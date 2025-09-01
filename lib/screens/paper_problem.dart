@@ -29,6 +29,7 @@ class _MainContainerState extends State<MainContainer> {
   late VariableDigitsProblem variableDigits;
   late List<List<int>> currentProblemSet;
   late List<int> currentProblem;
+  late List<bool> answerBools = [];
   String selectedLevel = "1kyuu"; // default
   int currentProblemIndex = 0;
   final TextEditingController _controller = TextEditingController();
@@ -69,6 +70,7 @@ class _MainContainerState extends State<MainContainer> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Correct! 🎉")));
+      answerBools[currentProblemIndex] = true;
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -77,6 +79,7 @@ class _MainContainerState extends State<MainContainer> {
           ),
         ),
       );
+      answerBools[currentProblemIndex] = false;
     }
   }
 
@@ -87,10 +90,11 @@ class _MainContainerState extends State<MainContainer> {
   }
 
   void _initializeProblem(String level) {
-    final spec = getSpec(kyuu_dan_spec[level]!);
+    final spec = getPaperSpec(level);
     variableDigits = VariableDigitsProblem(spec: spec);
     currentProblemSet = variableDigits.allProblems;
     currentProblemIndex = 0;
+    List<bool> answerBools = List.filled(currentProblemSet.length, false);
   }
 
   @override
@@ -144,24 +148,28 @@ class _MainContainerState extends State<MainContainer> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: currentProblemIndex > 0
-                    ? () {
-                        setState(() {
-                          currentProblemIndex--;
-                        });
-                      }
-                    : null, // disabled if at first
+                onPressed: () {
+                  setState(() {
+                    if (currentProblemIndex < currentProblemSet.length - 1) {
+                      currentProblemIndex++;
+                    } else {
+                      currentProblemIndex = 0;
+                    }
+                  });
+                },
                 child: Icon(Icons.arrow_back),
               ),
               SizedBox(width: 20),
               ElevatedButton(
-                onPressed: currentProblemIndex < currentProblemSet.length - 1
-                    ? () {
-                        setState(() {
-                          currentProblemIndex++;
-                        });
-                      }
-                    : null, // disabled if at last
+                onPressed: () {
+                  setState(() {
+                    if (currentProblemIndex > 0) {
+                      currentProblemIndex--;
+                    } else {
+                      currentProblemIndex = currentProblemSet.length - 1;
+                    }
+                  });
+                },
                 child: Icon(Icons.arrow_forward),
               ),
             ],

@@ -97,7 +97,7 @@ class Abacus {
 }
 
 void main() {
-  Abacus a1 = Abacus(28374);
-  a1.add(-5236);
+  Abacus a1 = Abacus(0);
+  a1.add(4);
   print(" ${a1.value}, carry: ${a1.carry}, digits: ${a1.digitsValues()}");
 }

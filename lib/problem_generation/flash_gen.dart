@@ -26,7 +26,7 @@ int getRandomInt(
   int digitCount,
   List<int> allPreviousNums,
   int? previousNum,
-  GenerationSpec options,
+  FlashSpec spec,
 ) {
   final rand = Random();
   final previousNumDigits = previousNum == null
@@ -49,7 +49,7 @@ int getRandomInt(
       if (previousNumDigits.length > i) {
         excepts.add(previousNumDigits[i]);
       }
-      if (options.digitAllDifferent!) {
+      if (spec.digitAllDifferent) {
         excepts.addAll(digits);
       }
       int nextDigit = getRandomDigit(rand, excepts: excepts);
@@ -58,8 +58,8 @@ int getRandomInt(
 
     int number = int.parse(digits.join());
 
-    if (options.allowMinus! && rand.nextDouble() < 0.3) {
-      if (options.neverNegative! &&
+    if (spec.allowMinus && rand.nextDouble() < 0.3) {
+      if (spec.neverNegative &&
           number > allPreviousNums.fold(0, (a, b) => a + b)) {
         continue;
       }
@@ -67,6 +67,28 @@ int getRandomInt(
     }
     return number;
   }
+}
+
+List<int> noCarryList(
+  int? previousNum,
+  List<int> allPreviousNums,
+  FlashSpec spec,
+) {
+  final noCarries = <int>[];
+  if (spec.allowMinus) {
+    for (int i = -9; i < 10; i++) {
+      if (i != previousNum && i != 0) {
+        noCarries.add(i);
+      }
+    }
+  } else {
+    for (int i = 1; i < 10; i++) {
+      if (i != previousNum) {
+        noCarries.add(i);
+      }
+    }
+  }
+  return noCarries;
 }
 
 double calculateComplexity(List<int> carries, int digit) {
@@ -96,25 +118,23 @@ double calculateComplexity(List<int> carries, int digit) {
 // Flash Addition Generator
 // ---------------------------------
 
-class AdditionGenerator {
-  final int digitCount;
-  final String difficulty;
-  GenerationSpec options;
+class FlashGenerator {
+  FlashSpec spec;
   final List<int> numbers = [];
   final List<int> carries = [];
   final Abacus abacus = Abacus(0);
 
-  AdditionGenerator(this.digitCount, this.difficulty, this.options);
+  FlashGenerator(this.spec);
 
   void addNumber() {
     int? lastNum = numbers.isNotEmpty ? numbers.last : null;
 
-    if (difficulty == "easy") {
+    if (spec.difficulty == "easy") {
       int? bestCandidate;
       int bestCarry = 1 << 30; // big number
 
       for (int i = 0; i < 20; i++) {
-        int candidate = getRandomInt(digitCount, numbers, lastNum, options);
+        int candidate = getRandomInt(spec.digitCount, numbers, lastNum, spec);
         Abacus tempAbacus = Abacus(abacus.value);
         tempAbacus.add(candidate);
         int carry = tempAbacus.carry;
@@ -133,18 +153,18 @@ class AdditionGenerator {
       if (bestCandidate != null) {
         _register(bestCandidate, bestCarry);
       }
-    } else if (difficulty == "normal" || difficulty == "random") {
-      int candidate = getRandomInt(digitCount, numbers, lastNum, options);
+    } else if (spec.difficulty == "normal" || spec.difficulty == "random") {
+      int candidate = getRandomInt(spec.digitCount, numbers, lastNum, spec);
       Abacus tempAbacus = Abacus(abacus.value);
       tempAbacus.add(candidate);
       int carry = tempAbacus.carry;
       _register(candidate, carry);
-    } else if (difficulty == "hard") {
+    } else if (spec.difficulty == "hard") {
       int? bestCandidate;
       int bestCarry = -1;
 
       for (int i = 0; i < 20; i++) {
-        int candidate = getRandomInt(digitCount, numbers, lastNum, options);
+        int candidate = getRandomInt(spec.digitCount, numbers, lastNum, spec);
         Abacus tempAbacus = Abacus(abacus.value);
         tempAbacus.add(candidate);
         int carry = tempAbacus.carry;
@@ -163,6 +183,19 @@ class AdditionGenerator {
       if (bestCandidate != null) {
         _register(bestCandidate, bestCarry);
       }
+    } else if (spec.difficulty == "noCarry") {
+      //Should only be used for 20-11kyuu
+      List<int> candidates = noCarryList(lastNum, numbers, spec);
+
+      final validNumbers = candidates.where((candidate) {
+        Abacus temp = Abacus(abacus.value);
+        temp.add(candidate);
+        return temp.carry == 0;
+      }).toList();
+
+      final candidate = validNumbers[Random().nextInt(validNumbers.length)];
+
+      _register(candidate, 0);
     }
   }
 
@@ -177,56 +210,51 @@ class AdditionGenerator {
 // Pick Problem
 // ---------------------------------
 
-List<int> pickFlashProblem(
-  int digitCount,
-  int length,
-  String difficulty,
-  GenerationSpec options,
-) {
+List<int> pickFlashProblem(FlashSpec spec) {
   int retry = 0;
   while (retry < generateRetryLimit) {
-    var gen = AdditionGenerator(digitCount, difficulty, options);
-    for (int i = 0; i < length; i++) {
+    var gen = FlashGenerator(spec);
+    for (int i = 0; i < spec.length; i++) {
       gen.addNumber();
     }
 
     var carries = gen.carries;
-    double complexity = calculateComplexity(carries, digitCount);
+    double complexity = calculateComplexity(carries, spec.digitCount);
 
-    // Construct key as string
-    String key = '$digitCount-$length';
+    String key = '${spec.digitCount}-${spec.length}';
 
-    // Access thresholds from loaded JSON
     var thresholds = difficultyThresholds['addition']?[key];
 
     if (thresholds == null) {
       return gen.numbers; // no thresholds available, accept anything
     }
 
-    if (difficulty == "random") {
+    if (spec.difficulty == "random") {
       print(
         "complexity=${complexity.toStringAsFixed(3)}, thresholds=$thresholds",
       );
       return gen.numbers;
-    } else if (difficulty == "easy" && complexity <= thresholds['easy']!) {
+    } else if (spec.difficulty == "easy" && complexity <= thresholds['easy']!) {
       print(
         "complexity=${complexity.toStringAsFixed(3)}, thresholds=$thresholds",
       );
       return gen.numbers;
-    } else if (difficulty == "normal" &&
+    } else if (spec.difficulty == "normal" &&
         complexity >= thresholds['easy']! &&
         complexity < thresholds['hard']!) {
       print(
         "complexity=${complexity.toStringAsFixed(3)}, thresholds=$thresholds",
       );
       return gen.numbers;
-    } else if (difficulty == "hard" && complexity >= thresholds['hard']!) {
+    } else if (spec.difficulty == "hard" && complexity >= thresholds['hard']!) {
       print(
         "complexity=${complexity.toStringAsFixed(3)}, thresholds=$thresholds",
       );
       return gen.numbers;
+    } else if (spec.difficulty == "noCarry") {
+      print("complexity=${complexity.toStringAsFixed(3)}, carry=$carries");
+      return gen.numbers;
     }
-
     retry++;
   }
 
@@ -244,17 +272,13 @@ Future<void> main() async {
   difficultyThresholds = jsonDecode(jsonString);
 
   // Example usage
-  int digitCount = 3;
-  int length = 15;
-  String difficulty = "random";
 
-  var flashOptions = GenerationSpec(
-    allowMinus: true,
-    digitAllDifferent: true,
-    neverNegative: true,
+  var problem = pickFlashProblem(
+    getFlashSpec(
+      "2dan",
+      overrides: {"allowMinus": true, "length": 15, "difficulty": "easy"},
+    ),
   );
-
-  var problem = pickFlashProblem(digitCount, length, difficulty, flashOptions);
   print("Problem: $problem");
   print("Sum: ${problem.reduce((a, b) => a + b)}");
 }

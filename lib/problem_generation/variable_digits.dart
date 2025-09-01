@@ -2,7 +2,7 @@ import 'dart:math';
 import 'generation_spec.dart';
 
 class VariableDigitsProblem {
-  final GenerationSpec spec;
+  final PaperSpec spec;
   late List<List<int>> allProblems = [];
   late List<int> sums = [];
 
@@ -16,7 +16,8 @@ class VariableDigitsProblem {
       return min + rand.nextInt(max - min + 1);
     }
 
-    for (int i = 0; i < (spec.probCount ?? 20); i++) {
+    /*
+    for (int i = 0; i < (spec.problemSpec['templateCountPerGroup'] ?? 20); i++) {
       List<int> problem = [];
       for (var step in spec.problemSpec!) {
         if (step.containsKey('digits')) {
@@ -63,13 +64,12 @@ class VariableDigitsProblem {
       allProblems.add(problem);
       sums.add(problem.reduce((a, b) => a + b));
     }
+    */
   }
 }
 
 void main() {
-  var problem = VariableDigitsProblem(
-    spec: getSpec(kyuu_dan_spec["1kyuu"] as Map<String, dynamic>),
-  );
+  var problem = VariableDigitsProblem(spec: getPaperSpec("1kyuu"));
 
   print(problem.allProblems);
   print(problem.sums);
