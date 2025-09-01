@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'generation_spec.dart';
 import 'abacus.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -25,7 +26,7 @@ int getRandomInt(
   int digitCount,
   List<int> allPreviousNums,
   int? previousNum,
-  FlashProblemOptions options,
+  GenerationSpec options,
 ) {
   final rand = Random();
   final previousNumDigits = previousNum == null
@@ -48,7 +49,7 @@ int getRandomInt(
       if (previousNumDigits.length > i) {
         excepts.add(previousNumDigits[i]);
       }
-      if (options.digitAllDifferent) {
+      if (options.digitAllDifferent!) {
         excepts.addAll(digits);
       }
       int nextDigit = getRandomDigit(rand, excepts: excepts);
@@ -57,8 +58,8 @@ int getRandomInt(
 
     int number = int.parse(digits.join());
 
-    if (options.allowMinus && rand.nextDouble() < 0.3) {
-      if (options.neverNegative &&
+    if (options.allowMinus! && rand.nextDouble() < 0.3) {
+      if (options.neverNegative! &&
           number > allPreviousNums.fold(0, (a, b) => a + b)) {
         continue;
       }
@@ -95,22 +96,10 @@ double calculateComplexity(List<int> carries, int digit) {
 // Flash Addition Generator
 // ---------------------------------
 
-class FlashProblemOptions {
-  final bool allowMinus;
-  final bool digitAllDifferent;
-  final bool neverNegative;
-
-  FlashProblemOptions({
-    required this.allowMinus,
-    required this.digitAllDifferent,
-    required this.neverNegative,
-  });
-}
-
 class AdditionGenerator {
   final int digitCount;
   final String difficulty;
-  FlashProblemOptions options;
+  GenerationSpec options;
   final List<int> numbers = [];
   final List<int> carries = [];
   final Abacus abacus = Abacus(0);
@@ -192,7 +181,7 @@ List<int> pickFlashProblem(
   int digitCount,
   int length,
   String difficulty,
-  FlashProblemOptions options,
+  GenerationSpec options,
 ) {
   int retry = 0;
   while (retry < generateRetryLimit) {
@@ -259,7 +248,7 @@ Future<void> main() async {
   int length = 15;
   String difficulty = "random";
 
-  var flashOptions = FlashProblemOptions(
+  var flashOptions = GenerationSpec(
     allowMinus: true,
     digitAllDifferent: true,
     neverNegative: true,
@@ -268,7 +257,4 @@ Future<void> main() async {
   var problem = pickFlashProblem(digitCount, length, difficulty, flashOptions);
   print("Problem: $problem");
   print("Sum: ${problem.reduce((a, b) => a + b)}");
-
-  String key = '$digitCount-$length';
-  var thresholds = difficultyThresholds['addition']?[key];
 }
