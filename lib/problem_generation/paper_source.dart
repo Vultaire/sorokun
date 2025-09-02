@@ -60,6 +60,7 @@ final paperSource = {
       "templateCountPerGroup": [5],
     },
     {"repeat": 3},
+    {"neverNegative": true},
   ],
   "7kyuu": [
     {
@@ -75,6 +76,7 @@ final paperSource = {
       "templateCountPerGroup": [5],
     },
     {"repeat": 3},
+    {"neverNegative": true},
   ],
   "6kyuu": [
     {
@@ -90,6 +92,7 @@ final paperSource = {
       "templateCountPerGroup": [5],
     },
     {"repeat": 3},
+    {"neverNegative": true},
   ],
   "5kyuu": [
     {
@@ -105,6 +108,7 @@ final paperSource = {
       "templateCountPerGroup": [5],
     },
     {"repeat": 3},
+    {"neverNegative": true},
   ],
   "4kyuu": [
     {
@@ -121,6 +125,7 @@ final paperSource = {
       "templateCountPerGroup": [5],
     },
     {"repeat": 3},
+    {"neverNegative": true},
   ],
   "3kyuu": [
     {
@@ -140,6 +145,7 @@ final paperSource = {
       "templateCountPerGroup": [3, 2],
     },
     {"repeat": 3},
+    {"neverNegative": true},
   ],
   "2kyuu": [
     {

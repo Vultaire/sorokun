@@ -97,7 +97,7 @@ class VariableDigitsProblem {
 
           for (var idx in selectedProblems) {
             List<int> problem = groupProblems[idx];
-            var minusIndices = List.generate(problem.length, (i) => i)
+            var minusIndices = List.generate(problem.length - 1, (i) => i + 1)
               ..shuffle(rand);
 
             int attempts = 0;
@@ -146,7 +146,7 @@ class VariableDigitsProblem {
 }
 
 void main() {
-  var problem = VariableDigitsProblem(spec: getPaperSpec("dan"));
+  var problem = VariableDigitsProblem(spec: getPaperSpec("10kyuuB"));
 
   print(problem.allProblems);
   print(problem.sums);
