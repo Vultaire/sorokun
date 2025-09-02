@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'generation_spec.dart';
-import 'paper_source.dart';
 
 class VariableDigitsProblem {
   final PaperSpec spec;
@@ -16,87 +15,128 @@ class VariableDigitsProblem {
       return min + rand.nextInt(max - min + 1);
     }
 
-    final problemSpec = spec.problemSpec ?? [];
+    final problemSpec = spec.problemSpec;
 
     for (int i = 0; i < problemSpec.length; i++) {
       final entry = problemSpec[i];
 
-      // Only process entries with "template"
       if (!entry.containsKey("template")) continue;
 
-      final templates = List<Map<String, int>>.from(entry["template"] as List);
+      final templateLists = entry["template"] as List;
 
-      // Look ahead to merge related keys
+      // Look for per-group settings in the next entries
       int repeatCount = 1;
-      bool neverNegative = true;
-      List<int> templateCounts = List.filled(templates.length, 1);
+      bool neverNegative = false;
       int minusCount = 0;
       int minusPerGroup = 2;
+
+      List<int> templateCounts = [];
 
       for (int j = i + 1; j < problemSpec.length; j++) {
         final next = problemSpec[j];
         if (next.containsKey("repeat")) repeatCount = next["repeat"];
-        if (next.containsKey("neverNegative")) {
+        if (next.containsKey("neverNegative"))
           neverNegative = next["neverNegative"];
-        }
+        if (next.containsKey("minusCount")) minusCount = next["minusCount"];
+        if (next.containsKey("minusPerGroup"))
+          minusPerGroup = next["minusPerGroup"];
         if (next.containsKey("templateCountPerGroup")) {
           templateCounts = List<int>.from(
             next["templateCountPerGroup"] as List,
           );
         }
-        if (next.containsKey("minusCount")) minusCount = next["minusCount"];
       }
 
-      // Repeat the group as specified
+      // Repeat the group (all template groups together)
       for (int r = 0; r < repeatCount; r++) {
-        for (int p = 0; p < templateCounts.first; p++) {
-          List<int> problem = [];
+        List<List<int>> groupProblems = [];
 
-          for (var template in templates) {
-            final digits = template["digits"]!;
-            final count = template["count"]!;
-            for (int n = 0; n < count; n++) {
-              problem.add(randomInt(digits));
+        for (var tgIndex = 0; tgIndex < templateLists.length; tgIndex++) {
+          var templateGroup = templateLists[tgIndex];
+          if (templateGroup is! List) continue;
+
+          final templates = List<Map<String, int>>.from(templateGroup);
+
+          // Determine number of problems for this template group
+          int problemsInGroup = templateCounts.isNotEmpty
+              ? templateCounts[tgIndex]
+              : 1; // fallback if templateCounts not set
+
+          for (int p = 0; p < problemsInGroup; p++) {
+            List<int> problem = [];
+            Set<int> usedNumbers = {};
+
+            for (var template in templates) {
+              final digits = template["digits"]!;
+              final count = template["count"]!;
+              int attempts = 0;
+
+              for (int n = 0; n < count; n++) {
+                int num;
+                do {
+                  num = randomInt(digits);
+                  attempts++;
+                  if (attempts > 1000) break; // avoid infinite loop
+                } while (usedNumbers.contains(num));
+
+                problem.add(num);
+                usedNumbers.add(num);
+              }
             }
-          }
 
-          if (minusCount > 0 && problem.length >= minusCount) {
-            var indices = List.generate(problem.length, (index) => index)
+            problem.shuffle();
+            groupProblems.add(problem);
+          }
+        }
+
+        // Apply minuses to randomly chosen problems in the group
+        if (minusPerGroup > 0 && minusCount > 0) {
+          var problemIndices = List.generate(groupProblems.length, (i) => i)
+            ..shuffle(rand);
+          var selectedProblems = problemIndices.take(minusPerGroup);
+
+          for (var idx in selectedProblems) {
+            List<int> problem = groupProblems[idx];
+            var minusIndices = List.generate(problem.length, (i) => i)
               ..shuffle(rand);
 
-            if (neverNegative) {
-              bool ok = false;
+            int attempts = 0;
+            const maxAttempts = 100;
+            bool valid = false;
 
-              while (!ok) {
-                problem.shuffle(rand);
-                problem = problem.map((x) => x.abs()).toList();
+            while (!valid && attempts < maxAttempts) {
+              attempts++;
+              problem = problem.map((x) => x.abs()).toList();
+              for (int k = 0; k < minusCount && k < problem.length; k++) {
+                problem[minusIndices[k]] = -problem[minusIndices[k]].abs();
+              }
 
-                for (var i in indices.take(minusCount)) {
-                  problem[i] = -problem[i].abs();
-                }
-
+              if (neverNegative) {
                 int runningSum = 0;
-                ok = true;
+                valid = true;
                 for (var n in problem) {
                   runningSum += n;
                   if (runningSum < 0) {
-                    ok = false;
-                    indices = List.generate(problem.length, (i) => i)
-                      ..shuffle(rand);
+                    valid = false;
+                    minusIndices.shuffle(rand);
                     break;
                   }
                 }
-              }
-            } else {
-              for (var i in indices.take(minusCount)) {
-                problem[i] = -problem[i].abs();
+              } else {
+                valid = true;
               }
             }
-            for (int k = 0; k < minusCount; k++) {
-              problem[indices[k]] = -problem[indices[k]].abs();
-            }
-          }
 
+            if (!valid) {
+              problem = problem.map((x) => x.abs()).toList();
+            }
+
+            groupProblems[idx] = problem;
+          }
+        }
+
+        // Add problems to the main list
+        for (var problem in groupProblems) {
           allProblems.add(problem);
           sums.add(problem.reduce((a, b) => a + b));
         }
@@ -106,58 +146,8 @@ class VariableDigitsProblem {
 }
 
 void main() {
-  var problem = VariableDigitsProblem(spec: getPaperSpec("10kyuuB"));
+  var problem = VariableDigitsProblem(spec: getPaperSpec("dan"));
 
   print(problem.allProblems);
   print(problem.sums);
 }
-
-/*
-    for (int i = 0; i < (spec.problemSpec['templateCountPerGroup'] ?? 20); i++) {
-      List<int> problem = [];
-      for (var step in spec.problemSpec!) {
-        if (step.containsKey('digits')) {
-          int digits = step['digits']!;
-          int count = step['count']!;
-          for (int i = 0; i < count; i++) {
-            problem.add(randomInt(digits));
-          }
-        } else if (step.containsKey('minusCount')) {
-          int minusCount = step['minusCount']!;
-          var minusIndices = List.generate(problem.length, (i) => i)
-            ..shuffle(rand);
-
-          if (spec.neverNegative ?? false) {
-            bool ok = false;
-
-            while (!ok) {
-              problem.shuffle(rand);
-              problem = problem.map((x) => x.abs()).toList();
-
-              for (var i in minusIndices.take(minusCount)) {
-                problem[i] = -problem[i].abs();
-              }
-
-              int runningSum = 0;
-              ok = true;
-              for (var n in problem) {
-                runningSum += n;
-                if (runningSum < 0) {
-                  ok = false;
-                  minusIndices = List.generate(problem.length, (i) => i)
-                    ..shuffle(rand);
-                  break;
-                }
-              }
-            }
-          } else {
-            for (var i in minusIndices.take(minusCount)) {
-              problem[i] = -problem[i].abs();
-            }
-          }
-        }
-      }
-      allProblems.add(problem);
-      sums.add(problem.reduce((a, b) => a + b));
-    }
-    */
