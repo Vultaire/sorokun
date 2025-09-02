@@ -1,5 +1,11 @@
 import 'dart:math';
 import 'generation_spec.dart';
+import 'paper_source.dart';
+
+dynamic getEntryValue(List<Map<String, dynamic>> spec, String key) {
+  final entry = spec.firstWhere((e) => e.containsKey(key), orElse: () => {});
+  return entry[key];
+}
 
 class VariableDigitsProblem {
   final PaperSpec spec;
@@ -8,6 +14,14 @@ class VariableDigitsProblem {
 
   VariableDigitsProblem({required this.spec}) {
     final rand = Random();
+
+    final templates =
+        getEntryValue(spec.problemSpec, "template") as List<Map<String, int>>?;
+
+    final minusCount = getEntryValue(spec.problemSpec, "minusCount") as int?;
+
+    final templateCounts =
+        getEntryValue(spec.problemSpec, "templateCountPerGroup") as List<int>?;
 
     int randomInt(int digits) {
       int min = pow(10, digits - 1).toInt();

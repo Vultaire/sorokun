@@ -7,7 +7,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 2},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -21,7 +20,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 2},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -35,7 +33,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 2},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -48,7 +45,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 2},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -62,7 +58,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 2},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -76,7 +71,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 3},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -90,7 +84,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 3},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -105,7 +98,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 3},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [5],
     },
@@ -125,7 +117,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 3},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [3, 2],
     },
@@ -146,7 +137,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 3},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [3, 2],
     },
@@ -168,7 +158,6 @@ final paperSource = {
       ],
     },
     {"minusCount": 3},
-    {"minusPerGroup": 2},
     {
       "templateCountPerGroup": [3, 2],
     },
@@ -177,71 +166,44 @@ final paperSource = {
   "dan": [
     {
       "template": [
-        {"digits": 3, "count": 3},
-        {"digits": 4, "count": 2},
-        {"digits": 5, "count": 2},
-        {"digits": 6, "count": 3},
+        [
+          {"digits": 3, "count": 3},
+          {"digits": 4, "count": 2},
+          {"digits": 5, "count": 2},
+          {"digits": 6, "count": 3},
+        ],
+        [
+          {"digits": 4, "count": 3},
+          {"digits": 5, "count": 4},
+          {"digits": 6, "count": 3},
+        ],
+        [
+          {"digits": 4, "count": 3},
+          {"digits": 5, "count": 2},
+          {"digits": 6, "count": 2},
+          {"digits": 7, "count": 2},
+        ],
+        [
+          {"digits": 4, "count": 2},
+          {"digits": 5, "count": 2},
+          {"digits": 6, "count": 2},
+          {"digits": 7, "count": 2},
+          {"digits": 8, "count": 2},
+        ],
+        [
+          {"digits": 4, "count": 2},
+          {"digits": 5, "count": 2},
+          {"digits": 6, "count": 1},
+          {"digits": 7, "count": 1},
+          {"digits": 8, "count": 2},
+          {"digits": 9, "count": 2},
+          {"repeat": 1},
+        ],
       ],
     },
     {"minusCount": 3},
-    {"minusPerGroup": 2},
     {
-      "templateCountPerGroup": [5],
+      "templateCountPerGroup": [5, 5, 5, 5, 5, 5],
     },
-    {
-      "template": [
-        {"digits": 4, "count": 3},
-        {"digits": 5, "count": 4},
-        {"digits": 6, "count": 3},
-      ],
-    },
-    {"minusCount": 3},
-    {"minusPerGroup": 2},
-    {
-      "templateCountPerGroup": [5],
-    },
-    {
-      "template": [
-        {"digits": 4, "count": 3},
-        {"digits": 5, "count": 2},
-        {"digits": 6, "count": 2},
-        {"digits": 7, "count": 2},
-      ],
-    },
-    {"minusCount": 3},
-    {"minusPerGroup": 2},
-    {
-      "templateCountPerGroup": [5],
-    },
-    {
-      "template": [
-        {"digits": 4, "count": 2},
-        {"digits": 5, "count": 2},
-        {"digits": 6, "count": 2},
-        {"digits": 7, "count": 2},
-        {"digits": 8, "count": 2},
-      ],
-    },
-    {"minusCount": 3},
-    {"minusPerGroup": 2},
-    {
-      "templateCountPerGroup": [5],
-    },
-    {
-      "template": [
-        {"digits": 4, "count": 2},
-        {"digits": 5, "count": 2},
-        {"digits": 6, "count": 1},
-        {"digits": 7, "count": 1},
-        {"digits": 8, "count": 2},
-        {"digits": 9, "count": 2},
-      ],
-    },
-    {"minusCount": 3},
-    {"minusPerGroup": 2},
-    {
-      "templateCountPerGroup": [5],
-    },
-    {"repeat": 1},
   ],
 };
