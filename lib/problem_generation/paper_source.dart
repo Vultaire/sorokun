@@ -11,6 +11,7 @@ final paperSource = {
       "templateCountPerGroup": [5],
     },
     {"repeat": 2},
+    {"neverNegative": true},
   ],
   "10kyuuB": [
     {
@@ -23,7 +24,8 @@ final paperSource = {
     {
       "templateCountPerGroup": [5],
     },
-    {"repeat": 2},
+    {"repeat": 1},
+    {"neverNegative": true},
   ],
   "9kyuu": [
     {
@@ -197,8 +199,8 @@ final paperSource = {
           {"digits": 7, "count": 1},
           {"digits": 8, "count": 2},
           {"digits": 9, "count": 2},
-          {"repeat": 1},
         ],
+        {"repeat": 1},
       ],
     },
     {"minusCount": 3},
