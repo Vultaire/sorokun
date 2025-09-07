@@ -2,20 +2,22 @@ import "flash_source.dart";
 import "paper_source.dart";
 
 class DivisionSpec {
-  int? probCount;
-  int? digitCount;
-  bool? integerDividend;
-  bool? decimals;
-  bool? controlDigitSplit;
-  bool? isExam;
+  int probCount;
+  int digitCount;
+  bool integerDividend;
+  bool hasDecimals;
+  bool isUnneat;
+  bool controlDigitSplit;
+  bool isExam;
 
   DivisionSpec({
-    this.isExam,
-    this.probCount,
-    this.digitCount,
-    this.integerDividend,
-    this.decimals,
-    this.controlDigitSplit,
+    this.isExam = true,
+    this.probCount = 15,
+    this.digitCount = 6,
+    this.integerDividend = false,
+    this.hasDecimals = false,
+    this.isUnneat = false,
+    this.controlDigitSplit = true,
   });
 }
 
@@ -47,7 +49,7 @@ class MultiplicationSpec {
   int? probCount;
   int? digitCount;
   bool? integerDividend;
-  bool? decimals;
+  bool? hasDecimals;
   bool? controlDigitSplit;
   bool? isExam;
 
@@ -56,7 +58,7 @@ class MultiplicationSpec {
     this.probCount,
     this.digitCount,
     this.integerDividend,
-    this.decimals,
+    this.hasDecimals,
     this.controlDigitSplit,
   });
 }
@@ -90,6 +92,12 @@ FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {
     neverNegative: merged["neverNegative"] ?? false,
     probCount: merged["probCount"] ?? 0,
   );
+}
+
+DivisionSpec getDivisionSpec(String level, {Map<String, dynamic>? overrides}) {
+  final baseConfig = flashSource[level] ?? {};
+  final merged = {...baseConfig, ...?overrides};
+  return DivisionSpec();
 }
 
 //final spec2 = getFlashSpec("19kyuu", overrides: {

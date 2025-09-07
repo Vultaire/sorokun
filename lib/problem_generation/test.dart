@@ -1,7 +1,7 @@
 import 'dart:math';
 
 void main() {
-  var problem = neatDecimalDivisionProblem(totalDigits: 6);
+  var problem = decimalDivisionNeat(totalDigits: 6);
   print('Dividend: ${problem['dividend']}');
   print('Divisor: ${problem['divisor']}');
   print('Quotient: ${problem['quotient']}');
@@ -90,7 +90,7 @@ int buildDenominatorForExactlyK({int a = 0, int b = 0}) {
   return (pow(2, a).toInt()) * (pow(5, b).toInt());
 }
 
-Map<String, num> neatDecimalDivisionProblem({required int totalDigits}) {
+Map<String, num> decimalDivisionNeat({required int totalDigits}) {
   final rand = Random();
 
   var split = _splitDigits(totalDigits);
@@ -127,7 +127,7 @@ Map<String, num> neatDecimalDivisionProblem({required int totalDigits}) {
 
   // Retry if generation failed
   if (quotient == -1) {
-    return neatDecimalDivisionProblem(totalDigits: totalDigits);
+    return decimalDivisionNeat(totalDigits: totalDigits);
   }
 
   double dividend = divisor * quotient;
