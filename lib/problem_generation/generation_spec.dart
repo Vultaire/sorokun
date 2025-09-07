@@ -70,15 +70,9 @@ class PaperSpec {
 
 PaperSpec getPaperSpec(String level, {List<Map<String, dynamic>>? overrides}) {
   final baseConfig = List<Map<String, dynamic>>.from(paperSource[level] ?? []);
-
-  // If overrides exist, append them (or replace existing keys if needed)
   final merged = [...baseConfig, ...?overrides];
 
-  return PaperSpec(
-    isExam:
-        true, // default true, you could also add support for custom override
-    problemSpec: merged,
-  );
+  return PaperSpec(isExam: true, problemSpec: merged);
 }
 
 FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {

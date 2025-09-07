@@ -1,5 +1,4 @@
 final paperSource = {
-  // TODO: Add neverNegative values.
   "10kyuuA": [
     {
       "template": [

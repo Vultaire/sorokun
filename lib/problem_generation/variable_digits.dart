@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'generation_spec.dart';
 
-class VariableDigitsProblem {
+class VariableDigitsProblemSet {
   final PaperSpec spec;
   late List<List<int>> allProblems = [];
   late List<int> sums = [];
 
-  VariableDigitsProblem({required this.spec}) {
+  VariableDigitsProblemSet({required this.spec}) {
     final rand = Random();
 
     int randomInt(int digits) {
@@ -76,7 +76,7 @@ class VariableDigitsProblem {
                 do {
                   num = randomInt(digits);
                   attempts++;
-                  if (attempts > 1000) break; // avoid infinite loop
+                  if (attempts > 1000) break;
                 } while (usedNumbers.contains(num));
 
                 problem.add(num);
@@ -135,7 +135,6 @@ class VariableDigitsProblem {
           }
         }
 
-        // Add problems to the main list
         for (var problem in groupProblems) {
           allProblems.add(problem);
           sums.add(problem.reduce((a, b) => a + b));
@@ -146,7 +145,7 @@ class VariableDigitsProblem {
 }
 
 void main() {
-  var problem = VariableDigitsProblem(spec: getPaperSpec("10kyuuB"));
+  var problem = VariableDigitsProblemSet(spec: getPaperSpec("10kyuuB"));
 
   print(problem.allProblems);
   print(problem.sums);

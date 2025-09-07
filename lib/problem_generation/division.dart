@@ -4,7 +4,7 @@ import 'package:decimal/decimal.dart';
 class DivisionProblem {
   final int digitCount;
   final bool controlDigitSplit;
-  final bool integerDividend;
+  final bool integerDividendUnneat;
   final bool decimals;
   late Decimal divisor;
   late Decimal quotient;
@@ -13,7 +13,7 @@ class DivisionProblem {
   DivisionProblem({
     required this.digitCount,
     this.controlDigitSplit = false,
-    this.integerDividend = false,
+    this.integerDividendUnneat = false,
     this.decimals = false,
     int? seed,
   }) {
@@ -24,14 +24,14 @@ class DivisionProblem {
     int maxAttempts = 100;
     for (var i = 0; i < maxAttempts; i++) {
       var split = _splitDigits(digitCount);
-      int dDigits = split.item1;
-      int qDigits = split.item2;
+      int dDigits = split.dDigits;
+      int qDigits = split.qDigits;
 
       divisor = _randomDecimal(dDigits);
       quotient = _randomDecimal(qDigits);
       dividend = divisor * quotient;
 
-      if (integerDividend) {
+      if (integerDividendUnneat) {
         if (decimals) {
           divisor = _scaleValue(divisor);
           quotient = _scaleValue(quotient, avoidSmallQuotient: true);
@@ -47,12 +47,12 @@ class DivisionProblem {
       } else {
         if (decimals) {
           divisor = _scaleValue(divisor);
-          quotient = _scaleValue(quotient);
+          // quotient = _scaleValue(quotient);
           dividend = divisor * quotient;
         }
       }
 
-      if ((!integerDividend) ||
+      if ((!integerDividendUnneat) ||
           (quotient.toString().length >= (digitCount / 3).ceil() &&
               dividend.toString().length >= (digitCount / 3).ceil())) {
         break;
@@ -60,13 +60,13 @@ class DivisionProblem {
     }
   }
 
-  ({int item1, int item2}) _splitDigits(int totalDigits) {
+  ({int dDigits, int qDigits}) _splitDigits(int totalDigits) {
     if (controlDigitSplit) {
-      return (item1: 3, item2: totalDigits - 3);
+      return (dDigits: 3, qDigits: totalDigits - 3);
     } else {
       var first = Random().nextInt(totalDigits - 3) + 2;
       var second = totalDigits - first;
-      return (item1: first, item2: second);
+      return (dDigits: first, qDigits: second);
     }
   }
 
@@ -105,7 +105,7 @@ Map<String, dynamic> calculateDivisionDifficulty(
   Decimal dividend,
   Decimal divisor,
   Decimal quotient,
-  bool integerDividend,
+  bool integerDividendUnneat,
 ) {
   List<int> modoshi = [];
   Decimal remainingDividend = dividend;
@@ -142,6 +142,10 @@ Map<String, dynamic> calculateDivisionDifficulty(
     String divisorDigitsStr = divisorStr
         .replaceFirst(RegExp(r'^0*\.?0*'), '')
         .replaceAll('.', '');
+
+    if (remDigitsStr.isEmpty) {
+      remDigitsStr = remStr;
+    }
 
     int dividendDigit = int.parse(remDigitsStr[0]);
     int divisorDigit = int.parse(divisorDigitsStr[0]);
@@ -210,7 +214,7 @@ Map<String, dynamic> calculateDivisionDifficulty(
 
     // stop conditions
     if ((placeValue <= Decimal.parse('0.0009') && qDigit != 0) ||
-        (i > decimalIndex && integerDividend)) {
+        (i > decimalIndex && integerDividendUnneat)) {
       break;
     }
   }
@@ -225,9 +229,9 @@ Map<String, dynamic> calculateDivisionDifficulty(
 
 void main() {
   var p2 = DivisionProblem(
-    digitCount: 5,
+    digitCount: 6,
     controlDigitSplit: false,
-    integerDividend: false,
+    integerDividendUnneat: false,
     decimals: true,
   );
   print(p2);
@@ -235,6 +239,6 @@ void main() {
     p2.dividend,
     p2.divisor,
     p2.quotient,
-    p2.integerDividend,
+    p2.integerDividendUnneat,
   );
 }
