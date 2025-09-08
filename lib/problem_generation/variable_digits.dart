@@ -145,7 +145,7 @@ class VariableDigitsProblemSet {
 }
 
 void main() {
-  var problem = VariableDigitsProblemSet(spec: getPaperSpec("10kyuuB"));
+  var problem = VariableDigitsProblemSet(spec: getPaperSpec("1kyuu"));
 
   print(problem.allProblems);
   print(problem.sums);

@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:decimal/decimal.dart';
+import 'package:rational/rational.dart';
 import 'generation_spec.dart';
 
 class DivisionProblem {
@@ -58,7 +59,55 @@ class DivisionProblem {
         Decimal dividend = divisor * quotient;
 
         return DivisionProblem._(dividend, divisor, quotient);
-      } //TODO: Figure out unneat generation
+      }
+    } else if (spec.isUnneat) {
+      var split = _splitDigits(spec.digitCount);
+      int qDigits = split.qDigits;
+      int dDigits = split.dDigits;
+      Decimal divisor = _randomDecimal(dDigits);
+      int digitsToTakeOffDividend = Random().nextInt(2);
+      Decimal dividend = _randomDecimal(
+        spec.digitCount - digitsToTakeOffDividend,
+      );
+
+      int scalePower = 0;
+      (divisor, scalePower) = _scaleValue(divisor);
+
+      int dividendScale =
+          (spec.digitCount - digitsToTakeOffDividend) -
+          ((dDigits - scalePower) + (qDigits - 3));
+      dividend = (dividend / Decimal.fromInt(pow(10, dividendScale).toInt()))
+          .toDecimal();
+
+      double approx = (dividend.toDouble() / divisor.toDouble());
+      Decimal quotient = Decimal.parse(approx.toStringAsFixed(3));
+
+      // Significant figures of divisor and quotient
+      int sigFigsDivisor = divisor
+          .toString()
+          .replaceFirst(RegExp(r'^0*\.?0*'), '')
+          .replaceAll('.', '')
+          .length;
+      int sigFigsQuotient = quotient
+          .toString()
+          .replaceFirst(RegExp(r'^0*\.?0*'), '')
+          .replaceAll('.', '')
+          .length;
+      int totalSigFigs = sigFigsDivisor + sigFigsQuotient;
+
+      if (totalSigFigs < spec.digitCount) {
+        int diff = spec.digitCount - totalSigFigs;
+        dividend *= Decimal.fromInt(pow(10, diff).toInt());
+      } else if (totalSigFigs > spec.digitCount) {
+        int diff = totalSigFigs - spec.digitCount;
+        dividend = (dividend / Decimal.fromInt(pow(10, diff).toInt()))
+            .toDecimal();
+      }
+
+      approx = (dividend.toDouble() / divisor.toDouble());
+      quotient = Decimal.parse(approx.toStringAsFixed(3));
+
+      return DivisionProblem._(dividend, divisor, quotient);
     } else {
       var split = _splitDigits(spec.digitCount);
       int dDigits = split.dDigits;
@@ -69,8 +118,8 @@ class DivisionProblem {
       Decimal dividend = divisor * quotient;
 
       if (spec.hasDecimals) {
-        divisor = _scaleValue(divisor);
-        quotient = _scaleValue(quotient, avoidSmallQuotient: true);
+        (divisor, _) = _scaleValue(divisor);
+        (quotient, _) = _scaleValue(quotient, avoidOverScale: true);
         dividend = divisor * quotient;
       }
 
@@ -88,20 +137,29 @@ class DivisionProblem {
       low = pow(10, digits - 1).toInt();
       high = pow(10, digits).toInt() - 1;
     }
-    int value = low + Random().nextInt(high - low + 1);
+
+    int value;
+    do {
+      value = low + Random().nextInt(high - low + 1);
+    } while (value % 10 == 0); // reject multiples of 10
+
     return Decimal.fromInt(value);
   }
 
-  static Decimal _scaleValue(Decimal val, {bool avoidSmallQuotient = false}) {
+  static (Decimal, int) _scaleValue(
+    Decimal val, {
+    bool avoidOverScale = false,
+    int scalePower = 0,
+  }) {
     var intDigits = val.toString().split('.')[0].length;
-    int maxPower = avoidSmallQuotient ? intDigits - 2 : intDigits + 1;
+    int maxPower = avoidOverScale ? 3 : intDigits + 1;
 
     if (maxPower > 0) {
-      int scalePower = 1 + Random().nextInt(maxPower);
+      scalePower = 1 + Random().nextInt(maxPower);
       Decimal divisor = Decimal.fromInt(pow(10, scalePower).toInt());
-      return (val / divisor).toDecimal();
+      return ((val / divisor).toDecimal(), scalePower);
     }
-    return val;
+    return (val, scalePower);
   }
 
   static int _gcd(int a, int b) {
@@ -309,7 +367,12 @@ Map<String, dynamic> calculateDivisionDifficulty(
 
 void main() {
   // Example 1: Generate a problem with an integer dividend
-  var spec1 = DivisionSpec(digitCount: 6, integerDividend: true);
+  var spec1 = DivisionSpec(
+    digitCount: 6,
+    integerDividend: false,
+    hasDecimals: true,
+    isUnneat: false,
+  );
   var problem1 = DivisionProblem(spec: spec1);
   print("Problem 1:");
   print(problem1);
@@ -317,9 +380,10 @@ void main() {
 
   // Example 2: Generate a problem with decimals allowed
   var spec2 = DivisionSpec(
-    digitCount: 5,
+    digitCount: 6,
     integerDividend: false,
     hasDecimals: true,
+    isUnneat: true,
   );
   var problem2 = DivisionProblem(spec: spec2);
   print("Problem 2:");
@@ -327,7 +391,12 @@ void main() {
   print("");
 
   // Example 3: Generate a larger problem
-  var spec3 = DivisionSpec(digitCount: 8, integerDividend: false);
+  var spec3 = DivisionSpec(
+    digitCount: 9,
+    integerDividend: false,
+    hasDecimals: true,
+    isUnneat: true,
+  );
   var problem3 = DivisionProblem(spec: spec3);
   print("Problem 3:");
   print(problem3);
