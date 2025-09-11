@@ -12,12 +12,17 @@ class DivisionProblem {
 
   factory DivisionProblem({required DivisionSpec spec}) {
     final rand = Random();
-    final split = _splitDigits(spec.digitCount);
+    final split = _splitDigits(
+      spec,
+      digitSplit: digitSplit,
+      qDigits: 0,
+      dDigits: 0,
+    );
     final int dDigits = split.dDigits;
     final int qDigits = split.qDigits;
 
     if (spec.integerDividend && !spec.isUnneat) {
-      return integerDividendNeat(spec, dDigits, qDigits, rand);
+      return _integerDivisionNeat(spec, dDigits, qDigits, rand);
     } else if (spec.integerDividend && spec.isUnneat) {
       int divisorScale = 0;
       Decimal divisor = _randomDecimalNoTrailingZero(dDigits);
@@ -66,7 +71,7 @@ class DivisionProblem {
           );
           quotient = scaledQuotient;
           dividend = divisor * quotient;
-          dividend = makeDivisionUnneat(dividend, divisor, quotient);
+          dividend = _makeDivisionUnneat(dividend, divisor, quotient);
         } else {
           final (Decimal scaledQuotient, int __) = _scaleValue(
             quotient,
@@ -93,7 +98,7 @@ class DivisionProblem {
     return Decimal.fromBigInt(n);
   }
 
-  static integerDividendNeat(
+  static _integerDivisionNeat(
     DivisionSpec spec,
     int dDigits,
     int qDigits,
@@ -141,7 +146,7 @@ class DivisionProblem {
     }
   }
 
-  static makeDivisionUnneat(
+  static _makeDivisionUnneat(
     Decimal originalDividend,
     Decimal divisor,
     Decimal quotient,
@@ -312,7 +317,6 @@ class DivisionProblem {
   }
 
   static ({int dDigits, int qDigits}) _splitDigits(
-    int digitCount,
     DivisionSpec spec, {
     Map<String, dynamic>? digitSplit,
     required final int qDigits,
@@ -323,24 +327,24 @@ class DivisionProblem {
     if (digitSplit != null && digitSplit.containsKey(spec.difficulty)) {
       final difficultySpec = digitSplit[spec.difficulty]!;
 
-      if (difficultySpec.containsKey(digitCount)) {
-        final entry = difficultySpec[digitCount]!;
+      if (difficultySpec.containsKey(spec.digitCount)) {
+        final entry = difficultySpec[spec.digitCount]!;
 
         if (entry is List<int>) {
-          return (qDigits: entry[0], dDigits: entry[1]);
+          return (dDigits: entry[0], qDigits: entry[1]);
         }
 
         if (entry is List<List<int>>) {
           final choice = entry[rand.nextInt(entry.length)];
-          return (qDigits: choice[0], dDigits: choice[1]);
+          return (dDigits: choice[0], qDigits: choice[1]);
         }
       }
     }
 
-    int a = (digitCount / 3).floor();
-    int b = digitCount - a;
+    int a = (spec.digitCount / 3).floor();
+    int b = spec.digitCount - a;
 
-    return (qDigits: a, dDigits: b);
+    return (dDigits: a, qDigits: b);
   }
 
   static int randomMultipleForDenominator(int den, int qDigits, Random rand) {
@@ -493,9 +497,10 @@ Map<String, dynamic> calculateDivisionDifficulty(
 void main() {
   // Example 1: Generate a problem with an integer dividend
   var spec1 = DivisionSpec(
-    digitCount: 6,
-    integerDividend: true,
-    hasDecimals: true,
+    digitCount: 4,
+    difficulty: "7kyuu",
+    integerDividend: false,
+    hasDecimals: false,
     isUnneat: false,
   );
   var problem1 = DivisionProblem(spec: spec1);

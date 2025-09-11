@@ -99,6 +99,7 @@ FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {
 DivisionSpec getDivisionSpec(String level, {Map<String, dynamic>? overrides}) {
   final baseConfig = flashSource[level] ?? {};
   final merged = {...baseConfig, ...?overrides};
+
   return DivisionSpec();
 }
 
