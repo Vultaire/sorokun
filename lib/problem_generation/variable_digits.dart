@@ -10,6 +10,7 @@ class VariableDigitsProblemSet {
     final rand = Random();
 
     int randomInt(int digits) {
+      final rand = Random();
       int min = pow(10, digits - 1).toInt();
       int max = pow(10, digits).toInt() - 1;
       return min + rand.nextInt(max - min + 1);

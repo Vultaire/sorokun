@@ -1,84 +1,141 @@
 import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'generation_spec.dart';
+import 'division_source.dart';
 
 class DivisionProblem {
   final Decimal dividend;
   final Decimal divisor;
   final Decimal quotient;
 
-  // Private generative constructor
   DivisionProblem._(this.dividend, this.divisor, this.quotient);
 
-  // Factory constructor that retries until success
   factory DivisionProblem({required DivisionSpec spec}) {
     final rand = Random();
+    final split = _splitDigits(spec.digitCount);
+    final int dDigits = split.dDigits;
+    final int qDigits = split.qDigits;
 
-    if (spec.integerDividend) {
-      while (true) {
-        var split = _splitDigits(spec.digitCount);
-        int dDigits = split.dDigits;
-        int qDigits = split.qDigits;
+    if (spec.integerDividend && !spec.isUnneat) {
+      return integerDividendNeat(spec, dDigits, qDigits, rand);
+    } else if (spec.integerDividend && spec.isUnneat) {
+      int divisorScale = 0;
+      Decimal divisor = _randomDecimalNoTrailingZero(dDigits);
+      (divisor, divisorScale) = _scaleValue(divisor);
 
-        int digitsBeforeDecimal = rand.nextInt(dDigits - 1);
-        int divisorDecimals = dDigits - digitsBeforeDecimal;
+      Decimal dividend = _randomDecimal(spec.digitCount - divisorScale);
+      Decimal quotient = (dividend / divisor).round().toDecimal();
 
-        int fixed = divisorDecimals;
-        int randomNumber = rand.nextInt(divisorDecimals);
-
-        int a, b;
-        if (rand.nextBool()) {
-          a = fixed;
-          b = randomNumber;
-        } else {
-          a = randomNumber;
-          b = fixed;
-        }
-
-        int denominator = buildDenominatorForExactlyK(a: a, b: b);
-
-        int numerator = randomNumeratorForExactlyK(
-          denominator,
-          divisorDecimals,
-          digitsBeforeDecimal,
-          rand,
-        );
-
-        Decimal divisor =
-            (Decimal.fromInt(numerator) / Decimal.fromInt(denominator))
-                .toDecimal();
-
-        int qInt = randomMultipleForDenominator(denominator, qDigits, rand);
-
-        if (qInt == -1) {
-          continue; // retry
-        }
-
-        Decimal quotient = Decimal.fromInt(qInt);
-        Decimal dividend = divisor * quotient;
-
-        return DivisionProblem._(dividend, divisor, quotient);
+      int sigFigsDivisor = divisor
+          .toString()
+          .replaceFirst(RegExp(r'^0*\.?0*'), '')
+          .replaceAll('.', '')
+          .length;
+      int sigFigsQuotient = quotient
+          .toString()
+          .replaceFirst(RegExp(r'^0*\.?0*'), '')
+          .replaceAll('.', '')
+          .length;
+      int totalSigFigs = sigFigsDivisor + sigFigsQuotient;
+      if (totalSigFigs < spec.digitCount) {
+        int diff = spec.digitCount - totalSigFigs;
+        dividend *= Decimal.fromInt(pow(10, diff).toInt());
+        dividend = dividend.round();
+      } else if (totalSigFigs > spec.digitCount) {
+        int diff = totalSigFigs - spec.digitCount;
+        dividend = (dividend / Decimal.fromInt(pow(10, diff).toInt()))
+            .toDecimal();
+        dividend = dividend.round();
       }
-    } else {
-      var split = _splitDigits(spec.digitCount);
-      int dDigits = split.dDigits;
-      int qDigits = split.qDigits;
+      quotient = (dividend / divisor).round().toDecimal();
 
-      Decimal divisor = _randomDecimal(dDigits);
-      Decimal quotient = _randomDecimal(qDigits);
+      return DivisionProblem._(dividend, divisor, quotient);
+    } else {
+      Decimal divisor = _randomDecimalNoTrailingZero(dDigits);
+      Decimal quotient = _randomDecimalNoTrailingZero(qDigits);
       Decimal dividend = divisor * quotient;
 
       if (spec.hasDecimals) {
-        (divisor, _) = _scaleValue(divisor);
+        final (Decimal scaledDivisor, int _) = _scaleValue(divisor);
+        divisor = scaledDivisor;
+
         if (spec.isUnneat) {
-          (quotient, _) = _scaleValue(quotient, alwaysThree: true);
+          final (Decimal scaledQuotient, int __) = _scaleValue(
+            quotient,
+            alwaysThree: true,
+          );
+          quotient = scaledQuotient;
           dividend = divisor * quotient;
           dividend = makeDivisionUnneat(dividend, divisor, quotient);
         } else {
-          (quotient, _) = _scaleValue(quotient, avoidOverScale: true);
+          final (Decimal scaledQuotient, int __) = _scaleValue(
+            quotient,
+            avoidOverScale: true,
+          );
+          quotient = scaledQuotient;
           dividend = divisor * quotient;
         }
       }
+
+      return DivisionProblem._(dividend, divisor, quotient);
+    }
+  }
+
+  static Decimal _randomDecimal(int digits) {
+    final rand = Random();
+
+    final min = BigInt.from(10).pow(digits - 1);
+    final max = BigInt.from(10).pow(digits) - BigInt.one;
+
+    final range = max - min + BigInt.one;
+    BigInt n = min + BigInt.from(rand.nextInt(range.toInt()));
+
+    return Decimal.fromBigInt(n);
+  }
+
+  static integerDividendNeat(
+    DivisionSpec spec,
+    int dDigits,
+    int qDigits,
+    Random rand,
+  ) {
+    while (true) {
+      int digitsBeforeDecimal = rand.nextInt(dDigits - 1);
+      int divisorDecimals = dDigits - digitsBeforeDecimal;
+
+      int fixed = divisorDecimals;
+      int randomNumber = rand.nextInt(divisorDecimals);
+
+      int a, b;
+      if (rand.nextBool()) {
+        a = fixed;
+        b = randomNumber;
+      } else {
+        a = randomNumber;
+        b = fixed;
+      }
+
+      int denominator = buildDenominatorForExactlyK(a: a, b: b);
+
+      int numerator = randomNumeratorForExactlyK(
+        denominator,
+        divisorDecimals,
+        digitsBeforeDecimal,
+        rand,
+      );
+
+      Decimal divisor =
+          (Decimal.fromInt(numerator) / Decimal.fromInt(denominator))
+              .toDecimal();
+
+      int qInt = randomMultipleForDenominator(denominator, qDigits, rand);
+
+      if (qInt == -1) {
+        continue; // retry
+      }
+
+      Decimal quotient = Decimal.fromInt(qInt);
+      Decimal dividend = divisor * quotient;
 
       return DivisionProblem._(dividend, divisor, quotient);
     }
@@ -172,8 +229,8 @@ class DivisionProblem {
     return newDividend;
   }
 
-  // Random decimal with given digits
-  static Decimal _randomDecimal(int digits) {
+  // Random decimal with given digits, never ends in zero
+  static Decimal _randomDecimalNoTrailingZero(int digits) {
     int low, high;
     if (digits == 1) {
       low = 2;
@@ -186,7 +243,7 @@ class DivisionProblem {
     int value;
     do {
       value = low + Random().nextInt(high - low + 1);
-    } while (value % 10 == 0); // reject multiples of 10
+    } while (value % 10 == 0);
 
     return Decimal.fromInt(value);
   }
@@ -254,10 +311,36 @@ class DivisionProblem {
     return candidate();
   }
 
-  static ({int dDigits, int qDigits}) _splitDigits(int totalDigits) {
-    var first = Random().nextInt(totalDigits - 3) + 2;
-    var second = totalDigits - first;
-    return (dDigits: first, qDigits: second);
+  static ({int dDigits, int qDigits}) _splitDigits(
+    int digitCount,
+    DivisionSpec spec, {
+    Map<String, dynamic>? digitSplit,
+    required final int qDigits,
+    required final int dDigits,
+  }) {
+    final rand = Random();
+
+    if (digitSplit != null && digitSplit.containsKey(spec.difficulty)) {
+      final difficultySpec = digitSplit[spec.difficulty]!;
+
+      if (difficultySpec.containsKey(digitCount)) {
+        final entry = difficultySpec[digitCount]!;
+
+        if (entry is List<int>) {
+          return (qDigits: entry[0], dDigits: entry[1]);
+        }
+
+        if (entry is List<List<int>>) {
+          final choice = entry[rand.nextInt(entry.length)];
+          return (qDigits: choice[0], dDigits: choice[1]);
+        }
+      }
+    }
+
+    int a = (digitCount / 3).floor();
+    int b = digitCount - a;
+
+    return (qDigits: a, dDigits: b);
   }
 
   static int randomMultipleForDenominator(int den, int qDigits, Random rand) {
@@ -435,7 +518,7 @@ void main() {
   // Example 3: Generate a larger problem
   var spec3 = DivisionSpec(
     digitCount: 9,
-    integerDividend: false,
+    integerDividend: true,
     hasDecimals: true,
     isUnneat: true,
   );

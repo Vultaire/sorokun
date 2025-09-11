@@ -9,9 +9,11 @@ class DivisionSpec {
   bool isUnneat;
   bool controlDigitSplit;
   bool isExam;
+  String difficulty;
 
   DivisionSpec({
     this.isExam = true,
+    this.difficulty = "5kyuu",
     this.probCount = 15,
     this.digitCount = 6,
     this.integerDividend = false,
