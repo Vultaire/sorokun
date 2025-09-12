@@ -5,7 +5,7 @@ class DivisionSpec {
   int probCount;
   int digitCount;
   bool integerDividend;
-  bool hasDecimals;
+  bool integerDivisor;
   bool isUnneat;
   bool controlDigitSplit;
   bool isExam;
@@ -17,10 +17,64 @@ class DivisionSpec {
     this.probCount = 15,
     this.digitCount = 6,
     this.integerDividend = false,
-    this.hasDecimals = false,
+    this.integerDivisor = false,
     this.isUnneat = false,
     this.controlDigitSplit = true,
   });
+}
+
+enum ProblemType { type1, type2, type3, type4, type5 }
+
+DivisionSpec specFromType(DivisionSpec base, ProblemType type) {
+  switch (type) {
+    case ProblemType.type1:
+      return DivisionSpec(
+        probCount: base.probCount,
+        digitCount: base.digitCount,
+        integerDividend: true,
+        integerDivisor: true,
+        isUnneat: false,
+        controlDigitSplit: base.controlDigitSplit,
+        isExam: base.isExam,
+        difficulty: base.difficulty,
+      );
+    case ProblemType.type2:
+      return DivisionSpec(
+        probCount: base.probCount,
+        digitCount: base.digitCount,
+        integerDividend: false,
+        integerDivisor: false,
+        isUnneat: false,
+        difficulty: base.difficulty,
+      );
+    case ProblemType.type3:
+      return DivisionSpec(
+        probCount: base.probCount,
+        digitCount: base.digitCount,
+        integerDividend: false,
+        integerDivisor: false,
+        isUnneat: true,
+        difficulty: base.difficulty,
+      );
+    case ProblemType.type4:
+      return DivisionSpec(
+        probCount: base.probCount,
+        digitCount: base.digitCount,
+        integerDividend: true,
+        integerDivisor: false,
+        isUnneat: false,
+        difficulty: base.difficulty,
+      );
+    case ProblemType.type5:
+      return DivisionSpec(
+        probCount: base.probCount,
+        digitCount: base.digitCount,
+        integerDividend: true,
+        integerDivisor: false,
+        isUnneat: true,
+        difficulty: base.difficulty,
+      );
+  }
 }
 
 class FlashSpec {
@@ -50,7 +104,7 @@ class FlashSpec {
 class MultiplicationSpec {
   int? probCount;
   int? digitCount;
-  bool? integerDividend;
+  bool? decimalOverInteger;
   bool? hasDecimals;
   bool? controlDigitSplit;
   bool? isExam;
@@ -59,7 +113,7 @@ class MultiplicationSpec {
     this.isExam,
     this.probCount,
     this.digitCount,
-    this.integerDividend,
+    this.decimalOverInteger,
     this.hasDecimals,
     this.controlDigitSplit,
   });
