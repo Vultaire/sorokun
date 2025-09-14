@@ -26,7 +26,7 @@ class MainContainer extends StatefulWidget {
 }
 
 class _MainContainerState extends State<MainContainer> {
-  late VariableDigitsProblem variableDigits;
+  late VariableDigitsProblemSet variableDigits;
   late List<List<int>> currentProblemSet;
   late List<int> currentProblem;
   late List<bool> answerBools = [];
@@ -91,7 +91,7 @@ class _MainContainerState extends State<MainContainer> {
 
   void _initializeProblem(String level) {
     final spec = getPaperSpec(level);
-    variableDigits = VariableDigitsProblem(spec: spec);
+    variableDigits = VariableDigitsProblemSet(spec: getPaperSpec("1kyuu"));
     currentProblemSet = variableDigits.allProblems;
     currentProblemIndex = 0;
     List<bool> answerBools = List.filled(currentProblemSet.length, false);

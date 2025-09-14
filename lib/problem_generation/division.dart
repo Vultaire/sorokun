@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'generation_spec.dart';
 import 'division_source.dart';
+import 'package:intl/intl.dart';
 
 class DivisionProblem {
   final Decimal dividend;
@@ -390,9 +391,27 @@ class DivisionProblem {
     return pow(2, a).toInt() * pow(5, b).toInt();
   }
 
+  static int _decimalPlaces(Decimal number) {
+    final str = number.toString();
+    if (!str.contains('.')) return 0;
+    return str.split('.')[1].length;
+  }
+
+  /// Formats a Decimal with commas and preserves all decimals
+  static String _formatDecimal(Decimal number) {
+    final decimals = _decimalPlaces(number);
+    final pattern = decimals > 0 ? '#,##0.' + '0' * decimals : '#,##0';
+    final formatter = NumberFormat(pattern);
+    return formatter.format(number.toDouble());
+  }
+
+  String get formattedDividend => _formatDecimal(dividend);
+  String get formattedDivisor => _formatDecimal(divisor);
+  String get formattedQuotient => _formatDecimal(quotient);
+
   @override
   String toString() {
-    return 'dividend=$dividend, divisor=$divisor, quotient=$quotient';
+    return 'dividend=$dividend, divisor=$divisor, quotient=$quotient dividend=$formattedDividend, divisor=$formattedDivisor, quotient=$formattedQuotient';
   }
 }
 
@@ -525,16 +544,19 @@ class DivisionProblemSet {
   final Random _rand = Random();
 
   /// Generates a sequence of problems based on configuration
-  List<DivisionProblem> generateProblems({
-    required DivisionSpec base,
-    required int firstPartCount,
-    required int secondPartCount,
-    required int type2Count,
-    required int type3Count,
-    required int type4Count,
-    required int type5Count,
-  }) {
+  List<DivisionProblem> generateProblems({required DivisionSpec base}) {
     final problems = <DivisionProblem>[];
+
+    const int firstPartCount = 7;
+    const int secondPartCount = 8;
+
+    final config =
+        divisionSource[base.difficulty] ?? divisionSource['noDecimal']!;
+
+    final type2Count = config['type2Count']!;
+    final type3Count = config['type3Count']!;
+    final type4Count = config['type4Count']!;
+    final type5Count = config['type5Count']!;
 
     // --- First part ---
     // Always first Type 1
@@ -586,15 +608,7 @@ void main() {
     difficulty: "1kyuu",
   );
 
-  final problems = generator.generateProblems(
-    base: baseSpec,
-    firstPartCount: 7, // first 7 problems
-    secondPartCount: 8, // next 8 problems
-    type2Count: 2,
-    type3Count: 2,
-    type4Count: 3,
-    type5Count: 2,
-  );
+  final problems = generator.generateProblems(base: baseSpec);
 
   for (var i = 0; i < problems.length; i++) {
     print("Problem ${i + 1}: ${problems[i]}");

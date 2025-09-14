@@ -9,10 +9,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  english_words: ^4.0.0
   provider: ^6.1.5
   decimal: ^2.3.3
   rational: 
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  path_provider: ^2.1.5
+  open_document: ^1.0.7
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +27,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/complexityThresholdMap.json
+    - assets/abacus3.ttf

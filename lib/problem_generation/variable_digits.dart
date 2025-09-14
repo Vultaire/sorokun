@@ -36,11 +36,13 @@ class VariableDigitsProblemSet {
       for (int j = i + 1; j < problemSpec.length; j++) {
         final next = problemSpec[j];
         if (next.containsKey("repeat")) repeatCount = next["repeat"];
-        if (next.containsKey("neverNegative"))
+        if (next.containsKey("neverNegative")) {
           neverNegative = next["neverNegative"];
+        }
         if (next.containsKey("minusCount")) minusCount = next["minusCount"];
-        if (next.containsKey("minusPerGroup"))
+        if (next.containsKey("minusPerGroup")) {
           minusPerGroup = next["minusPerGroup"];
+        }
         if (next.containsKey("templateCountPerGroup")) {
           templateCounts = List<int>.from(
             next["templateCountPerGroup"] as List,

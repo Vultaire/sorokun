@@ -79,3 +79,41 @@ final Map<String, dynamic> digitSplit = {
     ],
   },
 };
+
+final Map<String, Map<String, int>> divisionSource = {
+  'noDecimal': {
+    'type2Count': 0,
+    'type3Count': 0,
+    'type4Count': 0,
+    'type5Count': 0,
+    'totalCount': 15,
+  },
+  '3kyuu': {
+    'type2Count': 2,
+    'type3Count': 2,
+    'type4Count': 2,
+    'type5Count': 2,
+    'totalCount': 15,
+  },
+  '2kyuu': {
+    'type2Count': 2,
+    'type3Count': 2,
+    'type4Count': 2,
+    'type5Count': 2,
+    'totalCount': 15,
+  },
+  '1kyuu': {
+    'type2Count': 2,
+    'type3Count': 2,
+    'type4Count': 2,
+    'type5Count': 2,
+    'totalCount': 15,
+  },
+  'dan': {
+    'type2Count': 2,
+    'type3Count': 2,
+    'type4Count': 2,
+    'type5Count': 2,
+    'totalCount': 15,
+  },
+};
