@@ -102,20 +102,22 @@ class FlashSpec {
 }
 
 class MultiplicationSpec {
-  int? probCount;
-  int? digitCount;
-  bool? decimalOverInteger;
-  bool? hasDecimals;
-  bool? controlDigitSplit;
-  bool? isExam;
+  int probCount;
+  int digitCount;
+  bool integerMultiplicand;
+  bool integerMultiplier;
+  bool controlDigitSplit;
+  bool isExam;
+  String difficulty;
 
   MultiplicationSpec({
-    this.isExam,
-    this.probCount,
-    this.digitCount,
-    this.decimalOverInteger,
-    this.hasDecimals,
-    this.controlDigitSplit,
+    this.isExam = true,
+    this.difficulty = "5kyuu",
+    this.probCount = 15,
+    this.digitCount = 6,
+    this.integerMultiplicand = true,
+    this.integerMultiplier = true,
+    this.controlDigitSplit = true,
   });
 }
 

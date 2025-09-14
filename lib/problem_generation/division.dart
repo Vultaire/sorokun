@@ -13,14 +13,14 @@ class DivisionProblem {
 
   factory DivisionProblem({required DivisionSpec spec}) {
     final rand = Random();
-    final split = _splitDigits(
+    final split = splitDigits(
       spec,
       digitSplit: digitSplit,
-      qDigits: 0,
-      dDigits: 0,
+      firstDigits: 0,
+      secondDigits: 0,
     );
-    final int dDigits = split.dDigits;
-    final int qDigits = split.qDigits;
+    final int dDigits = split.firstDigits;
+    final int qDigits = split.secondDigits;
 
     if (spec.integerDividend) {
       if (spec.integerDivisor) {
@@ -36,8 +36,8 @@ class DivisionProblem {
   }
 
   static DivisionProblem _integerOverIntegerNeat(int dDigits, int qDigits) {
-    final divisor = _randomDecimalNoTrailingZero(dDigits);
-    final quotient = _randomDecimalNoTrailingZero(qDigits);
+    final divisor = randomDecimalNoTrailingZero(dDigits);
+    final quotient = randomDecimalNoTrailingZero(qDigits);
     final dividend = divisor * quotient;
     return DivisionProblem._(dividend, divisor, quotient);
   }
@@ -47,10 +47,10 @@ class DivisionProblem {
     int dDigits,
   ) {
     int divisorScale = 0;
-    Decimal divisor = _randomDecimalNoTrailingZero(dDigits);
-    (divisor, divisorScale) = _scaleValue(divisor);
+    Decimal divisor = randomDecimalNoTrailingZero(dDigits);
+    (divisor, divisorScale) = scaleValue(divisor);
 
-    Decimal dividend = _randomDecimal(spec.digitCount - divisorScale);
+    Decimal dividend = randomDecimal(spec.digitCount - divisorScale);
     Decimal quotient = (dividend / divisor).round().toDecimal();
 
     final sigFigsDivisor = divisor
@@ -85,16 +85,16 @@ class DivisionProblem {
     int dDigits,
     int qDigits,
   ) {
-    Decimal divisor = _randomDecimalNoTrailingZero(dDigits);
-    Decimal quotient = _randomDecimalNoTrailingZero(qDigits);
+    Decimal divisor = randomDecimalNoTrailingZero(dDigits);
+    Decimal quotient = randomDecimalNoTrailingZero(qDigits);
     Decimal dividend = divisor * quotient;
 
     if (!spec.integerDivisor) {
-      final (Decimal scaledDivisor, int _) = _scaleValue(divisor);
+      final (Decimal scaledDivisor, int _) = scaleValue(divisor);
       divisor = scaledDivisor;
 
       if (spec.isUnneat) {
-        final (Decimal scaledQuotient, int __) = _scaleValue(
+        final (Decimal scaledQuotient, int __) = scaleValue(
           quotient,
           alwaysThree: true,
         );
@@ -102,7 +102,7 @@ class DivisionProblem {
         dividend = divisor * quotient;
         dividend = _makeDivisionUnneat(dividend, divisor, quotient);
       } else {
-        final (Decimal scaledQuotient, int __) = _scaleValue(
+        final (Decimal scaledQuotient, int __) = scaleValue(
           quotient,
           avoidOverScale: true,
         );
@@ -114,7 +114,7 @@ class DivisionProblem {
     return DivisionProblem._(dividend, divisor, quotient);
   }
 
-  static Decimal _randomDecimal(int digits) {
+  static Decimal randomDecimal(int digits) {
     final rand = Random();
 
     final min = BigInt.from(10).pow(digits - 1);
@@ -263,7 +263,7 @@ class DivisionProblem {
   }
 
   // Random decimal with given digits, never ends in zero
-  static Decimal _randomDecimalNoTrailingZero(int digits) {
+  static Decimal randomDecimalNoTrailingZero(int digits) {
     int low, high;
     if (digits == 1) {
       low = 2;
@@ -281,7 +281,7 @@ class DivisionProblem {
     return Decimal.fromInt(value);
   }
 
-  static (Decimal, int) _scaleValue(
+  static (Decimal, int) scaleValue(
     Decimal val, {
     bool avoidOverScale = false,
     bool alwaysThree = false,
@@ -344,11 +344,11 @@ class DivisionProblem {
     return candidate();
   }
 
-  static ({int dDigits, int qDigits}) _splitDigits(
-    DivisionSpec spec, {
+  static ({int firstDigits, int secondDigits}) splitDigits(
+    var spec, {
     Map<String, dynamic>? digitSplit,
-    required final int qDigits,
-    required final int dDigits,
+    required final int secondDigits,
+    required final int firstDigits,
   }) {
     final rand = Random();
 
@@ -359,12 +359,12 @@ class DivisionProblem {
         final entry = difficultySpec[spec.digitCount]!;
 
         if (entry is List<int>) {
-          return (dDigits: entry[0], qDigits: entry[1]);
+          return (firstDigits: entry[0], secondDigits: entry[1]);
         }
 
         if (entry is List<List<int>>) {
           final choice = entry[rand.nextInt(entry.length)];
-          return (dDigits: choice[0], qDigits: choice[1]);
+          return (firstDigits: choice[0], secondDigits: choice[1]);
         }
       }
     }
@@ -372,7 +372,7 @@ class DivisionProblem {
     // --- fallback if no matching difficulty OR no matching digitCount ---
     int a = (spec.digitCount / 3).floor();
     int b = spec.digitCount - a;
-    return (dDigits: a, qDigits: b);
+    return (firstDigits: a, secondDigits: b);
   }
 
   static int randomMultipleForDenominator(int den, int qDigits, Random rand) {
@@ -398,16 +398,16 @@ class DivisionProblem {
   }
 
   /// Formats a Decimal with commas and preserves all decimals
-  static String _formatDecimal(Decimal number) {
+  static String formatDecimal(Decimal number) {
     final decimals = _decimalPlaces(number);
-    final pattern = decimals > 0 ? '#,##0.' + '0' * decimals : '#,##0';
+    final pattern = decimals > 0 ? '#,##0.${'0' * decimals}' : '#,##0';
     final formatter = NumberFormat(pattern);
     return formatter.format(number.toDouble());
   }
 
-  String get formattedDividend => _formatDecimal(dividend);
-  String get formattedDivisor => _formatDecimal(divisor);
-  String get formattedQuotient => _formatDecimal(quotient);
+  String get formattedDividend => formatDecimal(dividend);
+  String get formattedDivisor => formatDecimal(divisor);
+  String get formattedQuotient => formatDecimal(quotient);
 
   @override
   String toString() {

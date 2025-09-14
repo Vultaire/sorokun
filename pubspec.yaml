@@ -27,4 +27,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/complexityThresholdMap.json
-    - assets/abacus3.ttf
+    - assets/abacus5.ttf

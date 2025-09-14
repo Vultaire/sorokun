@@ -18,7 +18,7 @@ class SheetService {
     );
 
     final problems = generator.generateProblems(base: baseSpec);
-    final abacusFont = pw.Font.ttf(await rootBundle.load("assets/abacus3.ttf"));
+    final abacusFont = pw.Font.ttf(await rootBundle.load("assets/abacus5.ttf"));
 
     final pdf = pw.Document();
 
@@ -79,7 +79,7 @@ class SheetService {
                     // Dividend (border on right)
                     pw.Container(
                       alignment: pw.Alignment.centerRight,
-                      padding: const pw.EdgeInsets.all(8.0),
+                      padding: const pw.EdgeInsets.only(top: 10.0),
                       decoration: const pw.BoxDecoration(),
                       child: pw.Text(
                         problems[i].formattedDividend.toString(),
@@ -94,11 +94,11 @@ class SheetService {
                     // ÷ (no side borders)
                     pw.Container(
                       alignment: pw.Alignment.center,
-                      padding: const pw.EdgeInsets.all(8.0),
+                      padding: const pw.EdgeInsets.only(top: 9.0),
                       child: pw.Text(
                         '/',
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 15,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
@@ -108,7 +108,7 @@ class SheetService {
                     // Divisor (border on right)
                     pw.Container(
                       alignment: pw.Alignment.centerRight,
-                      padding: const pw.EdgeInsets.all(8.0),
+                      padding: const pw.EdgeInsets.only(top: 10.0),
                       decoration: const pw.BoxDecoration(),
                       child: pw.Text(
                         problems[i].formattedDivisor.toString(),
@@ -127,7 +127,7 @@ class SheetService {
                       child: pw.Text(
                         '=',
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
@@ -203,67 +203,6 @@ class SheetService {
     );
 
     return pdf.save();
-  }
-
-  pw.Widget _buildProblemTable(
-    String title,
-    List<DivisionProblem> problems,
-    int startNumber,
-  ) {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        pw.Text(
-          title,
-          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
-        ),
-        pw.SizedBox(height: 10),
-        pw.Table(
-          border: pw.TableBorder.all(color: PdfColors.black, width: 1.0),
-          children: [
-            // Header row with problem numbers
-            pw.TableRow(
-              children: List.generate(problems.length, (index) {
-                final problemNumber = startNumber + index;
-                return pw.Container(
-                  padding: const pw.EdgeInsets.all(8.0),
-                  color: PdfColors.grey200,
-                  child: pw.Center(
-                    child: pw.Text(
-                      'Problem $problemNumber',
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                    ),
-                  ),
-                );
-              }),
-            ),
-            // Problem row
-            pw.TableRow(
-              children: problems.map((problem) {
-                return pw.Container(
-                  padding: const pw.EdgeInsets.all(12.0),
-                  child: pw.Center(
-                    child: pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.center,
-                      children: [
-                        pw.Text(problem.formattedDividend.toString()),
-                        pw.SizedBox(width: 10),
-                        pw.Text(
-                          '÷',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
-                        pw.SizedBox(width: 10),
-                        pw.Text(problem.formattedDivisor.toString()),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      ],
-    );
   }
 
   pw.Widget _buildAnswerTable(List<DivisionProblem> problems) {
