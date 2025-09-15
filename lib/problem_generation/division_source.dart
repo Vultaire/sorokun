@@ -114,6 +114,6 @@ final Map<String, Map<String, int>> divisionSource = {
     'type3Count': 2,
     'type4Count': 2,
     'type5Count': 2,
-    'totalCount': 15,
+    'totalCount': 30,
   },
 };

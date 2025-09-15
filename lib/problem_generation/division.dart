@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:decimal/decimal.dart';
+import 'package:soroban_app/problem_generation/helpers.dart';
 import 'generation_spec.dart';
 import 'division_source.dart';
-import 'package:intl/intl.dart';
 
 class DivisionProblem {
   final Decimal dividend;
@@ -112,18 +112,6 @@ class DivisionProblem {
     }
 
     return DivisionProblem._(dividend, divisor, quotient);
-  }
-
-  static Decimal randomDecimal(int digits) {
-    final rand = Random();
-
-    final min = BigInt.from(10).pow(digits - 1);
-    final max = BigInt.from(10).pow(digits) - BigInt.one;
-
-    final range = max - min + BigInt.one;
-    BigInt n = min + BigInt.from(rand.nextInt(range.toInt()));
-
-    return Decimal.fromBigInt(n);
   }
 
   static _decimalOverIntegerNeat(
@@ -262,42 +250,6 @@ class DivisionProblem {
     return newDividend;
   }
 
-  // Random decimal with given digits, never ends in zero
-  static Decimal randomDecimalNoTrailingZero(int digits) {
-    int low, high;
-    if (digits == 1) {
-      low = 2;
-      high = 9;
-    } else {
-      low = pow(10, digits - 1).toInt();
-      high = pow(10, digits).toInt() - 1;
-    }
-
-    int value;
-    do {
-      value = low + Random().nextInt(high - low + 1);
-    } while (value % 10 == 0);
-
-    return Decimal.fromInt(value);
-  }
-
-  static (Decimal, int) scaleValue(
-    Decimal val, {
-    bool avoidOverScale = false,
-    bool alwaysThree = false,
-    int scalePower = 0,
-  }) {
-    var intDigits = val.toString().split('.')[0].length;
-    int maxPower = avoidOverScale ? 3 : intDigits + 1;
-
-    if (maxPower > 0) {
-      scalePower = alwaysThree ? 3 : 1 + Random().nextInt(maxPower);
-      Decimal divisor = Decimal.fromInt(pow(10, scalePower).toInt());
-      return ((val / divisor).toDecimal(), scalePower);
-    }
-    return (val, scalePower);
-  }
-
   static int _gcd(int a, int b) {
     // Find greatest common denominator
     while (b != 0) {
@@ -344,37 +296,6 @@ class DivisionProblem {
     return candidate();
   }
 
-  static ({int firstDigits, int secondDigits}) splitDigits(
-    var spec, {
-    Map<String, dynamic>? digitSplit,
-    required final int secondDigits,
-    required final int firstDigits,
-  }) {
-    final rand = Random();
-
-    if (digitSplit != null && digitSplit.containsKey(spec.difficulty)) {
-      final difficultySpec = digitSplit[spec.difficulty]!;
-
-      if (difficultySpec.containsKey(spec.digitCount)) {
-        final entry = difficultySpec[spec.digitCount]!;
-
-        if (entry is List<int>) {
-          return (firstDigits: entry[0], secondDigits: entry[1]);
-        }
-
-        if (entry is List<List<int>>) {
-          final choice = entry[rand.nextInt(entry.length)];
-          return (firstDigits: choice[0], secondDigits: choice[1]);
-        }
-      }
-    }
-
-    // --- fallback if no matching difficulty OR no matching digitCount ---
-    int a = (spec.digitCount / 3).floor();
-    int b = spec.digitCount - a;
-    return (firstDigits: a, secondDigits: b);
-  }
-
   static int randomMultipleForDenominator(int den, int qDigits, Random rand) {
     int minK = (pow(10, qDigits - 1) / den).ceil();
     int maxK = (pow(10, qDigits) / den).floor() - 1;
@@ -391,27 +312,13 @@ class DivisionProblem {
     return pow(2, a).toInt() * pow(5, b).toInt();
   }
 
-  static int _decimalPlaces(Decimal number) {
-    final str = number.toString();
-    if (!str.contains('.')) return 0;
-    return str.split('.')[1].length;
-  }
-
-  /// Formats a Decimal with commas and preserves all decimals
-  static String formatDecimal(Decimal number) {
-    final decimals = _decimalPlaces(number);
-    final pattern = decimals > 0 ? '#,##0.${'0' * decimals}' : '#,##0';
-    final formatter = NumberFormat(pattern);
-    return formatter.format(number.toDouble());
-  }
-
-  String get formattedDividend => formatDecimal(dividend);
-  String get formattedDivisor => formatDecimal(divisor);
-  String get formattedQuotient => formatDecimal(quotient);
+  String get formattedFirst => formatDecimal(dividend);
+  String get formattedSecond => formatDecimal(divisor);
+  String get formattedThird => formatDecimal(quotient);
 
   @override
   String toString() {
-    return 'dividend=$dividend, divisor=$divisor, quotient=$quotient dividend=$formattedDividend, divisor=$formattedDivisor, quotient=$formattedQuotient';
+    return 'dividend=$formattedFirst, divisor=$formattedSecond, quotient=$formattedThird';
   }
 }
 
@@ -540,75 +447,19 @@ Map<String, dynamic> getModoshi(
   };
 }
 
-class DivisionProblemSet {
-  final Random _rand = Random();
-
-  /// Generates a sequence of problems based on configuration
-  List<DivisionProblem> generateProblems({required DivisionSpec base}) {
-    final problems = <DivisionProblem>[];
-
-    const int firstPartCount = 7;
-    const int secondPartCount = 8;
-
-    final config =
-        divisionSource[base.difficulty] ?? divisionSource['noDecimal']!;
-
-    final type2Count = config['type2Count']!;
-    final type3Count = config['type3Count']!;
-    final type4Count = config['type4Count']!;
-    final type5Count = config['type5Count']!;
-
-    // --- First part ---
-    // Always first Type 1
-    problems.add(DivisionProblem(spec: specFromType(base, ProblemType.type1)));
-
-    // Fill pool with counts for part 1
-    final firstPartPool = <ProblemType>[
-      ...List.filled(type2Count, ProblemType.type2),
-      ...List.filled(type3Count, ProblemType.type3),
-    ];
-
-    // Randomly distribute among the remaining slots
-    while (firstPartPool.length < firstPartCount - 1) {
-      firstPartPool.add(ProblemType.type1);
-    }
-    firstPartPool.shuffle(_rand);
-
-    for (final type in firstPartPool) {
-      problems.add(DivisionProblem(spec: specFromType(base, type)));
-    }
-
-    // --- Second part ---
-    // Always first Type 1
-    problems.add(DivisionProblem(spec: specFromType(base, ProblemType.type1)));
-
-    final secondPartPool = <ProblemType>[
-      ...List.filled(type4Count, ProblemType.type4),
-      ...List.filled(type5Count, ProblemType.type5),
-    ];
-
-    while (secondPartPool.length < secondPartCount - 1) {
-      secondPartPool.add(ProblemType.type1);
-    }
-    secondPartPool.shuffle(_rand);
-
-    for (final type in secondPartPool) {
-      problems.add(DivisionProblem(spec: specFromType(base, type)));
-    }
-
-    return problems;
-  }
-}
-
 void main() {
-  final generator = DivisionProblemSet();
   final baseSpec = DivisionSpec(
     probCount: 15,
     digitCount: 8,
     difficulty: "1kyuu",
   );
 
-  final problems = generator.generateProblems(base: baseSpec);
+  final divisionSet = ProblemSet<DivisionProblem, DivisionSpec>(
+    builder: (spec, type) => DivisionProblem(spec: divSpecFromType(spec, type)),
+    source: divisionSource,
+  );
+
+  final problems = divisionSet.generateProblems(base: baseSpec);
 
   for (var i = 0; i < problems.length; i++) {
     print("Problem ${i + 1}: ${problems[i]}");

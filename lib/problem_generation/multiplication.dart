@@ -1,7 +1,9 @@
+import 'dart:math';
+
 import 'package:decimal/decimal.dart';
+import 'package:soroban_app/problem_generation/helpers.dart';
 import 'generation_spec.dart';
 import 'multiplication_source.dart';
-import 'division.dart';
 
 class MultiplicationProblem {
   final Decimal multiplicand;
@@ -11,36 +13,56 @@ class MultiplicationProblem {
   MultiplicationProblem._(this.multiplicand, this.multiplier, this.product);
 
   factory MultiplicationProblem({required MultiplicationSpec spec}) {
-    final split = DivisionProblem.splitDigits(
+    final split = splitDigits(
       spec,
       digitSplit: digitSplit,
       firstDigits: 0,
       secondDigits: 0,
     );
 
-    Decimal multiplicand = DivisionProblem.randomDecimal(split.firstDigits);
-    Decimal multiplier = DivisionProblem.randomDecimal(split.secondDigits);
+    Decimal multiplicand;
+    Decimal multiplier;
 
     if (!spec.integerMultiplicand) {
-      (multiplicand, _) = DivisionProblem.scaleValue(multiplicand);
-    }
-    if (!spec.integerMultiplier) {
-      (multiplier, _) = DivisionProblem.scaleValue(multiplier);
+      multiplicand = randomDecimalNoTrailingZero(split.firstDigits);
+      (multiplicand, _) = scaleValue(multiplicand);
+    } else {
+      multiplicand = randomDecimal(split.firstDigits);
     }
 
-    final product = multiplicand * multiplier;
+    if (!spec.integerMultiplier) {
+      multiplier = randomDecimalNoTrailingZero(split.secondDigits);
+      (multiplier, _) = scaleValue(multiplier);
+    } else {
+      multiplier = randomDecimal(split.secondDigits);
+    }
+
+    if (spec.maySwap) {
+      final rand = Random();
+      if (rand.nextBool()) {
+        [multiplicand, multiplier] = [multiplier, multiplicand];
+      }
+    }
+
+    Decimal product = multiplicand * multiplier;
+
+    // Rounding logic
+    if (spec.integerMultiplicand == spec.integerMultiplier) {
+      product = Decimal.parse(product.toStringAsFixed(3));
+    } else {
+      product = Decimal.parse(product.toStringAsFixed(0));
+    }
 
     return MultiplicationProblem._(multiplicand, multiplier, product);
   }
 
-  String get formattedMultiplicand =>
-      DivisionProblem.formatDecimal(multiplicand);
-  String get formattedMultiplier => DivisionProblem.formatDecimal(multiplier);
-  String get formattedProduct => DivisionProblem.formatDecimal(product);
+  String get formattedFirst => formatDecimal(multiplicand);
+  String get formattedSecond => formatDecimal(multiplier);
+  String get formattedThird => formatDecimal(product);
 
   @override
   String toString() {
-    return 'multiplicand=$formattedMultiplicand, multiplier=$formattedMultiplier product=$formattedProduct';
+    return 'multiplicand=$formattedFirst, multiplier=$formattedSecond product=$formattedThird';
   }
 }
 
@@ -52,7 +74,16 @@ void main() {
     integerMultiplier: false,
   );
 
-  final problem = MultiplicationProblem(spec: baseSpec);
+  final multiplicationSet =
+      ProblemSet<MultiplicationProblem, MultiplicationSpec>(
+        builder: (spec, type) =>
+            MultiplicationProblem(spec: multSpecFromType(spec, type)),
+        source: multiplicationSource,
+      );
 
-  print(problem);
+  final problems = multiplicationSet.generateProblems(base: baseSpec);
+
+  for (var i = 0; i < problems.length; i++) {
+    print("Problem ${i + 1}: ${problems[i]}");
+  }
 }

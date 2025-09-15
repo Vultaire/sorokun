@@ -6,27 +6,56 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:soroban_app/problem_generation/division.dart';
+import 'package:soroban_app/problem_generation/division_source.dart';
 import 'package:soroban_app/problem_generation/generation_spec.dart';
+import 'package:soroban_app/problem_generation/multiplication.dart';
+import 'package:soroban_app/problem_generation/multiplication_source.dart';
+
+typedef ProblemBuilder<TProblem, TSpec> =
+    TProblem Function(TSpec spec, ProblemType type);
 
 class SheetService {
-  Future<Uint8List> createDivisionSheet() async {
-    final generator = DivisionProblemSet();
-    final baseSpec = DivisionSpec(
+  Future<Uint8List> creatMultDivSheet() async {
+    final baseDivSpec = DivisionSpec(
       probCount: 15,
       digitCount: 8,
       difficulty: "1kyuu",
     );
 
-    final problems = generator.generateProblems(base: baseSpec);
+    final divisionSet = ProblemSet<DivisionProblem, DivisionSpec>(
+      builder: (spec, type) =>
+          DivisionProblem(spec: divSpecFromType(spec, type)),
+      source: divisionSource,
+    );
+
+    final divProblems = divisionSet.generateProblems(base: baseDivSpec);
+
+    final baseMultSpec = MultiplicationSpec(
+      probCount: 15,
+      digitCount: 9,
+      difficulty: "1kyuu",
+      integerMultiplier: false,
+    );
+
+    final multiplicationSet =
+        ProblemSet<MultiplicationProblem, MultiplicationSpec>(
+          builder: (spec, type) =>
+              MultiplicationProblem(spec: multSpecFromType(spec, type)),
+          source: multiplicationSource,
+        );
+
+    final multProblems = multiplicationSet.generateProblems(base: baseMultSpec);
+
     final abacusFont = pw.Font.ttf(await rootBundle.load("assets/abacus5.ttf"));
 
     final pdf = pw.Document();
 
     pw.Widget buildVerticalProblemTable(
       String title,
-      List<DivisionProblem> problems,
-      int startNumber,
-    ) {
+      var problems,
+      int startNumber, {
+      String operator = '/',
+    }) {
       return pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
@@ -61,7 +90,7 @@ class SheetService {
                     // Problem number cell (border on right)
                     pw.Container(
                       alignment: pw.Alignment.center,
-                      padding: const pw.EdgeInsets.all(8.0),
+                      padding: const pw.EdgeInsets.symmetric(vertical: 5),
                       decoration: const pw.BoxDecoration(
                         border: pw.Border(
                           right: pw.BorderSide(
@@ -79,10 +108,10 @@ class SheetService {
                     // Dividend (border on right)
                     pw.Container(
                       alignment: pw.Alignment.centerRight,
-                      padding: const pw.EdgeInsets.only(top: 10.0),
+                      padding: const pw.EdgeInsets.only(top: 7),
                       decoration: const pw.BoxDecoration(),
                       child: pw.Text(
-                        problems[i].formattedDividend.toString(),
+                        problems[i].formattedFirst.toString(),
                         style: pw.TextStyle(
                           fontSize: 12,
                           fontWeight: pw.FontWeight.bold,
@@ -94,11 +123,11 @@ class SheetService {
                     // ÷ (no side borders)
                     pw.Container(
                       alignment: pw.Alignment.center,
-                      padding: const pw.EdgeInsets.only(top: 9.0),
+                      padding: const pw.EdgeInsets.only(top: 7),
                       child: pw.Text(
-                        '/',
+                        operator,
                         style: pw.TextStyle(
-                          fontSize: 15,
+                          fontSize: 12,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
@@ -108,10 +137,10 @@ class SheetService {
                     // Divisor (border on right)
                     pw.Container(
                       alignment: pw.Alignment.centerRight,
-                      padding: const pw.EdgeInsets.only(top: 10.0),
+                      padding: const pw.EdgeInsets.only(top: 7),
                       decoration: const pw.BoxDecoration(),
                       child: pw.Text(
-                        problems[i].formattedDivisor.toString(),
+                        problems[i].formattedSecond.toString(),
                         style: pw.TextStyle(
                           fontSize: 12,
                           fontWeight: pw.FontWeight.bold,
@@ -120,14 +149,13 @@ class SheetService {
                       ),
                     ),
 
-                    // = (no side borders)
                     pw.Container(
                       alignment: pw.Alignment.center,
-                      padding: const pw.EdgeInsets.all(8.0),
+                      padding: const pw.EdgeInsets.only(top: 7),
                       child: pw.Text(
                         '=',
                         style: pw.TextStyle(
-                          fontSize: 16,
+                          fontSize: 12,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
@@ -135,7 +163,7 @@ class SheetService {
                     ),
 
                     // Answer placeholder (last cell, no right border needed because table border handles it)
-                    pw.SizedBox(height: 25),
+                    pw.Expanded(child: pw.SizedBox(height: 25)),
                   ],
                 ),
             ],
@@ -144,32 +172,73 @@ class SheetService {
       );
     }
 
-    // Problem page
     pdf.addPage(
       pw.Page(
-        build: (pw.Context context) {
+        pageFormat: PdfPageFormat.a4.landscape,
+        margin: const pw.EdgeInsets.all(10),
+        build: (context) {
           return pw.Padding(
-            padding: const pw.EdgeInsets.all(20.0),
-            child: pw.Column(
+            padding: const pw.EdgeInsets.all(20),
+            child: pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text(
-                  'Division Practice Problems',
-                  style: pw.TextStyle(
-                    fontSize: 20,
-                    fontWeight: pw.FontWeight.bold,
+                pw.Expanded(
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        'Multiplication Practice Problems',
+                        style: pw.TextStyle(
+                          fontSize: 20,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                      pw.SizedBox(height: 20),
+                      buildVerticalProblemTable(
+                        'Problems 1-7',
+                        multProblems.sublist(0, 7),
+                        1,
+                        operator: '*',
+                      ),
+                      pw.SizedBox(height: 20),
+                      buildVerticalProblemTable(
+                        'Problems 8-15',
+                        multProblems.sublist(7, 15),
+                        8,
+                        operator: '*',
+                      ),
+                    ],
                   ),
                 ),
-                pw.SizedBox(height: 20),
-                buildVerticalProblemTable(
-                  'Problems 1-7',
-                  problems.sublist(0, 7),
-                  1,
-                ),
-                pw.SizedBox(height: 20),
-                buildVerticalProblemTable(
-                  'Problems 8-15',
-                  problems.sublist(7, 15),
-                  8,
+                pw.SizedBox(width: 40),
+
+                pw.Expanded(
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        'Division Practice Problems',
+                        style: pw.TextStyle(
+                          fontSize: 20,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                      pw.SizedBox(height: 20),
+                      buildVerticalProblemTable(
+                        'Problems 1-7',
+                        divProblems.sublist(0, 7),
+                        1,
+                        operator: '/',
+                      ),
+                      pw.SizedBox(height: 20),
+                      buildVerticalProblemTable(
+                        'Problems 8-15',
+                        divProblems.sublist(7, 15),
+                        8,
+                        operator: '/',
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -177,7 +246,6 @@ class SheetService {
         },
       ),
     );
-
     // Answer sheet page
     pdf.addPage(
       pw.Page(
@@ -194,7 +262,7 @@ class SheetService {
                   ),
                 ),
                 pw.SizedBox(height: 20),
-                _buildAnswerTable(problems),
+                _buildAnswerTable(divProblems),
               ],
             ),
           );
@@ -272,7 +340,7 @@ class PdfPreviewApp extends StatelessWidget {
         body: PdfPreview(
           build: (format) async {
             final service = SheetService();
-            return service.createDivisionSheet(); // generates the Uint8List
+            return service.creatMultDivSheet(); // generates the Uint8List
           },
         ),
       ),
