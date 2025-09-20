@@ -17,6 +17,8 @@ dependencies:
   path_provider: ^2.1.5
   open_document: ^1.0.7
   intl: ^0.18.1
+  ffmpeg_kit_flutter_new: ^3.2.0
+  audioplayers: ^6.5.1
 
 dev_dependencies:
   flutter_test:
@@ -28,3 +30,5 @@ flutter:
   assets:
     - assets/complexityThresholdMap.json
     - assets/abacus5.ttf
+    - assets/audio/95man.wav
+    - assets/audio/25hyaku.wav
