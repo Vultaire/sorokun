@@ -101,15 +101,43 @@ const kyuuSpec = {
   'totalCount': 15,
 };
 
-final Map<String, Map<String, int>> multiplicationSource = {
-  'noDecimal': {
-    'type2Count': 0,
-    'type4Count': 0,
-    'type5Count': 0,
-    'totalCount': 15,
-  },
-  '3kyuu': kyuuSpec,
-  '2kyuu': kyuuSpec,
-  '1kyuu': kyuuSpec,
-  'dan': {'type2Count': 2, 'type4Count': 2, 'type5Count': 2, 'totalCount': 30},
+final Map<String, List<Map<String, dynamic>>> multiplicationSource = {
+  "9kyuu": [
+    {"digits": 3, "problemCount": 15},
+  ],
+  "8kyuu": [
+    {"digits": 4, "problemCount": 15},
+  ],
+  "7kyuu": [
+    {"digits": 4, "problemCount": 15},
+  ],
+  "6kyuu": [
+    {"digits": 5, "problemCount": 15},
+  ],
+  "5kyuu": [
+    {"digits": 6, "problemCount": 15},
+  ],
+  "4kyuu": [
+    {"digits": 7, "problemCount": 15},
+  ],
+  "3kyuu": [
+    {"digits": 7, "problemCount": 7, "type2Count": 3, "type4Count": 1},
+    {"digits": 7, "problemCount": 8, "type5Count": 4},
+  ],
+  "2kyuu": [
+    {"digits": 8, "problemCount": 7, "type2Count": 3, "type4Count": 1},
+    {"digits": 8, "problemCount": 8, "type5Count": 4},
+  ],
+  "1kyuu": [
+    {"digits": 9, "problemCount": 7, "type2Count": 3, "type4Count": 1},
+    {"digits": 9, "problemCount": 8, "type5Count": 4},
+  ],
+  "dan": [
+    {"digits": 9, "problemCount": 5, "type2Count": 2, "type4Count": 1},
+    {"digits": 10, "problemCount": 5, "type2Count": 2, "type4Count": 1},
+    {"digits": 11, "problemCount": 5, "type2Count": 2, "type4Count": 1},
+    {"digits": 12, "problemCount": 5, "type5Count": 3},
+    {"digits": 12, "problemCount": 5, "type5Count": 3},
+    {"digits": 12, "problemCount": 5, "type5Count": 3},
+  ],
 };

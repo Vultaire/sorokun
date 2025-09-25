@@ -6,7 +6,6 @@ typedef ProblemBuilder<TProblem, TSpec> =
     TProblem Function(TSpec spec, ProblemType type);
 
 class DivisionSpec {
-  int probCount;
   int digitCount;
   bool integerDividend;
   bool integerDivisor;
@@ -17,7 +16,6 @@ class DivisionSpec {
   DivisionSpec({
     this.isExam = true,
     this.difficulty = "5kyuu",
-    this.probCount = 15,
     this.digitCount = 6,
     this.integerDividend = false,
     this.integerDivisor = false,
@@ -30,7 +28,6 @@ class DivisionSpec {
     bool? isUnneat,
   }) {
     return DivisionSpec(
-      probCount: probCount,
       digitCount: digitCount,
       difficulty: difficulty,
       integerDividend: integerDividend ?? this.integerDividend,
@@ -78,7 +75,6 @@ DivisionSpec divSpecFromType(DivisionSpec base, ProblemType type) {
 }
 
 class MultiplicationSpec {
-  int probCount;
   int digitCount;
   bool integerMultiplicand;
   bool integerMultiplier;
@@ -89,7 +85,6 @@ class MultiplicationSpec {
   MultiplicationSpec({
     this.isExam = true,
     this.difficulty = "5kyuu",
-    this.probCount = 15,
     this.digitCount = 6,
     this.integerMultiplicand = true,
     this.integerMultiplier = true,
@@ -102,7 +97,6 @@ class MultiplicationSpec {
     bool? maySwap,
   }) {
     return MultiplicationSpec(
-      probCount: probCount,
       digitCount: digitCount,
       difficulty: difficulty,
       integerMultiplicand: integerMultiplicand ?? this.integerMultiplicand,
@@ -166,16 +160,16 @@ class FlashSpec {
 
 class PaperSpec {
   bool isExam;
-  List<Map<String, dynamic>> problemSpec;
+  List<Map<String, dynamic>> source;
 
-  PaperSpec({this.isExam = true, required this.problemSpec});
+  PaperSpec({this.isExam = true, required this.source});
 }
 
 PaperSpec getPaperSpec(String level, {List<Map<String, dynamic>>? overrides}) {
   final baseConfig = List<Map<String, dynamic>>.from(paperSource[level] ?? []);
   final merged = [...baseConfig, ...?overrides];
 
-  return PaperSpec(isExam: true, problemSpec: merged);
+  return PaperSpec(isExam: true, source: merged);
 }
 
 FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {
@@ -198,57 +192,42 @@ FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {
 class ProblemSet<TProblem, TSpec> {
   final Random _rand = Random();
   final ProblemBuilder<TProblem, TSpec> builder;
-  final Map<String, Map<String, int>> source;
+  final Map<String, List<Map<String, dynamic>>> source;
 
   ProblemSet({required this.builder, required this.source});
 
   List<TProblem> generateProblems({required TSpec base}) {
     final problems = <TProblem>[];
 
-    const int firstPartCount = 7;
-    const int secondPartCount = 8;
+    final batchList = source[(base as dynamic).difficulty];
 
-    final config = source[(base as dynamic).difficulty] ?? source['noDecimal']!;
+    for (Map batch in batchList!) {
+      final type2Count = batch["type2Count"] ?? 0;
+      final type3Count = batch['type3Count'] ?? 0;
+      final type4Count = batch['type4Count'] ?? 0;
+      final type5Count = batch['type5Count'] ?? 0;
+      final problemCount = batch['problemCount'] ?? 15;
+      final digits = batch['digits'];
 
-    final type2Count = config['type2Count']!;
-    final type3Count = config['type3Count'];
-    final type4Count = config['type4Count']!;
-    final type5Count = config['type5Count']!;
+      final typeList = <ProblemType>[
+        ...List.filled(type2Count, ProblemType.type2),
+        ...List.filled(type3Count, ProblemType.type3),
+        ...List.filled(type4Count, ProblemType.type4),
+        ...List.filled(type5Count, ProblemType.type5),
+      ];
 
-    // --- First part ---
-    problems.add(builder(base, ProblemType.type1));
+      while (typeList.length < problemCount) {
+        typeList.add(ProblemType.type1);
+      }
 
-    final firstPartPool = <ProblemType>[
-      ...List.filled(type2Count, ProblemType.type2),
-      if (type3Count != null) ...List.filled(type3Count, ProblemType.type3),
-    ];
+      typeList.shuffle(_rand);
 
-    while (firstPartPool.length < firstPartCount - 1) {
-      firstPartPool.add(ProblemType.type1);
+      final modifiedBase = (base as dynamic)..digitCount = digits;
+
+      for (final type in typeList) {
+        problems.add(builder(modifiedBase, type));
+      }
     }
-    firstPartPool.shuffle(_rand);
-
-    for (final type in firstPartPool) {
-      problems.add(builder(base, type));
-    }
-
-    // --- Second part ---
-    problems.add(builder(base, ProblemType.type1));
-
-    final secondPartPool = <ProblemType>[
-      ...List.filled(type4Count, ProblemType.type4),
-      ...List.filled(type5Count, ProblemType.type5),
-    ];
-
-    while (secondPartPool.length < secondPartCount - 1) {
-      secondPartPool.add(ProblemType.type1);
-    }
-    secondPartPool.shuffle(_rand);
-
-    for (final type in secondPartPool) {
-      problems.add(builder(base, type));
-    }
-
     return problems;
   }
 }

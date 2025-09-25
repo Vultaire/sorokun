@@ -54,28 +54,28 @@ final Map<String, dynamic> digitSplit = {
   },
   "dan": {
     8: [
-      // 5 problems, 11233
+      // 5 problemCount, 11233
       [3, 5],
       [4, 4],
       [4, 4],
       [5, 3],
     ],
     9: [
-      // 5 problems, 11233
+      // 5 problemCount, 11233
       [3, 6],
       [4, 5],
       [5, 4],
       [6, 3],
     ],
     10: [
-      // 5 problems, 11233; 5 integer problems, 11455
+      // 5 problemCount, 11233; 5 integer problemCount, 11455
       [4, 6],
       [5, 5],
       [5, 5],
       [6, 4],
     ],
     11: [
-      // 5 problems, 11455; 5 problems, 11455
+      // 5 problemCount, 11455; 5 problemCount, 11455
       [4, 7],
       [5, 6],
       [6, 5],
@@ -84,6 +84,45 @@ final Map<String, dynamic> digitSplit = {
   },
 };
 
+final Map<String, List<Map<String, dynamic>>> divisionSource = {
+  "8kyuu": [
+    {"digits": 3, "problemCount": 15},
+  ],
+  "7kyuu": [
+    {"digits": 4, "problemCount": 15},
+  ],
+  "6kyuu": [
+    {"digits": 4, "problemCount": 15},
+  ],
+  "5kyuu": [
+    {"digits": 5, "problemCount": 15},
+  ],
+  "4kyuu": [
+    {"digits": 6, "problemCount": 15},
+  ],
+  "3kyuu": [
+    {"digits": 6, "problemCount": 7, "type2Count": 2, "type3Count": 2},
+    {"digits": 6, "problemCount": 8, "type4Count": 2, "type5Count": 2},
+  ],
+  "2kyuu": [
+    {"digits": 7, "problemCount": 7, "type2Count": 2, "type3Count": 2},
+    {"digits": 7, "problemCount": 8, "type4Count": 2, "type5Count": 2},
+  ],
+  "1kyuu": [
+    {"digits": 8, "problemCount": 7, "type2Count": 2, "type3Count": 2},
+    {"digits": 8, "problemCount": 8, "type4Count": 2, "type5Count": 2},
+  ],
+  "dan": [
+    {"digits": 8, "problemCount": 5, "type2Count": 1, "type3Count": 2},
+    {"digits": 9, "problemCount": 5, "type2Count": 1, "type3Count": 2},
+    {"digits": 10, "problemCount": 5, "type2Count": 1, "type3Count": 2},
+    {"digits": 10, "problemCount": 5, "type4Count": 1, "type5Count": 2},
+    {"digits": 11, "problemCount": 5, "type4Count": 1, "type5Count": 2},
+    {"digits": 11, "problemCount": 5, "type4Count": 1, "type5Count": 2},
+  ],
+};
+
+/*
 final Map<String, Map<String, int>> divisionSource = {
   'noDecimal': {
     'type2Count': 0,
@@ -121,3 +160,4 @@ final Map<String, Map<String, int>> divisionSource = {
     'totalCount': 30,
   },
 };
+*/

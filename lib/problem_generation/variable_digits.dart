@@ -19,10 +19,10 @@ class VariableDigitsProblemSet {
       return min + rand.nextInt(max - min + 1);
     }
 
-    final problemSpec = spec.problemSpec;
+    final source = spec.source;
 
-    for (int i = 0; i < problemSpec.length; i++) {
-      final entry = problemSpec[i];
+    for (int i = 0; i < source.length; i++) {
+      final entry = source[i];
 
       if (!entry.containsKey("template")) continue;
 
@@ -36,13 +36,17 @@ class VariableDigitsProblemSet {
 
       List<int> templateCounts = [];
 
-      for (int j = i + 1; j < problemSpec.length; j++) {
-        final next = problemSpec[j];
-        if (next.containsKey("repeat")) repeatCount = next["repeat"];
+      for (int j = i + 1; j < source.length; j++) {
+        final next = source[j];
+        if (next.containsKey("repeat")) {
+          repeatCount = next["repeat"];
+        }
         if (next.containsKey("neverNegative")) {
           neverNegative = next["neverNegative"];
         }
-        if (next.containsKey("minusCount")) minusCount = next["minusCount"];
+        if (next.containsKey("minusCount")) {
+          minusCount = next["minusCount"];
+        }
         if (next.containsKey("minusPerGroup")) {
           minusPerGroup = next["minusPerGroup"];
         }

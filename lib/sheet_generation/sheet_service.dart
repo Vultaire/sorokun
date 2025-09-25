@@ -16,11 +16,7 @@ typedef ProblemBuilder<TProblem, TSpec> =
 
 class SheetService {
   Future<Uint8List> creatMultDivSheet() async {
-    final baseDivSpec = DivisionSpec(
-      probCount: 15,
-      digitCount: 8,
-      difficulty: "1kyuu",
-    );
+    final baseDivSpec = DivisionSpec(digitCount: 8, difficulty: "1kyuu");
 
     final divisionSet = ProblemSet<DivisionProblem, DivisionSpec>(
       builder: (spec, type) =>
@@ -31,7 +27,6 @@ class SheetService {
     final divProblems = divisionSet.generateProblems(base: baseDivSpec);
 
     final baseMultSpec = MultiplicationSpec(
-      probCount: 15,
       digitCount: 9,
       difficulty: "1kyuu",
       integerMultiplier: false,

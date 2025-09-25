@@ -72,7 +72,6 @@ class MultiplicationProblem {
 
 void main() {
   final baseSpec = MultiplicationSpec(
-    probCount: 15,
     digitCount: 9,
     difficulty: "1kyuu",
     integerMultiplier: false,

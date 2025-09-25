@@ -452,11 +452,7 @@ Map<String, dynamic> getModoshi(
 }
 
 void main() {
-  final baseSpec = DivisionSpec(
-    probCount: 15,
-    digitCount: 8,
-    difficulty: "1kyuu",
-  );
+  final baseSpec = DivisionSpec(difficulty: "3kyuu");
 
   final divisionSet = ProblemSet<DivisionProblem, DivisionSpec>(
     builder: (spec, type) => DivisionProblem(spec: divSpecFromType(spec, type)),
