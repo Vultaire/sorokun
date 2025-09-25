@@ -19,16 +19,29 @@ dependencies:
   intl: ^0.18.1
   ffmpeg_kit_flutter_new: ^3.2.0
   audioplayers: ^6.5.1
+  voicevox_flutter:
+    git:
+      url: https://github.com/char5742/voicevox_flutter.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  ffigen: ^11.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/complexityThresholdMap.json
-    - assets/abacus5.ttf
-    - assets/audio/95man.wav
-    - assets/audio/25hyaku.wav
+    - assets/open_jtalk_dic_utf_8-1.11/
+  fonts:
+    - family: abacusFont
+      fonts:
+        - asset: assets/abacus5.ttf
+    - family: bizUDPGR
+      fonts:
+        - asset: assets/BIZUDPGothic-Regular.ttf
+    - family: bizUDGB
+      fonts:
+        - asset: assets/BIZUDGothic-Bold.ttf

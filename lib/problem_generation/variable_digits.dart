@@ -1,10 +1,13 @@
 import 'dart:math';
 import 'generation_spec.dart';
+import 'helpers.dart';
 
 class VariableDigitsProblemSet {
   final PaperSpec spec;
   late List<List<int>> allProblems = [];
+  late List<List<String>> formattedProblems = [];
   late List<int> sums = [];
+  late List<String> formattedSums = [];
 
   VariableDigitsProblemSet({required this.spec}) {
     final rand = Random();
@@ -75,15 +78,15 @@ class VariableDigitsProblemSet {
               int attempts = 0;
 
               for (int n = 0; n < count; n++) {
-                int num;
+                int number;
                 do {
-                  num = randomInt(digits);
+                  number = randomInt(digits);
                   attempts++;
                   if (attempts > 1000) break;
-                } while (usedNumbers.contains(num));
+                } while (usedNumbers.contains(number));
 
-                problem.add(num);
-                usedNumbers.add(num);
+                problem.add(number);
+                usedNumbers.add(number);
               }
             }
 
@@ -140,7 +143,17 @@ class VariableDigitsProblemSet {
 
         for (var problem in groupProblems) {
           allProblems.add(problem);
+          List<String> formattedProblem = [];
+          for (int number in problem) {
+            String formattedNumber = formatInt(number);
+            formattedProblem.add(formattedNumber);
+          }
+          formattedProblems.add(formattedProblem);
           sums.add(problem.reduce((a, b) => a + b));
+        }
+        for (int sum in sums) {
+          String formattedSum = formatInt(sum);
+          formattedSums.add(formattedSum);
         }
       }
     }
@@ -148,8 +161,8 @@ class VariableDigitsProblemSet {
 }
 
 void main() {
-  var problem = VariableDigitsProblemSet(spec: getPaperSpec("1kyuu"));
+  var problem = VariableDigitsProblemSet(spec: getPaperSpec("dan"));
 
-  print(problem.allProblems);
-  print(problem.sums);
+  print(problem.formattedProblems);
+  print(problem.formattedSums);
 }

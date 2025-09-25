@@ -316,6 +316,10 @@ class DivisionProblem {
   String get formattedSecond => formatDecimal(divisor);
   String get formattedThird => formatDecimal(quotient);
 
+  String get first => (dividend).toString();
+  String get second => (divisor).toString();
+  String get third => (quotient).toString();
+
   @override
   String toString() {
     return 'dividend=$formattedFirst, divisor=$formattedSecond, quotient=$formattedThird';

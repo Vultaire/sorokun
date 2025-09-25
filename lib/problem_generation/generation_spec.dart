@@ -122,9 +122,8 @@ MultiplicationSpec multSpecFromType(MultiplicationSpec base, ProblemType type) {
         integerMultiplier: false,
       );
     case ProblemType.type3:
-      // not applicable to multiplication
       throw ArgumentError(
-        'ProblemType.type5 is not valid for MultiplicationSpec',
+        'ProblemType.type3 is not valid for MultiplicationSpec',
       );
     case ProblemType.type4:
       return base.copyWith(

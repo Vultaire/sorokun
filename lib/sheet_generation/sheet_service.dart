@@ -48,6 +48,14 @@ class SheetService {
 
     final abacusFont = pw.Font.ttf(await rootBundle.load("assets/abacus5.ttf"));
 
+    final bizUDPGR = pw.Font.ttf(
+      await rootBundle.load("assets/BIZUDPGothic-Regular.ttf"),
+    );
+
+    final bizUDGB = pw.Font.ttf(
+      await rootBundle.load("assets/BIZUDGothic-Bold.ttf"),
+    );
+
     final pdf = pw.Document();
 
     pw.Widget buildVerticalProblemTable(
@@ -55,13 +63,18 @@ class SheetService {
       var problems,
       int startNumber, {
       String operator = '/',
+      bool integerProblem = true,
     }) {
       return pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
             title,
-            style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(
+              font: bizUDPGR,
+              fontSize: 12,
+              fontWeight: pw.FontWeight.bold,
+            ),
           ),
           pw.SizedBox(height: 10),
           pw.Table(
@@ -76,12 +89,13 @@ class SheetService {
               ),
             ),
             columnWidths: {
-              0: const pw.FixedColumnWidth(30), // problem number
-              1: const pw.FlexColumnWidth(), // dividend
-              2: const pw.FixedColumnWidth(20), // ÷
-              3: const pw.FlexColumnWidth(), // divisor
-              4: const pw.FixedColumnWidth(20), // =
-              5: const pw.FixedColumnWidth(30), // answer space
+              0: const pw.FixedColumnWidth(25),
+              1: const pw.FixedColumnWidth(25),
+              2: pw.IntrinsicColumnWidth(),
+              3: const pw.FixedColumnWidth(10),
+              4: pw.IntrinsicColumnWidth(),
+              5: const pw.FixedColumnWidth(10),
+              6: const pw.FlexColumnWidth(3),
             },
             children: [
               for (var i = 0; i < problems.length; i++)
@@ -90,7 +104,7 @@ class SheetService {
                     // Problem number cell (border on right)
                     pw.Container(
                       alignment: pw.Alignment.center,
-                      padding: const pw.EdgeInsets.symmetric(vertical: 5),
+                      padding: const pw.EdgeInsets.symmetric(vertical: 8),
                       decoration: const pw.BoxDecoration(
                         border: pw.Border(
                           right: pw.BorderSide(
@@ -101,33 +115,52 @@ class SheetService {
                       ),
                       child: pw.Text(
                         '${startNumber + i}',
-                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        style: pw.TextStyle(
+                          font: bizUDGB,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
                       ),
                     ),
 
-                    // Dividend (border on right)
+                    // Conditional widget - Option 1: Using ternary operator
+                    integerProblem
+                        ? pw.Container(
+                            alignment: pw.Alignment.center,
+                            padding: const pw.EdgeInsets.only(top: 8),
+                            child: pw.Text(
+                              '\\', // Replace with your desired text
+                              style: pw.TextStyle(
+                                fontSize: 10,
+                                fontWeight: pw.FontWeight.bold,
+                                font: abacusFont,
+                              ),
+                            ),
+                          )
+                        : pw.SizedBox(height: 25),
+
+                    // Dividend
                     pw.Container(
                       alignment: pw.Alignment.centerRight,
-                      padding: const pw.EdgeInsets.only(top: 7),
+                      padding: const pw.EdgeInsets.only(top: 8, right: 5),
                       decoration: const pw.BoxDecoration(),
                       child: pw.Text(
                         problems[i].formattedFirst.toString(),
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
                       ),
                     ),
 
-                    // ÷ (no side borders)
+                    // Operator (no side borders)
                     pw.Container(
                       alignment: pw.Alignment.center,
-                      padding: const pw.EdgeInsets.only(top: 7),
+                      padding: const pw.EdgeInsets.only(top: 8),
                       child: pw.Text(
                         operator,
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
@@ -137,12 +170,16 @@ class SheetService {
                     // Divisor (border on right)
                     pw.Container(
                       alignment: pw.Alignment.centerRight,
-                      padding: const pw.EdgeInsets.only(top: 7),
+                      padding: const pw.EdgeInsets.only(
+                        top: 8,
+                        right: 5,
+                        left: 5,
+                      ),
                       decoration: const pw.BoxDecoration(),
                       child: pw.Text(
                         problems[i].formattedSecond.toString(),
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
@@ -151,18 +188,18 @@ class SheetService {
 
                     pw.Container(
                       alignment: pw.Alignment.center,
-                      padding: const pw.EdgeInsets.only(top: 7),
+                      padding: const pw.EdgeInsets.only(top: 8),
                       child: pw.Text(
                         '=',
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: pw.FontWeight.bold,
                           font: abacusFont,
                         ),
                       ),
                     ),
 
-                    // Answer placeholder (last cell, no right border needed because table border handles it)
+                    // Answer placeholder (last cell, takes remaining space)
                     pw.Expanded(child: pw.SizedBox(height: 25)),
                   ],
                 ),
@@ -186,56 +223,87 @@ class SheetService {
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text(
-                        'Multiplication Practice Problems',
-                        style: pw.TextStyle(
-                          fontSize: 20,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
+                      pw.Row(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.Text(
+                            'かけ算',
+                            style: pw.TextStyle(
+                              font: bizUDPGR,
+                              fontSize: 16,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ), // <- Added missing closing parenthesis and comma
+                          pw.Text(
+                            '    (制限時間7分)',
+                            style: pw.TextStyle(
+                              font: bizUDPGR,
+                              fontSize: 10,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ), // <- Removed extra closing parenthesis
+                        ],
                       ),
                       pw.SizedBox(height: 20),
                       buildVerticalProblemTable(
-                        'Problems 1-7',
+                        '（注意）小数第3位未満四捨五入。',
                         multProblems.sublist(0, 7),
                         1,
                         operator: '*',
+                        integerProblem: false,
                       ),
                       pw.SizedBox(height: 20),
                       buildVerticalProblemTable(
-                        'Problems 8-15',
+                        '(注意）整数位未満四捨五入。',
                         multProblems.sublist(7, 15),
                         8,
                         operator: '*',
+                        integerProblem: true,
                       ),
                     ],
                   ),
                 ),
                 pw.SizedBox(width: 40),
-
                 pw.Expanded(
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text(
-                        'Division Practice Problems',
-                        style: pw.TextStyle(
-                          fontSize: 20,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
+                      pw.Row(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.Text(
+                            'わり算',
+                            style: pw.TextStyle(
+                              font: bizUDPGR,
+                              fontSize: 16,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ), // <- Added missing closing parenthesis and comma
+                          pw.Text(
+                            '    (制限時間7分)',
+                            style: pw.TextStyle(
+                              font: bizUDPGR,
+                              fontSize: 10,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ), // <- Removed extra closing parenthesis
+                        ],
                       ),
                       pw.SizedBox(height: 20),
                       buildVerticalProblemTable(
-                        'Problems 1-7',
+                        '（注意）小数第3位未満四捨五入。',
                         divProblems.sublist(0, 7),
                         1,
                         operator: '/',
+                        integerProblem: false,
                       ),
                       pw.SizedBox(height: 20),
                       buildVerticalProblemTable(
-                        'Problems 8-15',
+                        '(注意）整数位未満四捨五入。',
                         divProblems.sublist(7, 15),
                         8,
                         operator: '/',
+                        integerProblem: true,
                       ),
                     ],
                   ),
@@ -340,7 +408,7 @@ class PdfPreviewApp extends StatelessWidget {
         body: PdfPreview(
           build: (format) async {
             final service = SheetService();
-            return service.creatMultDivSheet(); // generates the Uint8List
+            return service.creatMultDivSheet();
           },
         ),
       ),

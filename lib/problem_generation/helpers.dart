@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:intl/intl.dart';
 
-int _decimalPlaces(Decimal number) {
+int _decimalPlaces(var number) {
   final str = number.toString();
   if (!str.contains('.')) return 0;
   return str.split('.')[1].length;
@@ -14,6 +14,12 @@ String formatDecimal(Decimal number) {
   final pattern = decimals > 0 ? '#,##0.${'0' * decimals}' : '#,##0';
   final formatter = NumberFormat(pattern);
   return formatter.format(number.toDouble());
+}
+
+String formatInt(int number) {
+  final pattern = '#,##0';
+  final formatter = NumberFormat(pattern);
+  return formatter.format(number);
 }
 
 Decimal randomDecimal(int digits) {

@@ -54,24 +54,28 @@ final Map<String, dynamic> digitSplit = {
   },
   "dan": {
     8: [
+      // 5 problems, 11233
       [3, 5],
       [4, 4],
       [4, 4],
       [5, 3],
     ],
     9: [
+      // 5 problems, 11233
       [3, 6],
       [4, 5],
       [5, 4],
       [6, 3],
     ],
     10: [
+      // 5 problems, 11233; 5 integer problems, 11455
       [4, 6],
       [5, 5],
       [5, 5],
       [6, 4],
     ],
     11: [
+      // 5 problems, 11455; 5 problems, 11455
       [4, 7],
       [5, 6],
       [6, 5],

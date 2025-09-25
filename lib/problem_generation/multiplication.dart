@@ -60,6 +60,10 @@ class MultiplicationProblem {
   String get formattedSecond => formatDecimal(multiplier);
   String get formattedThird => formatDecimal(product);
 
+  String get first => (multiplicand).toString();
+  String get second => (multiplier).toString();
+  String get third => (product).toString();
+
   @override
   String toString() {
     return 'multiplicand=$formattedFirst, multiplier=$formattedSecond product=$formattedThird';

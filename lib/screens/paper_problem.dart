@@ -27,8 +27,8 @@ class MainContainer extends StatefulWidget {
 
 class _MainContainerState extends State<MainContainer> {
   late VariableDigitsProblemSet variableDigits;
-  late List<List<int>> currentProblemSet;
-  late List<int> currentProblem;
+  late List<List<String>> currentProblemSet;
+  late List<String> currentProblem;
   late List<bool> answerBools = [];
   String selectedLevel = "1kyuu"; // default
   int currentProblemIndex = 0;
@@ -92,7 +92,7 @@ class _MainContainerState extends State<MainContainer> {
   void _initializeProblem(String level) {
     final spec = getPaperSpec(level);
     variableDigits = VariableDigitsProblemSet(spec: getPaperSpec("1kyuu"));
-    currentProblemSet = variableDigits.allProblems;
+    currentProblemSet = variableDigits.formattedProblems;
     currentProblemIndex = 0;
     List<bool> answerBools = List.filled(currentProblemSet.length, false);
   }
@@ -120,11 +120,15 @@ class _MainContainerState extends State<MainContainer> {
                 ),
                 SizedBox(height: 10),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: currentProblem
                       .map(
                         (number) => Text(
                           number.toString(),
-                          style: TextStyle(fontSize: 24),
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontFamily: 'abacusFont',
+                          ),
                         ),
                       )
                       .toList(),
