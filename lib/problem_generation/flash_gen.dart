@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'generation_spec.dart';
+import 'helpers.dart';
 import 'abacus.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -11,63 +12,6 @@ late Map<String, dynamic> difficultyThresholds;
 // ---------------------------------
 // Helpers
 // ---------------------------------
-
-int getRandomDigit(Random rand, {List<int> excepts = const []}) {
-  final available = <int>[];
-  for (int i = 0; i < 10; i++) {
-    if (!excepts.contains(i)) {
-      available.add(i);
-    }
-  }
-  return available[rand.nextInt(available.length)];
-}
-
-int getRandomInt(
-  int digitCount,
-  List<int> allPreviousNums,
-  int? previousNum,
-  FlashSpec spec,
-) {
-  final rand = Random();
-  final previousNumDigits = previousNum == null
-      ? <int>[]
-      : previousNum.abs().toString().split('').map(int.parse).toList();
-
-  while (true) {
-    // First digit (avoid leading 0, and avoid previousNum last digit if provided)
-    List<int> firstExcepts = [0];
-    if (previousNumDigits.isNotEmpty) {
-      firstExcepts.add(previousNumDigits.first);
-    }
-    int firstDigit = getRandomDigit(rand, excepts: firstExcepts);
-
-    final digits = <int>[firstDigit];
-
-    // Remaining digits
-    for (int i = 1; i < digitCount; i++) {
-      List<int> excepts = [];
-      if (previousNumDigits.length > i) {
-        excepts.add(previousNumDigits[i]);
-      }
-      if (spec.digitAllDifferent) {
-        excepts.addAll(digits);
-      }
-      int nextDigit = getRandomDigit(rand, excepts: excepts);
-      digits.add(nextDigit);
-    }
-
-    int number = int.parse(digits.join());
-
-    if (spec.allowMinus && rand.nextDouble() < 0.3) {
-      if (spec.neverNegative &&
-          number > allPreviousNums.fold(0, (a, b) => a + b)) {
-        continue;
-      }
-      number = -number;
-    }
-    return number;
-  }
-}
 
 List<int> noCarryList(
   int? previousNum,
@@ -134,7 +78,12 @@ class FlashGenerator {
       int bestCarry = 1 << 30; // big number
 
       for (int i = 0; i < 20; i++) {
-        int candidate = getRandomInt(spec.digitCount, numbers, lastNum, spec);
+        int candidate = getRandomFlashInt(
+          spec.digitCount,
+          numbers,
+          lastNum,
+          spec,
+        );
         Abacus tempAbacus = Abacus(abacus.value);
         tempAbacus.add(candidate);
         int carry = tempAbacus.carry;
@@ -154,7 +103,12 @@ class FlashGenerator {
         _register(bestCandidate, bestCarry);
       }
     } else if (spec.difficulty == "normal" || spec.difficulty == "random") {
-      int candidate = getRandomInt(spec.digitCount, numbers, lastNum, spec);
+      int candidate = getRandomFlashInt(
+        spec.digitCount,
+        numbers,
+        lastNum,
+        spec,
+      );
       Abacus tempAbacus = Abacus(abacus.value);
       tempAbacus.add(candidate);
       int carry = tempAbacus.carry;
@@ -164,7 +118,12 @@ class FlashGenerator {
       int bestCarry = -1;
 
       for (int i = 0; i < 20; i++) {
-        int candidate = getRandomInt(spec.digitCount, numbers, lastNum, spec);
+        int candidate = getRandomFlashInt(
+          spec.digitCount,
+          numbers,
+          lastNum,
+          spec,
+        );
         Abacus tempAbacus = Abacus(abacus.value);
         tempAbacus.add(candidate);
         int carry = tempAbacus.carry;

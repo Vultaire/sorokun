@@ -39,6 +39,9 @@ flutter:
     - family: abacusFont
       fonts:
         - asset: assets/abacus5.ttf
+    - family: abacusFontSpaced
+      fonts:
+        - asset: assets/abacus5spaced.ttf
     - family: bizUDPGR
       fonts:
         - asset: assets/BIZUDPGothic-Regular.ttf

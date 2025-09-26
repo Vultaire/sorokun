@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:decimal/decimal.dart';
 import 'package:intl/intl.dart';
+import 'generation_spec.dart';
 
 int _decimalPlaces(var number) {
   final str = number.toString();
@@ -20,6 +21,96 @@ String formatInt(int number) {
   final pattern = '#,##0';
   final formatter = NumberFormat(pattern);
   return formatter.format(number);
+}
+
+int getRandomDigit(Random rand, {List<int> excepts = const []}) {
+  final available = <int>[];
+  for (int i = 0; i < 10; i++) {
+    if (!excepts.contains(i)) {
+      available.add(i);
+    }
+  }
+  return available[rand.nextInt(available.length)];
+}
+
+int getRandomFlashInt(
+  int digitCount,
+  List<int> allPreviousNums,
+  int? previousNum,
+  FlashSpec spec,
+) {
+  final rand = Random();
+  final previousNumDigits = previousNum == null
+      ? <int>[]
+      : previousNum.abs().toString().split('').map(int.parse).toList();
+
+  while (true) {
+    List<int> firstExcepts = [0];
+    if (previousNumDigits.isNotEmpty) {
+      firstExcepts.add(previousNumDigits.first);
+    }
+    int firstDigit = getRandomDigit(rand, excepts: firstExcepts);
+
+    final digits = <int>[firstDigit];
+
+    for (int i = 1; i < digitCount; i++) {
+      List<int> excepts = [];
+      if (previousNumDigits.length > i) {
+        excepts.add(previousNumDigits[i]);
+      }
+      if (spec.digitAllDifferent) {
+        excepts.addAll(digits);
+      }
+      int nextDigit = getRandomDigit(rand, excepts: excepts);
+      digits.add(nextDigit);
+    }
+
+    int number = int.parse(digits.join());
+
+    if (spec.allowMinus && rand.nextDouble() < 0.3) {
+      if (spec.neverNegative &&
+          number > allPreviousNums.fold(0, (a, b) => a + b)) {
+        continue;
+      }
+      number = -number;
+    }
+    return number;
+  }
+}
+
+int getRandomInt(int digitCount, bool digitAllDifferent, int? previousNum) {
+  final rand = Random();
+
+  while (true) {
+    final digits = <int>[];
+
+    for (int position = 0; position < digitCount; position++) {
+      List<int> excepts = [];
+
+      if (digitAllDifferent) {
+        excepts.addAll(digits);
+      }
+
+      if (position == 0) {
+        excepts.add(0);
+      }
+
+      // Calculate the place value for this position
+      int placeValue = pow(10, digitCount - 1 - position).toInt();
+
+      // If previousNum exists, find what digit is at this place value and exclude it
+      if (previousNum != null) {
+        int digitAtThisPlace = (previousNum ~/ placeValue) % 10;
+        excepts.add(digitAtThisPlace);
+      }
+
+      int nextDigit = getRandomDigit(rand, excepts: excepts);
+      digits.add(nextDigit);
+    }
+
+    int number = int.parse(digits.join());
+    return number;
+  }
 }
 
 Decimal randomDecimal(int digits) {

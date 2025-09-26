@@ -1,7 +1,7 @@
 final paperSource = {
   "10kyuuA": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 1, "count": 6},
         ],
@@ -16,7 +16,7 @@ final paperSource = {
   ],
   "10kyuuB": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 1, "count": 2},
           {"digits": 2, "count": 2},
@@ -32,7 +32,7 @@ final paperSource = {
   ],
   "9kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 1, "count": 2},
           {"digits": 2, "count": 3},
@@ -48,7 +48,7 @@ final paperSource = {
   ],
   "8kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 2, "count": 5},
         ],
@@ -63,7 +63,7 @@ final paperSource = {
   ],
   "7kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 2, "count": 2},
           {"digits": 3, "count": 2},
@@ -79,7 +79,7 @@ final paperSource = {
   ],
   "6kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 2, "count": 2},
           {"digits": 3, "count": 5},
@@ -95,7 +95,7 @@ final paperSource = {
   ],
   "5kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 3, "count": 4},
           {"digits": 4, "count": 3},
@@ -111,7 +111,7 @@ final paperSource = {
   ],
   "4kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 3, "count": 2},
           {"digits": 4, "count": 3},
@@ -128,7 +128,7 @@ final paperSource = {
   ],
   "3kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 3, "count": 3},
           {"digits": 4, "count": 2},
@@ -148,7 +148,7 @@ final paperSource = {
   ],
   "2kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 4, "count": 4},
           {"digits": 5, "count": 2},
@@ -168,7 +168,7 @@ final paperSource = {
   ],
   "1kyuu": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 4, "count": 2},
           {"digits": 5, "count": 2},
@@ -189,7 +189,7 @@ final paperSource = {
   ],
   "dan": [
     {
-      "template": [
+      "templates": [
         [
           {"digits": 3, "count": 3},
           {"digits": 4, "count": 2},
@@ -205,7 +205,7 @@ final paperSource = {
           {"digits": 4, "count": 3},
           {"digits": 5, "count": 2},
           {"digits": 6, "count": 2},
-          {"digits": 7, "count": 2},
+          {"digits": 7, "count": 3},
         ],
         [
           {"digits": 4, "count": 2},

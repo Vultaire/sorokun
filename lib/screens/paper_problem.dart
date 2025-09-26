@@ -30,7 +30,7 @@ class _MainContainerState extends State<MainContainer> {
   late List<List<String>> currentProblemSet;
   late List<String> currentProblem;
   late List<bool> answerBools = [];
-  String selectedLevel = "1kyuu"; // default
+  String selectedLevel = "dan"; // default
   int currentProblemIndex = 0;
   final TextEditingController _controller = TextEditingController();
 
@@ -91,7 +91,7 @@ class _MainContainerState extends State<MainContainer> {
 
   void _initializeProblem(String level) {
     final spec = getPaperSpec(level);
-    variableDigits = VariableDigitsProblemSet(spec: getPaperSpec("1kyuu"));
+    variableDigits = VariableDigitsProblemSet(spec: getPaperSpec("dan"));
     currentProblemSet = variableDigits.formattedProblems;
     currentProblemIndex = 0;
     List<bool> answerBools = List.filled(currentProblemSet.length, false);
@@ -109,8 +109,8 @@ class _MainContainerState extends State<MainContainer> {
             padding: EdgeInsets.all(16),
             margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.blue, width: 2),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black, width: 2),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Column(
               children: [
@@ -119,30 +119,33 @@ class _MainContainerState extends State<MainContainer> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: currentProblem
-                      .map(
-                        (number) => Text(
-                          number.toString(),
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontFamily: 'abacusFont',
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: currentProblem
+                        .map(
+                          (number) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3.0),
+                            child: Text(
+                              number.toString(),
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'abacusFontSpaced',
+                              ),
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TextField(
-                    controller: _controller,
-                    readOnly: true, // prevent system keyboard
-                    textAlign: TextAlign.right,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Enter number",
-                    ),
+                TextField(
+                  controller: _controller,
+                  readOnly: true, // prevent system keyboard
+                  textAlign: TextAlign.right,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Enter number",
                   ),
                 ),
               ],
@@ -154,10 +157,10 @@ class _MainContainerState extends State<MainContainer> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    if (currentProblemIndex < currentProblemSet.length - 1) {
-                      currentProblemIndex++;
+                    if (currentProblemIndex > 0) {
+                      currentProblemIndex--;
                     } else {
-                      currentProblemIndex = 0;
+                      currentProblemIndex = currentProblemSet.length - 1;
                     }
                   });
                 },
@@ -167,10 +170,10 @@ class _MainContainerState extends State<MainContainer> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    if (currentProblemIndex > 0) {
-                      currentProblemIndex--;
+                    if (currentProblemIndex < currentProblemSet.length - 1) {
+                      currentProblemIndex++;
                     } else {
-                      currentProblemIndex = currentProblemSet.length - 1;
+                      currentProblemIndex = 0;
                     }
                   });
                 },
@@ -181,34 +184,75 @@ class _MainContainerState extends State<MainContainer> {
 
           // Keypad buttons
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                children: [
-                  for (var i = 1; i <= 9; i++)
-                    ElevatedButton(
-                      onPressed: () => _appendDigit(i.toString()),
-                      child: Text(
-                        i.toString(),
-                        style: const TextStyle(fontSize: 24),
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: GridView.count(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 6,
+                    crossAxisSpacing: 6,
+                    childAspectRatio: 2, // Makes buttons wider than tall
+                    children: [
+                      for (var i = 1; i <= 9; i++)
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 120),
+                          child: ElevatedButton(
+                            onPressed: () => _appendDigit(i.toString()),
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              i.toString(),
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        ),
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 120),
+                        child: ElevatedButton(
+                          onPressed: _deleteDigit,
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Icon(Icons.backspace),
+                        ),
                       ),
-                    ),
-                  ElevatedButton(
-                    onPressed: _deleteDigit,
-                    child: const Icon(Icons.backspace),
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 120),
+                        child: ElevatedButton(
+                          onPressed: () => _appendDigit('0'),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            '0',
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 120),
+                        child: ElevatedButton(
+                          onPressed: _checkAnswer,
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Icon(Icons.check),
+                        ),
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    onPressed: () => _appendDigit('0'),
-                    child: const Text('0', style: TextStyle(fontSize: 24)),
-                  ),
-                  ElevatedButton(
-                    onPressed: _checkAnswer,
-                    child: const Icon(Icons.check),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

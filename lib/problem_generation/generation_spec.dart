@@ -160,9 +160,14 @@ class FlashSpec {
 
 class PaperSpec {
   bool isExam;
+  bool digitAllDifferent;
   List<Map<String, dynamic>> source;
 
-  PaperSpec({this.isExam = true, required this.source});
+  PaperSpec({
+    this.isExam = true,
+    this.digitAllDifferent = true,
+    required this.source,
+  });
 }
 
 PaperSpec getPaperSpec(String level, {List<Map<String, dynamic>>? overrides}) {
