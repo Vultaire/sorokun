@@ -1,26 +1,39 @@
 import 'dart:math';
 
 import 'package:decimal/decimal.dart';
-import 'package:intl/intl.dart';
 import 'generation_spec.dart';
 
-int _decimalPlaces(var number) {
-  final str = number.toString();
-  if (!str.contains('.')) return 0;
-  return str.split('.')[1].length;
-}
+String formatWithCommas(String text) {
+  if (text.isEmpty) return text;
 
-String formatDecimal(Decimal number) {
-  final decimals = _decimalPlaces(number);
-  final pattern = decimals > 0 ? '#,##0.${'0' * decimals}' : '#,##0';
-  final formatter = NumberFormat(pattern);
-  return formatter.format(number.toDouble());
-}
+  bool isNegative = text.startsWith('-');
+  if (isNegative) {
+    text = text.substring(1);
+  }
 
-String formatInt(int number) {
-  final pattern = '#,##0';
-  final formatter = NumberFormat(pattern);
-  return formatter.format(number);
+  List<String> parts = text.split('.');
+  String integerPart = parts[0];
+  String decimalPart = parts.length > 1 ? parts[1] : '';
+
+  String formatted = '';
+  for (int i = 0; i < integerPart.length; i++) {
+    if (i > 0 && (integerPart.length - i) % 3 == 0) {
+      formatted += ',';
+    }
+    formatted += integerPart[i];
+  }
+
+  if (decimalPart.isNotEmpty) {
+    formatted += '.$decimalPart';
+  } else if (parts.length > 1) {
+    formatted += '.';
+  }
+
+  if (isNegative) {
+    formatted = '-$formatted';
+  }
+
+  return formatted;
 }
 
 int getRandomDigit(Random rand, {List<int> excepts = const []}) {

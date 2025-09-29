@@ -15,14 +15,8 @@ dependencies:
   pdf: ^3.11.3
   printing: ^5.14.2
   path_provider: ^2.1.5
-  open_document: ^1.0.7
-  intl: ^0.18.1
   ffmpeg_kit_flutter_new: ^3.2.0
   audioplayers: ^6.5.1
-  voicevox_flutter:
-    git:
-      url: https://github.com/char5742/voicevox_flutter.git
-      ref: main
 
 dev_dependencies:
   flutter_test:

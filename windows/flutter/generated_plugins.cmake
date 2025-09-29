@@ -4,10 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
-  open_document
   printing
-  share_plus
-  url_launcher_windows
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

@@ -56,9 +56,9 @@ class MultiplicationProblem {
     return MultiplicationProblem._(multiplicand, multiplier, product);
   }
 
-  String get formattedFirst => formatDecimal(multiplicand);
-  String get formattedSecond => formatDecimal(multiplier);
-  String get formattedThird => formatDecimal(product);
+  String get formattedFirst => formatWithCommas(multiplicand.toString());
+  String get formattedSecond => formatWithCommas(multiplier.toString());
+  String get formattedThird => formatWithCommas(product.toString());
 
   String get first => (multiplicand).toString();
   String get second => (multiplier).toString();

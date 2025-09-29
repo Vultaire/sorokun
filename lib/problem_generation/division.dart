@@ -312,9 +312,9 @@ class DivisionProblem {
     return pow(2, a).toInt() * pow(5, b).toInt();
   }
 
-  String get formattedFirst => formatDecimal(dividend);
-  String get formattedSecond => formatDecimal(divisor);
-  String get formattedThird => formatDecimal(quotient);
+  String get formattedFirst => formatWithCommas(dividend.toString());
+  String get formattedSecond => formatWithCommas(divisor.toString());
+  String get formattedThird => formatWithCommas(quotient.toString());
 
   String get first => (dividend).toString();
   String get second => (divisor).toString();

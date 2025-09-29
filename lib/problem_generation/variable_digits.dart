@@ -12,13 +12,6 @@ class VariableDigitsProblemSet {
   VariableDigitsProblemSet({required this.spec}) {
     final rand = Random();
 
-    int randomInt(int digits) {
-      final rand = Random();
-      int min = pow(10, digits - 1).toInt();
-      int max = pow(10, digits).toInt() - 1;
-      return min + rand.nextInt(max - min + 1);
-    }
-
     final source = spec.source;
 
     for (int i = 0; i < source.length; i++) {
@@ -159,14 +152,14 @@ class VariableDigitsProblemSet {
           allProblems.add(problem);
           List<String> formattedProblem = [];
           for (int number in problem) {
-            String formattedNumber = formatInt(number);
+            String formattedNumber = formatWithCommas(number.toString());
             formattedProblem.add(formattedNumber);
           }
           formattedProblems.add(formattedProblem);
           sums.add(problem.reduce((a, b) => a + b));
         }
         for (int sum in sums) {
-          String formattedSum = formatInt(sum);
+          String formattedSum = formatWithCommas(sum.toString());
           formattedSums.add(formattedSum);
         }
       }
