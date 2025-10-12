@@ -1,50 +1,60 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
 
-class Keypad extends StatelessWidget {
-  Keypad({super.key});
+class Keypad extends StatefulWidget {
+  Keypad({super.key, required this.controller, required this.onCaretChanged});
 
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController controller;
+  final void Function(double) onCaretChanged;
+
+  @override
+  State<Keypad> createState() => _KeypadState();
+}
+
+class _KeypadState extends State<Keypad> {
   String _internalString = '';
+
   String _formatted = '';
+
   String _beforeCaret = '';
 
   TextPainter? _textPainter;
 
   void _appendDigit(String digit) {
-    String currentText = _controller.text.replaceAll(
-      ',',
-      '',
-    ); // Remove existing commas
+    setState(() {
+      String currentText = widget.controller.text.replaceAll(',', '');
 
-    // Check if we're trying to add a minus sign
-    if (digit == '-') {
-      // Only allow minus at the beginning and if there's no minus already
-      if (!_internalString.startsWith('-')) {
-        _internalString = '-$_internalString';
-      } else if (_internalString.startsWith('-')) {
-        // Remove minus if it's already there (toggle functionality)
-        _internalString = _internalString.substring(1);
+      // minus sign
+      if (digit == '-') {
+        // Only allow minus at the beginning and if there's no minus already
+        if (!_internalString.startsWith('-')) {
+          _internalString = '-$_internalString';
+        } else if (_internalString.startsWith('-')) {
+          // Remove minus if it's already there (toggle functionality)
+          _internalString = _internalString.substring(1);
+        }
       }
-    }
-    // Check if we're trying to add a decimal point
-    else if (digit == '.') {
-      if (!_internalString.contains('.') &&
-          _internalString.isNotEmpty &&
-          _internalString != '-') {
+      // decimal point
+      else if (digit == '.') {
+        if (!_internalString.contains('.') &&
+            _internalString.isNotEmpty &&
+            _internalString != '-') {
+          _internalString += digit;
+        }
+      } else {
         _internalString += digit;
       }
-    } else {
-      _internalString += digit;
-    }
 
-    // Check length limit (excluding commas, decimal point, and minus for counting)
-    String digitsOnly = currentText.replaceAll(RegExp(r'[,.\-]'), '');
-    if (digitsOnly.length > 15) {
-      return; // Limit to 15 digits (excluding formatting)
-    }
+      // Check length limit (excluding commas, decimal point, and minus for counting)
+      String digitsOnly = currentText.replaceAll(RegExp(r'[,.\-]'), '');
+      if (digitsOnly.length > 15) {
+        return; // Limit to 15 digits (excluding formatting)
+      }
 
-    _updateText();
+      _updateText();
+    });
   }
 
   void _makeFormatted() {
@@ -65,13 +75,31 @@ class Keypad extends StatelessWidget {
       result = '-$result';
     }
 
-    _formatted = formatWithCommas(result);
-    int caretIndex = _formatted.indexOf('b');
+    String formattedWithPlaceholder = formatWithCommas(result);
+    int caretIndex = formattedWithPlaceholder.indexOf('b');
+    _formatted = formattedWithPlaceholder.replaceAll('b', '');
     _beforeCaret = _formatted.substring(0, caretIndex);
   }
 
+  void _getCaretPosition() {
+    _textPainter = TextPainter(
+      text: TextSpan(
+        text: _beforeCaret,
+        style: const TextStyle(
+          fontSize: 17.8,
+          fontFamily: 'abacusFont',
+        ), // I have no idea why I have to use 17.8 instead of 17 here for the caret to line up correctly
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    _textPainter!.layout();
+    final pos = _textPainter!.width;
+
+    widget.onCaretChanged(pos);
+  }
+
   void _deleteDigit() {
-    if (_controller.text.isNotEmpty) {
+    if (widget.controller.text.isNotEmpty) {
       _internalString = _internalString.substring(
         0,
         _internalString.length - 1,
@@ -83,7 +111,8 @@ class Keypad extends StatelessWidget {
 
   void _updateText() {
     _makeFormatted();
-    _controller.text = _formatted;
+    widget.controller.text = _formatted;
+    _getCaretPosition();
   }
 
   @override
@@ -109,7 +138,7 @@ class Keypad extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Icon(Icons.backspace),
+                          child: const Icon(Icons.backspace, size: 25),
                         ),
                       ),
                     ),
@@ -124,7 +153,10 @@ class Keypad extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Icon(Icons.home),
+                          child: Transform.rotate(
+                            angle: pi, // radians; 90° clockwise
+                            child: const Icon(Icons.start, size: 30),
+                          ),
                         ),
                       ),
                     ),
@@ -138,7 +170,7 @@ class Keypad extends StatelessWidget {
                   crossAxisCount: 3,
                   mainAxisSpacing: 6,
                   crossAxisSpacing: 6,
-                  childAspectRatio: 2,
+                  childAspectRatio: 1.5,
                   children: [
                     _buildKey('7'),
                     _buildKey('8'),
@@ -158,7 +190,7 @@ class Keypad extends StatelessWidget {
 
               // Bottom check button
               Container(
-                margin: const EdgeInsets.only(top: 6),
+                margin: const EdgeInsets.only(top: 0),
                 child: Row(
                   children: [
                     Expanded(

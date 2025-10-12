@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/generation_spec.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 
-import '../problem_generation/helpers.dart';
 import 'components/keypadold.dart';
 
 void main() {
@@ -41,8 +39,8 @@ class _MainContainerState extends State<MainContainer> {
   late List<bool> answerBools = [];
   String selectedLevel = "dan"; // default
   int currentProblemIndex = 0;
-  String formatted = '';
-  int caretIndex = 0;
+  final TextEditingController _controller = TextEditingController();
+  double caretPos = 0;
 
   @override
   void initState() {
@@ -58,112 +56,161 @@ class _MainContainerState extends State<MainContainer> {
     List<bool> answerBools = List.filled(currentProblemSet.length, false);
   }
 
-  double _calculateCursorPixelPosition() {
-    if (_controller.text.isEmpty) return 0;
-
-    _textPainter = TextPainter(
-      text: TextSpan(
-        text: _beforeCaret,
-        style: TextStyle(fontSize: 17, fontFamily: 'abacusFont'),
+  Widget _buildTextFieldWithCursor() {
+    return SizedBox(
+      height: 30,
+      child: Stack(
+        children: [
+          TextField(
+            controller: _controller,
+            readOnly: true,
+            showCursor: false, // Disable native cursor
+            style: TextStyle(fontSize: 17, fontFamily: 'abacusFont'),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: "",
+              counterText: "",
+              contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+              isDense: true,
+            ),
+          ),
+          // Custom static cursor
+          Positioned(
+            left: caretPos,
+            top: 2,
+            child: Container(width: 1.5, height: 28, color: Colors.blue),
+          ),
+        ],
       ),
-      textDirection: TextDirection.ltr,
     );
-    _textPainter!.layout();
-    return _textPainter!.width;
   }
 
   @override
   Widget build(BuildContext context) {
     final currentProblem = currentProblemSet[currentProblemIndex];
-
-    final text = controller.text;
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              margin: EdgeInsets.symmetric(horizontal: 40, vertical: 5),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 2),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: currentProblem
-                          .map(
-                            (number) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 3.0,
-                              ),
-                              child: Text(
-                                number.toString(),
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'abacusFontSpaced',
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 2),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Column(
+                  children: [
+                    // Row with side buttons and middle numbers
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Left button flush to left
+                          SizedBox(
+                            width: 40,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                surfaceTintColor: Colors.transparent,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero,
                                 ),
+                                padding: EdgeInsets.zero,
                               ),
+                              onPressed: () {
+                                setState(() {
+                                  if (currentProblemIndex > 0) {
+                                    currentProblemIndex--;
+                                  } else {
+                                    currentProblemIndex =
+                                        currentProblemSet.length - 1;
+                                  }
+                                });
+                              },
+                              child: const Icon(Icons.arrow_back),
                             ),
-                          )
-                          .toList(),
+                          ),
+
+                          // Middle numbers (right-aligned and vertically centered)
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .center, // vertical centering
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.end, // right-aligned
+                              children: currentProblem
+                                  .map(
+                                    (n) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 3.0,
+                                      ),
+                                      child: Text(
+                                        n.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: 'abacusFontSpaced',
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+
+                          // Right button flush to right
+                          SizedBox(
+                            width: 40,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                surfaceTintColor: Colors.transparent,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero,
+                                ),
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (currentProblemIndex <
+                                      currentProblemSet.length - 1) {
+                                    currentProblemIndex++;
+                                  } else {
+                                    currentProblemIndex = 0;
+                                  }
+                                });
+                              },
+                              child: const Icon(Icons.arrow_forward),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Divider(
-                    color: Colors.black,
-                    thickness: 2,
-                    indent: 0,
-                    endIndent: 0,
-                  ),
-                  
-Stack(
-            children: [
-              Text(formatted, style: const TextStyle(fontSize: 20)),
-              Positioned(
-                left: _calculateCaretPixel(formatted, caretIndex),
-                top: 0,
-                bottom: 0,
-                child: Container(width: 2, color: Colors.blue),
-              ),
-            ],
-          ),
+
+                    const Divider(
+                      color: Colors.black,
+                      thickness: 2,
+                      height: 10,
+                    ),
+                    _buildTextFieldWithCursor(),
+                  ],
+                ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (currentProblemIndex > 0) {
-                        currentProblemIndex--;
-                      } else {
-                        currentProblemIndex = currentProblemSet.length - 1;
-                      }
-                    });
-                  },
-                  child: Icon(Icons.arrow_back),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (currentProblemIndex < currentProblemSet.length - 1) {
-                        currentProblemIndex++;
-                      } else {
-                        currentProblemIndex = 0;
-                      }
-                    });
-                  },
-                  child: Icon(Icons.arrow_forward),
-                ),
-              ],
+            Keypad(
+              controller: _controller,
+              onCaretChanged: (newPos) {
+                setState(() {
+                  caretPos = newPos;
+                });
+              },
             ),
-            Keypad(),
           ],
         ),
       ),

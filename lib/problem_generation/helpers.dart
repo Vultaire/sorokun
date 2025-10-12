@@ -16,11 +16,25 @@ String formatWithCommas(String text) {
   String decimalPart = parts.length > 1 ? parts[1] : '';
 
   String formatted = '';
+  int digitCount = 0; // counts only digits (ignores 'b')
+
   for (int i = 0; i < integerPart.length; i++) {
-    if (i > 0 && (integerPart.length - i) % 3 == 0) {
+    String ch = integerPart[i];
+
+    if (ch == 'b') {
+      // keep 'b' in output, but don't count it as a digit
+      formatted += ch;
+      continue;
+    }
+
+    // Add a comma if it's a digit and the position from the right is multiple of 3
+    if (digitCount > 0 &&
+        ((integerPart.replaceAll('b', '').length - digitCount) % 3 == 0)) {
       formatted += ',';
     }
-    formatted += integerPart[i];
+
+    formatted += ch;
+    digitCount++;
   }
 
   if (decimalPart.isNotEmpty) {
@@ -202,4 +216,8 @@ Decimal randomDecimalNoTrailingZero(int digits) {
   int a = (spec.digitCount / 3).floor();
   int b = spec.digitCount - a;
   return (firstDigits: a, secondDigits: b);
+}
+
+void main() {
+  print(formatWithCommas('45685b123'));
 }
