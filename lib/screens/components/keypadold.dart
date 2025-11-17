@@ -170,7 +170,7 @@ class _KeypadState extends State<Keypad> {
                   crossAxisCount: 3,
                   mainAxisSpacing: 6,
                   crossAxisSpacing: 6,
-                  childAspectRatio: 1.5,
+                  childAspectRatio: 2,
                   children: [
                     _buildKey('7'),
                     _buildKey('8'),

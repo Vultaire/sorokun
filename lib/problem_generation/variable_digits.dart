@@ -22,7 +22,7 @@ class VariableDigitsProblemSet {
       final templateLists = entry["templates"] as List;
 
       // Look for per-group settings in the next entries
-      int repeatCount = 1;
+      int repeatCount = source.repeat;
       bool neverNegative = false;
       int minusCount = 0;
       int minusPerGroup = 2;

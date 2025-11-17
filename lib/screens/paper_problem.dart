@@ -27,34 +27,9 @@ class MainContainer extends StatefulWidget {
   State<MainContainer> createState() => _MainContainerState();
 }
 
-class AlwaysFocusedNode extends FocusNode {
-  @override
-  bool get hasFocus => true;
-}
-
 class _MainContainerState extends State<MainContainer> {
-  late VariableDigitsProblemSet variableDigits;
-  late List<List<String>> currentProblemSet;
-  late List<String> currentProblem;
-  late List<bool> answerBools = [];
-  String selectedLevel = "dan"; // default
-  int currentProblemIndex = 0;
   final TextEditingController _controller = TextEditingController();
   double caretPos = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeProblem(selectedLevel);
-  }
-
-  void _initializeProblem(String level) {
-    final spec = getPaperSpec(level);
-    variableDigits = VariableDigitsProblemSet(spec: getPaperSpec("dan"));
-    currentProblemSet = variableDigits.formattedProblems;
-    currentProblemIndex = 0;
-    List<bool> answerBools = List.filled(currentProblemSet.length, false);
-  }
 
   Widget _buildTextFieldWithCursor() {
     return SizedBox(
@@ -87,112 +62,23 @@ class _MainContainerState extends State<MainContainer> {
 
   @override
   Widget build(BuildContext context) {
-    final currentProblem = currentProblemSet[currentProblemIndex];
     return Scaffold(
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Expanded(
+            // PROBLEM AREA - Takes 60% of the screen height
+            Flexible(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
+                // The margin and decoration for your problem box
+                margin: const EdgeInsets.fromLTRB(40, 5, 40, 5),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Column(
                   children: [
-                    // Row with side buttons and middle numbers
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Left button flush to left
-                          SizedBox(
-                            width: 40,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                surfaceTintColor: Colors.transparent,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero,
-                                ),
-                                padding: EdgeInsets.zero,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  if (currentProblemIndex > 0) {
-                                    currentProblemIndex--;
-                                  } else {
-                                    currentProblemIndex =
-                                        currentProblemSet.length - 1;
-                                  }
-                                });
-                              },
-                              child: const Icon(Icons.arrow_back),
-                            ),
-                          ),
-
-                          // Middle numbers (right-aligned and vertically centered)
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment
-                                  .center, // vertical centering
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.end, // right-aligned
-                              children: currentProblem
-                                  .map(
-                                    (n) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 3.0,
-                                      ),
-                                      child: Text(
-                                        n.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: 'abacusFontSpaced',
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ),
-
-                          // Right button flush to right
-                          SizedBox(
-                            width: 40,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                surfaceTintColor: Colors.transparent,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero,
-                                ),
-                                padding: EdgeInsets.zero,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  if (currentProblemIndex <
-                                      currentProblemSet.length - 1) {
-                                    currentProblemIndex++;
-                                  } else {
-                                    currentProblemIndex = 0;
-                                  }
-                                });
-                              },
-                              child: const Icon(Icons.arrow_forward),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
+                    MitorizanWindow(),
+                    const Spacer(),
                     const Divider(
                       color: Colors.black,
                       thickness: 2,
@@ -203,17 +89,129 @@ class _MainContainerState extends State<MainContainer> {
                 ),
               ),
             ),
-            Keypad(
-              controller: _controller,
-              onCaretChanged: (newPos) {
-                setState(() {
-                  caretPos = newPos;
-                });
-              },
+            Expanded(
+              child: Keypad(
+                controller: _controller,
+                onCaretChanged: (newPos) {
+                  setState(() {
+                    caretPos = newPos;
+                  });
+                },
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class MitorizanWindow extends StatefulWidget {
+  const MitorizanWindow({super.key});
+
+  @override
+  State<MitorizanWindow> createState() => _MitorizanWindowState();
+}
+
+class _MitorizanWindowState extends State<MitorizanWindow> {
+  int currentProblemIndex = 0;
+  String selectedLevel = "dan"; // default
+  late List<List<String>> currentProblemSet;
+  List<String> get currentProblem => currentProblemSet[currentProblemIndex];
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeProblem(selectedLevel);
+  }
+
+  void _initializeProblem(String level) {
+    VariableDigitsProblemSet variableDigits = VariableDigitsProblemSet(
+      spec: getPaperSpec("dan"),
+    );
+    currentProblemSet = variableDigits.formattedProblems;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 40,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              padding: EdgeInsets.zero,
+            ),
+            onPressed: () {
+              setState(() {
+                if (currentProblemIndex > 0) {
+                  currentProblemIndex--;
+                } else {
+                  currentProblemIndex = currentProblemSet.length - 1;
+                }
+              });
+            },
+            child: const Icon(Icons.arrow_back),
+          ),
+        ),
+
+        // Middle numbers
+        Expanded(
+          child: Column(
+            // These properties are still correct for alignment within the column
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: currentProblem
+                .map(
+                  (n) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 3.0,
+                      horizontal: 10.0,
+                    ),
+                    child: Text(
+                      n.toString(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'abacusFontSpaced',
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+
+        // Right button
+        SizedBox(
+          width: 40,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              padding: EdgeInsets.zero,
+            ),
+            onPressed: () {
+              setState(() {
+                if (currentProblemIndex < currentProblemSet.length - 1) {
+                  currentProblemIndex++;
+                } else {
+                  currentProblemIndex = 0;
+                }
+              });
+            },
+            child: const Icon(Icons.arrow_forward),
+          ),
+        ),
+      ],
     );
   }
 }
