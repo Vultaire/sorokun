@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/generation_spec.dart';
+import 'package:soroban_app/problem_generation/paper_source.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 
 import 'components/keypadold.dart';
@@ -127,7 +128,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
 
   void _initializeProblem(String level) {
     VariableDigitsProblemSet variableDigits = VariableDigitsProblemSet(
-      spec: getPaperSpec("dan"),
+      spec: PaperSpec(source: PaperSources.k5),
     );
     currentProblemSet = variableDigits.formattedProblems;
   }

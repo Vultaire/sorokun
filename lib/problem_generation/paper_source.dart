@@ -190,7 +190,7 @@ enum PaperSources {
     ],
     2,
     [5, 5, 5, 5, 5, 5],
-    3,
+    1,
     false,
   );
 
