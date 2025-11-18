@@ -5,9 +5,8 @@ class AbacusDigit {
   final int five;
   final int one;
 
-  AbacusDigit([int value = 0, int? five, int? one])
-    : value = value,
-      five = five ?? value ~/ 5,
+  AbacusDigit([this.value = 0, int? five, int? one])
+    : five = five ?? value ~/ 5,
       one = one ?? value % 5;
 
   static AbacusDigit deepCopy(AbacusDigit d) =>

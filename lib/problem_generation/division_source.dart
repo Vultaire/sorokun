@@ -1,4 +1,4 @@
-final Map<String, dynamic> digitSplit = {
+const Map<String, dynamic> digitSplit = {
   "8kyuu": {
     3: [
       [1, 2],
@@ -84,7 +84,7 @@ final Map<String, dynamic> digitSplit = {
   },
 };
 
-final Map<String, List<Map<String, dynamic>>> divisionSource = {
+const Map<String, List<Map<String, dynamic>>> divisionSource = {
   "8kyuu": [
     {"digits": 3, "problemCount": 15},
   ],

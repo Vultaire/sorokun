@@ -1,4 +1,4 @@
-final Map<String, dynamic> digitSplit = {
+const Map<String, dynamic> digitSplit = {
   "9kyuu": {
     // easy
     3: [
@@ -101,7 +101,7 @@ const kyuuSpec = {
   'totalCount': 15,
 };
 
-final Map<String, List<Map<String, dynamic>>> multiplicationSource = {
+const Map<String, List<Map<String, dynamic>>> multiplicationSource = {
   "9kyuu": [
     {"digits": 3, "problemCount": 15},
   ],

@@ -3,7 +3,7 @@ import 'package:soroban_app/problem_generation/generation_spec.dart';
 import 'package:soroban_app/problem_generation/paper_source.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 
-import 'components/keypadold.dart';
+import 'components/keypad.dart';
 
 void main() {
   runApp(const MainPage());
@@ -34,7 +34,7 @@ class _MainContainerState extends State<MainContainer> {
 
   Widget _buildTextFieldWithCursor() {
     return SizedBox(
-      height: 30,
+      height: 35,
       child: Stack(
         children: [
           TextField(
@@ -46,14 +46,14 @@ class _MainContainerState extends State<MainContainer> {
               border: InputBorder.none,
               hintText: "",
               counterText: "",
-              contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+              contentPadding: EdgeInsets.symmetric(horizontal: 4),
               isDense: true,
             ),
           ),
           // Custom static cursor
           Positioned(
             left: caretPos,
-            top: 2,
+            top: 1,
             child: Container(width: 1.5, height: 28, color: Colors.blue),
           ),
         ],
@@ -67,10 +67,8 @@ class _MainContainerState extends State<MainContainer> {
       body: SafeArea(
         child: Column(
           children: [
-            // PROBLEM AREA - Takes 60% of the screen height
             Flexible(
               child: Container(
-                // The margin and decoration for your problem box
                 margin: const EdgeInsets.fromLTRB(40, 5, 40, 5),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black, width: 2),
@@ -79,7 +77,6 @@ class _MainContainerState extends State<MainContainer> {
                 child: Column(
                   children: [
                     MitorizanWindow(),
-                    const Spacer(),
                     const Divider(
                       color: Colors.black,
                       thickness: 2,
@@ -135,84 +132,86 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 40,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              padding: EdgeInsets.zero,
+    return Expanded(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 40,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                padding: EdgeInsets.zero,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (currentProblemIndex > 0) {
+                    currentProblemIndex--;
+                  } else {
+                    currentProblemIndex = currentProblemSet.length - 1;
+                  }
+                });
+              },
+              child: const Icon(Icons.arrow_back),
             ),
-            onPressed: () {
-              setState(() {
-                if (currentProblemIndex > 0) {
-                  currentProblemIndex--;
-                } else {
-                  currentProblemIndex = currentProblemSet.length - 1;
-                }
-              });
-            },
-            child: const Icon(Icons.arrow_back),
           ),
-        ),
 
-        // Middle numbers
-        Expanded(
-          child: Column(
-            // These properties are still correct for alignment within the column
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: currentProblem
-                .map(
-                  (n) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 3.0,
-                      horizontal: 10.0,
-                    ),
-                    child: Text(
-                      n.toString(),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'abacusFontSpaced',
+          // Middle numbers
+          Expanded(
+            child: Column(
+              // These properties are still correct for alignment within the column
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: currentProblem
+                  .map(
+                    (n) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 3.0,
+                        horizontal: 10.0,
+                      ),
+                      child: Text(
+                        n.toString(),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'abacusFontSpaced',
+                        ),
                       ),
                     ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-
-        // Right button
-        SizedBox(
-          width: 40,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              padding: EdgeInsets.zero,
+                  )
+                  .toList(),
             ),
-            onPressed: () {
-              setState(() {
-                if (currentProblemIndex < currentProblemSet.length - 1) {
-                  currentProblemIndex++;
-                } else {
-                  currentProblemIndex = 0;
-                }
-              });
-            },
-            child: const Icon(Icons.arrow_forward),
           ),
-        ),
-      ],
+
+          // Right button
+          SizedBox(
+            width: 40,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                padding: EdgeInsets.zero,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (currentProblemIndex < currentProblemSet.length - 1) {
+                    currentProblemIndex++;
+                  } else {
+                    currentProblemIndex = 0;
+                  }
+                });
+              },
+              child: const Icon(Icons.arrow_forward),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
