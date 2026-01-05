@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/generation_spec.dart';
 import 'package:soroban_app/problem_generation/paper_source.dart';
@@ -29,37 +30,7 @@ class MainContainer extends StatefulWidget {
 }
 
 class _MainContainerState extends State<MainContainer> {
-  final TextEditingController _controller = TextEditingController();
-  double caretPos = 0;
-
-  Widget _buildTextFieldWithCursor() {
-    return SizedBox(
-      height: 35,
-      child: Stack(
-        children: [
-          TextField(
-            controller: _controller,
-            readOnly: true,
-            showCursor: false, // Disable native cursor
-            style: TextStyle(fontSize: 17, fontFamily: 'abacusFont'),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: "",
-              counterText: "",
-              contentPadding: EdgeInsets.symmetric(horizontal: 4),
-              isDense: true,
-            ),
-          ),
-          // Custom static cursor
-          Positioned(
-            left: caretPos,
-            top: 1,
-            child: Container(width: 1.5, height: 28, color: Colors.blue),
-          ),
-        ],
-      ),
-    );
-  }
+  final GlobalKey<_MitorizanWindowState> _mitorizanKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -68,32 +39,33 @@ class _MainContainerState extends State<MainContainer> {
         child: Column(
           children: [
             Flexible(
+              flex: 6,
               child: Container(
                 margin: const EdgeInsets.fromLTRB(40, 5, 40, 5),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Column(
-                  children: [
-                    MitorizanWindow(),
-                    const Divider(
-                      color: Colors.black,
-                      thickness: 2,
-                      height: 10,
-                    ),
-                    _buildTextFieldWithCursor(),
-                  ],
-                ),
+                child: MitorizanWindow(key: _mitorizanKey),
               ),
             ),
             Expanded(
-              child: Keypad(
-                controller: _controller,
-                onCaretChanged: (newPos) {
-                  setState(() {
-                    caretPos = newPos;
-                  });
+              flex: 5,
+              child: Builder(
+                builder: (context) {
+                  final mitorizanState = _mitorizanKey.currentState;
+                  if (mitorizanState == null) {
+                    return const SizedBox();
+                  }
+                  final currentIndex = mitorizanState._currentIndex;
+                  return Keypad(
+                    controller: mitorizanState._controllers[currentIndex],
+                    onCaretChanged: (newPos) {
+                      setState(() {
+                        mitorizanState._caretPositions[currentIndex] = newPos;
+                      });
+                    },
+                  );
                 },
               ),
             ),
@@ -112,102 +84,143 @@ class MitorizanWindow extends StatefulWidget {
 }
 
 class _MitorizanWindowState extends State<MitorizanWindow> {
-  int currentProblemIndex = 0;
-  String selectedLevel = "dan"; // default
-  late List<List<String>> currentProblemSet;
-  List<String> get currentProblem => currentProblemSet[currentProblemIndex];
+  PaperSources selectedLevel = PaperSources.dan; // default
+  late final List<List<String>> currentProblemSet;
+  late final List<TextEditingController> _controllers;
+  late final List<double> _caretPositions;
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _initializeProblem(selectedLevel);
+    _controllers = List.generate(
+      currentProblemSet.length,
+      (_) => TextEditingController(),
+    );
+    _caretPositions = List.generate(currentProblemSet.length, (_) => 0.0);
   }
 
-  void _initializeProblem(String level) {
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _initializeProblem(PaperSources source) {
     VariableDigitsProblemSet variableDigits = VariableDigitsProblemSet(
-      spec: PaperSpec(source: PaperSources.k5),
+      spec: PaperSpec(source: source),
     );
     currentProblemSet = variableDigits.formattedProblems;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return CarouselSlider(
+      options: CarouselOptions(
+        reverse: true,
+        onPageChanged: (index, reason) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+      items: currentProblemSet.asMap().entries.map((entry) {
+        final problemIndex = entry.key;
+        final currentProblem = entry.value;
+        return Builder(
+          builder: (BuildContext context) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0, bottom: 8.0),
+                  child: Text(
+                    'Problem ${problemIndex + 1}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: currentProblem
+                        .map(
+                          (n) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 3.0,
+                              horizontal: 10.0,
+                            ),
+                            child: Text(
+                              n.toString(),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'abacusFontSpaced',
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                const Divider(color: Colors.black, thickness: 2, height: 10),
+                CustomTextField(
+                  controller: _controllers[problemIndex],
+                  caretPos: _caretPositions[problemIndex],
+                ),
+              ],
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+}
+
+class CustomTextField extends StatefulWidget {
+  CustomTextField({
+    super.key,
+    required this.controller,
+    required this.caretPos,
+  });
+
+  final TextEditingController controller;
+  final double caretPos;
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 50,
+      child: Stack(
+        alignment: AlignmentGeometry.xy(0, -0.5),
         children: [
-          SizedBox(
-            width: 40,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                padding: EdgeInsets.zero,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (currentProblemIndex > 0) {
-                    currentProblemIndex--;
-                  } else {
-                    currentProblemIndex = currentProblemSet.length - 1;
-                  }
-                });
-              },
-              child: const Icon(Icons.arrow_back),
+          TextField(
+            controller: widget.controller,
+            readOnly: true,
+            showCursor: false,
+            style: TextStyle(fontSize: 20, fontFamily: 'abacusFont'),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: "",
+              counterText: "",
+              contentPadding: EdgeInsets.symmetric(horizontal: 4),
+              isDense: true,
             ),
           ),
-
-          // Middle numbers
-          Expanded(
-            child: Column(
-              // These properties are still correct for alignment within the column
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: currentProblem
-                  .map(
-                    (n) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 3.0,
-                        horizontal: 10.0,
-                      ),
-                      child: Text(
-                        n.toString(),
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'abacusFontSpaced',
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-
-          // Right button
-          SizedBox(
-            width: 40,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                padding: EdgeInsets.zero,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (currentProblemIndex < currentProblemSet.length - 1) {
-                    currentProblemIndex++;
-                  } else {
-                    currentProblemIndex = 0;
-                  }
-                });
-              },
-              child: const Icon(Icons.arrow_forward),
+          // Custom static cursor
+          Positioned(
+            left: widget.caretPos,
+            top: 8,
+            child: Container(
+              width: 1.6,
+              height: 30,
+              color: Theme.of(context).primaryColor,
             ),
           ),
         ],
