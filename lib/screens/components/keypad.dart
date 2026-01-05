@@ -1,139 +1,19 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:soroban_app/problem_generation/helpers.dart';
 
-class Keypad extends StatefulWidget {
-  Keypad({super.key, required this.controller, required this.onCaretChanged});
+class Keypad extends StatelessWidget {
+  Keypad({
+    super.key,
+    required this.onAppendDigit,
+    required this.onDeleteDigit,
+    required this.onClearAll,
+    required this.onSubmit,
+  });
 
-  final TextEditingController controller;
-
-  final void Function(double) onCaretChanged;
-
-  @override
-  State<Keypad> createState() => _KeypadState();
-}
-
-class _KeypadState extends State<Keypad> {
-  String _internalString = '';
-
-  String _formatted = '';
-
-  String _beforeCaret = '';
-
-  TextPainter? _textPainter;
-
-  void _appendDigit(String digit) {
-    setState(() {
-      if (digit == '-') {
-        // minus sign
-        if (!_internalString.startsWith('-')) {
-          // Only allow minus at the beginning and if there's no minus already
-          _internalString = '-$_internalString';
-        } else if (_internalString.startsWith('-')) {
-          // Remove minus if it's already there (toggle functionality)
-          _internalString = _internalString.substring(1);
-        }
-      } else if (digit == '.') {
-        // decimal point
-        if (!_internalString.contains('.') &&
-            _internalString.isNotEmpty &&
-            _internalString != '-') {
-          _internalString += digit;
-        }
-      } else if (digit == 'a') {
-        if (!_internalString.endsWith('a') &&
-            _internalString.isNotEmpty &&
-            _internalString != '-') {
-          _internalString += digit;
-        }
-      } else {
-        String digitsOnly = widget.controller.text.replaceAll(
-          RegExp(r'[,.\-]'),
-
-          '',
-        );
-
-        if (digitsOnly.length < 16) {
-          _internalString += digit;
-        }
-      }
-
-      _updateText();
-    });
-  }
-
-  void _makeFormatted() {
-    String result = '${_internalString}b';
-
-    bool hasMinusSign = false;
-
-    if (result.startsWith('-')) {
-      hasMinusSign = true;
-
-      result = result.substring(1);
-    }
-
-    if (result.contains('a')) {
-      List<String> parts = result.split('a');
-
-      result = parts.reversed.join('');
-    }
-
-    if (hasMinusSign) {
-      result = '-$result';
-    }
-
-    String formattedWithPlaceholder = formatWithCommas(result);
-
-    int caretIndex = formattedWithPlaceholder.indexOf('b');
-
-    _formatted = formattedWithPlaceholder.replaceAll('b', '');
-
-    _beforeCaret = _formatted.substring(0, caretIndex);
-  }
-
-  void _getCaretPosition() {
-    _textPainter = TextPainter(
-      text: TextSpan(
-        text: _beforeCaret,
-
-        style: const TextStyle(fontSize: 20.8, fontFamily: 'abacusFont'),
-      ),
-
-      textDirection: TextDirection.ltr,
-    );
-
-    _textPainter!.layout();
-
-    final pos = _textPainter!.width + 3;
-
-    widget.onCaretChanged(pos);
-  }
-
-  void _deleteDigit() {
-    if (widget.controller.text.isNotEmpty) {
-      _internalString = _internalString.substring(
-        0,
-
-        _internalString.length - 1,
-      );
-
-      _updateText();
-    }
-  }
-
-  void _clearText() {
-    _internalString = '';
-    _updateText();
-  }
-
-  void _updateText() {
-    _makeFormatted();
-
-    widget.controller.text = _formatted;
-
-    _getCaretPosition();
-  }
+  final void Function(String) onAppendDigit;
+  final VoidCallback onDeleteDigit;
+  final VoidCallback onClearAll;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +33,7 @@ class _KeypadState extends State<Keypad> {
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 60),
                       child: ElevatedButton(
-                        onPressed: () => _clearText(),
+                        onPressed: onClearAll,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -170,7 +50,7 @@ class _KeypadState extends State<Keypad> {
                       constraints: const BoxConstraints(minHeight: 60),
 
                       child: ElevatedButton(
-                        onPressed: () => _appendDigit('a'),
+                        onPressed: () => onAppendDigit('a'),
 
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -211,14 +91,14 @@ class _KeypadState extends State<Keypad> {
 
                   const SizedBox(width: 6),
 
-                  // Check button
+                  // Delete button
                   Column(
                     children: [
                       Expanded(
                         child: Container(
                           constraints: const BoxConstraints(maxWidth: 80),
                           child: ElevatedButton(
-                            onPressed: () => _deleteDigit(),
+                            onPressed: onDeleteDigit,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(
                                 double.infinity,
@@ -234,11 +114,12 @@ class _KeypadState extends State<Keypad> {
                         ),
                       ),
 
+                      // Check Button
                       Expanded(
                         child: Container(
                           constraints: const BoxConstraints(maxWidth: 80),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: onSubmit,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(
                                 double.infinity,
@@ -279,7 +160,7 @@ class _KeypadState extends State<Keypad> {
 
   Widget _buildKey(String value) {
     return ElevatedButton(
-      onPressed: () => _appendDigit(value),
+      onPressed: () => onAppendDigit(value),
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, double.infinity),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

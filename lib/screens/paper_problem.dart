@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/generation_spec.dart';
 import 'package:soroban_app/problem_generation/paper_source.dart';
+import 'package:soroban_app/problem_generation/helpers.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 
 import 'components/keypad.dart';
@@ -57,14 +58,11 @@ class _MainContainerState extends State<MainContainer> {
                   if (mitorizanState == null) {
                     return const SizedBox();
                   }
-                  final currentIndex = mitorizanState._currentIndex;
                   return Keypad(
-                    controller: mitorizanState._controllers[currentIndex],
-                    onCaretChanged: (newPos) {
-                      setState(() {
-                        mitorizanState._caretPositions[currentIndex] = newPos;
-                      });
-                    },
+                    onAppendDigit: mitorizanState.appendDigit,
+                    onDeleteDigit: mitorizanState.deleteDigit,
+                    onClearAll: mitorizanState.clearAll,
+                    onSubmit: mitorizanState.submit,
                   );
                 },
               ),
@@ -74,6 +72,13 @@ class _MainContainerState extends State<MainContainer> {
       ),
     );
   }
+}
+
+class TextFieldData {
+  String internalString = '';
+  String formatted = '';
+  String beforeCaret = '';
+  double caretPos = 0.0;
 }
 
 class MitorizanWindow extends StatefulWidget {
@@ -86,27 +91,100 @@ class MitorizanWindow extends StatefulWidget {
 class _MitorizanWindowState extends State<MitorizanWindow> {
   PaperSources selectedLevel = PaperSources.dan; // default
   late final List<List<String>> currentProblemSet;
-  late final List<TextEditingController> _controllers;
-  late final List<double> _caretPositions;
+  late final List<TextFieldData> _textFieldData;
   int _currentIndex = 0;
+  late final CarouselSliderController carouselController =
+      CarouselSliderController();
 
   @override
   void initState() {
     super.initState();
     _initializeProblem(selectedLevel);
-    _controllers = List.generate(
+    _textFieldData = List.generate(
       currentProblemSet.length,
-      (_) => TextEditingController(),
+      (_) => TextFieldData(),
     );
-    _caretPositions = List.generate(currentProblemSet.length, (_) => 0.0);
   }
 
-  @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
+  void appendDigit(String digit) {
+    setState(() {
+      final data = _textFieldData[_currentIndex];
+
+      if (digit == '-') {
+        if (!data.internalString.startsWith('-')) {
+          data.internalString = '-${data.internalString}';
+        } else {
+          data.internalString = data.internalString.substring(1);
+        }
+      } else if (digit == '.') {
+        if (!data.internalString.contains('.') &&
+            data.internalString.isNotEmpty &&
+            data.internalString != '-') {
+          data.internalString += digit;
+        }
+      } else if (digit == 'a') {
+        if (!data.internalString.endsWith('a') &&
+            data.internalString.isNotEmpty &&
+            data.internalString != '-') {
+          data.internalString += digit;
+        }
+      } else {
+        String digitsOnly = data.formatted.replaceAll(RegExp(r'[,.\-]'), '');
+        if (digitsOnly.length < 10) {
+          data.internalString += digit;
+        }
+      }
+      _updateText(data);
+    });
+  }
+
+  void _makeFormatted(TextFieldData data) {
+    String result = '${data.internalString}b';
+    bool hasMinusSign = false;
+    if (result.startsWith('-')) {
+      hasMinusSign = true;
+      result = result.substring(1);
     }
-    super.dispose();
+    if (result.contains('a')) {
+      List<String> parts = result.split('a');
+      result = parts.reversed.join('');
+    }
+    if (hasMinusSign) {
+      result = '-$result';
+    }
+    String formattedWithPlaceholder = formatWithCommas(result);
+    int caretIndex = formattedWithPlaceholder.indexOf('b');
+    data.formatted = formattedWithPlaceholder.replaceAll('b', '');
+    data.beforeCaret = data.formatted.substring(0, caretIndex);
+  }
+
+  void deleteDigit() {
+    if (_textFieldData[_currentIndex].internalString.isNotEmpty) {
+      setState(() {
+        final data = _textFieldData[_currentIndex];
+        data.internalString = data.internalString.substring(
+          0,
+          data.internalString.length - 1,
+        );
+        _updateText(data);
+      });
+    }
+  }
+
+  void clearAll() {
+    setState(() {
+      final data = _textFieldData[_currentIndex];
+      data.internalString = '';
+      _updateText(data);
+    });
+  }
+
+  void submit() {
+    carouselController.nextPage(curve: Curves.easeOutExpo);
+  }
+
+  void _updateText(TextFieldData data) {
+    _makeFormatted(data);
   }
 
   void _initializeProblem(PaperSources source) {
@@ -118,8 +196,10 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return CarouselSlider(
+    return CarouselSlider.builder(
+      carouselController: carouselController,
       options: CarouselOptions(
+        height: 500,
         reverse: true,
         onPageChanged: (index, reason) {
           setState(() {
@@ -127,98 +207,96 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
           });
         },
       ),
-      items: currentProblemSet.asMap().entries.map((entry) {
-        final problemIndex = entry.key;
-        final currentProblem = entry.value;
-        return Builder(
-          builder: (BuildContext context) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 10.0, bottom: 8.0),
-                  child: Text(
-                    'Problem ${problemIndex + 1}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: currentProblem
-                        .map(
-                          (n) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 3.0,
-                              horizontal: 10.0,
-                            ),
-                            child: Text(
-                              n.toString(),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontFamily: 'abacusFontSpaced',
-                              ),
-                            ),
+      itemCount: currentProblemSet.length,
+      itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
+        final currentProblem = currentProblemSet[problemIndex];
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0, bottom: 8.0),
+              child: Text(
+                'Problem ${problemIndex + 1}',
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: currentProblem
+                    .map(
+                      (n) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 3.0,
+                          horizontal: 10.0,
+                        ),
+                        child: Text(
+                          n.toString(),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'abacusFontSpaced',
                           ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                const Divider(color: Colors.black, thickness: 2, height: 10),
-                CustomTextField(
-                  controller: _controllers[problemIndex],
-                  caretPos: _caretPositions[problemIndex],
-                ),
-              ],
-            );
-          },
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+            const Divider(
+              color: Colors.black,
+              thickness: 2,
+              height: 10,
+              indent: 38,
+              endIndent: 38,
+            ),
+            CustomTextField(data: _textFieldData[problemIndex]),
+          ],
         );
-      }).toList(),
+      },
     );
   }
 }
 
-class CustomTextField extends StatefulWidget {
-  CustomTextField({
-    super.key,
-    required this.controller,
-    required this.caretPos,
-  });
+class CustomTextField extends StatelessWidget {
+  const CustomTextField({super.key, required this.data});
 
-  final TextEditingController controller;
-  final double caretPos;
+  final TextFieldData data;
 
-  @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
-}
-
-class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: data.beforeCaret,
+        style: const TextStyle(
+          fontSize: 20.4,
+          fontFamily: 'abacusFontSpaced',
+        ), // I don't know why the caret position drifts unless I add the extra .4 here.
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    final caretPos = textPainter.width;
+
     return SizedBox(
       height: 50,
       child: Stack(
-        alignment: AlignmentGeometry.xy(0, -0.5),
         children: [
-          TextField(
-            controller: widget.controller,
-            readOnly: true,
-            showCursor: false,
-            style: TextStyle(fontSize: 20, fontFamily: 'abacusFont'),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: "",
-              counterText: "",
-              contentPadding: EdgeInsets.symmetric(horizontal: 4),
-              isDense: true,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
+            child: Text(
+              data.formatted,
+              style: const TextStyle(
+                fontSize: 20,
+                fontFamily: 'abacusFontSpaced',
+              ),
             ),
           ),
           // Custom static cursor
           Positioned(
-            left: widget.caretPos,
-            top: 8,
+            left: caretPos + 7, // Account for padding
+            top: 10,
             child: Container(
-              width: 1.6,
+              width: 2,
               height: 30,
               color: Theme.of(context).primaryColor,
             ),
