@@ -89,7 +89,7 @@ class MitorizanWindow extends StatefulWidget {
 }
 
 class _MitorizanWindowState extends State<MitorizanWindow> {
-  PaperSources selectedLevel = PaperSources.dan; // default
+  final PaperSources selectedLevel = PaperSources.dan; // default
   late final List<List<String>> currentProblemSet;
   late final List<TextFieldData> _textFieldData;
   int _currentIndex = 0;
@@ -138,7 +138,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
     });
   }
 
-  void _makeFormatted(TextFieldData data) {
+  void _updateText(TextFieldData data) {
     String result = '${data.internalString}b';
     bool hasMinusSign = false;
     if (result.startsWith('-')) {
@@ -180,11 +180,19 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
   }
 
   void submit() {
-    carouselController.nextPage(curve: Curves.easeOutExpo);
-  }
-
-  void _updateText(TextFieldData data) {
-    _makeFormatted(data);
+    if (_textFieldData[_currentIndex].internalString.isEmpty) {
+      () {}; //TODO: Add sound
+    } else {
+      for (var offset = 1; offset <= _textFieldData.length; offset++) {
+        final i = (_currentIndex + offset) % _textFieldData.length;
+        if (_textFieldData[i].internalString.isEmpty) {
+          carouselController.animateToPage(i, curve: Curves.easeOutExpo);
+          break;
+        } else {
+          () {}; //TODO: Add scoring callback
+        }
+      }
+    }
   }
 
   void _initializeProblem(PaperSources source) {
@@ -249,7 +257,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
               indent: 38,
               endIndent: 38,
             ),
-            CustomTextField(data: _textFieldData[problemIndex]),
+            CustomTextField(data: _textFieldData[_currentIndex]),
           ],
         );
       },
