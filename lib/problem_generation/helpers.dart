@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:decimal/decimal.dart';
-import 'package:soroban_app/models/divmult_source.dart';
 import 'generation_spec.dart';
 
 String formatWithCommas(String text) {
@@ -144,13 +143,15 @@ int getRandomInt(int digitCount, bool digitAllDifferent, int? previousNum) {
 Decimal randomDecimal(int digits) {
   final rand = Random();
 
-  final min = BigInt.from(10).pow(digits - 1);
-  final max = BigInt.from(10).pow(digits) - BigInt.one;
+  // First digit can't be 0
+  String result = (1 + rand.nextInt(9)).toString();
 
-  final range = max - min + BigInt.one;
-  BigInt n = min + BigInt.from(rand.nextInt(range.toInt()));
+  // Remaining digits can be 0-9
+  for (int i = 1; i < digits; i++) {
+    result += rand.nextInt(10).toString();
+  }
 
-  return Decimal.fromBigInt(n);
+  return Decimal.parse(result);
 }
 
 Decimal randomDecimalNoTrailingZero(int digits) {

@@ -76,7 +76,7 @@ class MultiplicationProblem {
 
   @override
   String toString() {
-    return 'multiplicand=$formattedFirst, multiplier=$formattedSecond product=$formattedThird';
+    return '$formattedFirst * $formattedSecond = $formattedThird';
   }
 
   static MultiplicationProblem _type1(

@@ -182,7 +182,7 @@ List<TProblem> problemSet<TProblem>({required Difficulty difficulty}) {
         digitCount: digits,
         split: split,
       );
-      formattedProblems.add(difficulty.builder(spec));
+      formattedProblems.add(difficulty.builder(spec: spec));
     }
   }
   return formattedProblems;

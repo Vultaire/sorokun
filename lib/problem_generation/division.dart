@@ -15,20 +15,20 @@ class DivisionProblem {
     late final rand = Random();
     final split = splitDigits(split: spec.split);
     late final totalDigits = spec.digitCount;
-    late final int dDigits = split.firstDigits;
-    late final int qDigits = split.secondDigits;
+    late final int divisorDigits = split.firstDigits;
+    late final int quotientDigits = split.secondDigits;
 
     switch (spec.problemType) {
       case .type1:
-        return _type1(dDigits, qDigits);
+        return _type1(divisorDigits, quotientDigits);
       case .type2:
-        return _type2(dDigits, qDigits);
+        return _type2(divisorDigits, quotientDigits);
       case .type3:
-        return _type3(dDigits, qDigits);
+        return _type3(divisorDigits, quotientDigits);
       case .type4:
-        return _type4(dDigits, qDigits, rand);
+        return _type4(divisorDigits, quotientDigits, rand);
       case .type5:
-        return _type5(totalDigits, dDigits);
+        return _type5(totalDigits, divisorDigits);
     }
   }
 
@@ -313,7 +313,7 @@ class DivisionProblem {
 
   @override
   String toString() {
-    return 'dividend=$formattedFirst, divisor=$formattedSecond, quotient=$formattedThird';
+    return '$formattedFirst / $formattedSecond = $formattedThird';
   }
 }
 
