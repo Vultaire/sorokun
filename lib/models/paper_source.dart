@@ -1,4 +1,4 @@
-enum PaperSources {
+enum PaperSource {
   k10a(
     [
       [
@@ -194,7 +194,7 @@ enum PaperSources {
     false,
   );
 
-  const PaperSources(
+  const PaperSource(
     this.templates,
     this.minusCount,
     this.templateCountPerGroup,

@@ -1,44 +1,22 @@
-import "flash_source.dart";
-import "paper_source.dart";
 import "dart:math";
-
-typedef ProblemBuilder<TProblem, TSpec> =
-    TProblem Function(TSpec spec, ProblemType type);
-
-class DivisionSpec {
-  int digitCount;
-  bool integerDividend;
-  bool integerDivisor;
-  bool isUnneat;
-  bool isExam;
-  String difficulty;
-
-  DivisionSpec({
-    this.isExam = true,
-    this.difficulty = "5kyuu",
-    this.digitCount = 6,
-    this.integerDividend = false,
-    this.integerDivisor = false,
-    this.isUnneat = false,
-  });
-
-  DivisionSpec copyWith({
-    bool? integerDividend,
-    bool? integerDivisor,
-    bool? isUnneat,
-  }) {
-    return DivisionSpec(
-      digitCount: digitCount,
-      difficulty: difficulty,
-      integerDividend: integerDividend ?? this.integerDividend,
-      integerDivisor: integerDivisor ?? this.integerDivisor,
-      isUnneat: isUnneat ?? this.isUnneat,
-    );
-  }
-}
+import "../models/difficulty.dart";
+import "../models/sources.dart";
 
 enum ProblemType { type1, type2, type3, type4, type5 }
 
+class DivMultSpec {
+  final int digitCount;
+  final ProblemType problemType;
+  final List<List<int>> split;
+
+  const DivMultSpec({
+    required this.digitCount,
+    required this.problemType,
+    required this.split,
+  });
+}
+
+/*
 DivisionSpec divSpecFromType(DivisionSpec base, ProblemType type) {
   switch (type) {
     case ProblemType.type1:
@@ -73,24 +51,9 @@ DivisionSpec divSpecFromType(DivisionSpec base, ProblemType type) {
       );
   }
 }
+*/
 
-class MultiplicationSpec {
-  int digitCount;
-  bool integerMultiplicand;
-  bool integerMultiplier;
-  bool isExam;
-  bool maySwap;
-  String difficulty;
-
-  MultiplicationSpec({
-    this.isExam = true,
-    this.difficulty = "5kyuu",
-    this.digitCount = 6,
-    this.integerMultiplicand = true,
-    this.integerMultiplier = true,
-    this.maySwap = false,
-  });
-
+/*
   MultiplicationSpec copyWith({
     bool? integerMultiplicand,
     bool? integerMultiplier,
@@ -104,7 +67,6 @@ class MultiplicationSpec {
       maySwap: maySwap ?? this.maySwap,
     );
   }
-}
 
 MultiplicationSpec multSpecFromType(MultiplicationSpec base, ProblemType type) {
   switch (type) {
@@ -133,6 +95,7 @@ MultiplicationSpec multSpecFromType(MultiplicationSpec base, ProblemType type) {
       );
   }
 }
+*/
 
 class FlashSpec {
   int probCount;
@@ -161,7 +124,7 @@ class FlashSpec {
 class PaperSpec {
   bool isExam;
   bool digitAllDifferent;
-  PaperSources source;
+  PaperSource source;
 
   PaperSpec({
     this.isExam = true,
@@ -187,45 +150,40 @@ FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {
   );
 }
 
-class ProblemSet<TProblem, TSpec> {
-  final Random _rand = Random();
-  final ProblemBuilder<TProblem, TSpec> builder;
-  final Map<String, List<Map<String, dynamic>>> source;
+List<TProblem> problemSet<TProblem>({required Difficulty difficulty}) {
+  final formattedProblems = <TProblem>[];
+  final rand = Random();
 
-  ProblemSet({required this.builder, required this.source});
+  for (Map batch in difficulty.divMultSource.templates) {
+    final int type2Count = batch['type2Count'] ?? 0;
+    final int type3Count = batch['type3Count'] ?? 0;
+    final int type4Count = batch['type4Count'] ?? 0;
+    final int type5Count = batch['type5Count'] ?? 0;
+    final int problemCount = batch['problemCount'] ?? 15;
+    final int digits = batch['digits'];
+    final List<List<int>> split = difficulty.divMultSplit.templates[digits];
 
-  List<TProblem> generateProblems({required TSpec base}) {
-    final problems = <TProblem>[];
+    final typeList = <ProblemType>[
+      ...List.filled(type2Count, ProblemType.type2),
+      ...List.filled(type3Count, ProblemType.type3),
+      ...List.filled(type4Count, ProblemType.type4),
+      ...List.filled(type5Count, ProblemType.type5),
+    ];
 
-    final batchList = source[(base as dynamic).difficulty];
-
-    for (Map batch in batchList!) {
-      final type2Count = batch["type2Count"] ?? 0;
-      final type3Count = batch['type3Count'] ?? 0;
-      final type4Count = batch['type4Count'] ?? 0;
-      final type5Count = batch['type5Count'] ?? 0;
-      final problemCount = batch['problemCount'] ?? 15;
-      final digits = batch['digits'];
-
-      final typeList = <ProblemType>[
-        ...List.filled(type2Count, ProblemType.type2),
-        ...List.filled(type3Count, ProblemType.type3),
-        ...List.filled(type4Count, ProblemType.type4),
-        ...List.filled(type5Count, ProblemType.type5),
-      ];
-
-      while (typeList.length < problemCount) {
-        typeList.add(ProblemType.type1);
-      }
-
-      typeList.shuffle(_rand);
-
-      final modifiedBase = (base as dynamic)..digitCount = digits;
-
-      for (final type in typeList) {
-        problems.add(builder(modifiedBase, type));
-      }
+    while (typeList.length < problemCount) {
+      typeList.add(ProblemType.type1);
     }
-    return problems;
+
+    typeList.shuffle(rand);
+
+    for (final type in typeList) {
+      final DivMultSpec spec = DivMultSpec(
+        problemType: type,
+        digitCount: digits,
+        split: split,
+      );
+      formattedProblems.add(difficulty.builder(spec));
+    }
   }
+  return formattedProblems;
 }

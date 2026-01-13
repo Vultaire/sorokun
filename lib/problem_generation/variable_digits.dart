@@ -1,6 +1,5 @@
 import 'dart:math';
-import 'package:soroban_app/problem_generation/paper_source.dart';
-
+import '../models/paper_source.dart';
 import 'generation_spec.dart';
 import 'helpers.dart';
 
@@ -17,11 +16,11 @@ class VariableDigitsProblemSet {
     final source = spec.source;
 
     final templateLists = source.templates as List;
-    int repeat = source.repeat;
-    bool neverNegative = source.neverNegative;
-    int minusCount = source.minusCount;
+    final int repeat = source.repeat;
+    final bool neverNegative = source.neverNegative;
+    final int minusCount = source.minusCount;
     const int minusPerGroup = 2;
-    List<int> templateCounts = source.templateCountPerGroup;
+    final List<int> templateCounts = source.templateCountPerGroup;
 
     // Repeat the group (all template groups together)
     for (int r = 0; r < repeat; r++) {
@@ -136,7 +135,7 @@ class VariableDigitsProblemSet {
 
 void main() {
   var problem = VariableDigitsProblemSet(
-    spec: PaperSpec(source: PaperSources.dan),
+    spec: PaperSpec(source: PaperSource.dan),
   );
 
   print(problem.formattedProblems);

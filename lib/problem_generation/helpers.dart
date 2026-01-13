@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:decimal/decimal.dart';
+import 'package:soroban_app/models/divmult_source.dart';
 import 'generation_spec.dart';
 
 String formatWithCommas(String text) {
@@ -187,35 +188,13 @@ Decimal randomDecimalNoTrailingZero(int digits) {
   return (val, scalePower);
 }
 
-({int firstDigits, int secondDigits}) splitDigits(
-  var spec, {
-  Map<String, dynamic>? digitSplit,
-  required final int secondDigits,
-  required final int firstDigits,
+({int firstDigits, int secondDigits}) splitDigits({
+  required List<List<int>> split,
 }) {
   final rand = Random();
+  final selected = split[rand.nextInt(split.length)];
 
-  if (digitSplit != null && digitSplit.containsKey(spec.difficulty)) {
-    final difficultySpec = digitSplit[spec.difficulty]!;
-
-    if (difficultySpec.containsKey(spec.digitCount)) {
-      final entry = difficultySpec[spec.digitCount]!;
-
-      if (entry is List<int>) {
-        return (firstDigits: entry[0], secondDigits: entry[1]);
-      }
-
-      if (entry is List<List<int>>) {
-        final choice = entry[rand.nextInt(entry.length)];
-        return (firstDigits: choice[0], secondDigits: choice[1]);
-      }
-    }
-  }
-
-  // --- fallback if no matching difficulty OR no matching digitCount ---
-  int a = (spec.digitCount / 3).floor();
-  int b = spec.digitCount - a;
-  return (firstDigits: a, secondDigits: b);
+  return (firstDigits: selected[0], secondDigits: selected[1]);
 }
 
 void main() {

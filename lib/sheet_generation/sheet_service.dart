@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -15,9 +14,9 @@ typedef ProblemBuilder<TProblem, TSpec> =
 
 class SheetService {
   Future<Uint8List> creatMultDivSheet() async {
-    final baseDivSpec = DivisionSpec(digitCount: 8, difficulty: "1kyuu");
+    final baseDivSpec = DivMultSpec(digitCount: 8, difficulty: "1kyuu");
 
-    final divisionSet = ProblemSet<DivisionProblem, DivisionSpec>(
+    final divisionSet = ProblemSet<DivisionProblem, DivMultSpec>(
       builder: (spec, type) =>
           DivisionProblem(spec: divSpecFromType(spec, type)),
       source: divisionSource,

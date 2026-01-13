@@ -10,7 +10,7 @@ class PaperConfPage extends StatefulWidget {
 
 class _PaperConfPageState extends State<PaperConfPage> {
   final MultiplicationSpec savedMultiplicationDifficulty;
-  final DivisionSpec savedDivisionDifficulty;
+  final DivMultSpec savedDivisionDifficulty;
 
   @override
   Widget build(BuildContext context) {
