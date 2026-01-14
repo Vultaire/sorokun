@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:soroban_app/problem_generation/generation_spec.dart';
+import 'package:go_router/go_router.dart';
+
+import '../models/divmult_difficulty.dart';
+import '../models/mitori_difficulty.dart';
 
 class PaperConfPage extends StatefulWidget {
   const PaperConfPage({super.key});
@@ -9,8 +12,9 @@ class PaperConfPage extends StatefulWidget {
 }
 
 class _PaperConfPageState extends State<PaperConfPage> {
-  final MultiplicationSpec savedMultiplicationDifficulty;
-  final DivMultSpec savedDivisionDifficulty;
+  final DivMultLevel multiplicationLevel = DivMultLevel.mk6;
+  final DivMultLevel divisionLevel = DivMultLevel.ddan;
+  final MitoriLevel mitoriLevel = MitoriLevel.k6;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +28,10 @@ class _PaperConfPageState extends State<PaperConfPage> {
             crossAxisAlignment: .stretch,
             children: [
               ElevatedButton(
-                onPressed: () {},
-                child: const Text('Placeholder'),
+                onPressed: () {
+                  context.push('/paper-problem', extra: divisionLevel);
+                },
+                child: const Text('Start Mitori'),
               ),
             ],
           ),

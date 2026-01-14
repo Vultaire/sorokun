@@ -1,5 +1,104 @@
 import 'dart:math';
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
+
+import '../../problem_generation/helpers.dart';
+import '../paper_problem.dart';
+
+mixin KeypadMethods<T extends StatefulWidget> on State<T> {
+  List<TextFieldData> get textFieldData;
+  int get currentIndex;
+  CarouselSliderController get carouselController;
+
+  void appendDigit(String digit) {
+    setState(() {
+      final data = textFieldData[currentIndex];
+
+      if (digit == '-') {
+        if (!data.internalString.startsWith('-')) {
+          data.internalString = '-${data.internalString}';
+        } else {
+          data.internalString = data.internalString.substring(1);
+        }
+      } else if (digit == '.') {
+        if (!data.internalString.contains('.') &&
+            data.internalString.isNotEmpty &&
+            data.internalString != '-') {
+          data.internalString += digit;
+        }
+      } else if (digit == 'a') {
+        if (!data.internalString.endsWith('a') &&
+            data.internalString.isNotEmpty &&
+            data.internalString != '-') {
+          data.internalString += digit;
+        }
+      } else {
+        String digitsOnly = data.formatted.replaceAll(RegExp(r'[,.\-]'), '');
+        if (digitsOnly.length < 10) {
+          data.internalString += digit;
+        }
+      }
+      _updateText(data);
+    });
+  }
+
+  void _updateText(TextFieldData data) {
+    String result = '${data.internalString}b';
+    bool hasMinusSign = false;
+    if (result.startsWith('-')) {
+      hasMinusSign = true;
+      result = result.substring(1);
+    }
+    if (result.contains('a')) {
+      List<String> parts = result.split('a');
+      result = parts.reversed.join('');
+    }
+    if (hasMinusSign) {
+      result = '-$result';
+    }
+    String formattedWithPlaceholder = formatWithCommas(result);
+    int caretIndex = formattedWithPlaceholder.indexOf('b');
+    data.formatted = formattedWithPlaceholder.replaceAll('b', '');
+    data.beforeCaret = data.formatted.substring(0, caretIndex);
+  }
+
+  void deleteDigit() {
+    if (textFieldData[currentIndex].internalString.isNotEmpty) {
+      setState(() {
+        final data = textFieldData[currentIndex];
+        data.internalString = data.internalString.substring(
+          0,
+          data.internalString.length - 1,
+        );
+        _updateText(data);
+      });
+    }
+  }
+
+  void clearAll() {
+    setState(() {
+      final data = textFieldData[currentIndex];
+      data.internalString = '';
+      _updateText(data);
+    });
+  }
+
+  void submit() {
+    if (textFieldData[currentIndex].internalString.isEmpty) {
+      () {}; //TODO: Add sound
+    } else {
+      for (var offset = 1; offset <= textFieldData.length; offset++) {
+        final i = (currentIndex + offset) % textFieldData.length;
+        if (textFieldData[i].internalString.isEmpty) {
+          carouselController.animateToPage(i, curve: Curves.easeOutExpo);
+          break;
+        } else {
+          () {}; //TODO: Add scoring callback
+        }
+      }
+    }
+  }
+}
 
 class Keypad extends StatelessWidget {
   Keypad({

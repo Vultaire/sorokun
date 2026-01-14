@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/screens/paper_problem_menu.dart';
 import 'screens/home_page.dart';
+import 'screens/paper_problem.dart';
 
 void main() {
   runApp(const AbacusApp());
@@ -22,6 +23,13 @@ class _AbacusAppState extends State<AbacusApp> {
     routes: [
       GoRoute(path: '/home', builder: (context, state) => HomePage()),
       GoRoute(path: '/paperconf', builder: (context, state) => PaperConfPage()),
+      GoRoute(
+        path: '/paper-problem',
+        builder: (context, state) {
+          final selectedLevel = state.extra;
+          return PaperProblemScreen(selectedLevel: selectedLevel);
+        },
+      ),
     ],
   );
 

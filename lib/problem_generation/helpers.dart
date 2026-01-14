@@ -15,39 +15,38 @@ String formatWithCommas(String text) {
   String integerPart = parts[0];
   String decimalPart = parts.length > 1 ? parts[1] : '';
 
-  String formatted = '';
-  int digitCount = 0; // counts only digits (ignores 'b')
+  int totalDigits = integerPart.replaceAll('b', '').length;
+
+  StringBuffer formatted = StringBuffer();
+  int digitCount = 0;
 
   for (int i = 0; i < integerPart.length; i++) {
     String ch = integerPart[i];
-
     if (ch == 'b') {
-      // keep 'b' in output, but don't count it as a digit
-      formatted += ch;
+      formatted.write(ch);
       continue;
     }
 
-    // Add a comma if it's a digit and the position from the right is multiple of 3
-    if (digitCount > 0 &&
-        ((integerPart.replaceAll('b', '').length - digitCount) % 3 == 0)) {
-      formatted += ',';
+    // Add comma before digit if needed
+    if (digitCount > 0 && (totalDigits - digitCount) % 3 == 0) {
+      formatted.write(',');
     }
-
-    formatted += ch;
+    formatted.write(ch);
     digitCount++;
   }
 
   if (decimalPart.isNotEmpty) {
-    formatted += '.$decimalPart';
+    formatted.write('.');
+    formatted.write(decimalPart);
   } else if (parts.length > 1) {
-    formatted += '.';
+    formatted.write('.');
   }
 
   if (isNegative) {
-    formatted = '-$formatted';
+    return '-${formatted.toString()}';
   }
 
-  return formatted;
+  return formatted.toString();
 }
 
 int getRandomDigit(Random rand, {List<int> excepts = const []}) {

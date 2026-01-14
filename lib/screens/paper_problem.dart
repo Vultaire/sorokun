@@ -1,15 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:soroban_app/problem_generation/generation_spec.dart';
-import 'package:soroban_app/problem_generation/helpers.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 
+import '../models/divmult_difficulty.dart';
+import '../models/mitori_difficulty.dart';
+import '../problem_generation/generation_spec.dart';
 import 'components/keypad.dart';
-import '../models/sources.dart';
 
 class PaperProblemScreen extends StatefulWidget {
   const PaperProblemScreen({required this.selectedLevel, super.key});
-  final Difficulty selectedLevel; // default
+  final dynamic selectedLevel; // default
 
   @override
   State<PaperProblemScreen> createState() => _PaperProblemScreenState();
@@ -17,6 +17,44 @@ class PaperProblemScreen extends StatefulWidget {
 
 class _PaperProblemScreenState extends State<PaperProblemScreen> {
   final GlobalKey<_MitorizanWindowState> _mitorizanKey = GlobalKey();
+  final GlobalKey<_DivMultWindowState> _divMultKey = GlobalKey();
+
+  Widget _buildWindow() {
+    if (widget.selectedLevel is MitoriLevel) {
+      return MitorizanWindow(
+        selectedLevel: widget.selectedLevel as MitoriLevel,
+        key: _mitorizanKey,
+      );
+    } else if (widget.selectedLevel is DivMultLevel) {
+      return DivMultWindow(
+        selectedLevel: widget.selectedLevel as DivMultLevel,
+        key: _divMultKey,
+      );
+    } else {
+      return const Center(child: Text('Unknown level type'));
+    }
+  }
+
+  Widget _buildKeypad() {
+    if (widget.selectedLevel is MitoriLevel) {
+      return Keypad(
+        onAppendDigit: (digit) =>
+            _mitorizanKey.currentState?.appendDigit(digit),
+        onDeleteDigit: () => _mitorizanKey.currentState?.deleteDigit(),
+        onClearAll: () => _mitorizanKey.currentState?.clearAll(),
+        onSubmit: () => _mitorizanKey.currentState?.submit(),
+      );
+    } else if (widget.selectedLevel is DivMultLevel) {
+      return Keypad(
+        onAppendDigit: (digit) => _divMultKey.currentState?.appendDigit(digit),
+        onDeleteDigit: () => _divMultKey.currentState?.deleteDigit(),
+        onClearAll: () => _divMultKey.currentState?.clearAll(),
+        onSubmit: () => _divMultKey.currentState?.submit(),
+      );
+    } else {
+      return const SizedBox();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,34 +62,8 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Flexible(
-              flex: 6,
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(40, 5, 40, 5),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 2),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: MitorizanWindow(key: _mitorizanKey),
-              ),
-            ),
-            Expanded(
-              flex: 5,
-              child: Builder(
-                builder: (context) {
-                  final mitorizanState = _mitorizanKey.currentState;
-                  if (mitorizanState == null) {
-                    return const SizedBox();
-                  }
-                  return Keypad(
-                    onAppendDigit: mitorizanState.appendDigit,
-                    onDeleteDigit: mitorizanState.deleteDigit,
-                    onClearAll: mitorizanState.clearAll,
-                    onSubmit: mitorizanState.submit,
-                  );
-                },
-              ),
-            ),
+            Flexible(flex: 6, child: Container(child: _buildWindow())),
+            Expanded(flex: 5, child: _buildKeypad()),
           ],
         ),
       ),
@@ -67,123 +79,38 @@ class TextFieldData {
 }
 
 class MitorizanWindow extends StatefulWidget {
-  const MitorizanWindow({super.key});
+  const MitorizanWindow({required this.selectedLevel, super.key});
+  final MitoriLevel selectedLevel;
 
   @override
   State<MitorizanWindow> createState() => _MitorizanWindowState();
 }
 
-class _MitorizanWindowState extends State<MitorizanWindow> {
-  late final List<List<String>> currentProblemSet;
-  late final List<TextFieldData> _textFieldData;
-  int _currentIndex = 0;
+class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
+  late final List<List<String>> allProblems;
+
+  @override
+  late final List<TextFieldData> textFieldData;
+
+  @override
+  int currentIndex = 0;
+
+  @override
   late final CarouselSliderController carouselController =
       CarouselSliderController();
 
   @override
   void initState() {
     super.initState();
-    _initializeProblem(selectedLevel);
-    _textFieldData = List.generate(
-      currentProblemSet.length,
-      (_) => TextFieldData(),
+    _initializeProblem(widget.selectedLevel);
+    textFieldData = List.generate(allProblems.length, (_) => TextFieldData());
+  }
+
+  void _initializeProblem(MitoriLevel level) {
+    MitoriProblemSet fullProblemSet = MitoriProblemSet(
+      level: widget.selectedLevel,
     );
-  }
-
-  void appendDigit(String digit) {
-    setState(() {
-      final data = _textFieldData[_currentIndex];
-
-      if (digit == '-') {
-        if (!data.internalString.startsWith('-')) {
-          data.internalString = '-${data.internalString}';
-        } else {
-          data.internalString = data.internalString.substring(1);
-        }
-      } else if (digit == '.') {
-        if (!data.internalString.contains('.') &&
-            data.internalString.isNotEmpty &&
-            data.internalString != '-') {
-          data.internalString += digit;
-        }
-      } else if (digit == 'a') {
-        if (!data.internalString.endsWith('a') &&
-            data.internalString.isNotEmpty &&
-            data.internalString != '-') {
-          data.internalString += digit;
-        }
-      } else {
-        String digitsOnly = data.formatted.replaceAll(RegExp(r'[,.\-]'), '');
-        if (digitsOnly.length < 10) {
-          data.internalString += digit;
-        }
-      }
-      _updateText(data);
-    });
-  }
-
-  void _updateText(TextFieldData data) {
-    String result = '${data.internalString}b';
-    bool hasMinusSign = false;
-    if (result.startsWith('-')) {
-      hasMinusSign = true;
-      result = result.substring(1);
-    }
-    if (result.contains('a')) {
-      List<String> parts = result.split('a');
-      result = parts.reversed.join('');
-    }
-    if (hasMinusSign) {
-      result = '-$result';
-    }
-    String formattedWithPlaceholder = formatWithCommas(result);
-    int caretIndex = formattedWithPlaceholder.indexOf('b');
-    data.formatted = formattedWithPlaceholder.replaceAll('b', '');
-    data.beforeCaret = data.formatted.substring(0, caretIndex);
-  }
-
-  void deleteDigit() {
-    if (_textFieldData[_currentIndex].internalString.isNotEmpty) {
-      setState(() {
-        final data = _textFieldData[_currentIndex];
-        data.internalString = data.internalString.substring(
-          0,
-          data.internalString.length - 1,
-        );
-        _updateText(data);
-      });
-    }
-  }
-
-  void clearAll() {
-    setState(() {
-      final data = _textFieldData[_currentIndex];
-      data.internalString = '';
-      _updateText(data);
-    });
-  }
-
-  void submit() {
-    if (_textFieldData[_currentIndex].internalString.isEmpty) {
-      () {}; //TODO: Add sound
-    } else {
-      for (var offset = 1; offset <= _textFieldData.length; offset++) {
-        final i = (_currentIndex + offset) % _textFieldData.length;
-        if (_textFieldData[i].internalString.isEmpty) {
-          carouselController.animateToPage(i, curve: Curves.easeOutExpo);
-          break;
-        } else {
-          () {}; //TODO: Add scoring callback
-        }
-      }
-    }
-  }
-
-  void _initializeProblem(PaperSource source) {
-    VariableDigitsProblemSet variableDigits = VariableDigitsProblemSet(
-      spec: PaperSpec(source: source),
-    );
-    currentProblemSet = variableDigits.formattedProblems;
+    allProblems = fullProblemSet.formattedProblems;
   }
 
   @override
@@ -195,13 +122,13 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
         reverse: true,
         onPageChanged: (index, reason) {
           setState(() {
-            _currentIndex = index;
+            currentIndex = index;
           });
         },
       ),
-      itemCount: currentProblemSet.length,
+      itemCount: allProblems.length,
       itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
-        final currentProblem = currentProblemSet[problemIndex];
+        final currentProblem = allProblems[problemIndex];
         return Column(
           children: [
             Padding(
@@ -241,7 +168,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
               indent: 38,
               endIndent: 38,
             ),
-            CustomTextField(data: _textFieldData[_currentIndex]),
+            CustomTextField(data: textFieldData[problemIndex]),
           ],
         );
       },
@@ -249,10 +176,107 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
   }
 }
 
+class DivMultWindow extends StatefulWidget {
+  const DivMultWindow({required this.selectedLevel, super.key});
+  final DivMultLevel selectedLevel;
+
+  @override
+  State<DivMultWindow> createState() => _DivMultWindowState();
+}
+
+class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
+  late final List<(String, String)> allProblems;
+
+  @override
+  late final List<TextFieldData> textFieldData;
+
+  @override
+  int currentIndex = 0;
+
+  @override
+  late final CarouselSliderController carouselController =
+      CarouselSliderController();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeProblem(widget.selectedLevel);
+    textFieldData = List.generate(allProblems.length, (_) => TextFieldData());
+  }
+
+  void _initializeProblem(DivMultLevel level) {
+    DivMultProblemSet fullProblemSet = DivMultProblemSet(
+      level: widget.selectedLevel,
+    );
+    allProblems = fullProblemSet.formattedProblems;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CarouselSlider.builder(
+      carouselController: carouselController,
+      options: CarouselOptions(
+        height: 500,
+        scrollDirection: .vertical,
+        viewportFraction: 0.4,
+        enlargeCenterPage: true,
+        enlargeStrategy: .zoom,
+        onPageChanged: (index, reason) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+      ),
+      itemCount: allProblems.length,
+      itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
+        final currentProblem = allProblems[problemIndex];
+        final isFocused = problemIndex == currentIndex;
+        return Opacity(
+          opacity: isFocused ? 1.0 : 0.4,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0, bottom: 8.0),
+                child: Text(
+                  'Problem ${problemIndex + 1}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 10.0,
+                ),
+                child: Text(
+                  '${currentProblem.$1} / ${currentProblem.$2}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'abacusFont',
+                  ),
+                ),
+              ),
+              const Text('||', style: TextStyle(fontSize: 20)),
+              CustomTextField(
+                data: textFieldData[problemIndex],
+                isFocused: isFocused,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
 class CustomTextField extends StatelessWidget {
-  const CustomTextField({super.key, required this.data});
+  const CustomTextField({
+    super.key,
+    required this.data,
+    this.isFocused = false,
+  });
 
   final TextFieldData data;
+  final bool isFocused;
 
   @override
   Widget build(BuildContext context) {
@@ -284,15 +308,16 @@ class CustomTextField extends StatelessWidget {
             ),
           ),
           // Custom static cursor
-          Positioned(
-            left: caretPos + 7, // Account for padding
-            top: 10,
-            child: Container(
-              width: 2,
-              height: 30,
-              color: Theme.of(context).primaryColor,
+          if (isFocused)
+            Positioned(
+              left: caretPos + 7,
+              top: 10,
+              child: Container(
+                width: 2,
+                height: 30,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
-          ),
         ],
       ),
     );
