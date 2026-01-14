@@ -1,26 +1,24 @@
 import 'dart:math';
-import '../models/paper_source.dart';
-import 'generation_spec.dart';
+import '../models/mitori_difficulty.dart';
 import 'helpers.dart';
 
-class VariableDigitsProblemSet {
-  final PaperSpec spec;
+class MitoriProblemSet {
+  final MitoriLevel level;
   late List<List<int>> allProblems = [];
   late List<List<String>> formattedProblems = [];
   late List<int> sums = [];
   late List<String> formattedSums = [];
 
-  VariableDigitsProblemSet({required this.spec}) {
+  MitoriProblemSet({required this.level}) {
     final rand = Random();
 
-    final source = spec.source;
-
-    final templateLists = source.templates as List;
-    final int repeat = source.repeat;
-    final bool neverNegative = source.neverNegative;
-    final int minusCount = source.minusCount;
+    final templateLists = level.templates as List;
+    final int repeat = level.repeat;
+    final bool neverNegative = level.neverNegative;
+    final int minusCount = level.minusCount;
     const int minusPerGroup = 2;
-    final List<int> templateCounts = source.templateCountPerGroup;
+    const bool digitAllDifferent = true;
+    final List<int> templateCounts = level.templateCountPerGroup;
 
     // Repeat the group (all template groups together)
     for (int r = 0; r < repeat; r++) {
@@ -56,7 +54,7 @@ class VariableDigitsProblemSet {
           // Generate problem using shuffled layout
           for (int digits in randomLayout) {
             int? lastNum = problem.isNotEmpty ? problem.last : null;
-            int number = getRandomInt(digits, spec.digitAllDifferent, lastNum);
+            int number = getRandomInt(digits, digitAllDifferent, lastNum);
             problem.add(number);
           }
 
@@ -113,7 +111,6 @@ class VariableDigitsProblemSet {
           }
         }
       }
-
       // Add all problems from this group to the final lists
       for (var problem in groupProblems) {
         allProblems.add(problem);
@@ -125,18 +122,16 @@ class VariableDigitsProblemSet {
         formattedProblems.add(formattedProblem);
         sums.add(problem.reduce((a, b) => a + b));
       }
-      for (int sum in sums) {
-        String formattedSum = formatWithCommas(sum.toString());
-        formattedSums.add(formattedSum);
-      }
+    }
+    for (int sum in sums) {
+      String formattedSum = formatWithCommas(sum.toString());
+      formattedSums.add(formattedSum);
     }
   }
 }
 
 void main() {
-  var problem = VariableDigitsProblemSet(
-    spec: PaperSpec(source: PaperSource.dan),
-  );
+  var problem = MitoriProblemSet(level: MitoriLevel.k10b);
 
   print(problem.formattedProblems);
   print(problem.formattedSums);

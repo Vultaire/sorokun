@@ -1,4 +1,4 @@
-enum PaperSource {
+enum MitoriLevel {
   k10a(
     [
       [
@@ -194,7 +194,7 @@ enum PaperSource {
     false,
   );
 
-  const PaperSource(
+  const MitoriLevel(
     this.templates,
     this.minusCount,
     this.templateCountPerGroup,

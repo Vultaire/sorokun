@@ -1,36 +1,21 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/generation_spec.dart';
-import 'package:soroban_app/problem_generation/paper_source.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 
 import 'components/keypad.dart';
+import '../models/sources.dart';
 
-void main() {
-  runApp(const MainPage());
-}
-
-class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+class PaperProblemScreen extends StatefulWidget {
+  const PaperProblemScreen({required this.selectedLevel, super.key});
+  final Difficulty selectedLevel; // default
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainContainer(),
-    );
-  }
+  State<PaperProblemScreen> createState() => _PaperProblemScreenState();
 }
 
-class MainContainer extends StatefulWidget {
-  const MainContainer({super.key});
-
-  @override
-  State<MainContainer> createState() => _MainContainerState();
-}
-
-class _MainContainerState extends State<MainContainer> {
+class _PaperProblemScreenState extends State<PaperProblemScreen> {
   final GlobalKey<_MitorizanWindowState> _mitorizanKey = GlobalKey();
 
   @override
@@ -89,7 +74,6 @@ class MitorizanWindow extends StatefulWidget {
 }
 
 class _MitorizanWindowState extends State<MitorizanWindow> {
-  final PaperSources selectedLevel = PaperSources.dan; // default
   late final List<List<String>> currentProblemSet;
   late final List<TextFieldData> _textFieldData;
   int _currentIndex = 0;
@@ -195,7 +179,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> {
     }
   }
 
-  void _initializeProblem(PaperSources source) {
+  void _initializeProblem(PaperSource source) {
     VariableDigitsProblemSet variableDigits = VariableDigitsProblemSet(
       spec: PaperSpec(source: source),
     );

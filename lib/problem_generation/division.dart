@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
-import '../models/difficulty.dart';
+import '../models/divmult_difficulty.dart';
 import 'generation_spec.dart';
 
 class DivisionProblem {
@@ -19,15 +19,15 @@ class DivisionProblem {
     late final int quotientDigits = split.secondDigits;
 
     switch (spec.problemType) {
-      case .type1:
+      case .type1: //Integer dividend, integer divisor, neat
         return _type1(divisorDigits, quotientDigits);
-      case .type2:
+      case .type2: //Non-integer dividend, non-integer divisor, neat
         return _type2(divisorDigits, quotientDigits);
-      case .type3:
+      case .type3: //Non-integer dividend, non-integer divisor, unneat
         return _type3(divisorDigits, quotientDigits);
-      case .type4:
+      case .type4: //Integer dividend, non-integer divisor, neat
         return _type4(divisorDigits, quotientDigits, rand);
-      case .type5:
+      case .type5: //Integer dividend, non-integer divisor, unneat
         return _type5(totalDigits, divisorDigits);
     }
   }
@@ -307,9 +307,7 @@ class DivisionProblem {
   String get formattedSecond => formatWithCommas(divisor.toString());
   String get formattedThird => formatWithCommas(quotient.toString());
 
-  String get first => (dividend).toString();
-  String get second => (divisor).toString();
-  String get third => (quotient).toString();
+  (String, String) get problem => (formattedFirst, formattedSecond);
 
   @override
   String toString() {
@@ -443,22 +441,12 @@ Map<String, dynamic> getModoshi(
 }
 
 void main() {
-  /*
-  final baseSpec = DivisionSpec(difficulty: "3kyuu");
+  var problems = DivMultProblemSet(level: DivMultLevel.dk8);
 
-  final divisionSet = ProblemSet<DivisionProblem, DivisionSpec>(
-    builder: (spec, type) => DivisionProblem(spec: divSpecFromType(spec, type)),
-    source: divisionSource,
-  );
+  print(problems.formattedProblems);
+  print(problems.formattedSums);
 
-  final problems = divisionSet.generateProblems(base: baseSpec);
-
-  for (var i = 0; i < problems.length; i++) {
-    print("Problem ${i + 1}: ${problems[i]}");
-  }
-  */
-  List<DivisionProblem> problems = problemSet(difficulty: Difficulty.ddan);
-  for (var i = 0; i < problems.length; i++) {
-    print("Problem ${i + 1}: ${problems[i]}");
-  }
+  // for (var i = 0; i < problems.length; i++) {
+  //   print("Problem ${i + 1}: ${problems[i]}");
+  // }
 }

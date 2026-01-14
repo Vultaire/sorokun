@@ -2,7 +2,7 @@ import 'sources.dart';
 import '../problem_generation/multiplication.dart';
 import '../problem_generation/division.dart';
 
-enum Difficulty {
+enum DivMultLevel {
   mk9(
     MultiplicationSplit.k9,
     MultiplicationSource.k9,
@@ -63,7 +63,7 @@ enum Difficulty {
   dk1(DivisionSplit.k1, DivisionSource.k1, DivisionProblem.new),
   ddan(DivisionSplit.dan, DivisionSource.dan, DivisionProblem.new);
 
-  const Difficulty(this.divMultSplit, this.divMultSource, this.builder);
+  const DivMultLevel(this.divMultSplit, this.divMultSource, this.builder);
   final DivMultSplit divMultSplit;
   final DivMultSource divMultSource;
   final Function builder;
