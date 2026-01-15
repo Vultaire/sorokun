@@ -8,8 +8,13 @@ import '../problem_generation/generation_spec.dart';
 import 'components/keypad.dart';
 
 class PaperProblemScreen extends StatefulWidget {
-  const PaperProblemScreen({required this.selectedLevel, super.key});
+  const PaperProblemScreen({
+    required this.selectedLevel,
+    required this.isExam,
+    super.key,
+  });
   final dynamic selectedLevel; // default
+  final bool isExam;
 
   @override
   State<PaperProblemScreen> createState() => _PaperProblemScreenState();
@@ -23,11 +28,13 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     if (widget.selectedLevel is MitoriLevel) {
       return MitorizanWindow(
         selectedLevel: widget.selectedLevel as MitoriLevel,
+        isExam: widget.isExam,
         key: _mitorizanKey,
       );
     } else if (widget.selectedLevel is DivMultLevel) {
       return DivMultWindow(
         selectedLevel: widget.selectedLevel as DivMultLevel,
+        isExam: widget.isExam,
         key: _divMultKey,
       );
     } else {
@@ -79,8 +86,13 @@ class TextFieldData {
 }
 
 class MitorizanWindow extends StatefulWidget {
-  const MitorizanWindow({required this.selectedLevel, super.key});
+  const MitorizanWindow({
+    required this.selectedLevel,
+    required this.isExam,
+    super.key,
+  });
   final MitoriLevel selectedLevel;
+  final bool isExam;
 
   @override
   State<MitorizanWindow> createState() => _MitorizanWindowState();
@@ -90,7 +102,16 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
   late final List<List<String>> allProblems;
 
   @override
-  late final List<TextFieldData> textFieldData;
+  late final bool isExam = widget.isExam;
+
+  @override
+  late final List<String> allAnswers;
+
+  @override
+  late final List<bool> answerBools;
+
+  @override
+  late final List<TextFieldData> textFieldDataList;
 
   @override
   int currentIndex = 0;
@@ -103,7 +124,10 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
   void initState() {
     super.initState();
     _initializeProblem(widget.selectedLevel);
-    textFieldData = List.generate(allProblems.length, (_) => TextFieldData());
+    textFieldDataList = List.generate(
+      allProblems.length,
+      (_) => TextFieldData(),
+    );
   }
 
   void _initializeProblem(MitoriLevel level) {
@@ -111,6 +135,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       level: widget.selectedLevel,
     );
     allProblems = fullProblemSet.formattedProblems;
+    allAnswers = fullProblemSet.formattedAnswers;
   }
 
   @override
@@ -168,7 +193,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
               indent: 38,
               endIndent: 38,
             ),
-            CustomTextField(data: textFieldData[problemIndex]),
+            CustomTextField(data: textFieldDataList[problemIndex]),
           ],
         );
       },
@@ -177,18 +202,32 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
 }
 
 class DivMultWindow extends StatefulWidget {
-  const DivMultWindow({required this.selectedLevel, super.key});
+  const DivMultWindow({
+    required this.selectedLevel,
+    required this.isExam,
+    super.key,
+  });
   final DivMultLevel selectedLevel;
+  final bool isExam;
 
   @override
   State<DivMultWindow> createState() => _DivMultWindowState();
 }
 
 class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
-  late final List<(String, String)> allProblems;
+  late final List<String> allProblems;
 
   @override
-  late final List<TextFieldData> textFieldData;
+  late final bool isExam = widget.isExam;
+
+  @override
+  late final List<String> allAnswers;
+
+  @override
+  late final List<bool> answerBools;
+
+  @override
+  late final List<TextFieldData> textFieldDataList;
 
   @override
   int currentIndex = 0;
@@ -201,7 +240,11 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
   void initState() {
     super.initState();
     _initializeProblem(widget.selectedLevel);
-    textFieldData = List.generate(allProblems.length, (_) => TextFieldData());
+    textFieldDataList = List.generate(
+      allProblems.length,
+      (_) => TextFieldData(),
+    );
+    answerBools = List.generate(allProblems.length, (_) => false);
   }
 
   void _initializeProblem(DivMultLevel level) {
@@ -209,6 +252,7 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
       level: widget.selectedLevel,
     );
     allProblems = fullProblemSet.formattedProblems;
+    allAnswers = fullProblemSet.formattedAnswers;
   }
 
   @override
@@ -247,17 +291,20 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
                   horizontal: 10.0,
                   vertical: 10.0,
                 ),
-                child: Text(
-                  '${currentProblem.$1} / ${currentProblem.$2}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'abacusFont',
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Text(
+                    currentProblem,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'abacusFont',
+                    ),
                   ),
                 ),
               ),
               const Text('||', style: TextStyle(fontSize: 20)),
               CustomTextField(
-                data: textFieldData[problemIndex],
+                data: textFieldDataList[problemIndex],
                 isFocused: isFocused,
               ),
             ],

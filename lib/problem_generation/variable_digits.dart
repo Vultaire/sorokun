@@ -7,7 +7,7 @@ class MitoriProblemSet {
   late List<List<int>> allProblems = [];
   late List<List<String>> formattedProblems = [];
   late List<int> sums = [];
-  late List<String> formattedSums = [];
+  late List<String> formattedAnswers = [];
 
   MitoriProblemSet({required this.level}) {
     final rand = Random();
@@ -125,7 +125,7 @@ class MitoriProblemSet {
     }
     for (int sum in sums) {
       String formattedSum = formatWithCommas(sum.toString());
-      formattedSums.add(formattedSum);
+      formattedAnswers.add(formattedSum);
     }
   }
 }
@@ -134,5 +134,5 @@ void main() {
   var problem = MitoriProblemSet(level: MitoriLevel.k10b);
 
   print(problem.formattedProblems);
-  print(problem.formattedSums);
+  print(problem.formattedAnswers);
 }

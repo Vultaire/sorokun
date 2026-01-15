@@ -307,7 +307,7 @@ class DivisionProblem {
   String get formattedSecond => formatWithCommas(divisor.toString());
   String get formattedThird => formatWithCommas(quotient.toString());
 
-  (String, String) get problem => (formattedFirst, formattedSecond);
+  String get problem => '$formattedFirst / $formattedSecond';
 
   @override
   String toString() {
@@ -444,7 +444,7 @@ void main() {
   var problems = DivMultProblemSet(level: DivMultLevel.dk8);
 
   print(problems.formattedProblems);
-  print(problems.formattedSums);
+  print(problems.formattedAnswers);
 
   // for (var i = 0; i < problems.length; i++) {
   //   print("Problem ${i + 1}: ${problems[i]}");

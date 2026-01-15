@@ -37,7 +37,7 @@ class MultiplicationProblem {
   String get formattedSecond => formatWithCommas(multiplier.toString());
   String get formattedThird => formatWithCommas(product.toString());
 
-  (String, String) get problem => (formattedFirst, formattedSecond);
+  String get problem => '$formattedFirst * $formattedSecond';
 
   @override
   String toString() {
@@ -108,7 +108,7 @@ void main() {
   final problems = DivMultProblemSet(level: DivMultLevel.mk2);
 
   print(problems.formattedProblems);
-  print(problems.formattedSums);
+  print(problems.formattedAnswers);
 
   // for (var i = 0; i < problems.length; i++) {
   //   print("Problem ${i + 1}: ${problems[i]}");

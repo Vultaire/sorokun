@@ -26,8 +26,11 @@ class _AbacusAppState extends State<AbacusApp> {
       GoRoute(
         path: '/paper-problem',
         builder: (context, state) {
-          final selectedLevel = state.extra;
-          return PaperProblemScreen(selectedLevel: selectedLevel);
+          final args = state.extra as Map<String, dynamic>?;
+          return PaperProblemScreen(
+            selectedLevel: args?['selectedLevel'],
+            isExam: args?['isExam'] ?? false,
+          );
         },
       ),
     ],

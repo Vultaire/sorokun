@@ -6,13 +6,16 @@ import '../../problem_generation/helpers.dart';
 import '../paper_problem.dart';
 
 mixin KeypadMethods<T extends StatefulWidget> on State<T> {
-  List<TextFieldData> get textFieldData;
+  List<TextFieldData> get textFieldDataList;
   int get currentIndex;
   CarouselSliderController get carouselController;
+  List<String> get allAnswers;
+  List<bool> get answerBools; //true = correct, false = incorrect
+  bool get isExam;
 
   void appendDigit(String digit) {
     setState(() {
-      final data = textFieldData[currentIndex];
+      final data = textFieldDataList[currentIndex];
 
       if (digit == '-') {
         if (!data.internalString.startsWith('-')) {
@@ -43,7 +46,8 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   }
 
   void _updateText(TextFieldData data) {
-    String result = '${data.internalString}b';
+    String result =
+        '${data.internalString}b'; // 'b' marks the position of the caret
     bool hasMinusSign = false;
     if (result.startsWith('-')) {
       hasMinusSign = true;
@@ -63,9 +67,9 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   }
 
   void deleteDigit() {
-    if (textFieldData[currentIndex].internalString.isNotEmpty) {
+    if (textFieldDataList[currentIndex].internalString.isNotEmpty) {
       setState(() {
-        final data = textFieldData[currentIndex];
+        final data = textFieldDataList[currentIndex];
         data.internalString = data.internalString.substring(
           0,
           data.internalString.length - 1,
@@ -77,26 +81,86 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
 
   void clearAll() {
     setState(() {
-      final data = textFieldData[currentIndex];
+      final data = textFieldDataList[currentIndex];
       data.internalString = '';
       _updateText(data);
     });
   }
 
   void submit() {
-    if (textFieldData[currentIndex].internalString.isEmpty) {
-      () {}; //TODO: Add sound
+    if (textFieldDataList[currentIndex].internalString.isEmpty) {
+      _handleEmptyAnswer();
+      return;
+    }
+    if (!isExam && !_isAnswerCorrect()) {
+      showResultPopup(context, false);
+      return;
+    }
+
+    if (!isExam) {
+      showResultPopup(context, true);
+      _moveToNextEmptyQuestion();
     } else {
-      for (var offset = 1; offset <= textFieldData.length; offset++) {
-        final i = (currentIndex + offset) % textFieldData.length;
-        if (textFieldData[i].internalString.isEmpty) {
-          carouselController.animateToPage(i, curve: Curves.easeOutExpo);
-          break;
-        } else {
-          () {}; //TODO: Add scoring callback
-        }
+      _moveToNextEmptyQuestion();
+    }
+  }
+
+  bool _isAnswerCorrect() {
+    final isCorrect =
+        textFieldDataList[currentIndex].formatted == allAnswers[currentIndex];
+    answerBools[currentIndex] = isCorrect;
+    return isCorrect;
+  }
+
+  void _moveToNextEmptyQuestion() {
+    for (var offset = 1; offset <= textFieldDataList.length; offset++) {
+      final i = (currentIndex + offset) % textFieldDataList.length;
+
+      if (textFieldDataList[i].internalString.isEmpty) {
+        carouselController.animateToPage(i, curve: Curves.easeOutExpo);
+        return;
       }
     }
+  }
+
+  void _handleEmptyAnswer() {
+    // TODO: Add error sound
+  }
+
+  void _handleAllQuestionsAnswered() {
+    // TODO: Add scoring callback
+  }
+
+  void showResultPopup(BuildContext context, bool isCorrect) {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Center(
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.0, end: 1.0),
+          duration: Duration(milliseconds: 300),
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.scale(
+                scale: value,
+                child: Image.asset(
+                  isCorrect
+                      ? 'assets/correct.png' // Your correct image
+                      : 'assets/incorrect.png', // Your incorrect image
+                  width: 150,
+                  height: 150,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(overlayEntry);
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      overlayEntry.remove();
+    });
   }
 }
 

@@ -58,8 +58,8 @@ FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {
 }
 
 class DivMultProblemSet<TProblem> {
-  final formattedProblems = <(String, String)>[];
-  final formattedSums = <String>[];
+  final formattedProblems = <String>[];
+  final formattedAnswers = <String>[];
   DivMultProblemSet({required DivMultLevel level}) {
     final rand = Random();
 
@@ -93,7 +93,7 @@ class DivMultProblemSet<TProblem> {
         );
         var fullProblem = level.builder(spec: spec);
         formattedProblems.add(fullProblem.problem);
-        formattedSums.add(fullProblem.formattedThird);
+        formattedAnswers.add(fullProblem.formattedThird);
       }
     }
   }

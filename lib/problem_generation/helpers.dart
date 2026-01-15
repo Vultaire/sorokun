@@ -27,7 +27,6 @@ String formatWithCommas(String text) {
       continue;
     }
 
-    // Add comma before digit if needed
     if (digitCount > 0 && (totalDigits - digitCount) % 3 == 0) {
       formatted.write(',');
     }
