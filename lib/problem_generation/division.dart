@@ -308,6 +308,7 @@ class DivisionProblem {
   String get formattedThird => formatWithCommas(quotient.toString());
 
   String get problem => '$formattedFirst / $formattedSecond';
+  String get problemWithYenSymbol => '\\ $formattedFirst / $formattedSecond';
 
   @override
   String toString() {
@@ -441,7 +442,7 @@ Map<String, dynamic> getModoshi(
 }
 
 void main() {
-  var problems = DivMultProblemSet(level: DivMultLevel.dk8);
+  var problems = DivMultProblemSet(level: DivMultLevel.ddan);
 
   print(problems.formattedProblems);
   print(problems.formattedAnswers);

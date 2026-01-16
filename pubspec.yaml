@@ -32,6 +32,8 @@ flutter:
   assets:
     - assets/complexityThresholdMap.json
     - assets/open_jtalk_dic_utf_8-1.11/
+    - assets/correct.png
+    - assets/incorrect.png
   fonts:
     - family: abacusFont
       fonts:

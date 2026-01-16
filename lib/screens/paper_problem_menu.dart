@@ -12,9 +12,9 @@ class PaperConfPage extends StatefulWidget {
 }
 
 class _PaperConfPageState extends State<PaperConfPage> {
-  final DivMultLevel multiplicationLevel = DivMultLevel.mk6;
+  final DivMultLevel multiplicationLevel = DivMultLevel.mdan;
   final DivMultLevel divisionLevel = DivMultLevel.ddan;
-  final MitoriLevel mitoriLevel = MitoriLevel.k6;
+  final MitoriLevel mitoriLevel = MitoriLevel.dan;
   bool isExam = false;
 
   @override

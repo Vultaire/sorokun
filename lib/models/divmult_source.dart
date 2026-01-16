@@ -104,6 +104,8 @@ enum MultiplicationSplit implements DivMultSplit {
   });
 
   const MultiplicationSplit(this.templates);
+
+  @override
   final Map<int, List<List<int>>> templates;
 }
 
@@ -135,26 +137,28 @@ enum MultiplicationSource implements DivMultSource {
   ]),
   k3([
     {"digits": 7, "problemCount": 7, "type2Count": 3, "type4Count": 1},
-    {"digits": 7, "problemCount": 8, "type5Count": 4},
+    {"digits": 7, "problemCount": 8, "type5Count": 4, "intRound": 1},
   ]),
   k2([
     {"digits": 8, "problemCount": 7, "type2Count": 3, "type4Count": 1},
-    {"digits": 8, "problemCount": 8, "type5Count": 4},
+    {"digits": 8, "problemCount": 8, "type5Count": 4, "intRound": 1},
   ]),
   k1([
     {"digits": 9, "problemCount": 7, "type2Count": 3, "type4Count": 1},
-    {"digits": 9, "problemCount": 8, "type5Count": 4},
+    {"digits": 9, "problemCount": 8, "type5Count": 4, "intRound": 1},
   ]),
   dan([
     {"digits": 9, "problemCount": 5, "type2Count": 2, "type4Count": 1},
     {"digits": 10, "problemCount": 5, "type2Count": 2, "type4Count": 1},
     {"digits": 11, "problemCount": 5, "type2Count": 2, "type4Count": 1},
-    {"digits": 12, "problemCount": 5, "type5Count": 3},
-    {"digits": 12, "problemCount": 5, "type5Count": 3},
-    {"digits": 12, "problemCount": 5, "type5Count": 3},
+    {"digits": 12, "problemCount": 5, "type5Count": 3, "intRound": 1},
+    {"digits": 12, "problemCount": 5, "type5Count": 3, "intRound": 1},
+    {"digits": 12, "problemCount": 5, "type5Count": 3, "intRound": 1},
   ]);
 
   const MultiplicationSource(this.templates);
+
+  @override
   final List<Map<String, int>> templates;
 }
 
@@ -240,6 +244,8 @@ enum DivisionSplit implements DivMultSplit {
   });
 
   const DivisionSplit(this.templates);
+
+  @override
   final Map<int, List<List<int>>> templates;
 }
 
@@ -261,25 +267,63 @@ enum DivisionSource implements DivMultSource {
   ]),
   k3([
     {"digits": 6, "problemCount": 7, "type2Count": 2, "type3Count": 2},
-    {"digits": 6, "problemCount": 8, "type4Count": 2, "type5Count": 2},
+    {
+      "digits": 6,
+      "problemCount": 8,
+      "type4Count": 2,
+      "type5Count": 2,
+      "intRound": 1,
+    },
   ]),
   k2([
     {"digits": 7, "problemCount": 7, "type2Count": 2, "type3Count": 2},
-    {"digits": 7, "problemCount": 8, "type4Count": 2, "type5Count": 2},
+    {
+      "digits": 7,
+      "problemCount": 8,
+      "type4Count": 2,
+      "type5Count": 2,
+      "intRound": 1,
+    },
   ]),
   k1([
     {"digits": 8, "problemCount": 7, "type2Count": 2, "type3Count": 2},
-    {"digits": 8, "problemCount": 8, "type4Count": 2, "type5Count": 2},
+    {
+      "digits": 8,
+      "problemCount": 8,
+      "type4Count": 2,
+      "type5Count": 2,
+      "intRound": 1,
+    },
   ]),
   dan([
     {"digits": 8, "problemCount": 5, "type2Count": 1, "type3Count": 2},
     {"digits": 9, "problemCount": 5, "type2Count": 1, "type3Count": 2},
     {"digits": 10, "problemCount": 5, "type2Count": 1, "type3Count": 2},
-    {"digits": 10, "problemCount": 5, "type4Count": 1, "type5Count": 2},
-    {"digits": 11, "problemCount": 5, "type4Count": 1, "type5Count": 2},
-    {"digits": 11, "problemCount": 5, "type4Count": 1, "type5Count": 2},
+    {
+      "digits": 10,
+      "problemCount": 5,
+      "type4Count": 1,
+      "type5Count": 2,
+      "intRound": 1,
+    },
+    {
+      "digits": 11,
+      "problemCount": 5,
+      "type4Count": 1,
+      "type5Count": 2,
+      "intRound": 1,
+    },
+    {
+      "digits": 11,
+      "problemCount": 5,
+      "type4Count": 1,
+      "type5Count": 2,
+      "intRound": 1,
+    },
   ]);
 
   const DivisionSource(this.templates);
+
+  @override
   final List<Map<String, int>> templates;
 }

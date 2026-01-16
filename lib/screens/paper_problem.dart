@@ -128,6 +128,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       allProblems.length,
       (_) => TextFieldData(),
     );
+    answerBools = List.generate(allProblems.length, (_) => false);
   }
 
   void _initializeProblem(MitoriLevel level) {
@@ -145,6 +146,9 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       options: CarouselOptions(
         height: 500,
         reverse: true,
+        viewportFraction: 0.9,
+        enlargeCenterPage: true,
+        enlargeStrategy: .zoom,
         onPageChanged: (index, reason) {
           setState(() {
             currentIndex = index;
@@ -154,46 +158,79 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       itemCount: allProblems.length,
       itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
         final currentProblem = allProblems[problemIndex];
-        return Column(
+        final isFocused = problemIndex == currentIndex;
+        return Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0, bottom: 8.0),
-              child: Text(
-                'Problem ${problemIndex + 1}',
-                style: const TextStyle(fontSize: 16),
+            Positioned(
+              left: 0,
+              top: 0,
+              child: Container(
+                width: 40.0,
+                height: 40.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(width: 2),
+                ),
+                child: Center(
+                  child: Text(
+                    '${problemIndex + 1}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'bizUDPGR',
+                      fontWeight: .bold,
+                    ),
+                  ),
+                ),
               ),
             ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: currentProblem
-                    .map(
-                      (n) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 3.0,
-                          horizontal: 10.0,
+            Column(
+              children: [
+                Expanded(
+                  child: FittedBox(
+                    fit: .fitHeight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            ...currentProblem.map(
+                              (n) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 3.0,
+                                  horizontal: 10.0,
+                                ),
+                                child: Text(
+                                  n.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontFamily: 'abacusFontSpaced',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          n.toString(),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'abacusFontSpaced',
+                        Container(
+                          width: 250,
+                          height: 2,
+                          color: Colors.black,
+                          margin: const EdgeInsets.only(
+                            left: 38,
+                            right: 38,
+                            top: 5,
                           ),
                         ),
-                      ),
-                    )
-                    .toList(),
-              ),
+                        CustomTextField(
+                          data: textFieldDataList[problemIndex],
+                          isFocused: isFocused,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const Divider(
-              color: Colors.black,
-              thickness: 2,
-              height: 10,
-              indent: 38,
-              endIndent: 38,
-            ),
-            CustomTextField(data: textFieldDataList[problemIndex]),
           ],
         );
       },
@@ -276,7 +313,7 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
         final currentProblem = allProblems[problemIndex];
         final isFocused = problemIndex == currentIndex;
         return Opacity(
-          opacity: isFocused ? 1.0 : 0.4,
+          opacity: isFocused ? 1.0 : 0.6,
           child: Column(
             children: [
               Padding(
@@ -286,26 +323,29 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10.0,
-                  vertical: 10.0,
-                ),
+              Expanded(
                 child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: Text(
-                    currentProblem,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'abacusFont',
-                    ),
+                  fit: .fitWidth,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          currentProblem,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'abacusFont',
+                          ),
+                        ),
+                      ),
+                      const Text('||', style: TextStyle(fontSize: 20)),
+                      CustomTextField(
+                        data: textFieldDataList[problemIndex],
+                        isFocused: isFocused,
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const Text('||', style: TextStyle(fontSize: 20)),
-              CustomTextField(
-                data: textFieldDataList[problemIndex],
-                isFocused: isFocused,
               ),
             ],
           ),
@@ -357,7 +397,7 @@ class CustomTextField extends StatelessWidget {
           // Custom static cursor
           if (isFocused)
             Positioned(
-              left: caretPos + 7,
+              left: caretPos + 6,
               top: 10,
               child: Container(
                 width: 2,

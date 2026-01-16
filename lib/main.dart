@@ -39,6 +39,7 @@ class _AbacusAppState extends State<AbacusApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: _router,
       theme: ThemeData(
         elevatedButtonTheme: ElevatedButtonThemeData(

@@ -68,6 +68,9 @@ class DivMultProblemSet<TProblem> {
       final int type3Count = batch['type3Count'] ?? 0;
       final int type4Count = batch['type4Count'] ?? 0;
       final int type5Count = batch['type5Count'] ?? 0;
+      final int intRound =
+          batch['intRound'] ??
+          0; // marks if the answer should be rounded to the whole number. 1 is yes, 0 is no
       final int problemCount = batch['problemCount'] ?? 15;
       final int digits = batch['digits'];
       final List<List<int>> split = level.divMultSplit.templates[digits];
@@ -92,7 +95,11 @@ class DivMultProblemSet<TProblem> {
           split: split,
         );
         var fullProblem = level.builder(spec: spec);
-        formattedProblems.add(fullProblem.problem);
+        formattedProblems.add(
+          intRound == 1
+              ? fullProblem.problemWithYenSymbol
+              : fullProblem.problem,
+        );
         formattedAnswers.add(fullProblem.formattedThird);
       }
     }

@@ -12,6 +12,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   List<String> get allAnswers;
   List<bool> get answerBools; //true = correct, false = incorrect
   bool get isExam;
+  static final _digitsOnlyRegex = RegExp(r'[,.\-]');
 
   void appendDigit(String digit) {
     setState(() {
@@ -36,7 +37,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
           data.internalString += digit;
         }
       } else {
-        String digitsOnly = data.formatted.replaceAll(RegExp(r'[,.\-]'), '');
+        String digitsOnly = data.formatted.replaceAll(_digitsOnlyRegex, '');
         if (digitsOnly.length < 10) {
           data.internalString += digit;
         }
@@ -117,7 +118,11 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
       final i = (currentIndex + offset) % textFieldDataList.length;
 
       if (textFieldDataList[i].internalString.isEmpty) {
-        carouselController.animateToPage(i, curve: Curves.easeOutExpo);
+        carouselController.animateToPage(
+          i,
+          curve: Curves.easeOutExpo,
+          duration: Duration(milliseconds: 500),
+        );
         return;
       }
     }
@@ -132,34 +137,47 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   }
 
   void showResultPopup(BuildContext context, bool isCorrect) {
-    OverlayEntry overlayEntry = OverlayEntry(
-      builder: (context) => Center(
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0.0, end: 1.0),
-          duration: Duration(milliseconds: 300),
-          builder: (context, value, child) {
-            return Opacity(
-              opacity: value,
-              child: Transform.scale(
-                scale: value,
+    late OverlayEntry overlayEntry;
+    bool isRemoving = false;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => TweenAnimationBuilder<double>(
+        key: ValueKey(isRemoving),
+        tween: Tween(
+          begin: isRemoving ? 1.0 : 0.0,
+          end: isRemoving ? 0.0 : 1.0,
+        ),
+        duration: Duration(milliseconds: isRemoving ? 120 : 50),
+        onEnd: () {
+          if (isRemoving) {
+            overlayEntry.remove();
+          }
+        },
+        builder: (context, value, child) {
+          return Align(
+            alignment:
+                Alignment.bottomCenter, // Adjust this for keypad position
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 30), // Adjust offset
+              child: Opacity(
+                opacity: value,
                 child: Image.asset(
-                  isCorrect
-                      ? 'assets/correct.png' // Your correct image
-                      : 'assets/incorrect.png', // Your incorrect image
-                  width: 150,
-                  height: 150,
+                  isCorrect ? 'assets/correct.png' : 'assets/incorrect.png',
+                  width: 300,
+                  height: 300,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
 
     Overlay.of(context).insert(overlayEntry);
 
-    Future.delayed(Duration(milliseconds: 500), () {
-      overlayEntry.remove();
+    Future.delayed(Duration(milliseconds: 300), () {
+      isRemoving = true;
+      overlayEntry.markNeedsBuild();
     });
   }
 }
@@ -203,7 +221,7 @@ class Keypad extends StatelessWidget {
                           ),
                         ),
 
-                        child: const Icon(Icons.clear, size: 25),
+                        child: const Icon(Icons.clear, size: 45),
                       ),
                     ),
                   ),
@@ -223,7 +241,7 @@ class Keypad extends StatelessWidget {
 
                         child: Transform.rotate(
                           angle: pi,
-                          child: const Icon(Icons.start, size: 30),
+                          child: const Icon(Icons.start, size: 40),
                         ),
                       ),
                     ),
@@ -272,7 +290,7 @@ class Keypad extends StatelessWidget {
                               ),
                               padding: EdgeInsets.all(10),
                             ),
-                            child: const Icon(Icons.backspace, size: 25),
+                            child: const Icon(Icons.backspace, size: 40),
                           ),
                         ),
                       ),
@@ -293,7 +311,7 @@ class Keypad extends StatelessWidget {
                               ),
                               padding: EdgeInsets.all(10),
                             ),
-                            child: const Icon(Icons.check, size: 25),
+                            child: const Icon(Icons.check, size: 45),
                           ),
                         ),
                       ),
@@ -328,7 +346,10 @@ class Keypad extends StatelessWidget {
         minimumSize: const Size(double.infinity, double.infinity),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      child: Text(value, style: const TextStyle(fontSize: 32)),
+      child: Text(
+        value,
+        style: const TextStyle(fontSize: 32, fontFamily: 'bizUDPGR'),
+      ),
     );
   }
 }

@@ -38,6 +38,7 @@ class MultiplicationProblem {
   String get formattedThird => formatWithCommas(product.toString());
 
   String get problem => '$formattedFirst * $formattedSecond';
+  String get problemWithYenSymbol => '\\ $formattedFirst * $formattedSecond';
 
   @override
   String toString() {

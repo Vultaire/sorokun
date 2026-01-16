@@ -4,7 +4,7 @@ import 'package:decimal/decimal.dart';
 import 'generation_spec.dart';
 
 String formatWithCommas(String text) {
-  if (text.isEmpty) return text;
+  if (text.isEmpty || text.length <= 3) return text;
 
   bool isNegative = text.startsWith('-');
   if (isNegative) {
