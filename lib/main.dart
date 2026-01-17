@@ -30,6 +30,7 @@ class _AbacusAppState extends State<AbacusApp> {
           return PaperProblemScreen(
             selectedLevel: args?['selectedLevel'],
             isExam: args?['isExam'] ?? false,
+            time: args?['time'],
           );
         },
       ),

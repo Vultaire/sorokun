@@ -214,7 +214,7 @@ class Keypad extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Container(
-                      constraints: const BoxConstraints(minHeight: 60),
+                      constraints: const BoxConstraints(minHeight: 50),
                       child: ElevatedButton(
                         onPressed: onClearAll,
                         style: ElevatedButton.styleFrom(
@@ -223,14 +223,14 @@ class Keypad extends StatelessWidget {
                           ),
                         ),
 
-                        child: const Icon(Icons.clear, size: 45),
+                        child: const Icon(Icons.clear, size: 40),
                       ),
                     ),
                   ),
 
                   Expanded(
                     child: Container(
-                      constraints: const BoxConstraints(minHeight: 60),
+                      constraints: const BoxConstraints(minHeight: 50),
 
                       child: ElevatedButton(
                         onPressed: () => onAppendDigit('a'),
@@ -258,6 +258,7 @@ class Keypad extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
+                    flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -275,49 +276,54 @@ class Keypad extends StatelessWidget {
                   const SizedBox(width: 6),
 
                   // Delete button
-                  Column(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 80),
-                          child: ElevatedButton(
-                            onPressed: onDeleteDigit,
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(
-                                double.infinity,
-                                double.infinity,
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            constraints: const BoxConstraints(maxWidth: 80),
+                            child: ElevatedButton(
+                              onPressed: onDeleteDigit,
+                              onLongPress: onClearAll,
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(
+                                  double.infinity,
+                                  double.infinity,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: EdgeInsets.all(10),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: EdgeInsets.all(10),
+                              child: const Icon(Icons.backspace, size: 40),
                             ),
-                            child: const Icon(Icons.backspace, size: 40),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 6),
 
-                      // Check Button
-                      Expanded(
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 80),
-                          child: ElevatedButton(
-                            onPressed: onSubmit,
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(
-                                double.infinity,
-                                double.infinity,
+                        // Check Button
+                        Expanded(
+                          child: Container(
+                            constraints: const BoxConstraints(maxWidth: 80),
+                            child: ElevatedButton(
+                              onPressed: onSubmit,
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(
+                                  double.infinity,
+                                  double.infinity,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: EdgeInsets.all(10),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: EdgeInsets.all(10),
+                              child: const Icon(Icons.check, size: 45),
                             ),
-                            child: const Icon(Icons.check, size: 45),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

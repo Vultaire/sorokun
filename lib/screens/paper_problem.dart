@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
+import 'package:soroban_app/screens/components/pie_timer.dart';
 
 import '../models/divmult_difficulty.dart';
 import '../models/mitori_difficulty.dart';
@@ -11,10 +12,12 @@ class PaperProblemScreen extends StatefulWidget {
   const PaperProblemScreen({
     required this.selectedLevel,
     required this.isExam,
+    required this.time,
     super.key,
   });
-  final dynamic selectedLevel; // default
+  final dynamic selectedLevel;
   final bool isExam;
+  final Duration time;
 
   @override
   State<PaperProblemScreen> createState() => _PaperProblemScreenState();
@@ -63,14 +66,26 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     }
   }
 
+  void onComplete() {
+    //TODO
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            Flexible(flex: 6, child: Container(child: _buildWindow())),
-            Expanded(flex: 5, child: _buildKeypad()),
+            Positioned(
+              right: 0,
+              child: PieTimer(duration: widget.time, onComplete: onComplete),
+            ),
+            Column(
+              children: [
+                Flexible(flex: 6, child: Container(child: _buildWindow())),
+                Expanded(flex: 5, child: _buildKeypad()),
+              ],
+            ),
           ],
         ),
       ),
@@ -212,7 +227,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
                           ],
                         ),
                         Container(
-                          width: 250,
+                          width: MediaQuery.of(context).size.width * 0.8,
                           height: 2,
                           color: Colors.black,
                           margin: const EdgeInsets.only(
@@ -415,7 +430,7 @@ class CustomTextField extends StatelessWidget {
     final caretPos = textPainter.width;
 
     return SizedBox(
-      height: 50,
+      height: 55,
       child: Stack(
         children: [
           Padding(
