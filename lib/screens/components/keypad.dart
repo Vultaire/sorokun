@@ -141,35 +141,37 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
     bool isRemoving = false;
 
     overlayEntry = OverlayEntry(
-      builder: (context) => TweenAnimationBuilder<double>(
-        key: ValueKey(isRemoving),
-        tween: Tween(
-          begin: isRemoving ? 1.0 : 0.0,
-          end: isRemoving ? 0.0 : 1.0,
-        ),
-        duration: Duration(milliseconds: isRemoving ? 120 : 50),
-        onEnd: () {
-          if (isRemoving) {
-            overlayEntry.remove();
-          }
-        },
-        builder: (context, value, child) {
-          return Align(
-            alignment:
-                Alignment.bottomCenter, // Adjust this for keypad position
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 30), // Adjust offset
-              child: Opacity(
-                opacity: value,
-                child: Image.asset(
-                  isCorrect ? 'assets/correct.png' : 'assets/incorrect.png',
-                  width: 300,
-                  height: 300,
+      builder: (context) => IgnorePointer(
+        ignoring: true,
+        child: TweenAnimationBuilder<double>(
+          key: ValueKey(isRemoving),
+          tween: Tween(
+            begin: isRemoving ? 1.0 : 0.0,
+            end: isRemoving ? 0.0 : 1.0,
+          ),
+          duration: Duration(milliseconds: isRemoving ? 120 : 50),
+          onEnd: () {
+            if (isRemoving) {
+              overlayEntry.remove();
+            }
+          },
+          builder: (context, value, child) {
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 30),
+                child: Opacity(
+                  opacity: value,
+                  child: Image.asset(
+                    isCorrect ? 'assets/correct.png' : 'assets/incorrect.png',
+                    width: 300,
+                    height: 300,
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
 
@@ -340,15 +342,22 @@ class Keypad extends StatelessWidget {
   }
 
   Widget _buildKey(String value) {
-    return ElevatedButton(
-      onPressed: () => onAppendDigit(value),
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size(double.infinity, double.infinity),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(
+    return Listener(
+      onPointerDown: (event) => onAppendDigit(
         value,
-        style: const TextStyle(fontSize: 32, fontFamily: 'bizUDPGR'),
+      ), // registers on tap down instead of tap down and release
+      child: ElevatedButton(
+        onPressed: () => (),
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(double.infinity, double.infinity),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Text(
+          value,
+          style: const TextStyle(fontSize: 32, fontFamily: 'bizUDPGR'),
+        ),
       ),
     );
   }

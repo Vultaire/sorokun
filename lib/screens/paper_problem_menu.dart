@@ -40,10 +40,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
                 onPressed: () {
                   context.push(
                     '/paper-problem',
-                    extra: {
-                      'selectedLevel': multiplicationLevel,
-                      'isExam': isExam,
-                    },
+                    extra: {'selectedLevel': mitoriLevel, 'isExam': isExam},
                   );
                 },
                 child: Text('Start'),

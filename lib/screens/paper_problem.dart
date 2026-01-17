@@ -203,7 +203,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
                                 child: Text(
                                   n.toString(),
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 26,
                                     fontFamily: 'abacusFontSpaced',
                                   ),
                                 ),
@@ -253,6 +253,8 @@ class DivMultWindow extends StatefulWidget {
 
 class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
   late final List<String> allProblems;
+  late final int
+  intRoundIndex; // index in allProblems at the first problem to require an answer rounded to integer
 
   @override
   late final bool isExam = widget.isExam;
@@ -290,6 +292,7 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
     );
     allProblems = fullProblemSet.formattedProblems;
     allAnswers = fullProblemSet.formattedAnswers;
+    intRoundIndex = allProblems.indexWhere((item) => item.startsWith('\\'));
   }
 
   @override
@@ -297,9 +300,9 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
     return CarouselSlider.builder(
       carouselController: carouselController,
       options: CarouselOptions(
-        height: 500,
+        height: 700,
         scrollDirection: .vertical,
-        viewportFraction: 0.4,
+        viewportFraction: 0.45,
         enlargeCenterPage: true,
         enlargeStrategy: .zoom,
         onPageChanged: (index, reason) {
@@ -314,40 +317,71 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
         final isFocused = problemIndex == currentIndex;
         return Opacity(
           opacity: isFocused ? 1.0 : 0.6,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0, bottom: 8.0),
-                child: Text(
-                  'Problem ${problemIndex + 1}',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-              Expanded(
-                child: FittedBox(
-                  fit: .fitWidth,
-                  child: Column(
+          child: FittedBox(
+            fit: .contain,
+
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: .spaceAround,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          currentProblem,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'abacusFont',
+                      Container(
+                        width: 40.0,
+                        height: 40.0,
+                        margin: const EdgeInsets.all(1.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(width: 2),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${problemIndex + 1}',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'bizUDPGR',
+                              fontWeight: .bold,
+                            ),
                           ),
                         ),
                       ),
-                      const Text('||', style: TextStyle(fontSize: 20)),
-                      CustomTextField(
-                        data: textFieldDataList[problemIndex],
-                        isFocused: isFocused,
-                      ),
+                      if (problemIndex == 0 && intRoundIndex != -1)
+                        Text(
+                          '（注意） 小数第3位未満四捨五入。',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'bizUDPGR',
+                          ),
+                        ),
+                      if (problemIndex == intRoundIndex)
+                        Text(
+                          '（注意） 整数位未満四捨五入。',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'bizUDPGR',
+                          ),
+                        ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    currentProblem,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontFamily: 'abacusFont',
+                    ),
+                  ),
+                ),
+                const Text('||', style: TextStyle(fontSize: 26)),
+                CustomTextField(
+                  data: textFieldDataList[problemIndex],
+                  isFocused: isFocused,
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -371,7 +405,7 @@ class CustomTextField extends StatelessWidget {
       text: TextSpan(
         text: data.beforeCaret,
         style: const TextStyle(
-          fontSize: 20.4,
+          fontSize: 26.4,
           fontFamily: 'abacusFontSpaced',
         ), // I don't know why the caret position drifts unless I add the extra .4 here.
       ),
@@ -389,7 +423,7 @@ class CustomTextField extends StatelessWidget {
             child: Text(
               data.formatted,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 26,
                 fontFamily: 'abacusFontSpaced',
               ),
             ),
@@ -401,7 +435,7 @@ class CustomTextField extends StatelessWidget {
               top: 10,
               child: Container(
                 width: 2,
-                height: 30,
+                height: 40,
                 color: Theme.of(context).primaryColor,
               ),
             ),
