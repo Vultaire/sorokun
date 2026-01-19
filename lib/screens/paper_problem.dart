@@ -332,71 +332,68 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
         final isFocused = problemIndex == currentIndex;
         return Opacity(
           opacity: isFocused ? 1.0 : 0.6,
-          child: FittedBox(
-            fit: .contain,
-
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: .spaceAround,
-                    children: [
-                      Container(
-                        width: 40.0,
-                        height: 40.0,
-                        margin: const EdgeInsets.all(1.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(width: 2),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${problemIndex + 1}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'bizUDPGR',
-                              fontWeight: .bold,
-                            ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: .spaceAround,
+                  children: [
+                    Container(
+                      width: 40.0,
+                      height: 40.0,
+                      margin: const EdgeInsets.all(1.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(width: 2),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${problemIndex + 1}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'bizUDPGR',
+                            fontWeight: .bold,
                           ),
                         ),
                       ),
-                      if (problemIndex == 0 && intRoundIndex != -1)
-                        Text(
-                          '（注意） 小数第3位未満四捨五入。',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'bizUDPGR',
-                          ),
-                        ),
-                      if (problemIndex == intRoundIndex)
-                        Text(
-                          '（注意） 整数位未満四捨五入。',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'bizUDPGR',
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    currentProblem,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontFamily: 'abacusFont',
                     ),
-                  ),
+                    if (problemIndex == 0 && intRoundIndex != -1)
+                      Text(
+                        '（注意） 小数第3位未満四捨五入。',
+                        style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
+                      ),
+                    if (problemIndex == intRoundIndex)
+                      Text(
+                        '（注意） 整数位未満四捨五入。',
+                        style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
+                      ),
+                  ],
                 ),
-                const Text('||', style: TextStyle(fontSize: 26)),
-                CustomTextField(
-                  data: textFieldDataList[problemIndex],
-                  isFocused: isFocused,
+              ),
+              FittedBox(
+                fit: .contain,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        currentProblem,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontFamily: 'abacusFont',
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const Text('||', style: TextStyle(fontSize: 26)),
+              CustomTextField(
+                data: textFieldDataList[problemIndex],
+                isFocused: isFocused,
+              ),
+            ],
           ),
         );
       },

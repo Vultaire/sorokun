@@ -48,7 +48,7 @@ String formatWithCommas(String text) {
   return formatted.toString();
 }
 
-int getRandomDigit(Random rand, {List<int> excepts = const []}) {
+int getRandomFlashDigit(Random rand, {List<int> excepts = const []}) {
   final available = <int>[];
   for (int i = 0; i < 10; i++) {
     if (!excepts.contains(i)) {
@@ -74,7 +74,7 @@ int getRandomFlashInt(
     if (previousNumDigits.isNotEmpty) {
       firstExcepts.add(previousNumDigits.first);
     }
-    int firstDigit = getRandomDigit(rand, excepts: firstExcepts);
+    int firstDigit = getRandomFlashDigit(rand, excepts: firstExcepts);
 
     final digits = <int>[firstDigit];
 
@@ -86,7 +86,7 @@ int getRandomFlashInt(
       if (spec.digitAllDifferent) {
         excepts.addAll(digits);
       }
-      int nextDigit = getRandomDigit(rand, excepts: excepts);
+      int nextDigit = getRandomFlashDigit(rand, excepts: excepts);
       digits.add(nextDigit);
     }
 
@@ -129,7 +129,7 @@ int getRandomInt(int digitCount, bool digitAllDifferent, int? previousNum) {
         excepts.add(digitAtThisPlace);
       }
 
-      int nextDigit = getRandomDigit(rand, excepts: excepts);
+      int nextDigit = getRandomFlashDigit(rand, excepts: excepts);
       digits.add(nextDigit);
     }
 
@@ -140,13 +140,19 @@ int getRandomInt(int digitCount, bool digitAllDifferent, int? previousNum) {
 
 Decimal randomDecimal(int digits) {
   final rand = Random();
+  late String result;
 
-  // First digit can't be 0
-  String result = (1 + rand.nextInt(9)).toString();
+  if (digits == 1) {
+    // single digit can't be 0 or 1, too easy.
+    result = (2 + rand.nextInt(8)).toString();
+  } else {
+    // First digit can't be 0
+    result = (1 + rand.nextInt(9)).toString();
 
-  // Remaining digits can be 0-9
-  for (int i = 1; i < digits; i++) {
-    result += rand.nextInt(10).toString();
+    // Remaining digits can be 0-9
+    for (int i = 1; i < digits; i++) {
+      result += rand.nextInt(10).toString();
+    }
   }
 
   return Decimal.parse(result);

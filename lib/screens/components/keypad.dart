@@ -38,7 +38,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
         }
       } else {
         String digitsOnly = data.formatted.replaceAll(_digitsOnlyRegex, '');
-        if (digitsOnly.length < 10) {
+        if (digitsOnly.length < 11) {
           data.internalString += digit;
         }
       }
