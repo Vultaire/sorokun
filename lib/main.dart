@@ -31,6 +31,7 @@ class _AbacusAppState extends State<AbacusApp> {
             selectedLevel: args?['selectedLevel'],
             isExam: args?['isExam'] ?? false,
             time: args?['time'],
+            appBarTitle: args?['appBarTitle'],
           );
         },
       ),

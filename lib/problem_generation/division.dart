@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
-import '../models/divmult_difficulty.dart';
+import '../models/level_definitions.dart';
 import 'generation_spec.dart';
 
 class DivisionProblem {

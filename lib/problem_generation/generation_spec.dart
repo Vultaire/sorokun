@@ -1,5 +1,5 @@
 import "dart:math";
-import "../models/divmult_difficulty.dart";
+import "../models/level_definitions.dart";
 import "../models/sources.dart";
 
 enum ProblemType { type1, type2, type3, type4, type5 }

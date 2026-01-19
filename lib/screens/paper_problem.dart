@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
 
-import '../models/divmult_difficulty.dart';
-import '../models/mitori_difficulty.dart';
+import '../models/level_definitions.dart';
 import '../problem_generation/generation_spec.dart';
 import 'components/keypad.dart';
 
@@ -13,11 +12,13 @@ class PaperProblemScreen extends StatefulWidget {
     required this.selectedLevel,
     required this.isExam,
     required this.time,
+    required this.appBarTitle,
     super.key,
   });
-  final dynamic selectedLevel;
+  final ProblemLevel selectedLevel;
   final bool isExam;
   final Duration time;
+  final String appBarTitle;
 
   @override
   State<PaperProblemScreen> createState() => _PaperProblemScreenState();
@@ -53,6 +54,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         onDeleteDigit: () => _mitorizanKey.currentState?.deleteDigit(),
         onClearAll: () => _mitorizanKey.currentState?.clearAll(),
         onSubmit: () => _mitorizanKey.currentState?.submit(),
+        levelType: widget.selectedLevel,
       );
     } else if (widget.selectedLevel is DivMultLevel) {
       return Keypad(
@@ -60,6 +62,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         onDeleteDigit: () => _divMultKey.currentState?.deleteDigit(),
         onClearAll: () => _divMultKey.currentState?.clearAll(),
         onSubmit: () => _divMultKey.currentState?.submit(),
+        levelType: widget.selectedLevel,
       );
     } else {
       return const SizedBox();
@@ -73,19 +76,20 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.appBarTitle),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        actions: [PieTimer(duration: widget.time, onComplete: onComplete)],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+        ),
+      ),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            Positioned(
-              right: 0,
-              child: PieTimer(duration: widget.time, onComplete: onComplete),
-            ),
-            Column(
-              children: [
-                Flexible(flex: 6, child: Container(child: _buildWindow())),
-                Expanded(flex: 5, child: _buildKeypad()),
-              ],
-            ),
+            Flexible(flex: 8, child: Container(child: _buildWindow())),
+            Expanded(flex: 5, child: _buildKeypad()),
           ],
         ),
       ),
@@ -161,9 +165,9 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       options: CarouselOptions(
         height: 500,
         reverse: true,
-        viewportFraction: 0.9,
+        viewportFraction: 0.95,
         enlargeCenterPage: true,
-        enlargeStrategy: .zoom,
+        enlargeStrategy: .scale,
         onPageChanged: (index, reason) {
           setState(() {
             currentIndex = index;
@@ -178,7 +182,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
           children: [
             Positioned(
               left: 0,
-              top: 0,
+              top: 10,
               child: Container(
                 width: 40.0,
                 height: 40.0,
@@ -203,6 +207,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
                 Expanded(
                   child: FittedBox(
                     fit: .fitHeight,
+                    clipBehavior: Clip.hardEdge,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -227,14 +232,10 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
                           ],
                         ),
                         Container(
-                          width: MediaQuery.of(context).size.width * 0.8,
+                          width: 700,
                           height: 2,
                           color: Colors.black,
-                          margin: const EdgeInsets.only(
-                            left: 38,
-                            right: 38,
-                            top: 5,
-                          ),
+                          margin: const EdgeInsets.only(top: 5),
                         ),
                         CustomTextField(
                           data: textFieldDataList[problemIndex],
@@ -317,9 +318,10 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
       options: CarouselOptions(
         height: 700,
         scrollDirection: .vertical,
-        viewportFraction: 0.45,
+        viewportFraction: 0.5,
         enlargeCenterPage: true,
         enlargeStrategy: .zoom,
+        enlargeFactor: 0.25,
         onPageChanged: (index, reason) {
           setState(() {
             currentIndex = index;
@@ -332,66 +334,81 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
         final isFocused = problemIndex == currentIndex;
         return Opacity(
           opacity: isFocused ? 1.0 : 0.6,
-          child: Column(
+          child: Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: .spaceAround,
+              if (problemIndex == 0 && intRoundIndex != -1)
+                Align(
+                  alignment: .topCenter,
+                  child: Transform.translate(
+                    offset: const Offset(0, -30.0),
+                    child: Text(
+                      '（注意） 小数第3位未満四捨五入。',
+                      style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
+                    ),
+                  ),
+                ),
+              if (problemIndex == intRoundIndex)
+                Align(
+                  alignment: .topCenter,
+                  child: Transform.translate(
+                    offset: const Offset(0, -30.0),
+                    child: Text(
+                      '（注意） 整数位未満四捨五入。',
+                      style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
+                    ),
+                  ),
+                ),
+              Align(
+                child: Column(
                   children: [
-                    Container(
-                      width: 40.0,
-                      height: 40.0,
-                      margin: const EdgeInsets.all(1.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(width: 2),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${problemIndex + 1}',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'bizUDPGR',
-                            fontWeight: .bold,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        width: 40.0,
+                        height: 40.0,
+                        margin: const EdgeInsets.all(1.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(width: 2),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${problemIndex + 1}',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'bizUDPGR',
+                              fontWeight: .bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    if (problemIndex == 0 && intRoundIndex != -1)
-                      Text(
-                        '（注意） 小数第3位未満四捨五入。',
-                        style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
+                    FittedBox(
+                      fit: .contain,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                            ),
+                            child: Text(
+                              currentProblem,
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontFamily: 'abacusFont',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    if (problemIndex == intRoundIndex)
-                      Text(
-                        '（注意） 整数位未満四捨五入。',
-                        style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
-                      ),
-                  ],
-                ),
-              ),
-              FittedBox(
-                fit: .contain,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        currentProblem,
-                        style: const TextStyle(
-                          fontSize: 26,
-                          fontFamily: 'abacusFont',
-                        ),
-                      ),
+                    ),
+                    const Text('||', style: TextStyle(fontSize: 26)),
+                    CustomTextField(
+                      data: textFieldDataList[problemIndex],
+                      isFocused: isFocused,
                     ),
                   ],
                 ),
-              ),
-              const Text('||', style: TextStyle(fontSize: 26)),
-              CustomTextField(
-                data: textFieldDataList[problemIndex],
-                isFocused: isFocused,
               ),
             ],
           ),

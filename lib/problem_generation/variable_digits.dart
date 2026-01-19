@@ -1,5 +1,6 @@
 import 'dart:math';
-import '../models/mitori_difficulty.dart';
+import 'package:soroban_app/models/level_definitions.dart';
+
 import 'helpers.dart';
 
 class MitoriProblemSet {

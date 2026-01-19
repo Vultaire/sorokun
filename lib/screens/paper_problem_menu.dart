@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../models/divmult_difficulty.dart';
-import '../models/mitori_difficulty.dart';
+import '../models/level_definitions.dart';
 
 class PaperConfPage extends StatefulWidget {
   const PaperConfPage({super.key});
@@ -40,43 +39,43 @@ class _PaperConfPageState extends State<PaperConfPage> {
                 },
               ),
               _buildProblemTypeSection(
-                label: '$mitoriLevelDisplayStringのみとり算をはじめる',
+                label: '${mitoriLevel.displayString}をはじめる',
                 selectLabel: 'みとり算の級位を選ぶ',
                 currentLevel: mitoriLevel,
                 bottomSheet: MitoriBottomSheet(
                   mitoriLevel: mitoriLevel,
-                  onLevelChanged: (newLevel, displayString) {
+                  onLevelChanged: (newLevel) {
                     setState(() {
                       mitoriLevel = newLevel;
-                      mitoriLevelDisplayString = displayString;
+                      mitoriLevelDisplayString = newLevel.displayString;
                     });
                   },
                 ),
               ),
               _buildProblemTypeSection(
-                label: '$multiplicationLevelDisplayStringのかけ算をはじめる',
+                label: '${multiplicationLevel.displayString}をはじめる',
                 selectLabel: 'かけ算の級位を選ぶ',
                 currentLevel: multiplicationLevel,
                 bottomSheet: MultiplicationBottomSheet(
                   multiplicationLevel: multiplicationLevel,
-                  onLevelChanged: (newLevel, displayString) {
+                  onLevelChanged: (newLevel) {
                     setState(() {
                       multiplicationLevel = newLevel;
-                      multiplicationLevelDisplayString = displayString;
+                      multiplicationLevelDisplayString = newLevel.displayString;
                     });
                   },
                 ),
               ),
               _buildProblemTypeSection(
-                label: '$divisionLevelDisplayStringのわり算をはじめる',
+                label: '${divisionLevel.displayString}をはじめる',
                 selectLabel: 'わり算の級位を選ぶ',
                 currentLevel: divisionLevel,
                 bottomSheet: DivisionBottomSheet(
                   divisionLevel: divisionLevel,
-                  onLevelChanged: (newLevel, displayString) {
+                  onLevelChanged: (newLevel) {
                     setState(() {
                       divisionLevel = newLevel;
-                      divisionLevelDisplayString = displayString;
+                      divisionLevelDisplayString = newLevel.displayString;
                     });
                   },
                 ),
@@ -91,7 +90,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
   Widget _buildProblemTypeSection({
     required String label,
     required String selectLabel,
-    required dynamic currentLevel,
+    required ProblemLevel currentLevel,
     required Widget bottomSheet,
   }) {
     return Column(
@@ -104,6 +103,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
                 'selectedLevel': currentLevel,
                 'isExam': isExam,
                 'time': time,
+                'appBarTitle': currentLevel.displayString,
               },
             );
           },
@@ -132,7 +132,7 @@ class OpenLevelSelectButton extends StatelessWidget {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
-          builder: (context) => Container(
+          builder: (context) => SizedBox(
             height: MediaQuery.of(context).size.height * 0.9,
             child: page,
           ),
@@ -151,21 +151,21 @@ class MitoriBottomSheet extends StatelessWidget {
   });
 
   final MitoriLevel mitoriLevel;
-  final Function(MitoriLevel, String) onLevelChanged;
+  final Function(MitoriLevel) onLevelChanged;
 
-  static const List<Map<String, dynamic>> levels = [
-    {'level': MitoriLevel.k10a, 'label': '10級(A)'},
-    {'level': MitoriLevel.k10b, 'label': '10級(B)'},
-    {'level': MitoriLevel.k9, 'label': '9級'},
-    {'level': MitoriLevel.k8, 'label': '8級'},
-    {'level': MitoriLevel.k7, 'label': '7級'},
-    {'level': MitoriLevel.k6, 'label': '6級'},
-    {'level': MitoriLevel.k5, 'label': '5級'},
-    {'level': MitoriLevel.k4, 'label': '4級'},
-    {'level': MitoriLevel.k3, 'label': '3級'},
-    {'level': MitoriLevel.k2, 'label': '2級'},
-    {'level': MitoriLevel.k1, 'label': '1級'},
-    {'level': MitoriLevel.dan, 'label': '段位'},
+  static const List<MitoriLevel> levels = [
+    MitoriLevel.k10a,
+    MitoriLevel.k10b,
+    MitoriLevel.k9,
+    MitoriLevel.k8,
+    MitoriLevel.k7,
+    MitoriLevel.k6,
+    MitoriLevel.k5,
+    MitoriLevel.k4,
+    MitoriLevel.k3,
+    MitoriLevel.k2,
+    MitoriLevel.k1,
+    MitoriLevel.dan,
   ];
 
   @override
@@ -177,13 +177,13 @@ class MitoriBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: levels.map((levelData) {
+            children: levels.map((level) {
               return ElevatedButton(
                 onPressed: () {
-                  onLevelChanged(levelData['level'], levelData['label']);
+                  onLevelChanged(level);
                   Navigator.pop(context);
                 },
-                child: Text(levelData['label']),
+                child: Text(level.displayString),
               );
             }).toList(),
           ),
@@ -201,19 +201,19 @@ class MultiplicationBottomSheet extends StatelessWidget {
   });
 
   final DivMultLevel multiplicationLevel;
-  final Function(DivMultLevel, String) onLevelChanged;
+  final Function(DivMultLevel) onLevelChanged;
 
-  static const List<Map<String, dynamic>> levels = [
-    {'level': DivMultLevel.mk9, 'label': '9級'},
-    {'level': DivMultLevel.mk8, 'label': '8級'},
-    {'level': DivMultLevel.mk7, 'label': '7級'},
-    {'level': DivMultLevel.mk6, 'label': '6級'},
-    {'level': DivMultLevel.mk5, 'label': '5級'},
-    {'level': DivMultLevel.mk4, 'label': '4級'},
-    {'level': DivMultLevel.mk3, 'label': '3級'},
-    {'level': DivMultLevel.mk2, 'label': '2級'},
-    {'level': DivMultLevel.mk1, 'label': '1級'},
-    {'level': DivMultLevel.mdan, 'label': '段位'},
+  static const List<DivMultLevel> levels = [
+    DivMultLevel.mk9,
+    DivMultLevel.mk8,
+    DivMultLevel.mk7,
+    DivMultLevel.mk6,
+    DivMultLevel.mk5,
+    DivMultLevel.mk4,
+    DivMultLevel.mk3,
+    DivMultLevel.mk2,
+    DivMultLevel.mk1,
+    DivMultLevel.mdan,
   ];
 
   @override
@@ -225,13 +225,13 @@ class MultiplicationBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: levels.map((levelData) {
+            children: levels.map((level) {
               return ElevatedButton(
                 onPressed: () {
-                  onLevelChanged(levelData['level'], levelData['label']);
+                  onLevelChanged(level);
                   Navigator.pop(context);
                 },
-                child: Text(levelData['label']),
+                child: Text(level.displayString),
               );
             }).toList(),
           ),
@@ -249,18 +249,18 @@ class DivisionBottomSheet extends StatelessWidget {
   });
 
   final DivMultLevel divisionLevel;
-  final Function(DivMultLevel, String) onLevelChanged;
+  final Function(DivMultLevel) onLevelChanged;
 
-  static const List<Map<String, dynamic>> levels = [
-    {'level': DivMultLevel.dk8, 'label': '8級'},
-    {'level': DivMultLevel.dk7, 'label': '7級'},
-    {'level': DivMultLevel.dk6, 'label': '6級'},
-    {'level': DivMultLevel.dk5, 'label': '5級'},
-    {'level': DivMultLevel.dk4, 'label': '4級'},
-    {'level': DivMultLevel.dk3, 'label': '3級'},
-    {'level': DivMultLevel.dk2, 'label': '2級'},
-    {'level': DivMultLevel.dk1, 'label': '1級'},
-    {'level': DivMultLevel.ddan, 'label': '段位'},
+  static const List<DivMultLevel> levels = [
+    DivMultLevel.dk8,
+    DivMultLevel.dk7,
+    DivMultLevel.dk6,
+    DivMultLevel.dk5,
+    DivMultLevel.dk4,
+    DivMultLevel.dk3,
+    DivMultLevel.dk2,
+    DivMultLevel.dk1,
+    DivMultLevel.ddan,
   ];
 
   @override
@@ -272,13 +272,13 @@ class DivisionBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: levels.map((levelData) {
+            children: levels.map((level) {
               return ElevatedButton(
                 onPressed: () {
-                  onLevelChanged(levelData['level'], levelData['label']);
+                  onLevelChanged(level);
                   Navigator.pop(context);
                 },
-                child: Text(levelData['label']),
+                child: Text(level.displayString),
               );
             }).toList(),
           ),
