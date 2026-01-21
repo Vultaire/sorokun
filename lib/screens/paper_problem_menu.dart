@@ -17,7 +17,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
   String divisionLevelDisplayString = '';
   String mitoriLevelDisplayString = '';
   bool isExam = false;
-  Duration? time = Duration(minutes: 1);
+  Duration? time = Duration(seconds: 3);
 
   @override
   Widget build(BuildContext context) {

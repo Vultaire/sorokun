@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:soroban_app/problem_generation/variable_digits.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
 
@@ -27,18 +28,69 @@ class PaperProblemScreen extends StatefulWidget {
 class _PaperProblemScreenState extends State<PaperProblemScreen> {
   final GlobalKey<_MitorizanWindowState> _mitorizanKey = GlobalKey();
   final GlobalKey<_DivMultWindowState> _divMultKey = GlobalKey();
+  bool _delayOver = false;
+  bool _showLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startDelaySequence();
+  }
+
+  void _startDelaySequence() async {
+    // Wait for fade transition to complete
+    await Future.delayed(DelayWindow.delayToSoundCue);
+
+    if (!mounted) return;
+    setState(() {
+      _showLoading = true;
+    });
+    // TODO: Play your sound here
+
+    // loading animation
+    await Future.delayed(DelayWindow.delayToStart);
+
+    if (!mounted) return;
+
+    setState(() {
+      _delayOver = true;
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    final shouldPop = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('終了の確認'),
+        content: const Text('本当にやめますか?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('いいえ'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('はい'),
+          ),
+        ],
+      ),
+    );
+    return shouldPop ?? false;
+  }
 
   Widget _buildWindow() {
     if (widget.selectedLevel is MitoriLevel) {
       return MitorizanWindow(
         selectedLevel: widget.selectedLevel as MitoriLevel,
         isExam: widget.isExam,
+        onComplete: () => _onComplete(outOfTime: false),
         key: _mitorizanKey,
       );
     } else if (widget.selectedLevel is DivMultLevel) {
       return DivMultWindow(
         selectedLevel: widget.selectedLevel as DivMultLevel,
         isExam: widget.isExam,
+        onComplete: () => _onComplete(outOfTime: false),
         key: _divMultKey,
       );
     } else {
@@ -69,28 +121,146 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     }
   }
 
-  void onComplete() {
-    //TODO
+  void _onComplete({required bool outOfTime}) async {
+    List<String>? allAnswers;
+    List<bool>? answerBools;
+    List<TextFieldData>? textFieldDataList;
+
+    if (widget.selectedLevel is MitoriLevel) {
+      final state = _mitorizanKey.currentState;
+      if (state != null) {
+        allAnswers = state.allAnswers;
+        answerBools = state.answerBools;
+        textFieldDataList = state.textFieldDataList;
+      }
+    } else if (widget.selectedLevel is DivMultLevel) {
+      final state = _divMultKey.currentState;
+      if (state != null) {
+        allAnswers = state.allAnswers;
+        answerBools = state.answerBools;
+        textFieldDataList = state.textFieldDataList;
+      }
+    }
+
+    // Play "Time's Up" animation if out of time
+    if (outOfTime) {
+      int animationState = 0;
+      late OverlayEntry overlayEntry;
+
+      overlayEntry = OverlayEntry(
+        builder: (context) => Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black.withValues(alpha: 0.7),
+            ),
+            TweenAnimationBuilder<double>(
+              key: ValueKey(animationState),
+              tween: Tween(
+                begin: animationState == 0
+                    ? 2.0
+                    : (animationState == 1 ? 0.0 : 0.0),
+                end: animationState == 0
+                    ? 0.0
+                    : (animationState == 1 ? 0.0 : -2.0),
+              ),
+              duration: Duration(milliseconds: animationState == 1 ? 0 : 500),
+              curve: animationState == 0 ? Curves.easeOut : Curves.easeIn,
+              onEnd: () {
+                if (animationState == 0) {
+                  // Finished sliding in, now pause
+                  animationState = 1;
+                  overlayEntry.markNeedsBuild();
+
+                  // After pause, slide out
+                  Future.delayed(const Duration(milliseconds: 1000), () {
+                    animationState = 2;
+                    overlayEntry.markNeedsBuild();
+                    // Navigate to results page
+                    if (mounted && allAnswers != null) {
+                      context.push(
+                        '/paper-results',
+                        extra: {
+                          'allAnswers': allAnswers,
+                          'answerBools': answerBools,
+                          'textFieldDataList': textFieldDataList,
+                        },
+                      );
+                    }
+                  });
+                } else if (animationState == 2) {
+                  // Finished sliding out, remove overlay
+                  overlayEntry.remove();
+                }
+              },
+              builder: (context, value, child) {
+                return Center(
+                  child: Transform.translate(
+                    offset: Offset(
+                      value * MediaQuery.of(context).size.width,
+                      0,
+                    ),
+                    child: Image.asset(
+                      'assets/yame.png',
+                      width: 200,
+                      height: 200,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+      Overlay.of(context).insert(overlayEntry);
+      await Future.delayed(const Duration(milliseconds: 2400));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.appBarTitle),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        actions: [PieTimer(duration: widget.time, onComplete: onComplete)],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Flexible(flex: 8, child: Container(child: _buildWindow())),
-            Expanded(flex: 5, child: _buildKeypad()),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        final shouldPop = await _onWillPop();
+        if (shouldPop && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.appBarTitle),
+          centerTitle: true,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          actions: [
+            PieTimer(
+              duration: widget.time,
+              delayOver: _delayOver,
+              onComplete: () => _onComplete(outOfTime: true),
+            ),
           ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Flexible(
+                flex: 8,
+                child: Stack(
+                  children: [
+                    _buildWindow(),
+                    if (!_delayOver) DelayWindow(showLoading: _showLoading),
+                  ],
+                ),
+              ),
+              Expanded(flex: 5, child: _buildKeypad()),
+            ],
+          ),
         ),
       ),
     );
@@ -104,14 +274,35 @@ class TextFieldData {
   double caretPos = 0.0;
 }
 
+class DelayWindow extends StatelessWidget {
+  const DelayWindow({super.key, required this.showLoading});
+  final bool showLoading;
+  static const Duration delayToSoundCue = Duration(seconds: 1);
+  static const Duration delayToStart = Duration(seconds: 2);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Center(
+        child: showLoading
+            ? const CircularProgressIndicator()
+            : const SizedBox.shrink(),
+      ),
+    );
+  }
+}
+
 class MitorizanWindow extends StatefulWidget {
   const MitorizanWindow({
     required this.selectedLevel,
     required this.isExam,
+    required this.onComplete,
     super.key,
   });
   final MitoriLevel selectedLevel;
   final bool isExam;
+  final VoidCallback onComplete;
 
   @override
   State<MitorizanWindow> createState() => _MitorizanWindowState();
@@ -131,6 +322,9 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
 
   @override
   late final List<TextFieldData> textFieldDataList;
+
+  @override
+  VoidCallback get onComplete => widget.onComplete;
 
   @override
   int currentIndex = 0;
@@ -258,10 +452,12 @@ class DivMultWindow extends StatefulWidget {
   const DivMultWindow({
     required this.selectedLevel,
     required this.isExam,
+    required this.onComplete,
     super.key,
   });
   final DivMultLevel selectedLevel;
   final bool isExam;
+  final VoidCallback onComplete;
 
   @override
   State<DivMultWindow> createState() => _DivMultWindowState();
@@ -283,6 +479,9 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
 
   @override
   late final List<TextFieldData> textFieldDataList;
+
+  @override
+  VoidCallback get onComplete => widget.onComplete;
 
   @override
   int currentIndex = 0;

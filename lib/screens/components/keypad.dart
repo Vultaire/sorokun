@@ -14,6 +14,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   List<String> get allAnswers;
   List<bool> get answerBools; //true = correct, false = incorrect
   bool get isExam;
+  VoidCallback get onComplete;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
 
   void appendDigit(String digit) {
@@ -128,15 +129,12 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
         );
         return;
       }
+      onComplete();
     }
   }
 
   void _handleEmptyAnswer() {
     // TODO: Add error sound
-  }
-
-  void _handleAllQuestionsAnswered() {
-    // TODO: Add scoring callback
   }
 
   void showResultPopup(BuildContext context, bool isCorrect) {
@@ -332,7 +330,7 @@ class Keypad extends StatelessWidget {
           children: [
             Expanded(flex: 2, child: _buildKey('0')),
             const SizedBox(width: 6),
-            Expanded(flex: 2, child: _buildKey('.')),
+            Expanded(flex: 1, child: _buildKey('.')),
             const SizedBox(width: 6),
           ],
         );

@@ -34,6 +34,8 @@ flutter:
     - assets/open_jtalk_dic_utf_8-1.11/
     - assets/correct.png
     - assets/incorrect.png
+    - assets/yame.png
+    - assets/timesup.png
   fonts:
     - family: abacusFont
       fonts:

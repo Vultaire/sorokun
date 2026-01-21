@@ -4,8 +4,14 @@ import 'package:flutter/material.dart';
 class PieTimer extends StatefulWidget {
   final Duration duration;
   final VoidCallback onComplete;
+  final bool delayOver;
 
-  const PieTimer({super.key, required this.duration, required this.onComplete});
+  const PieTimer({
+    super.key,
+    required this.duration,
+    required this.delayOver,
+    required this.onComplete,
+  });
 
   @override
   State<PieTimer> createState() => _PieTimerState();
@@ -14,19 +20,34 @@ class PieTimer extends StatefulWidget {
 class _PieTimerState extends State<PieTimer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _hasStarted = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
-
-    _controller.forward();
-
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         widget.onComplete();
       }
     });
+
+    // Start animation if delay is already over
+    if (widget.delayOver) {
+      _controller.forward();
+      _hasStarted = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(PieTimer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Start animation when delayOver becomes true
+    if (!oldWidget.delayOver && widget.delayOver && !_hasStarted) {
+      _controller.forward();
+      _hasStarted = true;
+    }
   }
 
   @override
@@ -37,21 +58,24 @@ class _PieTimerState extends State<PieTimer>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return CustomPaint(
-            painter: _TimerCirclePainter(
-              progress: 1 - _controller.value,
-              color: Theme.of(context).primaryColor,
-              borderColor: Theme.of(context).dividerColor,
-              borderWidth: 2,
-            ),
-          );
-        },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: 38,
+        height: 38,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return CustomPaint(
+              painter: _TimerCirclePainter(
+                progress: 1 - _controller.value,
+                color: Theme.of(context).primaryColor,
+                borderColor: Theme.of(context).dividerColor,
+                borderWidth: 2,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -80,7 +104,7 @@ class _TimerCirclePainter extends CustomPainter {
       ..color = borderColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = borderWidth;
-    canvas.drawCircle(center, radius - borderWidth / 2, borderPaint);
+    canvas.drawCircle(center, radius - borderWidth, borderPaint);
 
     // Draw filled pie chart
     final fillPaint = Paint()
