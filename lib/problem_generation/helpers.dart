@@ -103,39 +103,64 @@ int getRandomFlashInt(
   }
 }
 
-int getRandomInt(int digitCount, bool digitAllDifferent, int? previousNum) {
-  final rand = Random();
+List<int> getVariableDigitsProblemFromDigitList(List<int> input, Random rand) {
+  //TODO:Minus Count included
+  final reversedNumbers = <List<int>>[];
+  List<int> previous = [];
 
-  while (true) {
-    final digits = <int>[];
+  for (int idx = 0; idx < input.length; idx++) {
+    int len = input[idx];
+    List<int> rowDigits;
+    int firstDigit;
 
-    for (int position = 0; position < digitCount; position++) {
-      List<int> excepts = [];
+    // Step 1: candidate digits for last position
+    List<int> firstDigitCandidates = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-      if (digitAllDifferent) {
-        excepts.addAll(digits);
-      }
-
-      if (position == 0) {
-        excepts.add(0);
-      }
-
-      // Calculate the place value for this position
-      int placeValue = pow(10, digitCount - 1 - position).toInt();
-
-      // If previousNum exists, find what digit is at this place value and exclude it
-      if (previousNum != null) {
-        int digitAtThisPlace = (previousNum ~/ placeValue) % 10;
-        excepts.add(digitAtThisPlace);
-      }
-
-      int nextDigit = getRandomFlashDigit(rand, excepts: excepts);
-      digits.add(nextDigit);
+    // Remove previous row's digit in this column (last column)
+    if (previous.isNotEmpty && previous.length >= len) {
+      firstDigitCandidates.remove(previous[len - 1]);
     }
 
-    int number = int.parse(digits.join());
-    return number;
+    // Pick a random first digit
+    firstDigit =
+        firstDigitCandidates[rand.nextInt(firstDigitCandidates.length)];
+
+    while (true) {
+      // Step 2: build candidates for remaining digits
+      List<int> candidates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..remove(firstDigit);
+
+      // Step 3: pick remainingCount digits
+      int remainingCount = len - 1;
+      candidates.shuffle(rand);
+      rowDigits = candidates.take(remainingCount).toList();
+
+      // Step 4: check column collision with previous row
+      bool collision = false;
+      if (previous.isNotEmpty) {
+        for (int i = 0; i < rowDigits.length; i++) {
+          if (i < previous.length && rowDigits[i] == previous[i]) {
+            collision = true;
+            break;
+          }
+        }
+      }
+
+      if (!collision) break; // valid row found
+    }
+
+    // Combine remaining digits + last digit
+    rowDigits.add(firstDigit);
+    reversedNumbers.add(rowDigits);
+
+    previous = rowDigits;
   }
+
+  return reversedNumbers.map((row) {
+    final unreversed = row.reversed.toList();
+    // Convert each digit to a string, join them, then parse as int
+    final numberStr = unreversed.map((d) => d.toString()).join();
+    return int.parse(numberStr);
+  }).toList();
 }
 
 Decimal randomDecimal(int digits) {

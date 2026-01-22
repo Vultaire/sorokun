@@ -18,7 +18,6 @@ class MitoriProblemSet {
     final bool neverNegative = level.neverNegative;
     final int minusCount = level.minusCount;
     const int minusPerGroup = 2;
-    const bool digitAllDifferent = true;
     final List<int> templateCounts = level.templateCountPerGroup;
 
     // Repeat the group (all template groups together)
@@ -37,8 +36,6 @@ class MitoriProblemSet {
             : 1; // fallback if templateCounts not set
 
         for (int p = 0; p < problemsInGroup; p++) {
-          List<int> problem = [];
-
           // Generate randomLayout list
           List<int> randomLayout = [];
           for (var template in templates) {
@@ -53,11 +50,10 @@ class MitoriProblemSet {
           randomLayout.shuffle();
 
           // Generate problem using shuffled layout
-          for (int digits in randomLayout) {
-            int? lastNum = problem.isNotEmpty ? problem.last : null;
-            int number = getRandomInt(digits, digitAllDifferent, lastNum);
-            problem.add(number);
-          }
+          List<int> problem = getVariableDigitsProblemFromDigitList(
+            randomLayout,
+            rand,
+          );
 
           groupProblems.add(problem);
         }
@@ -77,10 +73,9 @@ class MitoriProblemSet {
               ..shuffle(rand);
 
             int attempts = 0;
-            const maxAttempts = 100;
             bool valid = false;
 
-            while (!valid && attempts < maxAttempts) {
+            while (!valid) {
               attempts++;
               problem = problem.map((x) => x.abs()).toList();
 
@@ -105,6 +100,7 @@ class MitoriProblemSet {
             }
 
             if (!valid) {
+              print(attempts);
               problem = problem.map((x) => x.abs()).toList();
             }
 

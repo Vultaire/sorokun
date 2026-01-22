@@ -166,6 +166,7 @@ class MitoriBottomSheet extends StatelessWidget {
     MitoriLevel.k2,
     MitoriLevel.k1,
     MitoriLevel.dan,
+    MitoriLevel.nsdan,
   ];
 
   @override
