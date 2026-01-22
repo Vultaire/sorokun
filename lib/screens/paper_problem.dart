@@ -16,7 +16,7 @@ class PaperProblemScreen extends StatefulWidget {
     required this.appBarTitle,
     super.key,
   });
-  final ProblemLevel selectedLevel;
+  final PaperProblemLevel selectedLevel;
   final bool isExam;
   final Duration time;
   final String appBarTitle;
@@ -173,21 +173,21 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                   animationState = 1;
                   overlayEntry.markNeedsBuild();
 
+                  final router = GoRouter.of(context);
+
                   // After pause, slide out
                   Future.delayed(const Duration(milliseconds: 1000), () {
                     animationState = 2;
                     overlayEntry.markNeedsBuild();
                     // Navigate to results page
-                    if (mounted && allAnswers != null) {
-                      context.push(
-                        '/paper-results',
-                        extra: {
-                          'allAnswers': allAnswers,
-                          'answerBools': answerBools,
-                          'textFieldDataList': textFieldDataList,
-                        },
-                      );
-                    }
+                    router.go(
+                      '/paper-results',
+                      extra: {
+                        'allAnswers': allAnswers,
+                        'answerBools': answerBools,
+                        'textFieldDataList': textFieldDataList,
+                      },
+                    );
                   });
                 } else if (animationState == 2) {
                   // Finished sliding out, remove overlay
@@ -236,11 +236,12 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.surface,
           actions: [
-            PieTimer(
-              duration: widget.time,
-              delayOver: _delayOver,
-              onComplete: () => _onComplete(outOfTime: true),
-            ),
+            if (widget.isExam)
+              PieTimer(
+                duration: widget.time,
+                delayOver: _delayOver,
+                onComplete: () => _onComplete(outOfTime: true),
+              ),
           ],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),

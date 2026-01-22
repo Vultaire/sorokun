@@ -196,7 +196,7 @@ class Keypad extends StatelessWidget {
   final VoidCallback onDeleteDigit;
   final VoidCallback onClearAll;
   final VoidCallback onSubmit;
-  final ProblemLevel levelType;
+  final PaperProblemLevel levelType;
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +294,7 @@ class Keypad extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomRow(ProblemLevel levelType) {
+  Widget _buildBottomRow(PaperProblemLevel levelType) {
     switch (levelType) {
       case MitoriLevel _:
         return Row(

@@ -132,7 +132,7 @@ class MitoriProblemSet {
 }
 
 void main() {
-  var problem = MitoriProblemSet(level: MitoriLevel.k10b);
+  var problem = MitoriProblemSet(level: MitoriLevel.nsdan);
 
   print(problem.formattedProblems);
   print(problem.formattedAnswers);

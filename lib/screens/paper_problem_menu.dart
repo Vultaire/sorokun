@@ -90,7 +90,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
   Widget _buildProblemTypeSection({
     required String label,
     required String selectLabel,
-    required ProblemLevel currentLevel,
+    required PaperProblemLevel currentLevel,
     required Widget bottomSheet,
   }) {
     return Column(
