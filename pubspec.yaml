@@ -36,6 +36,8 @@ flutter:
     - assets/incorrect.png
     - assets/yame.png
     - assets/timesup.png
+    - assets/kanryou.png
+    - assets/finished.png
   fonts:
     - family: abacusFont
       fonts:

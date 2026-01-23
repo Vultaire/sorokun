@@ -129,8 +129,10 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
         );
         return;
       }
-      onComplete();
     }
+    Future.delayed(Duration(milliseconds: 500), () {
+      onComplete();
+    });
   }
 
   void _handleEmptyAnswer() {

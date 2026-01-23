@@ -103,66 +103,6 @@ int getRandomFlashInt(
   }
 }
 
-List<int> getVariableDigitsProblemFromDigitList(List<int> input, Random rand) {
-  //TODO:Minus Count included
-  final reversedNumbers = <List<int>>[];
-  List<int> previous = [];
-
-  for (int idx = 0; idx < input.length; idx++) {
-    int len = input[idx];
-    List<int> rowDigits;
-    int firstDigit;
-
-    // Step 1: candidate digits for last position
-    List<int> firstDigitCandidates = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-    // Remove previous row's digit in this column (last column)
-    if (previous.isNotEmpty && previous.length >= len) {
-      firstDigitCandidates.remove(previous[len - 1]);
-    }
-
-    // Pick a random first digit
-    firstDigit =
-        firstDigitCandidates[rand.nextInt(firstDigitCandidates.length)];
-
-    while (true) {
-      // Step 2: build candidates for remaining digits
-      List<int> candidates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..remove(firstDigit);
-
-      // Step 3: pick remainingCount digits
-      int remainingCount = len - 1;
-      candidates.shuffle(rand);
-      rowDigits = candidates.take(remainingCount).toList();
-
-      // Step 4: check column collision with previous row
-      bool collision = false;
-      if (previous.isNotEmpty) {
-        for (int i = 0; i < rowDigits.length; i++) {
-          if (i < previous.length && rowDigits[i] == previous[i]) {
-            collision = true;
-            break;
-          }
-        }
-      }
-
-      if (!collision) break; // valid row found
-    }
-
-    // Combine remaining digits + last digit
-    rowDigits.add(firstDigit);
-    reversedNumbers.add(rowDigits);
-
-    previous = rowDigits;
-  }
-
-  return reversedNumbers.map((row) {
-    final unreversed = row.reversed.toList();
-    // Convert each digit to a string, join them, then parse as int
-    final numberStr = unreversed.map((d) => d.toString()).join();
-    return int.parse(numberStr);
-  }).toList();
-}
-
 Decimal randomDecimal(int digits) {
   final rand = Random();
   late String result;

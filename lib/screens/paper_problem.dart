@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soroban_app/problem_generation/variable_digits.dart';
+import 'package:soroban_app/problem_generation/mitori_set.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
 
 import '../models/level_definitions.dart';
@@ -30,11 +30,15 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   final GlobalKey<_DivMultWindowState> _divMultKey = GlobalKey();
   bool _delayOver = false;
   bool _showLoading = false;
+  Stopwatch? _stopwatch;
 
   @override
   void initState() {
     super.initState();
     _startDelaySequence();
+    if (widget.isExam) {
+      _stopwatch = Stopwatch();
+    }
   }
 
   void _startDelaySequence() async {
@@ -45,7 +49,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     setState(() {
       _showLoading = true;
     });
-    // TODO: Play your sound here
+    // TODO: Play sound here
 
     // loading animation
     await Future.delayed(DelayWindow.delayToStart);
@@ -55,6 +59,8 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     setState(() {
       _delayOver = true;
     });
+
+    _stopwatch?.start();
   }
 
   Future<bool> _onWillPop() async {
@@ -125,6 +131,9 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     List<String>? allAnswers;
     List<bool>? answerBools;
     List<TextFieldData>? textFieldDataList;
+    Duration? elapsed;
+
+    _stopwatch?.stop();
 
     if (widget.selectedLevel is MitoriLevel) {
       final state = _mitorizanKey.currentState;
@@ -132,6 +141,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         allAnswers = state.allAnswers;
         answerBools = state.answerBools;
         textFieldDataList = state.textFieldDataList;
+        elapsed = _stopwatch?.elapsed;
       }
     } else if (widget.selectedLevel is DivMultLevel) {
       final state = _divMultKey.currentState;
@@ -139,16 +149,17 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         allAnswers = state.allAnswers;
         answerBools = state.answerBools;
         textFieldDataList = state.textFieldDataList;
+        elapsed = _stopwatch?.elapsed;
       }
     }
 
-    // Play "Time's Up" animation if out of time
-    if (outOfTime) {
-      int animationState = 0;
-      late OverlayEntry overlayEntry;
-
-      overlayEntry = OverlayEntry(
-        builder: (context) => Stack(
+    int animationState = 0;
+    late OverlayEntry overlayEntry;
+    overlayEntry = OverlayEntry(
+      builder: (context) => Material(
+        // Add Material widget for proper transparency
+        color: Colors.transparent,
+        child: Stack(
           children: [
             Container(
               width: double.infinity,
@@ -169,28 +180,23 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
               curve: animationState == 0 ? Curves.easeOut : Curves.easeIn,
               onEnd: () {
                 if (animationState == 0) {
-                  // Finished sliding in, now pause
                   animationState = 1;
                   overlayEntry.markNeedsBuild();
-
                   final router = GoRouter.of(context);
-
-                  // After pause, slide out
                   Future.delayed(const Duration(milliseconds: 1000), () {
                     animationState = 2;
                     overlayEntry.markNeedsBuild();
-                    // Navigate to results page
                     router.go(
                       '/paper-results',
                       extra: {
                         'allAnswers': allAnswers,
                         'answerBools': answerBools,
                         'textFieldDataList': textFieldDataList,
+                        'elapsed': elapsed,
                       },
                     );
                   });
                 } else if (animationState == 2) {
-                  // Finished sliding out, remove overlay
                   overlayEntry.remove();
                 }
               },
@@ -201,21 +207,27 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                       value * MediaQuery.of(context).size.width,
                       0,
                     ),
-                    child: Image.asset(
-                      'assets/yame.png',
-                      width: 200,
-                      height: 200,
-                    ),
+                    child: outOfTime
+                        ? Image.asset(
+                            'assets/yame.png',
+                            width: 200,
+                            height: 200,
+                          )
+                        : Image.asset(
+                            'assets/kanryou.png',
+                            width: 200,
+                            height: 200,
+                          ),
                   ),
                 );
               },
             ),
           ],
         ),
-      );
-      Overlay.of(context).insert(overlayEntry);
-      await Future.delayed(const Duration(milliseconds: 2400));
-    }
+      ),
+    );
+    Overlay.of(context).insert(overlayEntry);
+    await Future.delayed(const Duration(milliseconds: 2400));
   }
 
   @override

@@ -6,12 +6,14 @@ class PaperResultsScreen extends StatelessWidget {
   final List<String> allAnswers;
   final List<bool> answerBools;
   final List<TextFieldData> textFieldDataList;
+  final Duration? elapsed;
 
   const PaperResultsScreen({
     super.key,
     required this.allAnswers,
     required this.answerBools,
     required this.textFieldDataList,
+    this.elapsed,
   });
 
   @override

@@ -12,12 +12,12 @@ class PaperConfPage extends StatefulWidget {
 class _PaperConfPageState extends State<PaperConfPage> {
   DivMultLevel multiplicationLevel = DivMultLevel.mk6;
   DivMultLevel divisionLevel = DivMultLevel.dk6;
-  MitoriLevel mitoriLevel = MitoriLevel.k6;
+  MitoriLevel mitoriLevel = MitoriLevel.zsk6;
   String multiplicationLevelDisplayString = '';
   String divisionLevelDisplayString = '';
   String mitoriLevelDisplayString = '';
   bool isExam = false;
-  Duration? time = Duration(seconds: 3);
+  Duration? time = MitoriLevel.zsk6.timeLimit;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +48,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
                     setState(() {
                       mitoriLevel = newLevel;
                       mitoriLevelDisplayString = newLevel.displayString;
+                      time = newLevel.timeLimit;
                     });
                   },
                 ),
@@ -62,6 +63,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
                     setState(() {
                       multiplicationLevel = newLevel;
                       multiplicationLevelDisplayString = newLevel.displayString;
+                      time = newLevel.timeLimit;
                     });
                   },
                 ),
@@ -76,6 +78,7 @@ class _PaperConfPageState extends State<PaperConfPage> {
                     setState(() {
                       divisionLevel = newLevel;
                       divisionLevelDisplayString = newLevel.displayString;
+                      time = newLevel.timeLimit;
                     });
                   },
                 ),
@@ -153,19 +156,33 @@ class MitoriBottomSheet extends StatelessWidget {
   final MitoriLevel mitoriLevel;
   final Function(MitoriLevel) onLevelChanged;
 
-  static const List<MitoriLevel> levels = [
-    MitoriLevel.k10a,
-    MitoriLevel.k10b,
-    MitoriLevel.k9,
-    MitoriLevel.k8,
-    MitoriLevel.k7,
-    MitoriLevel.k6,
-    MitoriLevel.k5,
-    MitoriLevel.k4,
-    MitoriLevel.k3,
-    MitoriLevel.k2,
-    MitoriLevel.k1,
-    MitoriLevel.dan,
+  static const List<MitoriLevel> zslevels = [
+    MitoriLevel.zsk10a,
+    MitoriLevel.zsk10b,
+    MitoriLevel.zsk9,
+    MitoriLevel.zsk8,
+    MitoriLevel.zsk7,
+    MitoriLevel.zsk6,
+    MitoriLevel.zsk5,
+    MitoriLevel.zsk4,
+    MitoriLevel.zsk3,
+    MitoriLevel.zsk2,
+    MitoriLevel.zsk1,
+    MitoriLevel.zsdan,
+  ];
+
+  static const List<MitoriLevel> nslevels = [
+    MitoriLevel.nsk9,
+    MitoriLevel.nsk8,
+    MitoriLevel.nsk7,
+    MitoriLevel.nsk6,
+    MitoriLevel.nsk5,
+    MitoriLevel.nsk4,
+    MitoriLevel.nsk3,
+    MitoriLevel.nskj2,
+    MitoriLevel.nsk2,
+    MitoriLevel.nskj1,
+    MitoriLevel.nsk1,
     MitoriLevel.nsdan,
   ];
 
@@ -178,7 +195,7 @@ class MitoriBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: levels.map((level) {
+            children: nslevels.map((level) {
               return ElevatedButton(
                 onPressed: () {
                   onLevelChanged(level);
@@ -204,7 +221,7 @@ class MultiplicationBottomSheet extends StatelessWidget {
   final DivMultLevel multiplicationLevel;
   final Function(DivMultLevel) onLevelChanged;
 
-  static const List<DivMultLevel> levels = [
+  static const List<DivMultLevel> zslevels = [
     DivMultLevel.mk9,
     DivMultLevel.mk8,
     DivMultLevel.mk7,
@@ -226,7 +243,7 @@ class MultiplicationBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: levels.map((level) {
+            children: zslevels.map((level) {
               return ElevatedButton(
                 onPressed: () {
                   onLevelChanged(level);
@@ -252,7 +269,7 @@ class DivisionBottomSheet extends StatelessWidget {
   final DivMultLevel divisionLevel;
   final Function(DivMultLevel) onLevelChanged;
 
-  static const List<DivMultLevel> levels = [
+  static const List<DivMultLevel> zslevels = [
     DivMultLevel.dk8,
     DivMultLevel.dk7,
     DivMultLevel.dk6,
@@ -273,7 +290,7 @@ class DivisionBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: levels.map((level) {
+            children: zslevels.map((level) {
               return ElevatedButton(
                 onPressed: () {
                   onLevelChanged(level);

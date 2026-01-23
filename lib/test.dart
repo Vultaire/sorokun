@@ -1,21 +1,24 @@
 import 'dart:math';
 
-List<List<int>> generate2DArray(List<int> input) {
+List<int> generateMitoriProblemFromDigitList(List<int> digitList) {
   final random = Random();
 
   // Calculate sum and generate pool
-  int sum = input.fold(0, (a, b) => a + b);
-  List<int> pool = _generatePool(sum, random, input);
+  int sum = digitList.fold(0, (a, b) => a + b);
+  List<int> pool = _generatePool(sum, random, digitList);
 
   for (int attempt = 0; attempt < 100; attempt++) {
     pool.shuffle(random);
 
     // Build initial array by distributing pool
-    List<List<int>> array = _buildInitialArray(input, pool);
+    List<List<int>> array = _buildInitialArray(digitList, pool);
 
     // Fix violations through swapping
     if (_fixViolations(array, random, maxIterations: 10000)) {
-      return array;
+      return array.map((row) {
+        final unreversed = row.reversed;
+        return int.parse(unreversed.join());
+      }).toList();
     }
   }
 
@@ -234,29 +237,28 @@ void _randomSwap(List<List<int>> array, Random random) {
 }
 
 List<int> _generatePool(int sum, Random random, List<int> input) {
-  List<int> pool = [];
+  final bool allOnes = input.every((len) => len == 1);
 
-  // Check if all rows have length 1 (can't use 0)
-  bool allOnes = input.every((len) => len == 1);
+  final List<int> digits = allOnes
+      ? [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-  // Add complete sets of 10 digits (0-9)
-  int completeSets = sum ~/ 10;
+  final int base = digits.length;
+
+  final int completeSets = sum ~/ base;
+  final int remainder = sum % base;
+
+  final List<int> pool = [];
+
+  // Add full sets
   for (int i = 0; i < completeSets; i++) {
-    if (allOnes) {
-      pool.addAll([1, 2, 3, 4, 5, 6, 7, 8, 9, 1]);
-    } else {
-      pool.addAll([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    }
+    pool.addAll(digits);
   }
 
-  // Add remaining digits from a random partial set
-  int remainder = sum % 10;
+  // Add remainder
   if (remainder > 0) {
-    List<int> partialSet = allOnes
-        ? [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    partialSet.shuffle(random);
-    pool.addAll(partialSet.take(remainder));
+    final shuffled = List<int>.from(digits)..shuffle(random);
+    pool.addAll(shuffled.take(remainder));
   }
 
   return pool;
@@ -281,72 +283,28 @@ enum ViolationType { rowDuplicate, verticalDuplicate, lastColZero }
 // Example usage and testing
 void main() {
   print('Testing [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]...');
-  List<int> input0 = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8];
+  List<int> input0 = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7];
   print('Input: $input0 (sum: ${input0.fold(0, (a, b) => a + b)})');
-  var result0 = generate2DArray(input0);
+  var result0 = generateMitoriProblemFromDigitList(input0);
   _printArray(result0);
-  _validateArray(result0, input0);
 
   print('\n---\n');
 
   List<int> input1 = [1, 1, 1, 1, 1, 1, 1];
   print('Input: $input1 (sum: ${input1.fold(0, (a, b) => a + b)})');
-  var result1 = generate2DArray(input1);
+  var result1 = generateMitoriProblemFromDigitList(input1);
   _printArray(result1);
-  _validateArray(result1, input1);
 
   print('\n---\n');
 
   List<int> input2 = [5, 6, 7, 8, 5, 6, 7, 8, 8, 7];
   print('Input: $input2 (sum: ${input2.fold(0, (a, b) => a + b)})');
-  var result2 = generate2DArray(input2);
+  var result2 = generateMitoriProblemFromDigitList(input2);
   _printArray(result2);
-  _validateArray(result2, input2);
 }
 
-void _printArray(List<List<int>> arr) {
-  for (var row in arr) {
-    print(row);
+void _printArray(List<int> list) {
+  for (var int in list) {
+    print(int);
   }
 }
-
-void _validateArray(List<List<int>> arr, List<int> input) {
-  print('\nValidation:');
-
-  for (int i = 0; i < arr.length; i++) {
-    if (arr[i].length != input[i]) {
-      print('❌ Row $i has wrong length: ${arr[i].length} != ${input[i]}');
-      return;
-    }
-  }
-  print('✓ Row lengths match input');
-
-  for (int i = 0; i < arr.length; i++) {
-    if (arr[i].toSet().length != arr[i].length) {
-      print('❌ Row $i has duplicates: ${arr[i]}');
-      return;
-    }
-  }
-  print('✓ All digits unique within rows');
-
-  for (int i = 1; i < arr.length; i++) {
-    for (int j = 0; j < arr[i].length && j < arr[i - 1].length; j++) {
-      if (arr[i][j] == arr[i - 1][j]) {
-        print('❌ Digit at row $i, col $j matches digit above');
-        return;
-      }
-    }
-  }
-  print('✓ No digit matches the one immediately above');
-
-  for (int i = 0; i < arr.length; i++) {
-    if (arr[i].last == 0) {
-      print('❌ Row $i ends with 0: ${arr[i]}');
-      return;
-    }
-  }
-  print('✓ No row ends with 0');
-
-  print('\n✅ All constraints satisfied!');
-}
-

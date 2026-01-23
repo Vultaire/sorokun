@@ -51,6 +51,7 @@ class _AbacusAppState extends State<AbacusApp> {
               allAnswers: args?['allAnswers'],
               answerBools: args?['answerBools'],
               textFieldDataList: args?['textFieldDataList'],
+              elapsed: args?['elapsed'],
             ),
           );
         },

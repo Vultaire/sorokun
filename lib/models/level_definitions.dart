@@ -155,119 +155,135 @@ enum DivMultLevel implements PaperProblemLevel {
 }
 
 enum MitoriLevel implements PaperProblemLevel {
-  k10a(
-    [
+  zsk10a(
+    templates: [
       [
         {"digits": 1, "count": 6},
       ],
     ],
-    2,
-    [5],
-    3,
-    true,
-    '10級のみとり算 (A)',
-    Duration(minutes: 7),
+    minusCount: 2,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '10級のみとり算 (A)',
+    timeLimit: Duration(minutes: 7),
   ),
-  k10b(
-    [
+  zsk10b(
+    templates: [
       [
         {"digits": 1, "count": 2},
         {"digits": 2, "count": 2},
       ],
     ],
-    2,
-    [5],
-    3,
-    true,
-    '10級のみとり算 (B)',
-    Duration(minutes: 7),
+    minusCount: 2,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '10級のみとり算 (B)',
+    timeLimit: Duration(minutes: 7),
   ),
-  k9(
-    [
+  zsk9(
+    templates: [
       [
         {"digits": 1, "count": 2},
         {"digits": 2, "count": 3},
       ],
     ],
-    2,
-    [5],
-    3,
-    true,
-    '9級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 2,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '9級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k8(
-    [
+  zsk8(
+    templates: [
       [
         {"digits": 2, "count": 5},
       ],
     ],
-    2,
-    [5],
-    3,
-    true,
-    '8級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 2,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '8級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k7(
-    [
+  zsk7(
+    templates: [
       [
         {"digits": 2, "count": 2},
         {"digits": 3, "count": 2},
       ],
     ],
-    2,
-    [5],
-    3,
-    true,
-    '7級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 2,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '7級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k6(
-    [
+  zsk6(
+    templates: [
       [
         {"digits": 2, "count": 2},
         {"digits": 3, "count": 5},
       ],
     ],
-    3,
-    [5],
-    3,
-    true,
-    '6級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 3,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '6級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k5(
-    [
+  zsk5(
+    templates: [
       [
         {"digits": 3, "count": 4},
         {"digits": 4, "count": 3},
       ],
     ],
-    3,
-    [5],
-    3,
-    true,
-    '5級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 3,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '5級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k4(
-    [
+  zsk4(
+    templates: [
       [
         {"digits": 3, "count": 2},
         {"digits": 4, "count": 3},
         {"digits": 5, "count": 2},
       ],
     ],
-    3,
-    [5],
-    3,
-    true,
-    '4級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 3,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '4級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k3(
-    [
+  zsk3(
+    templates: [
       [
         {"digits": 3, "count": 3},
         {"digits": 4, "count": 2},
@@ -277,15 +293,17 @@ enum MitoriLevel implements PaperProblemLevel {
         {"digits": 4, "count": 8},
       ],
     ],
-    3,
-    [3, 2],
-    3,
-    true,
-    '3級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 3,
+    minusProblemsPerGroup: 1,
+    denomination: .zenshuren,
+    templateCountPerGroup: [3, 2],
+    repeat: 3,
+    neverNegative: true,
+    displayString: '3級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k2(
-    [
+  zsk2(
+    templates: [
       [
         {"digits": 4, "count": 4},
         {"digits": 5, "count": 2},
@@ -296,15 +314,17 @@ enum MitoriLevel implements PaperProblemLevel {
         {'digits': 5, 'count': 6},
       ],
     ],
-    3,
-    [3, 2],
-    3,
-    false,
-    '2級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 3,
+    minusProblemsPerGroup: 1,
+    denomination: .zenshuren,
+    templateCountPerGroup: [3, 2],
+    repeat: 3,
+    neverNegative: false,
+    displayString: '2級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  k1(
-    [
+  zsk1(
+    templates: [
       [
         {"digits": 4, "count": 2},
         {"digits": 5, "count": 2},
@@ -316,15 +336,17 @@ enum MitoriLevel implements PaperProblemLevel {
         {'digits': 6, 'count': 4},
       ],
     ],
-    3,
-    [3, 2],
-    3,
-    false,
-    '1級のみとり算',
-    Duration(minutes: 7),
+    minusCount: 3,
+    minusProblemsPerGroup: 1,
+    denomination: .zenshuren,
+    templateCountPerGroup: [3, 2],
+    repeat: 3,
+    neverNegative: false,
+    displayString: '1級のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  dan(
-    [
+  zsdan(
+    templates: [
       [
         {"digits": 3, "count": 3},
         {"digits": 4, "count": 2},
@@ -366,47 +388,228 @@ enum MitoriLevel implements PaperProblemLevel {
         {"digits": 9, "count": 2},
       ],
     ],
-    3,
-    [5, 5, 5, 5, 5, 5],
-    1,
-    false,
-    '段位のみとり算',
-    Duration(minutes: 7),
+    minusCount: 3,
+    minusProblemsPerGroup: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5, 5, 5, 5, 5, 5],
+    repeat: 1,
+    neverNegative: false,
+    displayString: '段位のみとり算',
+    timeLimit: Duration(minutes: 7),
   ),
-  nsdan(
-    [
+  nsk9(
+    templates: [
+      [
+        {"digits": 2, "count": 5},
+      ],
+    ],
+    minusCount: 1,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '10級/9級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsk8(
+    templates: [
+      [
+        {"digits": 4, "count": 10},
+      ],
+    ],
+    minusCount: 2,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '8級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsk7(
+    templates: [
+      [
+        {"digits": 2, "count": 10},
+      ],
+    ],
+    minusCount: 3,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '7級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsk6(
+    templates: [
+      [
+        {"digits": 3, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '6級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsk5(
+    templates: [
+      [
+        {"digits": 4, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    neverNegative: true,
+    displayString: '5級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsk4(
+    templates: [
+      [
+        {"digits": 5, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '4級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  // nskj3(
+  //   templates: [
+  //     [
+  //       {"digits": 5, "count": 10},
+  //     ],
+  //     [
+  //       {"digits": 6, "count": 10},
+  //     ],
+  //   ],
+  //   minusCount: 4,
+  //   minusProblemsPerGroup: 2,
+  //   denomination: .nisshou,
+  //   templateCountPerGroup: [5, 5],
+  //   repeat: 1,
+  //   displayString: '準3級みとり算',
+  //   timeLimit: Duration(minutes: 10),
+  // ),
+  nsk3(
+    templates: [
+      [
+        {"digits": 6, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '3級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nskj2(
+    templates: [
+      [
+        {"digits": 7, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '準2級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsk2(
+    templates: [
+      [
+        {"digits": 8, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '2級みとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nskj1(
+    templates: [
+      [
+        {"digits": 9, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '準1級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsk1(
+    templates: [
       [
         {"digits": 10, "count": 10},
       ],
     ],
-    4,
-    [5],
-    2,
-    true,
-    '日商みとり算段位',
-    Duration(minutes: 10),
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '1級のみとり算',
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsdan(
+    templates: [
+      [
+        {"digits": 10, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    minusProblemsPerGroup: 2,
+    denomination: .nisshou,
+    templateCountPerGroup: [10],
+    repeat: 1,
+    displayString: '段位のみとり算',
+    timeLimit: Duration(minutes: 10),
   );
 
-  const MitoriLevel(
-    this.templates,
-    this.minusCount,
-    this.templateCountPerGroup,
-    this.repeat,
+  const MitoriLevel({
+    required this.templates,
+    required this.minusCount,
+    this.minusProblemsPerGroup,
+    required this.denomination,
+    required this.templateCountPerGroup,
+    required this.repeat,
     this.neverNegative,
-    this.displayString,
-    this.timeLimit,
-  );
+    required this.displayString,
+    required this.timeLimit,
+  });
   final List<List<Map<String, int>>> templates;
   final int minusCount;
+  final int? minusProblemsPerGroup;
+  final Denomination denomination;
   final List<int> templateCountPerGroup;
   final int repeat;
-  final bool neverNegative;
+  final bool? neverNegative; // nisshou is always neverNegative
 
   @override
   final String displayString;
   @override
   final Duration timeLimit;
 }
+
+enum Denomination { nisshou, zenshuren }
 
 sealed class PaperProblemLevel {
   String get displayString;
