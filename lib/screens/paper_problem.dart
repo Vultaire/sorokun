@@ -155,75 +155,71 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
 
     int animationState = 0;
     late OverlayEntry overlayEntry;
+
     overlayEntry = OverlayEntry(
-      builder: (context) => Material(
-        // Add Material widget for proper transparency
-        color: Colors.transparent,
-        child: Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.black.withValues(alpha: 0.7),
+      builder: (context) => Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.black.withValues(alpha: 0.7),
+          ),
+          TweenAnimationBuilder<double>(
+            key: ValueKey(animationState),
+            tween: Tween(
+              begin: animationState == 0
+                  ? 2.0
+                  : (animationState == 1 ? 0.0 : 0.0),
+              end: animationState == 0
+                  ? 0.0
+                  : (animationState == 1 ? 0.0 : -2.0),
             ),
-            TweenAnimationBuilder<double>(
-              key: ValueKey(animationState),
-              tween: Tween(
-                begin: animationState == 0
-                    ? 2.0
-                    : (animationState == 1 ? 0.0 : 0.0),
-                end: animationState == 0
-                    ? 0.0
-                    : (animationState == 1 ? 0.0 : -2.0),
-              ),
-              duration: Duration(milliseconds: animationState == 1 ? 0 : 500),
-              curve: animationState == 0 ? Curves.easeOut : Curves.easeIn,
-              onEnd: () {
-                if (animationState == 0) {
-                  animationState = 1;
+            duration: Duration(milliseconds: animationState == 1 ? 0 : 500),
+            curve: animationState == 0 ? Curves.easeOut : Curves.easeIn,
+            onEnd: () {
+              if (animationState == 0) {
+                // Finished sliding in, now pause
+                animationState = 1;
+                overlayEntry.markNeedsBuild();
+
+                final router = GoRouter.of(context);
+
+                // After pause, slide out
+                Future.delayed(const Duration(milliseconds: 1000), () {
+                  animationState = 2;
                   overlayEntry.markNeedsBuild();
-                  final router = GoRouter.of(context);
-                  Future.delayed(const Duration(milliseconds: 1000), () {
-                    animationState = 2;
-                    overlayEntry.markNeedsBuild();
-                    router.go(
-                      '/paper-results',
-                      extra: {
-                        'allAnswers': allAnswers,
-                        'answerBools': answerBools,
-                        'textFieldDataList': textFieldDataList,
-                        'elapsed': elapsed,
-                      },
-                    );
-                  });
-                } else if (animationState == 2) {
-                  overlayEntry.remove();
-                }
-              },
-              builder: (context, value, child) {
-                return Center(
-                  child: Transform.translate(
-                    offset: Offset(
-                      value * MediaQuery.of(context).size.width,
-                      0,
-                    ),
-                    child: outOfTime
-                        ? Image.asset(
-                            'assets/yame.png',
-                            width: 200,
-                            height: 200,
-                          )
-                        : Image.asset(
-                            'assets/kanryou.png',
-                            width: 200,
-                            height: 200,
-                          ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+                  // Navigate to results page
+                  router.go(
+                    '/paper-results',
+                    extra: {
+                      'allAnswers': allAnswers,
+                      'answerBools': answerBools,
+                      'textFieldDataList': textFieldDataList,
+                      'elapsed': elapsed,
+                    },
+                  );
+                });
+              } else if (animationState == 2) {
+                // Finished sliding out, remove overlay
+                overlayEntry.remove();
+              }
+            },
+            builder: (context, value, child) {
+              return Center(
+                child: Transform.translate(
+                  offset: Offset(value * MediaQuery.of(context).size.width, 0),
+                  child: outOfTime
+                      ? Image.asset('assets/yame.png', width: 200, height: 200)
+                      : Image.asset(
+                          'assets/kanryou.png',
+                          width: 200,
+                          height: 200,
+                        ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
     Overlay.of(context).insert(overlayEntry);

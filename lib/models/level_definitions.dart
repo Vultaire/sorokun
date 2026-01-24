@@ -482,6 +482,7 @@ enum MitoriLevel implements PaperProblemLevel {
     displayString: '4級のみとり算',
     timeLimit: Duration(minutes: 10),
   ),
+  // // Minus generation doesn't work.
   // nskj3(
   //   templates: [
   //     [
