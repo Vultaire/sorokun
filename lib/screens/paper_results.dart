@@ -35,21 +35,15 @@ class PaperResultsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 250, maxHeight: 250),
-                child: CountUpText(
-                  actualScore: getScore(selectedLevel, answerBools),
-                  maxScore: getMaxScore(selectedLevel, answerBools),
-                  duration: Duration(milliseconds: 3000),
-                  passThreshold: selectedLevel.denomination.passThreshold,
-                  style: TextStyle(
-                    fontSize: 78,
-                    fontWeight: .bold,
-                    fontFamily: 'bizUDPGR',
-                  ),
-                ),
+            CountUpText(
+              actualScore: getScore(selectedLevel, answerBools),
+              maxScore: getMaxScore(selectedLevel, answerBools),
+              duration: Duration(milliseconds: 3000),
+              passThreshold: selectedLevel.denomination.passThreshold,
+              style: TextStyle(
+                fontSize: 78,
+                fontWeight: .bold,
+                fontFamily: 'bizUDPGR',
               ),
             ),
 
@@ -259,16 +253,17 @@ class _CountUpTextState extends State<CountUpText>
             tickScale = 1.0 + pulse * pulseAmplitude;
           }
         }
-        return CustomPaint(
-          painter: CircularProgressPainter(
-            progress: _progressAnimation.value,
-            ringColor: colorScheme.primary,
-            alternateRingColor: colorScheme.primary.withAlpha(170),
-            backgroundColor: colorScheme.surfaceContainerHighest,
-            tickPosition: widget.passThreshold,
-            tickScale: tickScale,
-          ),
-          child: Center(
+        return Padding(
+          padding: const EdgeInsets.all(70.0),
+          child: CustomPaint(
+            painter: CircularProgressPainter(
+              progress: _progressAnimation.value,
+              ringColor: colorScheme.primary,
+              alternateRingColor: colorScheme.primary.withAlpha(170),
+              backgroundColor: colorScheme.surfaceContainerHighest,
+              tickPosition: widget.passThreshold,
+              tickScale: tickScale,
+            ),
             child: FittedBox(
               fit: .contain,
               child: Column(
@@ -299,7 +294,13 @@ class _CountUpTextState extends State<CountUpText>
                       Row(
                         crossAxisAlignment: .end,
                         children: [
-                          Text('${_countAnimation.value}', style: widget.style),
+                          Transform.translate(
+                            offset: Offset(0, 10),
+                            child: Text(
+                              '${_countAnimation.value}',
+                              style: widget.style,
+                            ),
+                          ),
                           Text(
                             widget.suffix,
                             style: widget.style.copyWith(
@@ -347,7 +348,7 @@ class CircularProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
+    final center = Offset(size.width / 2, size.height / 2 - 10);
     final radius = (size.width * 0.7);
 
     // Draw background circle
@@ -470,16 +471,13 @@ class _PassFailState extends State<PassFail>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      child: FadeTransition(
-        opacity: _opacity,
-        child: ScaleTransition(
-          scale: _scale,
-          child: Text(
-            widget.userPassed ? '合格' : '不合格',
-            style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
-          ),
+    return FadeTransition(
+      opacity: _opacity,
+      child: ScaleTransition(
+        scale: _scale,
+        child: Text(
+          widget.userPassed ? '合格' : '不合格',
+          style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
         ),
       ),
     );
