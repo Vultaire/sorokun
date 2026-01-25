@@ -348,7 +348,7 @@ class CircularProgressPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width * 0.6);
+    final radius = (size.width * 0.7);
 
     // Draw background circle
     final backgroundPaint = Paint()
@@ -478,7 +478,7 @@ class _PassFailState extends State<PassFail>
           scale: _scale,
           child: Text(
             widget.userPassed ? '合格' : '不合格',
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
           ),
         ),
       ),

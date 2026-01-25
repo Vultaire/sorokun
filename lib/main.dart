@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/paper_problem_menu.dart';
@@ -7,7 +8,9 @@ import 'package:soroban_app/screens/paper_results.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SoLoud.instance.init();
   runApp(const AbacusApp());
 }
 
@@ -61,15 +64,17 @@ class DebugMockData {
       false,
       false,
       false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
       true,
       true,
       true,

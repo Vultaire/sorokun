@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/problem_generation/mitori_set.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
@@ -323,6 +324,43 @@ class TextFieldData {
   double caretPos = 0.0;
 }
 
+class SoundController {
+  final SoLoud _soloud = SoLoud.instance;
+  AudioSource? keyTap;
+  AudioSource? correct;
+  AudioSource? incorrect;
+  AudioSource? delete;
+  bool _isReady = false;
+
+  Future<void> init() async {
+    if (_isReady || _soloud.isInitialized) {
+      _isReady = true;
+      return;
+    }
+    try {
+      await _soloud.init();
+      keyTap = await _soloud.loadAsset('assets/key-tap.wav');
+      correct = await _soloud.loadAsset('assets/correct.wav');
+      incorrect = await _soloud.loadAsset('assets/incorrect.wav');
+      delete = await _soloud.loadAsset('assets/delete.wav');
+      _isReady = true;
+    } catch (e) {
+      print('Error initializing SoundController: $e');
+    }
+  }
+
+  void play(AudioSource? sound) {
+    if (!_isReady || sound == null) return; // This prevents the error
+    _soloud.play(sound);
+  }
+
+  void dispose() {
+    if (_soloud.isInitialized) {
+      _soloud.deinit();
+    }
+  }
+}
+
 class DelayWindow extends StatelessWidget {
   const DelayWindow({super.key, required this.showLoading});
   final bool showLoading;
@@ -374,6 +412,11 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
   @override
   late final List<TextFieldData> textFieldDataList;
 
+  late final SoundController _sound;
+
+  @override
+  SoundController get sound => _sound;
+
   @override
   VoidCallback get onComplete => widget.onComplete;
 
@@ -393,6 +436,15 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       (_) => TextFieldData(),
     );
     _answerBools = List.generate(allProblems.length, (_) => false);
+    _sound = SoundController();
+
+    // Use postFrameCallback to ensure initialization happens after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _sound.init();
+      if (mounted) {
+        setState(() {}); // Optional: trigger rebuild if needed
+      }
+    });
   }
 
   void _initializeProblem(MitoriLevel level) {
@@ -401,6 +453,12 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
     );
     allProblems = fullProblemSet.formattedProblems;
     allAnswers = fullProblemSet.formattedAnswers;
+  }
+
+  @override
+  void dispose() {
+    _sound.dispose();
+    super.dispose();
   }
 
   @override
@@ -533,6 +591,11 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
   @override
   late final List<TextFieldData> textFieldDataList;
 
+  late final SoundController _sound;
+
+  @override
+  SoundController get sound => _sound;
+
   @override
   VoidCallback get onComplete => widget.onComplete;
 
@@ -552,6 +615,15 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
       (_) => TextFieldData(),
     );
     _answerBools = List.generate(allProblems.length, (_) => false);
+    _sound = SoundController();
+
+    // Use postFrameCallback to ensure initialization happens after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _sound.init();
+      if (mounted) {
+        setState(() {}); // Optional: trigger rebuild if needed
+      }
+    });
   }
 
   void _initializeProblem(DivMultLevel level) {
@@ -561,6 +633,12 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
     allProblems = fullProblemSet.formattedProblems;
     allAnswers = fullProblemSet.formattedAnswers;
     intRoundIndex = allProblems.indexWhere((item) => item.startsWith('\\'));
+  }
+
+  @override
+  void dispose() {
+    sound.dispose();
+    super.dispose();
   }
 
   @override

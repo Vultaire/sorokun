@@ -45,6 +45,11 @@ flutter:
     - assets/passthreshold.wav
     - assets/pass.wav
     - assets/fail.wav
+    - assets/key-tap.wav
+    - assets/correct.wav
+    - assets/incorrect.wav
+    - assets/progress.wav
+    - assets/delete.wav
   fonts:
     - family: abacusFont
       fonts:

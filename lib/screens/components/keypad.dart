@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 
 import '../../problem_generation/helpers.dart';
@@ -17,6 +18,8 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   VoidCallback get onComplete;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
 
+  SoundController get sound;
+
   void appendDigit(String digit) {
     setState(() {
       final data = textFieldDataList[currentIndex];
@@ -24,26 +27,30 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
       if (digit == '-') {
         if (!data.internalString.startsWith('-')) {
           data.internalString = '-${data.internalString}';
+          sound.play(sound.keyTap);
         } else {
           data.internalString = data.internalString.substring(1);
+          sound.play(sound.delete);
         }
       } else if (digit == '.') {
         if (!data.internalString.contains('.') &&
             data.internalString.isNotEmpty &&
             data.internalString != '-') {
           data.internalString += digit;
+          sound.play(sound.keyTap);
         }
       } else if (digit == 'a') {
         if (!data.internalString.endsWith('a') &&
             data.internalString.isNotEmpty &&
             data.internalString != '-') {
           data.internalString += digit;
+          sound.play(sound.keyTap);
         }
+      } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length < 11) {
+        data.internalString += digit;
+        sound.play(sound.keyTap);
       } else {
-        String digitsOnly = data.formatted.replaceAll(_digitsOnlyRegex, '');
-        if (digitsOnly.length < 11) {
-          data.internalString += digit;
-        }
+        sound.play(sound.incorrect);
       }
       _updateText(data);
     });
