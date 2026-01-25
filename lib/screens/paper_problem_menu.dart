@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../models/level_definitions.dart';
 
-class PaperConfPage extends StatefulWidget {
-  const PaperConfPage({super.key});
+class PaperMenuPage extends StatefulWidget {
+  const PaperMenuPage({super.key});
 
   @override
-  State<PaperConfPage> createState() => _PaperConfPageState();
+  State<PaperMenuPage> createState() => _PaperMenuPageState();
 }
 
-class _PaperConfPageState extends State<PaperConfPage> {
+class _PaperMenuPageState extends State<PaperMenuPage> {
   DivMultLevel multiplicationLevel = DivMultLevel.mk6;
   DivMultLevel divisionLevel = DivMultLevel.dk6;
   MitoriLevel mitoriLevel = MitoriLevel.zsk6;

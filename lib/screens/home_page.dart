@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
 
               ElevatedButton(
                 onPressed: () {
-                  context.push('/paperconf');
+                  context.push('/paper-menu');
                 },
                 child: const Text('Train In The App'),
               ),

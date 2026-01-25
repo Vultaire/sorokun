@@ -1,16 +1,27 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:go_router/go_router.dart';
+
+import '../models/level_definitions.dart';
 import 'paper_problem.dart';
 
 class PaperResultsScreen extends StatelessWidget {
+  final PaperProblemLevel selectedLevel;
+  final bool isExam;
   final List<String> allAnswers;
+  final List<dynamic> allProblems;
   final List<bool> answerBools;
   final List<TextFieldData> textFieldDataList;
   final Duration? elapsed;
 
   const PaperResultsScreen({
     super.key,
+    required this.selectedLevel,
+    required this.isExam,
     required this.allAnswers,
+    required this.allProblems,
     required this.answerBools,
     required this.textFieldDataList,
     this.elapsed,
@@ -19,15 +30,456 @@ class PaperResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Results')),
+      appBar: AppBar(title: const Text('成績発表'), centerTitle: true),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Total: ${allAnswers.length}'),
-            Text('Correct: ${answerBools.where((b) => b).length}'),
-            // Add more result details here
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 250, maxHeight: 250),
+                child: CountUpText(
+                  actualScore: getScore(selectedLevel, answerBools),
+                  maxScore: getMaxScore(selectedLevel, answerBools),
+                  duration: Duration(milliseconds: 3000),
+                  passThreshold: selectedLevel.denomination.passThreshold,
+                  style: TextStyle(
+                    fontSize: 78,
+                    fontWeight: .bold,
+                    fontFamily: 'bizUDPGR',
+                  ),
+                ),
+              ),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                context.go(
+                  '/paper-problem',
+                  extra: {
+                    'selectedLevel': selectedLevel,
+                    'isExam': isExam,
+                    'time': selectedLevel.timeLimit,
+                    'appBarTitle': selectedLevel.displayString,
+                  },
+                );
+              },
+              child: Text('もう一度挑戦する'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.go('/home');
+              },
+              child: Text('メインメニューに戻る'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.go('/paper-menu');
+              },
+              child: Text('設定画面に戻る'),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+int getMaxScore(PaperProblemLevel selectedLevel, List<bool> answerBools) {
+  switch (selectedLevel) {
+    case MitoriLevel _:
+      final int outOf = answerBools.length * 10;
+      return outOf;
+    case DivMultLevel _:
+      final int outOf =
+          answerBools.length *
+          (selectedLevel.denomination == .nisshou ? 5 : 10);
+      return outOf;
+  }
+}
+
+int getScore(PaperProblemLevel selectedLevel, List<bool> answerBools) {
+  switch (selectedLevel) {
+    case MitoriLevel _:
+      final int score = answerBools.fold(
+        0,
+        (previous, element) => (previous += element ? 10 : 0),
+      );
+      return score;
+    case DivMultLevel _:
+      final int score = answerBools.fold(
+        0,
+        (previous, element) => (previous += element
+            ? (selectedLevel.denomination == .nisshou ? 5 : 10)
+            : 0),
+      );
+      return score;
+  }
+}
+
+class CountUpText extends StatefulWidget {
+  final int actualScore;
+  final int maxScore;
+  final Duration duration;
+  final TextStyle style;
+  final String suffix;
+  final double passThreshold;
+
+  const CountUpText({
+    super.key,
+    required this.actualScore,
+    required this.maxScore,
+    required this.duration,
+    required this.style,
+    this.suffix = '点',
+    required this.passThreshold,
+  });
+
+  @override
+  State<CountUpText> createState() => _CountUpTextState();
+}
+
+class _CountUpTextState extends State<CountUpText>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<int> _countAnimation;
+  late Animation<double> _progressAnimation;
+  SoLoud? soloud;
+  AudioSource? tickSound;
+  AudioSource? passThresholdSound;
+  AudioSource? passFailAppearSound;
+  int _lastSoundTrigger = 0;
+  bool _soundReady = false;
+  bool _animate = false;
+  bool _thresholdSoundPlayed = false;
+
+  bool get userPassed =>
+      widget.actualScore / widget.maxScore > widget.passThreshold;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSound();
+    _controller = AnimationController(duration: widget.duration, vsync: this);
+
+    _countAnimation = IntTween(
+      begin: 0,
+      end: widget.actualScore,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
+    // Progress animation from 0 to targetValue/maxValue
+    _progressAnimation = Tween<double>(
+      begin: 0.0,
+      end: widget.actualScore / widget.maxScore,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
+    _countAnimation.addListener(_onCountChange);
+    _controller.forward();
+    _progressAnimation.addListener(_onProgressChange);
+
+    Future.delayed(widget.duration + Duration(milliseconds: 500), () {
+      setState(() => _animate = true);
+    });
+  }
+
+  Future<void> _initSound() async {
+    try {
+      soloud = SoLoud.instance;
+      await soloud!.init();
+      tickSound = await soloud!.loadAsset('assets/tick.wav');
+      passThresholdSound = await soloud!.loadAsset('assets/passthreshold.wav');
+      passFailAppearSound = userPassed
+          ? await soloud!.loadAsset('assets/pass.wav')
+          : await soloud!.loadAsset('assets/fail.wav');
+      setState(() {
+        _soundReady = true;
+      });
+    } catch (e) {
+      print('Error initializing sound: $e');
+    }
+  }
+
+  void _onCountChange() {
+    if (!_soundReady || soloud == null || tickSound == null) return;
+    int currentValue = _countAnimation.value;
+    int currentMilestone = (currentValue ~/ 10) * 10;
+    if (currentMilestone > _lastSoundTrigger && currentMilestone > 0) {
+      _lastSoundTrigger = currentMilestone;
+      int playCount = currentMilestone ~/ 10;
+      double pitch = 0.8 + (playCount * 0.04);
+      soloud!.play(tickSound!).then((handle) {
+        soloud!.setRelativePlaySpeed(handle, pitch);
+      });
+    }
+  }
+
+  void _onProgressChange() {
+    if (!_soundReady || soloud == null || passThresholdSound == null) return;
+
+    final progress = _progressAnimation.value;
+
+    if (!_thresholdSoundPlayed && progress >= widget.passThreshold) {
+      _thresholdSoundPlayed = true;
+
+      soloud!.play(passThresholdSound!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _countAnimation.removeListener(_onCountChange);
+    _controller.dispose();
+    if (tickSound != null && soloud != null) {
+      soloud!.disposeSource(tickSound!);
+    }
+    soloud?.deinit();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool userPassed =
+        widget.actualScore / widget.maxScore > widget.passThreshold;
+
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        double tickScale = 1.0;
+        const pulseWindow = 0.20; // portion of animation after tick
+        const pulseAmplitude = 0.35;
+
+        if (_progressAnimation.value > widget.passThreshold) {
+          final t =
+              (_progressAnimation.value - widget.passThreshold) / pulseWindow;
+
+          if (t >= 0.0 && t <= 1.0) {
+            final pulse = sin(t * pi);
+            tickScale = 1.0 + pulse * pulseAmplitude;
+          }
+        }
+        return CustomPaint(
+          painter: CircularProgressPainter(
+            progress: _progressAnimation.value,
+            ringColor: colorScheme.primary,
+            alternateRingColor: colorScheme.primary.withAlpha(170),
+            backgroundColor: colorScheme.surfaceContainerHighest,
+            tickPosition: widget.passThreshold,
+            tickScale: tickScale,
+          ),
+          child: Center(
+            child: FittedBox(
+              fit: .contain,
+              child: Column(
+                children: [
+                  Text(
+                    '${widget.maxScore}満点',
+                    style: widget.style.copyWith(
+                      fontSize: widget.style.fontSize! * 0.4,
+                    ),
+                  ),
+                  Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      Opacity(
+                        opacity: 0,
+                        child: Row(
+                          children: [
+                            Text('${widget.actualScore}', style: widget.style),
+                            Text(
+                              widget.suffix,
+                              style: widget.style.copyWith(
+                                fontSize: widget.style.fontSize! * 0.75,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: .end,
+                        children: [
+                          Text('${_countAnimation.value}', style: widget.style),
+                          Text(
+                            widget.suffix,
+                            style: widget.style.copyWith(
+                              fontSize: widget.style.fontSize! * 0.75,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  PassFail(
+                    animate: _animate,
+                    userPassed: userPassed,
+                    soloud: soloud,
+                    passFailAppearSound: passFailAppearSound,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class CircularProgressPainter extends CustomPainter {
+  final double progress;
+  final Color ringColor;
+  final Color backgroundColor;
+  final Color alternateRingColor;
+  final double tickPosition;
+  final double tickLength;
+  final double tickScale;
+
+  CircularProgressPainter({
+    required this.progress,
+    required this.ringColor,
+    required this.backgroundColor,
+    required this.alternateRingColor,
+    required this.tickPosition,
+    required this.tickScale,
+    this.tickLength = 20.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width * 0.6);
+
+    // Draw background circle
+    final backgroundPaint = Paint()
+      ..color = backgroundColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 12
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawCircle(center, radius, backgroundPaint);
+
+    // Draw progress arc
+    final progressPaint = Paint()
+      ..color = progress > tickPosition ? ringColor : alternateRingColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 12
+      ..strokeCap = StrokeCap.round;
+
+    const startAngle = -pi / 2; // Start at top
+    final sweepAngle = 2 * pi * progress;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweepAngle,
+      false,
+      progressPaint,
+    );
+
+    final tickAngle = -pi / 2 + (2 * pi * tickPosition);
+
+    final tickInnerRadius = radius - (tickLength * tickScale);
+    final tickOuterRadius = radius;
+
+    final tickStart = Offset(
+      center.dx + tickInnerRadius * cos(tickAngle),
+      center.dy + tickInnerRadius * sin(tickAngle),
+    );
+
+    final tickEnd = Offset(
+      center.dx + tickOuterRadius * cos(tickAngle),
+      center.dy + tickOuterRadius * sin(tickAngle),
+    );
+
+    final tickPaint = Paint()
+      ..color = progress > tickPosition ? ringColor : backgroundColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6.0 * tickScale
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(tickStart, tickEnd, tickPaint);
+  }
+
+  @override
+  bool shouldRepaint(CircularProgressPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.ringColor != ringColor ||
+        oldDelegate.backgroundColor != backgroundColor ||
+        oldDelegate.tickPosition != tickPosition ||
+        oldDelegate.tickLength != tickLength;
+  }
+}
+
+class PassFail extends StatefulWidget {
+  final bool animate;
+  final bool userPassed;
+  final SoLoud? soloud;
+  final AudioSource? passFailAppearSound;
+
+  const PassFail({
+    super.key,
+    required this.animate,
+    required this.userPassed,
+    required this.soloud,
+    required this.passFailAppearSound,
+  });
+
+  @override
+  State<PassFail> createState() => _PassFailState();
+}
+
+class _PassFailState extends State<PassFail>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scale;
+  late final Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    final curved = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+
+    _scale = Tween<double>(begin: 1.4, end: 1.0).animate(curved);
+
+    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(curved);
+  }
+
+  @override
+  void didUpdateWidget(PassFail oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!oldWidget.animate && widget.animate) {
+      _controller.forward();
+      if (widget.passFailAppearSound != null) {
+        widget.soloud?.play(widget.passFailAppearSound!);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 50,
+      child: FadeTransition(
+        opacity: _opacity,
+        child: ScaleTransition(
+          scale: _scale,
+          child: Text(
+            widget.userPassed ? '合格' : '不合格',
+            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );

@@ -442,12 +442,18 @@ Map<String, dynamic> getModoshi(
 }
 
 void main() {
-  var problems = DivMultProblemSet(level: DivMultLevel.ddan);
+  var problems = DivMultProblemSet(level: DivMultLevel.dk8);
 
-  print(problems.formattedProblems);
-  print(problems.formattedAnswers);
+  // Print each item individually to see they're strings
+  for (var problem in problems.formattedProblems) {
+    print('Problem: "$problem" (type: ${problem.runtimeType})');
+  }
 
-  // for (var i = 0; i < problems.length; i++) {
-  //   print("Problem ${i + 1}: ${problems[i]}");
-  // }
+  for (var answer in problems.formattedAnswers) {
+    print('Answer: "$answer" (type: ${answer.runtimeType})');
+  }
+
+  // Or use join to print clearly
+  print('Problems: ${problems.formattedProblems.join(", ")}');
+  print('Answers: ${problems.formattedAnswers.join(", ")}');
 }

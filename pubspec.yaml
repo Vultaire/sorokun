@@ -15,6 +15,7 @@ dependencies:
   pdf: ^3.11.3
   printing: ^5.14.2
   path_provider: ^2.1.5
+  flutter_soloud: ^3.4.9
   ffmpeg_kit_flutter_new: ^3.2.0
   audioplayers: ^6.5.1
   carousel_slider: ^5.1.1
@@ -40,6 +41,10 @@ flutter:
     - assets/timesup.png
     - assets/kanryou.png
     - assets/finished.png
+    - assets/tick.wav
+    - assets/passthreshold.wav
+    - assets/pass.wav
+    - assets/fail.wav
   fonts:
     - family: abacusFont
       fonts:

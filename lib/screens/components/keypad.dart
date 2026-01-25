@@ -96,7 +96,10 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
       _handleEmptyAnswer();
       return;
     }
-    if (!isExam && !_isAnswerCorrect()) {
+
+    final isCorrect = _isAnswerCorrect();
+
+    if (!isExam && !isCorrect) {
       showResultPopup(context, false);
       clearAll();
       return;
@@ -104,10 +107,9 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
 
     if (!isExam) {
       showResultPopup(context, true);
-      _moveToNextEmptyQuestion();
-    } else {
-      _moveToNextEmptyQuestion();
     }
+
+    _moveToNextEmptyQuestion();
   }
 
   bool _isAnswerCorrect() {
@@ -130,9 +132,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
         return;
       }
     }
-    Future.delayed(Duration(milliseconds: 500), () {
-      onComplete();
-    });
+    onComplete();
   }
 
   void _handleEmptyAnswer() {

@@ -128,17 +128,33 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   }
 
   void _onComplete({required bool outOfTime}) async {
+    PaperProblemLevel? selectedLevel;
+    bool? isExam;
     List<String>? allAnswers;
+    List<dynamic>? allProblems;
     List<bool>? answerBools;
     List<TextFieldData>? textFieldDataList;
     Duration? elapsed;
 
     _stopwatch?.stop();
 
+    final blockingOverlay = OverlayEntry(
+      builder: (context) => Positioned.fill(
+        child: AbsorbPointer(
+          absorbing: true,
+          child: Container(color: Colors.transparent),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(blockingOverlay);
+
     if (widget.selectedLevel is MitoriLevel) {
       final state = _mitorizanKey.currentState;
       if (state != null) {
+        selectedLevel = widget.selectedLevel;
+        isExam = widget.isExam;
         allAnswers = state.allAnswers;
+        allProblems = state.allProblems;
         answerBools = state.answerBools;
         textFieldDataList = state.textFieldDataList;
         elapsed = _stopwatch?.elapsed;
@@ -146,17 +162,25 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     } else if (widget.selectedLevel is DivMultLevel) {
       final state = _divMultKey.currentState;
       if (state != null) {
+        selectedLevel = widget.selectedLevel;
+        isExam = widget.isExam;
         allAnswers = state.allAnswers;
+        allProblems = state.allProblems;
         answerBools = state.answerBools;
         textFieldDataList = state.textFieldDataList;
         elapsed = _stopwatch?.elapsed;
       }
     }
 
-    int animationState = 0;
-    late OverlayEntry overlayEntry;
+    if (!mounted) return;
+    final overlay = Overlay.of(context);
 
-    overlayEntry = OverlayEntry(
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    int animationState = 0;
+    late OverlayEntry animationOverlay;
+
+    animationOverlay = OverlayEntry(
       builder: (context) => Stack(
         children: [
           Container(
@@ -180,18 +204,21 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
               if (animationState == 0) {
                 // Finished sliding in, now pause
                 animationState = 1;
-                overlayEntry.markNeedsBuild();
+                animationOverlay.markNeedsBuild();
 
                 final router = GoRouter.of(context);
 
                 // After pause, slide out
                 Future.delayed(const Duration(milliseconds: 1000), () {
                   animationState = 2;
-                  overlayEntry.markNeedsBuild();
+                  animationOverlay.markNeedsBuild();
                   // Navigate to results page
                   router.go(
                     '/paper-results',
                     extra: {
+                      'selectedLevel': selectedLevel,
+                      'isExam': isExam,
+                      'allProblems': allProblems,
                       'allAnswers': allAnswers,
                       'answerBools': answerBools,
                       'textFieldDataList': textFieldDataList,
@@ -200,8 +227,9 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                   );
                 });
               } else if (animationState == 2) {
-                // Finished sliding out, remove overlay
-                overlayEntry.remove();
+                // Finished sliding out, remove overlays
+                animationOverlay.remove();
+                blockingOverlay.remove();
               }
             },
             builder: (context, value, child) {
@@ -222,7 +250,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         ],
       ),
     );
-    Overlay.of(context).insert(overlayEntry);
+    overlay.insert(animationOverlay);
     await Future.delayed(const Duration(milliseconds: 2400));
   }
 
@@ -242,6 +270,12 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         appBar: AppBar(
           title: Text(widget.appBarTitle),
           centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              GoRouter.of(context).go('/home');
+            },
+          ),
           backgroundColor: Theme.of(context).colorScheme.surface,
           actions: [
             if (widget.isExam)
@@ -267,7 +301,13 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                   ],
                 ),
               ),
-              Expanded(flex: 5, child: _buildKeypad()),
+              Expanded(
+                flex: 5,
+                child: IgnorePointer(
+                  ignoring: !_delayOver,
+                  child: _buildKeypad(),
+                ),
+              ),
             ],
           ),
         ),
@@ -326,8 +366,10 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
   @override
   late final List<String> allAnswers;
 
+  late final List<bool> _answerBools;
+
   @override
-  late final List<bool> answerBools;
+  List<bool> get answerBools => _answerBools;
 
   @override
   late final List<TextFieldData> textFieldDataList;
@@ -350,7 +392,7 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       allProblems.length,
       (_) => TextFieldData(),
     );
-    answerBools = List.generate(allProblems.length, (_) => false);
+    _answerBools = List.generate(allProblems.length, (_) => false);
   }
 
   void _initializeProblem(MitoriLevel level) {
@@ -483,8 +525,10 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
   @override
   late final List<String> allAnswers;
 
+  late final List<bool> _answerBools;
+
   @override
-  late final List<bool> answerBools;
+  List<bool> get answerBools => _answerBools;
 
   @override
   late final List<TextFieldData> textFieldDataList;
@@ -507,7 +551,7 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
       allProblems.length,
       (_) => TextFieldData(),
     );
-    answerBools = List.generate(allProblems.length, (_) => false);
+    _answerBools = List.generate(allProblems.length, (_) => false);
   }
 
   void _initializeProblem(DivMultLevel level) {

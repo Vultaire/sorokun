@@ -4,149 +4,170 @@ import '../problem_generation/division.dart';
 
 enum DivMultLevel implements PaperProblemLevel {
   mk9(
-    MultiplicationSplit.k9,
-    MultiplicationSource.k9,
-    '9級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k9,
+    divMultSource: MultiplicationSource.k9,
+    denomination: .zenshuren,
+    displayString: '9級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk8(
-    MultiplicationSplit.k8,
-    MultiplicationSource.k8,
-    '8級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k8,
+    divMultSource: MultiplicationSource.k8,
+    denomination: .zenshuren,
+    displayString: '8級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk7(
-    MultiplicationSplit.k7,
-    MultiplicationSource.k7,
-    '7級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k7,
+    divMultSource: MultiplicationSource.k7,
+    denomination: .zenshuren,
+    displayString: '7級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk6(
-    MultiplicationSplit.k6,
-    MultiplicationSource.k6,
-    '6級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k6,
+    divMultSource: MultiplicationSource.k6,
+    denomination: .zenshuren,
+    displayString: '6級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk5(
-    MultiplicationSplit.k5,
-    MultiplicationSource.k5,
-    '5級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k5,
+    divMultSource: MultiplicationSource.k5,
+    denomination: .zenshuren,
+    displayString: '5級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk4(
-    MultiplicationSplit.k4,
-    MultiplicationSource.k4,
-    '4級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k4,
+    divMultSource: MultiplicationSource.k4,
+    denomination: .zenshuren,
+    displayString: '4級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk3(
-    MultiplicationSplit.k3,
-    MultiplicationSource.k3,
-    '3級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k3,
+    divMultSource: MultiplicationSource.k3,
+    denomination: .zenshuren,
+    displayString: '3級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk2(
-    MultiplicationSplit.k2,
-    MultiplicationSource.k2,
-    '2級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k2,
+    divMultSource: MultiplicationSource.k2,
+    denomination: .zenshuren,
+    displayString: '2級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mk1(
-    MultiplicationSplit.k1,
-    MultiplicationSource.k1,
-    '1級のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.k1,
+    divMultSource: MultiplicationSource.k1,
+    denomination: .zenshuren,
+    displayString: '1級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   mdan(
-    MultiplicationSplit.dan,
-    MultiplicationSource.dan,
-    '段位のかけ算',
-    MultiplicationProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: MultiplicationSplit.dan,
+    divMultSource: MultiplicationSource.dan,
+    denomination: .zenshuren,
+    displayString: '段位のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk8(
-    DivisionSplit.k8,
-    DivisionSource.k8,
-    '8級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k8,
+    divMultSource: DivisionSource.k8,
+    denomination: .zenshuren,
+    displayString: '8級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk7(
-    DivisionSplit.k7,
-    DivisionSource.k7,
-    '7級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k7,
+    divMultSource: DivisionSource.k7,
+    denomination: .zenshuren,
+    displayString: '7級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk6(
-    DivisionSplit.k6,
-    DivisionSource.k6,
-    '6級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k6,
+    divMultSource: DivisionSource.k6,
+    denomination: .zenshuren,
+    displayString: '6級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk5(
-    DivisionSplit.k5,
-    DivisionSource.k5,
-    '5級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k5,
+    divMultSource: DivisionSource.k5,
+    denomination: .zenshuren,
+    displayString: '5級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk4(
-    DivisionSplit.k4,
-    DivisionSource.k4,
-    '4級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k4,
+    divMultSource: DivisionSource.k4,
+    denomination: .zenshuren,
+    displayString: '4級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk3(
-    DivisionSplit.k3,
-    DivisionSource.k3,
-    '3級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k3,
+    divMultSource: DivisionSource.k3,
+    denomination: .zenshuren,
+    displayString: '3級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk2(
-    DivisionSplit.k2,
-    DivisionSource.k2,
-    '2級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k2,
+    divMultSource: DivisionSource.k2,
+    denomination: .zenshuren,
+    displayString: '2級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   dk1(
-    DivisionSplit.k1,
-    DivisionSource.k1,
-    '1級のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.k1,
+    divMultSource: DivisionSource.k1,
+    denomination: .zenshuren,
+    displayString: '1級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   ),
   ddan(
-    DivisionSplit.dan,
-    DivisionSource.dan,
-    '段位のわり算',
-    DivisionProblem.new,
-    Duration(minutes: 7),
+    divMultSplit: DivisionSplit.dan,
+    divMultSource: DivisionSource.dan,
+    denomination: .zenshuren,
+    displayString: '段位のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 7),
   );
 
-  const DivMultLevel(
-    this.divMultSplit,
-    this.divMultSource,
-    this.displayString,
-    this.builder,
-
-    this.timeLimit,
-  );
+  const DivMultLevel({
+    required this.divMultSplit,
+    required this.divMultSource,
+    required this.denomination,
+    required this.displayString,
+    required this.builder,
+    required this.timeLimit,
+  });
   final DivMultSplit divMultSplit;
   final DivMultSource divMultSource;
+  @override
+  final Denomination denomination;
   @override
   final String displayString;
   @override
@@ -599,20 +620,27 @@ enum MitoriLevel implements PaperProblemLevel {
   final List<List<Map<String, int>>> templates;
   final int minusCount;
   final int? minusProblemsPerGroup;
+  @override
   final Denomination denomination;
   final List<int> templateCountPerGroup;
   final int repeat;
   final bool? neverNegative; // nisshou is always neverNegative
-
   @override
   final String displayString;
   @override
   final Duration timeLimit;
 }
 
-enum Denomination { nisshou, zenshuren }
+enum Denomination {
+  nisshou(passThreshold: 0.66),
+  zenshuren(passThreshold: 0.7);
+
+  const Denomination({required this.passThreshold});
+  final double passThreshold;
+}
 
 sealed class PaperProblemLevel {
+  Denomination get denomination;
   String get displayString;
   Duration get timeLimit;
 }

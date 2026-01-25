@@ -95,12 +95,20 @@ class DivMultProblemSet<TProblem> {
           split: split,
         );
         var fullProblem = level.builder(spec: spec);
-        formattedProblems.add(
-          intRound == 1
-              ? fullProblem.problemWithYenSymbol
-              : fullProblem.problem,
-        );
-        formattedAnswers.add(fullProblem.formattedThird);
+
+        while (formattedAnswers.contains(fullProblem.formattedThird)) {
+          fullProblem = level.builder(spec: spec);
+        }
+
+        // Only add if we found a unique answer
+        if (!formattedAnswers.contains(fullProblem.formattedThird)) {
+          formattedProblems.add(
+            intRound == 1
+                ? fullProblem.problemWithYenSymbol
+                : fullProblem.problem,
+          );
+          formattedAnswers.add(fullProblem.formattedThird);
+        }
       }
     }
   }
