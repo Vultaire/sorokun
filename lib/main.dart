@@ -9,8 +9,12 @@ import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await SoLoud.instance.init();
+  await SoLoud.instance.init(
+    sampleRate: 44100, // Audio quality
+    bufferSize: 2048, // Buffer size affects latency
+    channels: Channels.stereo,
+  );
+
   runApp(const AbacusApp());
 }
 
@@ -138,7 +142,7 @@ class _AbacusAppState extends State<AbacusApp> {
   ThemeMode themeMode = ThemeMode.light;
 
   late final _router = GoRouter(
-    initialLocation: kDebugMode ? '/paper-results' : '/home',
+    initialLocation: kDebugMode ? '/home' : '/home',
     routes: [
       GoRoute(path: '/home', builder: (context, state) => HomePage()),
       GoRoute(

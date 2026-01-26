@@ -8,6 +8,28 @@ import 'package:soroban_app/models/level_definitions.dart';
 import '../../problem_generation/helpers.dart';
 import '../paper_problem.dart';
 
+class KeypadSounds {
+  late final AudioSource keyTap;
+  late final AudioSource correct;
+  late final AudioSource incorrect;
+  late final AudioSource delete;
+  late final AudioSource invalid;
+  late final AudioSource progress;
+
+  Future<void> init() async {
+    try {
+      keyTap = await SoLoud.instance.loadAsset('assets/key-tap.wav');
+      correct = await SoLoud.instance.loadAsset('assets/correct.wav');
+      incorrect = await SoLoud.instance.loadAsset('assets/incorrect.wav');
+      delete = await SoLoud.instance.loadAsset('assets/delete.wav');
+      invalid = await SoLoud.instance.loadAsset('assets/invalid.wav');
+      progress = await SoLoud.instance.loadAsset('assets/progress.wav');
+    } catch (e) {
+      print('Error initializing SoundController: $e');
+    }
+  }
+}
+
 mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   List<TextFieldData> get textFieldDataList;
   int get currentIndex;
@@ -18,7 +40,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   VoidCallback get onComplete;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
 
-  SoundController get sound;
+  KeypadSounds get sound;
 
   void appendDigit(String digit) {
     setState(() {
@@ -27,30 +49,30 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
       if (digit == '-') {
         if (!data.internalString.startsWith('-')) {
           data.internalString = '-${data.internalString}';
-          sound.play(sound.keyTap);
+          SoLoud.instance.play(sound.keyTap);
         } else {
           data.internalString = data.internalString.substring(1);
-          sound.play(sound.delete);
+          SoLoud.instance.play(sound.delete);
         }
       } else if (digit == '.') {
         if (!data.internalString.contains('.') &&
             data.internalString.isNotEmpty &&
             data.internalString != '-') {
           data.internalString += digit;
-          sound.play(sound.keyTap);
+          SoLoud.instance.play(sound.keyTap);
         }
       } else if (digit == 'a') {
         if (!data.internalString.endsWith('a') &&
             data.internalString.isNotEmpty &&
             data.internalString != '-') {
           data.internalString += digit;
-          sound.play(sound.keyTap);
+          SoLoud.instance.play(sound.keyTap);
         }
       } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length < 11) {
         data.internalString += digit;
-        sound.play(sound.keyTap);
+        SoLoud.instance.play(sound.keyTap);
       } else {
-        sound.play(sound.incorrect);
+        SoLoud.instance.play(sound.invalid);
       }
       _updateText(data);
     });
@@ -58,7 +80,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
 
   void _updateText(TextFieldData data) {
     String result =
-        '${data.internalString}b'; // 'b' marks the position of the caret
+        '${data.internalString}b'; // 'b' marks the position of the caret, which must be stored after commas have been applied so we know where to draw the caret.
     bool hasMinusSign = false;
     if (result.startsWith('-')) {
       hasMinusSign = true;
@@ -86,6 +108,7 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
           data.internalString.length - 1,
         );
         _updateText(data);
+        SoLoud.instance.play(sound.delete);
       });
     }
   }
@@ -95,12 +118,13 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
       final data = textFieldDataList[currentIndex];
       data.internalString = '';
       _updateText(data);
+      SoLoud.instance.play(sound.delete);
     });
   }
 
   void submit() {
     if (textFieldDataList[currentIndex].internalString.isEmpty) {
-      _handleEmptyAnswer();
+      SoLoud.instance.play(sound.invalid);
       return;
     }
 
@@ -108,12 +132,20 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
 
     if (!isExam && !isCorrect) {
       showResultPopup(context, false);
-      clearAll();
+      setState(() {
+        final data = textFieldDataList[currentIndex];
+        data.internalString = '';
+        _updateText(data);
+      });
+      SoLoud.instance.play(sound.incorrect);
       return;
     }
 
     if (!isExam) {
       showResultPopup(context, true);
+      SoLoud.instance.play(sound.correct);
+    } else {
+      SoLoud.instance.play(sound.progress);
     }
 
     _moveToNextEmptyQuestion();
@@ -140,10 +172,6 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
       }
     }
     onComplete();
-  }
-
-  void _handleEmptyAnswer() {
-    // TODO: Add error sound
   }
 
   void showResultPopup(BuildContext context, bool isCorrect) {

@@ -50,6 +50,7 @@ flutter:
     - assets/incorrect.wav
     - assets/progress.wav
     - assets/delete.wav
+    - assets/invalid.wav
   fonts:
     - family: abacusFont
       fonts:

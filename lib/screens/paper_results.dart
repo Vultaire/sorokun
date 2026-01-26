@@ -38,7 +38,7 @@ class PaperResultsScreen extends StatelessWidget {
             CountUpText(
               actualScore: getScore(selectedLevel, answerBools),
               maxScore: getMaxScore(selectedLevel, answerBools),
-              duration: Duration(milliseconds: 3000),
+              durationBase: Duration(milliseconds: 10),
               passThreshold: selectedLevel.denomination.passThreshold,
               style: TextStyle(
                 fontSize: 78,
@@ -115,7 +115,7 @@ int getScore(PaperProblemLevel selectedLevel, List<bool> answerBools) {
 class CountUpText extends StatefulWidget {
   final int actualScore;
   final int maxScore;
-  final Duration duration;
+  final Duration durationBase;
   final TextStyle style;
   final String suffix;
   final double passThreshold;
@@ -124,7 +124,7 @@ class CountUpText extends StatefulWidget {
     super.key,
     required this.actualScore,
     required this.maxScore,
-    required this.duration,
+    required this.durationBase,
     required this.style,
     this.suffix = '点',
     required this.passThreshold,
@@ -139,13 +139,11 @@ class _CountUpTextState extends State<CountUpText>
   late AnimationController _controller;
   late Animation<int> _countAnimation;
   late Animation<double> _progressAnimation;
-  SoLoud? soloud;
   AudioSource? tickSound;
   AudioSource? passThresholdSound;
   AudioSource? passFailAppearSound;
   int _lastSoundTrigger = 0;
-  bool _soundReady = false;
-  bool _animate = false;
+  bool _animatePassFail = false;
   bool _thresholdSoundPlayed = false;
 
   bool get userPassed =>
@@ -155,7 +153,9 @@ class _CountUpTextState extends State<CountUpText>
   void initState() {
     super.initState();
     _initSound();
-    _controller = AnimationController(duration: widget.duration, vsync: this);
+    Duration duration =
+        Duration(milliseconds: 800) + widget.durationBase * widget.actualScore;
+    _controller = AnimationController(duration: duration, vsync: this);
 
     _countAnimation = IntTween(
       begin: 0,
@@ -172,51 +172,50 @@ class _CountUpTextState extends State<CountUpText>
     _controller.forward();
     _progressAnimation.addListener(_onProgressChange);
 
-    Future.delayed(widget.duration + Duration(milliseconds: 500), () {
-      setState(() => _animate = true);
+    Future.delayed(duration + Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() => _animatePassFail = true);
+      }
     });
   }
 
   Future<void> _initSound() async {
     try {
-      soloud = SoLoud.instance;
-      await soloud!.init();
-      tickSound = await soloud!.loadAsset('assets/tick.wav');
-      passThresholdSound = await soloud!.loadAsset('assets/passthreshold.wav');
+      tickSound = await SoLoud.instance.loadAsset('assets/tick.wav');
+      passThresholdSound = await SoLoud.instance.loadAsset(
+        'assets/passthreshold.wav',
+      );
       passFailAppearSound = userPassed
-          ? await soloud!.loadAsset('assets/pass.wav')
-          : await soloud!.loadAsset('assets/fail.wav');
-      setState(() {
-        _soundReady = true;
-      });
+          ? await SoLoud.instance.loadAsset('assets/pass.wav')
+          : await SoLoud.instance.loadAsset('assets/fail.wav');
     } catch (e) {
       print('Error initializing sound: $e');
     }
   }
 
   void _onCountChange() {
-    if (!_soundReady || soloud == null || tickSound == null) return;
+    if (tickSound == null) return;
     int currentValue = _countAnimation.value;
     int currentMilestone = (currentValue ~/ 10) * 10;
     if (currentMilestone > _lastSoundTrigger && currentMilestone > 0) {
       _lastSoundTrigger = currentMilestone;
       int playCount = currentMilestone ~/ 10;
       double pitch = 0.8 + (playCount * 0.04);
-      soloud!.play(tickSound!).then((handle) {
-        soloud!.setRelativePlaySpeed(handle, pitch);
+      SoLoud.instance.play(tickSound!).then((handle) {
+        SoLoud.instance.setRelativePlaySpeed(handle, pitch);
       });
     }
   }
 
   void _onProgressChange() {
-    if (!_soundReady || soloud == null || passThresholdSound == null) return;
+    if (passThresholdSound == null) return;
 
     final progress = _progressAnimation.value;
 
     if (!_thresholdSoundPlayed && progress >= widget.passThreshold) {
       _thresholdSoundPlayed = true;
 
-      soloud!.play(passThresholdSound!);
+      SoLoud.instance.play(passThresholdSound!);
     }
   }
 
@@ -224,10 +223,9 @@ class _CountUpTextState extends State<CountUpText>
   void dispose() {
     _countAnimation.removeListener(_onCountChange);
     _controller.dispose();
-    if (tickSound != null && soloud != null) {
-      soloud!.disposeSource(tickSound!);
+    if (tickSound != null) {
+      SoLoud.instance.disposeSource(tickSound!);
     }
-    soloud?.deinit();
     super.dispose();
   }
 
@@ -241,18 +239,23 @@ class _CountUpTextState extends State<CountUpText>
       animation: _controller,
       builder: (context, child) {
         double tickScale = 1.0;
-        const pulseWindow = 0.20; // portion of animation after tick
+        const pulseWindow = 0.20;
         const pulseAmplitude = 0.35;
 
         if (_progressAnimation.value > widget.passThreshold) {
           final t =
               (_progressAnimation.value - widget.passThreshold) / pulseWindow;
 
-          if (t >= 0.0 && t <= 1.0) {
-            final pulse = sin(t * pi);
-            tickScale = 1.0 + pulse * pulseAmplitude;
+          if (t < 1.0) {
+            // Animate during pulse window
+            final eased = Curves.elasticOut.transform(t);
+            tickScale = 1.0 + eased * pulseAmplitude;
+          } else {
+            // Lock final scale AFTER pulse
+            tickScale = 1.0 + pulseAmplitude;
           }
         }
+
         return Padding(
           padding: const EdgeInsets.all(70.0),
           child: CustomPaint(
@@ -269,7 +272,7 @@ class _CountUpTextState extends State<CountUpText>
               child: Column(
                 children: [
                   Text(
-                    '${widget.maxScore}満点',
+                    '${widget.maxScore}点満点',
                     style: widget.style.copyWith(
                       fontSize: widget.style.fontSize! * 0.4,
                     ),
@@ -312,9 +315,8 @@ class _CountUpTextState extends State<CountUpText>
                     ],
                   ),
                   PassFail(
-                    animate: _animate,
+                    animate: _animatePassFail,
                     userPassed: userPassed,
-                    soloud: soloud,
                     passFailAppearSound: passFailAppearSound,
                   ),
                 ],
@@ -381,7 +383,7 @@ class CircularProgressPainter extends CustomPainter {
     final tickAngle = -pi / 2 + (2 * pi * tickPosition);
 
     final tickInnerRadius = radius - (tickLength * tickScale);
-    final tickOuterRadius = radius;
+    final tickOuterRadius = radius - 3;
 
     final tickStart = Offset(
       center.dx + tickInnerRadius * cos(tickAngle),
@@ -396,7 +398,7 @@ class CircularProgressPainter extends CustomPainter {
     final tickPaint = Paint()
       ..color = progress > tickPosition ? ringColor : backgroundColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 6.0 * tickScale
+      ..strokeWidth = 10.0 * tickScale
       ..strokeCap = StrokeCap.round;
 
     canvas.drawLine(tickStart, tickEnd, tickPaint);
@@ -415,14 +417,12 @@ class CircularProgressPainter extends CustomPainter {
 class PassFail extends StatefulWidget {
   final bool animate;
   final bool userPassed;
-  final SoLoud? soloud;
   final AudioSource? passFailAppearSound;
 
   const PassFail({
     super.key,
     required this.animate,
     required this.userPassed,
-    required this.soloud,
     required this.passFailAppearSound,
   });
 
@@ -458,7 +458,7 @@ class _PassFailState extends State<PassFail>
     if (!oldWidget.animate && widget.animate) {
       _controller.forward();
       if (widget.passFailAppearSound != null) {
-        widget.soloud?.play(widget.passFailAppearSound!);
+        SoLoud.instance.play(widget.passFailAppearSound!);
       }
     }
   }
@@ -476,7 +476,7 @@ class _PassFailState extends State<PassFail>
       child: ScaleTransition(
         scale: _scale,
         child: Text(
-          widget.userPassed ? '合格' : '不合格',
+          widget.userPassed ? '合格!' : '不合格',
           style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
         ),
       ),
