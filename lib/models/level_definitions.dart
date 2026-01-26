@@ -435,7 +435,7 @@ enum MitoriLevel implements PaperProblemLevel {
   nsk8(
     templates: [
       [
-        {"digits": 4, "count": 10},
+        {"digits": 2, "count": 8},
       ],
     ],
     minusCount: 2,

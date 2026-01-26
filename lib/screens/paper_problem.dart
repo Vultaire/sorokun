@@ -324,6 +324,26 @@ class TextFieldData {
   double caretPos = 0.0;
 }
 
+class PaperProblemSounds {
+  late final AudioSource firstStartBeep;
+  late final AudioSource lastStartBeep;
+  late final AudioSource finished;
+
+  Future<void> _init() async {
+    try {
+      firstStartBeep = await SoLoud.instance.loadAsset(
+        'assets/firstStartBeep.wav',
+      );
+      lastStartBeep = await SoLoud.instance.loadAsset(
+        'assets/lastStartBeep.wav',
+      );
+      finished = await SoLoud.instance.loadAsset('assets/finisihed.wav');
+    } catch (e) {
+      print('Error inilializing sound: $e');
+    }
+  }
+}
+
 class DelayWindow extends StatelessWidget {
   const DelayWindow({super.key, required this.showLoading});
   final bool showLoading;
@@ -393,12 +413,16 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
   @override
   void initState() {
     super.initState();
+
     _initializeProblem(widget.selectedLevel);
+
     textFieldDataList = List.generate(
       allProblems.length,
       (_) => TextFieldData(),
     );
+
     _answerBools = List.generate(allProblems.length, (_) => false);
+
     _sound = KeypadSounds();
     _sound.init();
   }
@@ -559,12 +583,16 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
   @override
   void initState() {
     super.initState();
+
     _initializeProblem(widget.selectedLevel);
+
     textFieldDataList = List.generate(
       allProblems.length,
       (_) => TextFieldData(),
     );
+
     _answerBools = List.generate(allProblems.length, (_) => false);
+
     _sound = KeypadSounds();
     _sound.init();
   }
