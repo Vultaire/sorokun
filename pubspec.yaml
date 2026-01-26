@@ -51,6 +51,9 @@ flutter:
     - assets/progress.wav
     - assets/delete.wav
     - assets/invalid.wav
+    - assets/starting-sine.wav
+    - assets/sine-beep.wav
+    - assets/finished.wav
   fonts:
     - family: abacusFont
       fonts:

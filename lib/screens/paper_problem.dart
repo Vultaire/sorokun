@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -31,6 +34,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   final GlobalKey<_DivMultWindowState> _divMultKey = GlobalKey();
   bool _delayOver = false;
   bool _showLoading = false;
+  late final PaperProblemSounds _sound;
   Stopwatch? _stopwatch;
 
   @override
@@ -43,25 +47,18 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   }
 
   void _startDelaySequence() async {
-    // Wait for fade transition to complete
-    await Future.delayed(DelayWindow.delayToSoundCue);
+    _sound = PaperProblemSounds();
+
+    await Future.wait([
+      Future.delayed(DelayWindow.delayToSoundCue),
+      _sound.init(),
+    ]);
 
     if (!mounted) return;
+
     setState(() {
       _showLoading = true;
     });
-    // TODO: Play sound here
-
-    // loading animation
-    await Future.delayed(DelayWindow.delayToStart);
-
-    if (!mounted) return;
-
-    setState(() {
-      _delayOver = true;
-    });
-
-    _stopwatch?.start();
   }
 
   Future<bool> _onWillPop() async {
@@ -273,8 +270,11 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.close),
-            onPressed: () {
-              GoRouter.of(context).go('/home');
+            onPressed: () async {
+              final shouldClose = await _onWillPop();
+              if (shouldClose && context.mounted) {
+                GoRouter.of(context).go('/paper-menu');
+              }
             },
           ),
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -298,7 +298,17 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                 child: Stack(
                   children: [
                     _buildWindow(),
-                    if (!_delayOver) DelayWindow(showLoading: _showLoading),
+                    if (!_delayOver)
+                      DelayWindow(
+                        showLoading: _showLoading,
+                        sounds: _sound,
+                        onFinished: () {
+                          setState(() {
+                            _delayOver = true;
+                          });
+                          _stopwatch?.start();
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -325,38 +335,175 @@ class TextFieldData {
 }
 
 class PaperProblemSounds {
-  late final AudioSource firstStartBeep;
-  late final AudioSource lastStartBeep;
-  late final AudioSource finished;
+  late final AudioSource startingSine;
+  late final AudioSource sineBeep;
 
-  Future<void> _init() async {
-    try {
-      firstStartBeep = await SoLoud.instance.loadAsset(
-        'assets/firstStartBeep.wav',
-      );
-      lastStartBeep = await SoLoud.instance.loadAsset(
-        'assets/lastStartBeep.wav',
-      );
-      finished = await SoLoud.instance.loadAsset('assets/finisihed.wav');
-    } catch (e) {
-      print('Error inilializing sound: $e');
-    }
+  final Completer<void> _ready = Completer<void>();
+
+  Future<void> init() async {
+    startingSine = await SoLoud.instance.loadAsset('assets/starting-sine.wav');
+    sineBeep = await SoLoud.instance.loadAsset('assets/sine-beep.wav');
+    _ready.complete();
+  }
+
+  Future<void> get ready => _ready.future;
+}
+
+class LoadingCircle extends CustomPainter {
+  final double progress;
+  final Color ringColor;
+  final Color backgroundColor;
+
+  LoadingCircle({
+    required this.progress,
+    required this.ringColor,
+    required this.backgroundColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width * 0.5);
+
+    // Draw progress arc
+    final progressPaint = Paint()
+      ..color = ringColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 12
+      ..strokeCap = StrokeCap.round;
+
+    const startAngle = -pi / 2;
+    final sweepAngle = -2 * pi * progress;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweepAngle,
+      false,
+      progressPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(LoadingCircle oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.ringColor != ringColor ||
+        oldDelegate.backgroundColor != backgroundColor;
   }
 }
 
-class DelayWindow extends StatelessWidget {
-  const DelayWindow({super.key, required this.showLoading});
+class DelayWindow extends StatefulWidget {
+  const DelayWindow({
+    super.key,
+    required this.showLoading,
+    required this.sounds,
+    required this.onFinished,
+  });
   final bool showLoading;
-  static const Duration delayToSoundCue = Duration(seconds: 1);
+  static const Duration delayToSoundCue = Duration(milliseconds: 600);
   static const Duration delayToStart = Duration(seconds: 2);
+  final PaperProblemSounds sounds;
+  final VoidCallback onFinished;
+
+  @override
+  State<DelayWindow> createState() => _DelayWindowState();
+}
+
+class _DelayWindowState extends State<DelayWindow>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _progressAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: DelayWindow.delayToStart,
+      vsync: this,
+    );
+
+    _progressAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 1.0,
+          end: 0.0,
+        ).chain(CurveTween(curve: Curves.linear)),
+        weight: 32, // 0.5s out of 2s = 25%
+      ),
+      TweenSequenceItem(tween: ConstantTween<double>(0.0), weight: 16),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 1.0,
+          end: 0.0,
+        ).chain(CurveTween(curve: Curves.linear)),
+        weight: 32, // 0.5s animation
+      ),
+      TweenSequenceItem(tween: ConstantTween<double>(0.0), weight: 20),
+    ]).animate(_controller);
+    _controller.addStatusListener((status) async {
+      if (status == AnimationStatus.forward) {
+        await widget.sounds.ready;
+        SoLoud.instance.play(widget.sounds.startingSine);
+      }
+
+      if (status == AnimationStatus.completed) {
+        await widget.sounds.ready;
+        SoLoud.instance.play(widget.sounds.sineBeep);
+
+        if (mounted) {
+          widget.onFinished();
+        }
+      }
+    });
+    if (widget.showLoading) {
+      _controller.forward();
+    }
+  }
+
+  @override
+  void didUpdateWidget(DelayWindow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.showLoading && !oldWidget.showLoading) {
+      _controller.reset();
+      _controller.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Center(
-        child: showLoading
-            ? const CircularProgressIndicator()
+        child: widget.showLoading
+            ? AnimatedBuilder(
+                animation: _progressAnimation,
+                builder: (context, child) {
+                  if (_progressAnimation.value <= 0.0) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: CustomPaint(
+                      painter: LoadingCircle(
+                        progress: _progressAnimation.value,
+                        ringColor: colorScheme.primary,
+                        backgroundColor: colorScheme.surfaceContainerHighest,
+                      ),
+                    ),
+                  );
+                },
+              )
             : const SizedBox.shrink(),
       ),
     );

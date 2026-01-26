@@ -152,7 +152,6 @@ class _CountUpTextState extends State<CountUpText>
   @override
   void initState() {
     super.initState();
-    _initSound();
     Duration duration =
         Duration(milliseconds: 800) + widget.durationBase * widget.actualScore;
     _controller = AnimationController(duration: duration, vsync: this);
@@ -169,9 +168,15 @@ class _CountUpTextState extends State<CountUpText>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _countAnimation.addListener(_onCountChange);
-    _controller.forward();
     _progressAnimation.addListener(_onProgressChange);
 
+    _startAfterDelay(duration);
+  }
+
+  void _startAfterDelay(Duration duration) async {
+    await Future.wait([Future.delayed(Duration(seconds: 1)), _initSound()]);
+    if (!mounted) return;
+    _controller.forward();
     Future.delayed(duration + Duration(milliseconds: 500), () {
       if (mounted) {
         setState(() => _animatePassFail = true);
@@ -277,14 +282,39 @@ class _CountUpTextState extends State<CountUpText>
                       fontSize: widget.style.fontSize! * 0.4,
                     ),
                   ),
-                  Stack(
-                    alignment: Alignment.centerRight,
-                    children: [
-                      Opacity(
-                        opacity: 0,
-                        child: Row(
+                  SizedBox(
+                    width: 250,
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        Opacity(
+                          opacity: 0,
+                          child: Row(
+                            children: [
+                              Text(
+                                '${widget.actualScore}',
+                                style: widget.style,
+                              ),
+                              Text(
+                                widget.suffix,
+                                style: widget.style.copyWith(
+                                  fontSize: widget.style.fontSize! * 0.75,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: .end,
+                          mainAxisAlignment: .center,
                           children: [
-                            Text('${widget.actualScore}', style: widget.style),
+                            Transform.translate(
+                              offset: Offset(0, 10),
+                              child: Text(
+                                '${_countAnimation.value}',
+                                style: widget.style,
+                              ),
+                            ),
                             Text(
                               widget.suffix,
                               style: widget.style.copyWith(
@@ -293,26 +323,8 @@ class _CountUpTextState extends State<CountUpText>
                             ),
                           ],
                         ),
-                      ),
-                      Row(
-                        crossAxisAlignment: .end,
-                        children: [
-                          Transform.translate(
-                            offset: Offset(0, 10),
-                            child: Text(
-                              '${_countAnimation.value}',
-                              style: widget.style,
-                            ),
-                          ),
-                          Text(
-                            widget.suffix,
-                            style: widget.style.copyWith(
-                              fontSize: widget.style.fontSize! * 0.75,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   PassFail(
                     animate: _animatePassFail,
