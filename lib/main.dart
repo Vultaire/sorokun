@@ -13,7 +13,7 @@ import 'screens/paper_problem.dart';
 void main() async {
   await SoLoud.instance.init(
     sampleRate: 44100, // Audio quality
-    bufferSize: 2048, // Buffer size affects latency
+    bufferSize: 256, // Buffer size affects latency
     channels: Channels.stereo,
   );
 

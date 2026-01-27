@@ -23,80 +23,91 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
     with SingleTickerProviderStateMixin {
   late final List<int> template;
   late final List<int> problem;
-  late final Duration kuchiWindow;
-  late final AudioSource startingSine;
-  late final AudioSource sineBeep;
   late final AnimationController _controller;
+  late final List<Segment> _schedule;
 
   int _currentIndex = 0;
-  bool _showNumber = true;
+  bool _showNumber = false;
+
+  late final AudioSource startingSine;
+  late final AudioSource sineBeep;
+  int _currentSegment = 0;
 
   @override
   void initState() {
     super.initState();
-    Random rand = Random();
+
+    // Generate the problem
     template = List.filled(widget.kuchi, widget.digits);
-    problem = generateMitoriProblemFromDigitList(template, rand);
+    problem = generateMitoriProblemFromDigitList(template, Random());
 
-    // Debug print
-    print('Full problem: $problem');
-    print('Problem length: ${problem.length}');
+    // Calculate green/black durations
+    final n = widget.kuchi;
+    final d = widget.secondsPerProblem;
+    final blackDuration = d / (2.5 * n - 1);
+    final greenDuration = 1.5 * blackDuration;
 
-    kuchiWindow = Duration(
-      milliseconds: (widget.secondsPerProblem / widget.kuchi * 1000).round(),
-    );
+    // Build schedule of segments (green/black alternating)
+    double t = 0;
+    _schedule = [];
+    for (int i = 0; i < n; i++) {
+      // Green segment
+      _schedule.add(Segment(t, t + greenDuration, true, i));
+      t += greenDuration;
 
-    print('Kuchi window duration: ${kuchiWindow.inMilliseconds}ms');
+      // Black segment (except after last green)
+      if (i < n - 1) {
+        _schedule.add(Segment(t, t + blackDuration, false, i));
+        t += blackDuration;
+      }
+    }
 
-    _controller = AnimationController(vsync: this, duration: kuchiWindow)
-      ..addListener(_onTick)
-      ..addStatusListener(_onAnimationStatus);
+    // Animation controller
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(microseconds: (d * 1e6).round()),
+    )..addListener(_onTick);
 
-    _beepsAndStart();
+    // Initialize sounds and start animation
+    _initSoundsAndStart();
   }
 
-  void _beepsAndStart() async {
-    await Future.wait([Future.delayed(Duration(seconds: 1)), _initSound()]);
+  Future<void> _initSoundsAndStart() async {
+    startingSine = await SoLoud.instance.loadAsset('assets/starting-sine.wav');
+    sineBeep = await SoLoud.instance.loadAsset('assets/sine-beep.wav');
+
     if (!mounted) return;
+
     SoLoud.instance.play(startingSine);
-    await Future.delayed(Duration(seconds: 2));
+
+    // Wait 2 seconds before starting animation
+    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
+
     _controller.forward();
   }
 
-  Future<void> _initSound() async {
-    startingSine = await SoLoud.instance.loadAsset('assets/starting-sine.wav');
-    sineBeep = await SoLoud.instance.loadAsset('assets/sine-beep.wav');
-  }
-
   void _onTick() {
-    final progress = _controller.value;
-    final shouldShow = progress < 0.6;
+    final t = _controller.value * widget.secondsPerProblem;
 
-    if (shouldShow != _showNumber && mounted) {
-      setState(() {
-        _showNumber = shouldShow;
-      });
+    // Advance current segment pointer only if t > segment.end
+    while (_currentSegment < _schedule.length - 1 &&
+        t >= _schedule[_currentSegment].end) {
+      _currentSegment++;
     }
-  }
 
-  void _onAnimationStatus(AnimationStatus status) {
-    print('Animation status: $status, currentIndex: $_currentIndex');
+    final seg = _schedule[_currentSegment];
 
-    if (status == AnimationStatus.completed) {
-      if (mounted) {
-        setState(() {
-          _currentIndex++;
-          _showNumber = true;
-        });
-      }
+    // Update only if the segment actually changed
+    if (mounted && (_currentIndex != seg.index || _showNumber != seg.showing)) {
+      _currentIndex = seg.index;
+      _showNumber = seg.showing;
 
-      print('Advanced to index: $_currentIndex');
+      setState(() {});
 
-      if (_currentIndex < problem.length) {
-        _controller.forward(from: 0);
-      } else {
-        print('Problem complete!');
+      // Play sine beep only at start of green
+      if (_showNumber) {
+        SoLoud.instance.play(sineBeep);
       }
     }
   }
@@ -109,8 +120,6 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
 
   @override
   Widget build(BuildContext context) {
-    print('Building with index: $_currentIndex, showNumber: $_showNumber');
-
     if (_currentIndex >= problem.length) {
       return const Scaffold(body: Center(child: Text('Done!')));
     }
@@ -124,11 +133,19 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
                 style: const TextStyle(
                   fontFamily: 'abacusFont',
                   fontSize: 92,
-                  color: Colors.green,
+                  color: Colors.lightGreenAccent,
                 ),
               )
             : const SizedBox.shrink(),
       ),
     );
   }
+}
+
+class Segment {
+  final double start; // seconds
+  final double end; // seconds
+  final bool showing; // green = true, black = false
+  final int index; // which number
+  Segment(this.start, this.end, this.showing, this.index);
 }
