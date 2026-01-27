@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/screens/flash_menu.dart';
+import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/paper_problem_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'screens/home_page.dart';
@@ -145,6 +147,25 @@ class _AbacusAppState extends State<AbacusApp> {
     initialLocation: kDebugMode ? '/home' : '/home',
     routes: [
       GoRoute(path: '/home', builder: (context, state) => HomePage()),
+      GoRoute(
+        path: '/flash-menu',
+        builder: (context, state) => FlashMenuPage(),
+      ),
+      GoRoute(
+        path: '/flash-problem',
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>?;
+
+          return blackFadeTransition(
+            key: state.pageKey,
+            child: FlashProblemScreen(
+              kuchi: args?['kuchi'],
+              digits: args?['digits'],
+              secondsPerProblem: args?['secondsPerProblem'],
+            ),
+          );
+        },
+      ),
       GoRoute(
         path: '/paper-menu',
         builder: (context, state) => PaperMenuPage(),

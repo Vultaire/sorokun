@@ -57,7 +57,7 @@ class HomePage extends StatelessWidget {
 
               ElevatedButton(
                 onPressed: () {
-                  // TODO: button 2 action
+                  context.push('/flash-menu');
                 },
                 child: const Text('Flash Anzan'),
               ),
