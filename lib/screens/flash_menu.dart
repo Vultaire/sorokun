@@ -11,7 +11,7 @@ class FlashMenuPage extends StatefulWidget {
 }
 
 class _FlashMenuPageState extends State<FlashMenuPage> {
-  double _secondsPerProblem = 1.00;
+  double _secondsPerProblem = 10.00;
   int _kuchi = 15;
   int _digits = 3;
 
@@ -25,7 +25,7 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
           children: [
             CircularSlider(
               initialValue: 10.0,
-              size: 250,
+              size: 300,
               onChanged: (value) {
                 setState(() {
                   _secondsPerProblem = value;
@@ -262,35 +262,22 @@ class _CircularSliderState extends State<CircularSlider> {
               ),
             ),
             // Center display
-            Container(
+            SizedBox(
               width: widget.size * 0.5,
               height: widget.size * 0.5,
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    _value.toStringAsFixed(1),
+                    _value >= 10
+                        ? '${_value.toStringAsFixed(0)}秒'
+                        : '${_value.toStringAsFixed(1)}秒',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      fontSize: 50,
                       color: activeColor,
+                      fontFamily: 'bizUDPGR',
                     ),
-                  ),
-                  Text(
-                    'seconds',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                 ],
               ),

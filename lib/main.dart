@@ -7,6 +7,7 @@ import 'package:soroban_app/screens/flash_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/paper_problem_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
+import 'package:soroban_app/screens/paper_review.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
 
@@ -105,7 +106,7 @@ class DebugMockData {
     });
 
     return {
-      'selectedLevel': DivMultLevel.dk8, // or whatever level
+      'selectedLevel': DivMultLevel.dk8,
       'allProblems': allProblems,
       'allAnswers': allAnswers,
       'answerBools': answerBools,
@@ -171,18 +172,13 @@ class _AbacusAppState extends State<AbacusApp> {
         builder: (context, state) => PaperMenuPage(),
       ),
       GoRoute(
-        path: '/paper-problem',
-        pageBuilder: (context, state) {
+        path: '/paper-review',
+        builder: (context, state) {
           final args = state.extra as Map<String, dynamic>?;
 
-          return blackFadeTransition(
-            key: state.pageKey,
-            child: PaperProblemScreen(
-              selectedLevel: args?['selectedLevel'],
-              isExam: args?['isExam'] ?? false,
-              time: args?['time'],
-              appBarTitle: args?['appBarTitle'],
-            ),
+          return PaperReviewScreen(
+            selectedLevel: args?['selectedLevel'],
+            problemScorerList: args?['problemScorerList'],
           );
         },
       ),
@@ -200,9 +196,24 @@ class _AbacusAppState extends State<AbacusApp> {
               isExam: args?['isExam'] ?? true,
               allAnswers: args?['allAnswers'],
               allProblems: args?['allProblems'],
-              answerBools: args?['answerBools'],
               textFieldDataList: args?['textFieldDataList'],
               elapsed: args?['elapsed'],
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/paper-problem',
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>?;
+
+          return blackFadeTransition(
+            key: state.pageKey,
+            child: PaperProblemScreen(
+              selectedLevel: args?['selectedLevel'],
+              isExam: args?['isExam'] ?? false,
+              time: args?['time'],
+              appBarTitle: args?['appBarTitle'],
             ),
           );
         },

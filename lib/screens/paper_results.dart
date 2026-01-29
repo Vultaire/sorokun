@@ -12,9 +12,8 @@ class PaperResultsScreen extends StatelessWidget {
   final bool isExam;
   final List<String> allAnswers;
   final List<dynamic> allProblems;
-  final List<bool> answerBools;
   final List<TextFieldData> textFieldDataList;
-  final Duration? elapsed;
+  final Duration elapsed;
 
   const PaperResultsScreen({
     super.key,
@@ -22,22 +21,36 @@ class PaperResultsScreen extends StatelessWidget {
     required this.isExam,
     required this.allAnswers,
     required this.allProblems,
-    required this.answerBools,
     required this.textFieldDataList,
-    this.elapsed,
+    required this.elapsed,
   });
 
   @override
   Widget build(BuildContext context) {
+    final List<ProblemScorer> problemScorerList = [
+      for (int i = 0; i < allProblems.length; i++)
+        ProblemScorer(
+          index: i,
+          problem: allProblems[i],
+          answer: allAnswers[i],
+          userAnswer: textFieldDataList[i].formatted,
+        ),
+    ];
     return Scaffold(
       appBar: AppBar(title: const Text('成績発表'), centerTitle: true),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              elapsed.inMinutes > 0
+                  ? '${elapsed.inMinutes.remainder(60)}:${elapsed.inSeconds.remainder(60).toString().padLeft(2, '0')}.${elapsed.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}'
+                  : '${elapsed.inSeconds.remainder(60)}.${elapsed.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}',
+              style: TextStyle(fontSize: 48, fontFamily: 'bizUDPGR'),
+            ),
+            SizedBox(height: 10),
             CountUpText(
-              actualScore: getScore(selectedLevel, answerBools),
-              maxScore: getMaxScore(selectedLevel, answerBools),
+              score: getScore(selectedLevel, problemScorerList),
               durationBase: Duration(milliseconds: 10),
               passThreshold: selectedLevel.denomination.passThreshold,
               style: TextStyle(
@@ -46,7 +59,18 @@ class PaperResultsScreen extends StatelessWidget {
                 fontFamily: 'bizUDPGR',
               ),
             ),
-
+            ElevatedButton(
+              onPressed: () {
+                context.push(
+                  '/paper-review',
+                  extra: {
+                    'selectedLevel': selectedLevel,
+                    'problemScorerList': problemScorerList,
+                  },
+                );
+              },
+              child: Text('間違えた問題を見る'),
+            ),
             ElevatedButton(
               onPressed: () {
                 context.go(
@@ -80,41 +104,50 @@ class PaperResultsScreen extends StatelessWidget {
   }
 }
 
-int getMaxScore(PaperProblemLevel selectedLevel, List<bool> answerBools) {
-  switch (selectedLevel) {
-    case MitoriLevel _:
-      final int outOf = answerBools.length * 10;
-      return outOf;
-    case DivMultLevel _:
-      final int outOf =
-          answerBools.length *
-          (selectedLevel.denomination == .nisshou ? 5 : 10);
-      return outOf;
-  }
+class ProblemScorer {
+  final int index;
+  final dynamic problem;
+  final String answer;
+  final String userAnswer;
+
+  const ProblemScorer({
+    required this.index,
+    required this.problem,
+    required this.answer,
+    required this.userAnswer,
+  });
+
+  bool get isCorrect => answer == userAnswer;
 }
 
-int getScore(PaperProblemLevel selectedLevel, List<bool> answerBools) {
+(int, int) getScore(
+  PaperProblemLevel selectedLevel,
+  List<ProblemScorer> problemScoringList,
+) {
   switch (selectedLevel) {
     case MitoriLevel _:
-      final int score = answerBools.fold(
+      final int outOf = problemScoringList.length * 10;
+      final int score = problemScoringList.fold(
         0,
-        (previous, element) => (previous += element ? 10 : 0),
+        (total, scorer) => (total += scorer.isCorrect ? 10 : 0),
       );
-      return score;
+      return (score, outOf);
     case DivMultLevel _:
-      final int score = answerBools.fold(
+      final int outOf =
+          problemScoringList.length *
+          (selectedLevel.denomination == .nisshou ? 5 : 10);
+      final int score = problemScoringList.fold(
         0,
-        (previous, element) => (previous += element
+        (total, scorer) => (total += scorer.isCorrect
             ? (selectedLevel.denomination == .nisshou ? 5 : 10)
             : 0),
       );
-      return score;
+      return (score, outOf);
   }
 }
 
 class CountUpText extends StatefulWidget {
-  final int actualScore;
-  final int maxScore;
+  final (int, int) score;
   final Duration durationBase;
   final TextStyle style;
   final String suffix;
@@ -122,8 +155,7 @@ class CountUpText extends StatefulWidget {
 
   const CountUpText({
     super.key,
-    required this.actualScore,
-    required this.maxScore,
+    required this.score,
     required this.durationBase,
     required this.style,
     this.suffix = '点',
@@ -147,24 +179,24 @@ class _CountUpTextState extends State<CountUpText>
   bool _thresholdSoundPlayed = false;
 
   bool get userPassed =>
-      widget.actualScore / widget.maxScore > widget.passThreshold;
+      widget.score.$1 / widget.score.$2 > widget.passThreshold;
 
   @override
   void initState() {
     super.initState();
     Duration duration =
-        Duration(milliseconds: 800) + widget.durationBase * widget.actualScore;
+        Duration(milliseconds: 800) + widget.durationBase * widget.score.$1;
     _controller = AnimationController(duration: duration, vsync: this);
 
     _countAnimation = IntTween(
       begin: 0,
-      end: widget.actualScore,
+      end: widget.score.$1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     // Progress animation from 0 to targetValue/maxValue
     _progressAnimation = Tween<double>(
       begin: 0.0,
-      end: widget.actualScore / widget.maxScore,
+      end: widget.score.$1 / widget.score.$2,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _countAnimation.addListener(_onCountChange);
@@ -237,7 +269,7 @@ class _CountUpTextState extends State<CountUpText>
   @override
   Widget build(BuildContext context) {
     final bool userPassed =
-        widget.actualScore / widget.maxScore > widget.passThreshold;
+        widget.score.$1 / widget.score.$2 > widget.passThreshold;
 
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return AnimatedBuilder(
@@ -277,7 +309,7 @@ class _CountUpTextState extends State<CountUpText>
               child: Column(
                 children: [
                   Text(
-                    '${widget.maxScore}点満点',
+                    '${widget.score.$2}点満点',
                     style: widget.style.copyWith(
                       fontSize: widget.style.fontSize! * 0.4,
                     ),
@@ -291,10 +323,7 @@ class _CountUpTextState extends State<CountUpText>
                           opacity: 0,
                           child: Row(
                             children: [
-                              Text(
-                                '${widget.actualScore}',
-                                style: widget.style,
-                              ),
+                              Text('${widget.score.$1}', style: widget.style),
                               Text(
                                 widget.suffix,
                                 style: widget.style.copyWith(
@@ -381,7 +410,7 @@ class CircularProgressPainter extends CustomPainter {
       ..strokeWidth = 12
       ..strokeCap = StrokeCap.round;
 
-    const startAngle = -pi / 2; // Start at top
+    const startAngle = -pi / 2;
     final sweepAngle = 2 * pi * progress;
 
     canvas.drawArc(

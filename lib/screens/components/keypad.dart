@@ -35,7 +35,6 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   int get currentIndex;
   CarouselSliderController get carouselController;
   List<String> get allAnswers;
-  List<bool> get answerBools; //true = correct, false = incorrect
   bool get isExam;
   VoidCallback get onComplete;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
@@ -154,7 +153,6 @@ mixin KeypadMethods<T extends StatefulWidget> on State<T> {
   bool _isAnswerCorrect() {
     final isCorrect =
         textFieldDataList[currentIndex].formatted == allAnswers[currentIndex];
-    answerBools[currentIndex] = isCorrect;
     return isCorrect;
   }
 

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:go_router/go_router.dart';
 import 'package:soroban_app/problem_generation/mitori.dart';
 
 class FlashProblemScreen extends StatefulWidget {
@@ -10,10 +11,12 @@ class FlashProblemScreen extends StatefulWidget {
     required this.kuchi,
     required this.digits,
     required this.secondsPerProblem,
+    this.repeatedProblem,
   });
   final int kuchi;
   final int digits;
   final double secondsPerProblem;
+  final List<int>? repeatedProblem;
 
   @override
   State<FlashProblemScreen> createState() => FlashProblemScreenState();
@@ -21,7 +24,6 @@ class FlashProblemScreen extends StatefulWidget {
 
 class FlashProblemScreenState extends State<FlashProblemScreen>
     with SingleTickerProviderStateMixin {
-  late final List<int> template;
   late final List<int> problem;
   late final AnimationController _controller;
   late final List<Segment> _schedule;
@@ -37,38 +39,53 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
   void initState() {
     super.initState();
 
-    // Generate the problem
-    template = List.filled(widget.kuchi, widget.digits);
-    problem = generateMitoriProblemFromDigitList(template, Random());
+    problem =
+        widget.repeatedProblem ??
+        (() {
+          late final List<int> template = List.filled(
+            widget.kuchi,
+            widget.digits,
+          );
+          return generateMitoriProblemFromDigitList(template, Random());
+        })();
 
-    // Calculate green/black durations
     final n = widget.kuchi;
     final d = widget.secondsPerProblem;
-    final blackDuration = d / (2.5 * n - 1);
-    final greenDuration = 1.5 * blackDuration;
+    final hideDuration = d / (2.5 * n - 1);
+    final showDuration = 1.5 * hideDuration;
 
-    // Build schedule of segments (green/black alternating)
     double t = 0;
     _schedule = [];
     for (int i = 0; i < n; i++) {
-      // Green segment
-      _schedule.add(Segment(t, t + greenDuration, true, i));
-      t += greenDuration;
+      _schedule.add(Segment(t, t + showDuration, true, i));
+      t += showDuration;
 
-      // Black segment (except after last green)
       if (i < n - 1) {
-        _schedule.add(Segment(t, t + blackDuration, false, i));
-        t += blackDuration;
+        _schedule.add(Segment(t, t + hideDuration, false, i));
+        t += hideDuration;
       }
     }
 
     // Animation controller
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(microseconds: (d * 1e6).round()),
-    )..addListener(_onTick);
+    _controller =
+        AnimationController(
+            vsync: this,
+            duration: Duration(milliseconds: (d * 1000).round()),
+          )
+          ..addListener(_onTick)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              setState(() {
+                _showNumber = false;
+              });
+              Future.delayed(const Duration(seconds: 1), () {
+                if (mounted) {
+                  context.push('/flash-input');
+                }
+              });
+            }
+          });
 
-    // Initialize sounds and start animation
     _initSoundsAndStart();
   }
 
@@ -80,7 +97,6 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
 
     SoLoud.instance.play(startingSine);
 
-    // Wait 2 seconds before starting animation
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
@@ -90,7 +106,6 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
   void _onTick() {
     final t = _controller.value * widget.secondsPerProblem;
 
-    // Advance current segment pointer only if t > segment.end
     while (_currentSegment < _schedule.length - 1 &&
         t >= _schedule[_currentSegment].end) {
       _currentSegment++;
@@ -98,14 +113,12 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
 
     final seg = _schedule[_currentSegment];
 
-    // Update only if the segment actually changed
     if (mounted && (_currentIndex != seg.index || _showNumber != seg.showing)) {
-      _currentIndex = seg.index;
-      _showNumber = seg.showing;
+      setState(() {
+        _currentIndex = seg.index;
+        _showNumber = seg.showing;
+      });
 
-      setState(() {});
-
-      // Play sine beep only at start of green
       if (_showNumber) {
         SoLoud.instance.play(sineBeep);
       }
@@ -120,23 +133,25 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (_currentIndex >= problem.length) {
-      return const Scaffold(body: Center(child: Text('Done!')));
-    }
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
-        child: _showNumber
-            ? Text(
-                '${problem[_currentIndex]}',
-                style: const TextStyle(
-                  fontFamily: 'abacusFont',
-                  fontSize: 92,
-                  color: Colors.lightGreenAccent,
-                ),
-              )
-            : const SizedBox.shrink(),
+        child: FittedBox(
+          fit: .contain,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _showNumber
+                ? Text(
+                    '${problem[_currentIndex]}',
+                    style: const TextStyle(
+                      fontFamily: 'abacusFont',
+                      fontSize: 200,
+                      color: Colors.lightGreenAccent,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
       ),
     );
   }
@@ -145,7 +160,7 @@ class FlashProblemScreenState extends State<FlashProblemScreen>
 class Segment {
   final double start; // seconds
   final double end; // seconds
-  final bool showing; // green = true, black = false
-  final int index; // which number
+  final bool showing;
+  final int index;
   Segment(this.start, this.end, this.showing, this.index);
 }

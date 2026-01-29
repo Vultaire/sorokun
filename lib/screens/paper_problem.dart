@@ -35,15 +35,12 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   bool _delayOver = false;
   bool _showLoading = false;
   late final PaperProblemSounds _sound;
-  Stopwatch? _stopwatch;
+  Stopwatch _stopwatch = Stopwatch();
 
   @override
   void initState() {
     super.initState();
     _startDelaySequence();
-    if (widget.isExam) {
-      _stopwatch = Stopwatch();
-    }
   }
 
   void _startDelaySequence() async {
@@ -130,11 +127,10 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     bool? isExam;
     List<String>? allAnswers;
     List<dynamic>? allProblems;
-    List<bool>? answerBools;
     List<TextFieldData>? textFieldDataList;
     Duration? elapsed;
 
-    _stopwatch?.stop();
+    _stopwatch.stop();
 
     final blockingOverlay = OverlayEntry(
       builder: (context) => Positioned.fill(
@@ -153,9 +149,8 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         isExam = widget.isExam;
         allAnswers = state.allAnswers;
         allProblems = state.allProblems;
-        answerBools = state.answerBools;
         textFieldDataList = state.textFieldDataList;
-        elapsed = _stopwatch?.elapsed;
+        elapsed = _stopwatch.elapsed;
       }
     } else if (widget.selectedLevel is DivMultLevel) {
       final state = _divMultKey.currentState;
@@ -164,9 +159,8 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         isExam = widget.isExam;
         allAnswers = state.allAnswers;
         allProblems = state.allProblems;
-        answerBools = state.answerBools;
         textFieldDataList = state.textFieldDataList;
-        elapsed = _stopwatch?.elapsed;
+        elapsed = _stopwatch.elapsed;
       }
     }
 
@@ -218,7 +212,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                       'isExam': isExam,
                       'allProblems': allProblems,
                       'allAnswers': allAnswers,
-                      'answerBools': answerBools,
                       'textFieldDataList': textFieldDataList,
                       'elapsed': elapsed,
                     },
@@ -306,7 +299,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                           setState(() {
                             _delayOver = true;
                           });
-                          _stopwatch?.start();
+                          _stopwatch.start();
                         },
                       ),
                   ],
@@ -534,11 +527,6 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
   @override
   late final List<String> allAnswers;
 
-  late final List<bool> _answerBools;
-
-  @override
-  List<bool> get answerBools => _answerBools;
-
   @override
   late final List<TextFieldData> textFieldDataList;
 
@@ -567,8 +555,6 @@ class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
       allProblems.length,
       (_) => TextFieldData(),
     );
-
-    _answerBools = List.generate(allProblems.length, (_) => false);
 
     _sound = KeypadSounds();
     _sound.init();
@@ -704,11 +690,6 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
   @override
   late final List<String> allAnswers;
 
-  late final List<bool> _answerBools;
-
-  @override
-  List<bool> get answerBools => _answerBools;
-
   @override
   late final List<TextFieldData> textFieldDataList;
 
@@ -737,8 +718,6 @@ class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
       allProblems.length,
       (_) => TextFieldData(),
     );
-
-    _answerBools = List.generate(allProblems.length, (_) => false);
 
     _sound = KeypadSounds();
     _sound.init();
