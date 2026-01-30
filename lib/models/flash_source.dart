@@ -5,9 +5,8 @@ final flashSource = {
     "length": 2,
     "time": 4,
     "difficulty": "noCarry",
-    "allowMinus":
-        true, //Technically 19kyuu does not contain minuses but if I set it to false there are cases where generation breaks.
-  },
+    "allowMinus": false,
+  }, // Always 5 + a noCarry
   "18kyuu": {
     "digitCount": 1,
     "length": 3,
@@ -63,11 +62,31 @@ final flashSource = {
     "time": 4,
     "difficulty": "noCarry",
     "allowMinus": true,
-  },
-  "10kyuu": {"digitCount": 1, "length": 4, "time": 4, "difficulty": "easy"},
-  "9kyuu": {"digitCount": 1, "length": 5, "time": 5, "difficulty": "easy"},
-  "8kyuu": {"digitCount": 1, "length": 6, "time": 6, "difficulty": "easy"},
-  "7kyuu": {"digitCount": 2, "length": 3, "time": 3, "difficulty": "easy"},
+  }, // all end in 0
+  "10kyuu": {
+    "digitCount": 1,
+    "length": 4,
+    "time": 4,
+    "difficulty": "easy",
+  }, //never carries like 5 + 7
+  "9kyuu": {
+    "digitCount": 1,
+    "length": 5,
+    "time": 5,
+    "difficulty": "easy",
+  }, //never carries like 5 + 7
+  "8kyuu": {
+    "digitCount": 1,
+    "length": 6,
+    "time": 6,
+    "difficulty": "easy",
+  }, //never carries like 5 + 7
+  "7kyuu": {
+    "digitCount": 2,
+    "length": 3,
+    "time": 3,
+    "difficulty": "easy",
+  }, //always has 2 kuchi ending in 0
   "6kyuu": {"digitCount": 2, "length": 3, "time": 3},
   "5kyuu": {"digitCount": 2, "length": 4, "time": 4},
   "4kyuu": {"digitCount": 2, "length": 5, "time": 5},
@@ -85,3 +104,231 @@ final flashSource = {
   "9dan": {"digitCount": 3, "length": 15, "time": 4},
   "10dan": {"digitCount": 3, "length": 15, "time": 3},
 };
+
+enum FlashLevel {
+  zsk20(
+    kuchi: 1,
+    digits: 1,
+    secondsPerProblem: 2,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk19(
+    kuchi: 2,
+    digits: 1,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .zsk19,
+  ),
+  zsk18(
+    kuchi: 3,
+    digits: 1,
+    secondsPerProblem: 6,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk17(
+    kuchi: 4,
+    digits: 1,
+    secondsPerProblem: 8,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk16(
+    kuchi: 5,
+    digits: 1,
+    secondsPerProblem: 5,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk15(
+    kuchi: 6,
+    digits: 1,
+    secondsPerProblem: 6,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk14(
+    kuchi: 8,
+    digits: 1,
+    secondsPerProblem: 8,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk13(
+    kuchi: 10,
+    digits: 1,
+    secondsPerProblem: 10,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk12(
+    kuchi: 3,
+    digits: 1,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .noCarry,
+  ),
+  zsk11(
+    kuchi: 4,
+    digits: 1,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .x10,
+  ),
+  zsk10(
+    kuchi: 4,
+    digits: 1,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .someCarry,
+  ),
+  zsk9(
+    kuchi: 5,
+    digits: 1,
+    secondsPerProblem: 5,
+    probCount: 15,
+    builder: .someCarry,
+  ),
+  zsk8(
+    kuchi: 6,
+    digits: 1,
+    secondsPerProblem: 6,
+    probCount: 15,
+    builder: .someCarry,
+  ),
+  zsk7(
+    kuchi: 3,
+    digits: 2,
+    secondsPerProblem: 3,
+    probCount: 15,
+    builder: .zsk7,
+  ),
+  zsk6(
+    kuchi: 3,
+    digits: 2,
+    secondsPerProblem: 3,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsk5(
+    kuchi: 4,
+    digits: 2,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsk4(
+    kuchi: 5,
+    digits: 2,
+    secondsPerProblem: 5,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsk3(
+    kuchi: 6,
+    digits: 2,
+    secondsPerProblem: 5,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsk2(
+    kuchi: 8,
+    digits: 2,
+    secondsPerProblem: 7,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsk1(
+    kuchi: 10,
+    digits: 2,
+    secondsPerProblem: 8,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd1(
+    kuchi: 4,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd2(
+    kuchi: 5,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd3(
+    kuchi: 6,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd4(
+    kuchi: 7,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd5(
+    kuchi: 8,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd6(
+    kuchi: 9,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd7(
+    kuchi: 10,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd8(
+    kuchi: 12,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd9(
+    kuchi: 15,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 15,
+    builder: .mitoriStyle,
+  ),
+  zsd10(
+    kuchi: 15,
+    digits: 3,
+    secondsPerProblem: 3,
+    probCount: 15,
+    builder: .mitoriStyle,
+  );
+
+  const FlashLevel({
+    required this.kuchi,
+    required this.digits,
+    required this.secondsPerProblem,
+    required this.probCount,
+    required this.builder,
+  });
+  final int kuchi;
+  final int digits;
+  final double secondsPerProblem;
+  final int probCount;
+  final FlashBuilder builder;
+}
+
+enum FlashBuilder { noCarry, mitoriStyle, doubled, x10, someCarry, zsk19, zsk7 }

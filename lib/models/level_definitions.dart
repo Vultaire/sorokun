@@ -167,7 +167,7 @@ enum DivMultLevel implements PaperProblemLevel {
   final DivMultSplit divMultSplit;
   final DivMultSource divMultSource;
   @override
-  final Denomination denomination;
+  final PaperDenomination denomination;
   @override
   final String displayString;
   @override
@@ -621,7 +621,7 @@ enum MitoriLevel implements PaperProblemLevel {
   final int minusCount;
   final int? minusProblemsPerGroup;
   @override
-  final Denomination denomination;
+  final PaperDenomination denomination;
   final List<int> templateCountPerGroup;
   final int repeat;
   final bool? neverNegative; // nisshou is always neverNegative
@@ -631,16 +631,16 @@ enum MitoriLevel implements PaperProblemLevel {
   final Duration timeLimit;
 }
 
-enum Denomination {
+enum PaperDenomination {
   nisshou(passThreshold: 0.66),
   zenshuren(passThreshold: 0.7);
 
-  const Denomination({required this.passThreshold});
+  const PaperDenomination({required this.passThreshold});
   final double passThreshold;
 }
 
 sealed class PaperProblemLevel {
-  Denomination get denomination;
+  PaperDenomination get denomination;
   String get displayString;
   Duration get timeLimit;
 }

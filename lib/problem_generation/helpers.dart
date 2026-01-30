@@ -160,8 +160,8 @@ Decimal randomDecimalNoTrailingZero(int digits) {
 
 ({int firstDigits, int secondDigits}) splitDigits({
   required List<List<int>> split,
+  required Random rand,
 }) {
-  final rand = Random();
   final selected = split[rand.nextInt(split.length)];
 
   return (firstDigits: selected[0], secondDigits: selected[1]);

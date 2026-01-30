@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
 import '../models/level_definitions.dart';
-import 'generation_spec.dart';
+import 'divmult_set.dart';
 
 class DivisionProblem {
   final Decimal dividend;
@@ -13,7 +13,7 @@ class DivisionProblem {
 
   factory DivisionProblem({required DivMultSpec spec}) {
     late final rand = Random();
-    final split = splitDigits(split: spec.split);
+    final split = splitDigits(split: spec.split, rand: rand);
     late final totalDigits = spec.digitCount;
     late final int divisorDigits = split.firstDigits;
     late final int quotientDigits = split.secondDigits;

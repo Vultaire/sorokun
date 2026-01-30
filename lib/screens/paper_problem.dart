@@ -9,7 +9,7 @@ import 'package:soroban_app/problem_generation/mitori_set.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
 
 import '../models/level_definitions.dart';
-import '../problem_generation/generation_spec.dart';
+import '../problem_generation/divmult_set.dart';
 import 'components/keypad.dart';
 
 class PaperProblemScreen extends StatefulWidget {

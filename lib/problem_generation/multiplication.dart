@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
 import '../models/level_definitions.dart';
-import 'generation_spec.dart';
+import 'divmult_set.dart';
 
 class MultiplicationProblem {
   final Decimal multiplicand;
@@ -13,7 +13,7 @@ class MultiplicationProblem {
   MultiplicationProblem._(this.multiplicand, this.multiplier, this.product);
 
   factory MultiplicationProblem({required DivMultSpec spec}) {
-    final split = splitDigits(split: spec.split);
+    final split = splitDigits(split: spec.split, rand: Random());
     late final int multiplicandDigits = split.firstDigits;
     late final int multiplierDigits = split.secondDigits;
 

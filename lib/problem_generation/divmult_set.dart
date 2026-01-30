@@ -1,6 +1,5 @@
 import "dart:math";
 import "../models/level_definitions.dart";
-import "../models/sources.dart";
 
 enum ProblemType { type1, type2, type3, type4, type5 }
 
@@ -16,50 +15,9 @@ class DivMultSpec {
   });
 }
 
-class FlashSpec {
-  int probCount;
-  int digitCount;
-  int length;
-  int time;
-  String difficulty;
-  bool allowMinus;
-  bool digitAllDifferent;
-  bool neverNegative;
-  bool isExam;
-
-  FlashSpec({
-    this.allowMinus = false,
-    this.difficulty = "random",
-    this.digitAllDifferent = true,
-    this.digitCount = 1,
-    this.isExam = false,
-    this.length = 8,
-    this.time = 10,
-    this.neverNegative = true,
-    this.probCount = 15,
-  });
-}
-
-FlashSpec getFlashSpec(String level, {Map<String, dynamic>? overrides}) {
-  final baseConfig = flashSource[level] ?? {};
-  final merged = {...baseConfig, ...?overrides};
-
-  return FlashSpec(
-    allowMinus: merged["allowMinus"] ?? false,
-    difficulty: merged["difficulty"] ?? "normal",
-    digitAllDifferent: merged["digitAllDifferent"] ?? false,
-    digitCount: merged["digitCount"] ?? 1,
-    isExam: merged["isExam"] ?? false,
-    length: merged["length"] ?? 1,
-    time: merged["time"] ?? 10,
-    neverNegative: merged["neverNegative"] ?? false,
-    probCount: merged["probCount"] ?? 0,
-  );
-}
-
 class DivMultProblemSet<TProblem> {
-  final formattedProblems = <String>[];
-  final formattedAnswers = <String>[];
+  final List<String> formattedProblems = [];
+  final List<String> formattedAnswers = [];
   DivMultProblemSet({required DivMultLevel level}) {
     final rand = Random();
 
