@@ -1,7 +1,5 @@
 import 'dart:math';
-
 import 'package:decimal/decimal.dart';
-import 'generation_spec.dart';
 
 String formatWithCommas(String text) {
   if (text.isEmpty || text.length <= 3) return text;
@@ -62,7 +60,6 @@ int getRandomFlashInt(
   int digitCount,
   List<int> allPreviousNums,
   int? previousNum,
-  FlashSpec spec,
 ) {
   final rand = Random();
   final previousNumDigits = previousNum == null
@@ -83,22 +80,13 @@ int getRandomFlashInt(
       if (previousNumDigits.length > i) {
         excepts.add(previousNumDigits[i]);
       }
-      if (spec.digitAllDifferent) {
-        excepts.addAll(digits);
-      }
+      excepts.addAll(digits);
       int nextDigit = getRandomFlashDigit(rand, excepts: excepts);
       digits.add(nextDigit);
     }
 
     int number = int.parse(digits.join());
 
-    if (spec.allowMinus && rand.nextDouble() < 0.3) {
-      if (spec.neverNegative &&
-          number > allPreviousNums.fold(0, (a, b) => a + b)) {
-        continue;
-      }
-      number = -number;
-    }
     return number;
   }
 }

@@ -1,109 +1,4 @@
-final flashSource = {
-  "20kyuu": {"digitCount": 1, "length": 1, "time": 2, "difficulty": "noCarry"},
-  "19kyuu": {
-    "digitCount": 1,
-    "length": 2,
-    "time": 4,
-    "difficulty": "noCarry",
-    "allowMinus": false,
-  }, // Always 5 + a noCarry
-  "18kyuu": {
-    "digitCount": 1,
-    "length": 3,
-    "time": 6,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  },
-  "17kyuu": {
-    "digitCount": 1,
-    "length": 4,
-    "time": 8,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  },
-  "16kyuu": {
-    "digitCount": 1,
-    "length": 5,
-    "time": 5,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  },
-  "15kyuu": {
-    "digitCount": 1,
-    "length": 6,
-    "time": 6,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  },
-  "14kyuu": {
-    "digitCount": 1,
-    "length": 8,
-    "time": 8,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  },
-  "13kyuu": {
-    "digitCount": 1,
-    "length": 10,
-    "time": 10,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  },
-  "12kyuu": {
-    "digitCount": 1,
-    "length": 3,
-    "time": 4,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  },
-  "11kyuu": {
-    "digitCount": 1,
-    "length": 4,
-    "time": 4,
-    "difficulty": "noCarry",
-    "allowMinus": true,
-  }, // all end in 0
-  "10kyuu": {
-    "digitCount": 1,
-    "length": 4,
-    "time": 4,
-    "difficulty": "easy",
-  }, //never carries like 5 + 7
-  "9kyuu": {
-    "digitCount": 1,
-    "length": 5,
-    "time": 5,
-    "difficulty": "easy",
-  }, //never carries like 5 + 7
-  "8kyuu": {
-    "digitCount": 1,
-    "length": 6,
-    "time": 6,
-    "difficulty": "easy",
-  }, //never carries like 5 + 7
-  "7kyuu": {
-    "digitCount": 2,
-    "length": 3,
-    "time": 3,
-    "difficulty": "easy",
-  }, //always has 2 kuchi ending in 0
-  "6kyuu": {"digitCount": 2, "length": 3, "time": 3},
-  "5kyuu": {"digitCount": 2, "length": 4, "time": 4},
-  "4kyuu": {"digitCount": 2, "length": 5, "time": 5},
-  "3kyuu": {"digitCount": 2, "length": 6, "time": 5},
-  "2kyuu": {"digitCount": 2, "length": 8, "time": 7},
-  "1kyuu": {"digitCount": 2, "length": 10, "time": 8},
-  "1dan": {"digitCount": 3, "length": 4, "time": 4},
-  "2dan": {"digitCount": 3, "length": 5, "time": 4},
-  "3dan": {"digitCount": 3, "length": 6, "time": 4},
-  "4dan": {"digitCount": 3, "length": 7, "time": 4},
-  "5dan": {"digitCount": 3, "length": 8, "time": 4},
-  "6dan": {"digitCount": 3, "length": 9, "time": 4},
-  "7dan": {"digitCount": 3, "length": 10, "time": 4},
-  "8dan": {"digitCount": 3, "length": 12, "time": 4},
-  "9dan": {"digitCount": 3, "length": 15, "time": 4},
-  "10dan": {"digitCount": 3, "length": 15, "time": 3},
-};
+import 'package:soroban_app/problem_generation/flash.dart';
 
 enum FlashLevel {
   zsk20(
@@ -111,210 +6,428 @@ enum FlashLevel {
     digits: 1,
     secondsPerProblem: 2,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk19(
     kuchi: 2,
     digits: 1,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .zsk19,
+    builder: zsk19Builder,
   ),
   zsk18(
     kuchi: 3,
     digits: 1,
     secondsPerProblem: 6,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk17(
     kuchi: 4,
     digits: 1,
     secondsPerProblem: 8,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk16(
     kuchi: 5,
     digits: 1,
     secondsPerProblem: 5,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk15(
     kuchi: 6,
     digits: 1,
     secondsPerProblem: 6,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk14(
     kuchi: 8,
     digits: 1,
     secondsPerProblem: 8,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk13(
     kuchi: 10,
     digits: 1,
     secondsPerProblem: 10,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk12(
-    kuchi: 3,
+    kuchi: 12,
     digits: 1,
-    secondsPerProblem: 4,
+    secondsPerProblem: 12,
     probCount: 15,
-    builder: .noCarry,
+    builder: noCarry,
   ),
   zsk11(
-    kuchi: 4,
-    digits: 1,
-    secondsPerProblem: 4,
+    kuchi: 10,
+    digits: 1, // uses x10 builder
+    secondsPerProblem: 10,
     probCount: 15,
-    builder: .x10,
+    builder: multiplierBuilder,
+    multiplier: 10,
   ),
   zsk10(
     kuchi: 4,
     digits: 1,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .someCarry,
+    builder: noCarry,
+    someCarriesAllowed: true,
   ),
   zsk9(
     kuchi: 5,
     digits: 1,
     secondsPerProblem: 5,
     probCount: 15,
-    builder: .someCarry,
+    builder: noCarry,
+    someCarriesAllowed: true,
   ),
   zsk8(
     kuchi: 6,
     digits: 1,
     secondsPerProblem: 6,
     probCount: 15,
-    builder: .someCarry,
+    builder: noCarry,
+    someCarriesAllowed: true,
   ),
   zsk7(
     kuchi: 3,
     digits: 2,
     secondsPerProblem: 3,
     probCount: 15,
-    builder: .zsk7,
+    builder: zsk7Builder,
   ),
   zsk6(
     kuchi: 3,
     digits: 2,
     secondsPerProblem: 3,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsk5(
     kuchi: 4,
     digits: 2,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsk4(
     kuchi: 5,
     digits: 2,
     secondsPerProblem: 5,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsk3(
     kuchi: 6,
     digits: 2,
     secondsPerProblem: 5,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsk2(
     kuchi: 8,
     digits: 2,
     secondsPerProblem: 7,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsk1(
     kuchi: 10,
     digits: 2,
     secondsPerProblem: 8,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd1(
     kuchi: 4,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd2(
     kuchi: 5,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd3(
     kuchi: 6,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd4(
     kuchi: 7,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd5(
     kuchi: 8,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd6(
     kuchi: 9,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd7(
     kuchi: 10,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd8(
     kuchi: 12,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd9(
     kuchi: 15,
     digits: 3,
     secondsPerProblem: 4,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
   ),
   zsd10(
     kuchi: 15,
     digits: 3,
     secondsPerProblem: 3,
     probCount: 15,
-    builder: .mitoriStyle,
+    builder: mitoriStyle,
+  ),
+  kkk20(
+    kuchi: 3,
+    digits: 1,
+    secondsPerProblem: 5,
+    probCount: 10,
+    builder: noCarry,
+    constrainUnder4: true,
+  ),
+  kkk19(
+    kuchi: 3,
+    digits: 1,
+    secondsPerProblem: 5,
+    probCount: 10,
+    builder: kkk19Builder,
+  ),
+  kkk18(
+    kuchi: 5,
+    digits: 1,
+    secondsPerProblem: 7,
+    probCount: 10,
+    builder: noCarry,
+  ),
+  kkk17(
+    kuchi: 8,
+    digits: 1,
+    secondsPerProblem: 10,
+    probCount: 10,
+    builder: noCarry,
+  ),
+  kkk16(
+    kuchi: 10,
+    digits: 1,
+    secondsPerProblem: 12,
+    probCount: 10,
+    builder: noCarry,
+  ),
+  kkk15(
+    kuchi: 12,
+    digits: 1,
+    secondsPerProblem: 15,
+    probCount: 10,
+    builder: noCarry,
+  ),
+  kkk14(
+    kuchi: 15,
+    digits: 1,
+    secondsPerProblem: 15,
+    probCount: 10,
+    builder: noCarry,
+  ),
+  kkk13(
+    kuchi: 20,
+    digits: 1,
+    secondsPerProblem: 15,
+    probCount: 10,
+    builder: noCarry,
+  ),
+  kkk12(
+    kuchi: 10,
+    digits: 1, // uses x10 builder
+    secondsPerProblem: 10,
+    probCount: 10,
+    builder: multiplierBuilder,
+    multiplier: 10,
+  ),
+  kkk11(
+    kuchi: 15,
+    digits: 1, // uses x11 builder
+    secondsPerProblem: 15,
+    probCount: 10,
+    builder: multiplierBuilder,
+    multiplier: 11,
+  ),
+  kkk10(
+    kuchi: 2,
+    digits: 2,
+    secondsPerProblem: 4,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk9(
+    kuchi: 3,
+    digits: 2,
+    secondsPerProblem: 6,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk8(
+    kuchi: 4,
+    digits: 2,
+    secondsPerProblem: 7,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk7(
+    kuchi: 5,
+    digits: 2,
+    secondsPerProblem: 8,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk6(
+    kuchi: 6,
+    digits: 2,
+    secondsPerProblem: 9,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk5(
+    kuchi: 7,
+    digits: 2,
+    secondsPerProblem: 10,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk4(
+    kuchi: 8,
+    digits: 2,
+    secondsPerProblem: 11,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk3(
+    kuchi: 10,
+    digits: 2,
+    secondsPerProblem: 12,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk2(
+    kuchi: 12,
+    digits: 2,
+    secondsPerProblem: 12,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkk1(
+    kuchi: 15,
+    digits: 2,
+    secondsPerProblem: 13,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkd1(
+    kuchi: 15,
+    digits: 2,
+    secondsPerProblem: 10,
+    probCount: 10,
+    builder: mitoriStyle,
+  ),
+  kkd2(
+    kuchi: 4,
+    digits: 3,
+    secondsPerProblem: 4,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkd3(
+    kuchi: 6,
+    digits: 3,
+    secondsPerProblem: 5,
+    probCount: 10,
+    builder: mitoriStyle, // no 2-carries, might have to change this later.
+  ),
+  kkd4(
+    kuchi: 8,
+    digits: 3,
+    secondsPerProblem: 6,
+    probCount: 10,
+    builder:
+        mitoriStyle, // no 2-carries, might have to change this later. This seems to be the last level without 2-carries.
+  ),
+  kkd5(
+    kuchi: 10,
+    digits: 3,
+    secondsPerProblem: 7,
+    probCount: 10,
+    builder: mitoriStyle,
+  ),
+  kkd6(
+    kuchi: 12,
+    digits: 3,
+    secondsPerProblem: 8,
+    probCount: 10,
+    builder: mitoriStyle,
+  ),
+  kkd7(
+    kuchi: 15,
+    digits: 3,
+    secondsPerProblem: 8,
+    probCount: 10,
+    builder: mitoriStyle,
+  ),
+  kkd8(
+    kuchi: 15,
+    digits: 3,
+    secondsPerProblem: 6,
+    probCount: 10,
+    builder: mitoriStyle,
+  ),
+  kkd9(
+    kuchi: 15,
+    digits: 3,
+    secondsPerProblem: 4.5,
+    probCount: 10,
+    builder: mitoriStyle,
+  ),
+  kkd10(
+    kuchi: 15,
+    digits: 3,
+    secondsPerProblem: 3,
+    probCount: 10,
+    builder: mitoriStyle,
   );
 
   const FlashLevel({
@@ -323,12 +436,16 @@ enum FlashLevel {
     required this.secondsPerProblem,
     required this.probCount,
     required this.builder,
+    this.someCarriesAllowed = false,
+    this.constrainUnder4 = false,
+    this.multiplier = 0,
   });
   final int kuchi;
   final int digits;
   final double secondsPerProblem;
   final int probCount;
-  final FlashBuilder builder;
+  final Function builder;
+  final bool someCarriesAllowed;
+  final bool constrainUnder4;
+  final int multiplier;
 }
-
-enum FlashBuilder { noCarry, mitoriStyle, doubled, x10, someCarry, zsk19, zsk7 }
