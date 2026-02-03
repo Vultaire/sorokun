@@ -160,9 +160,8 @@ class _AbacusAppState extends State<AbacusApp> {
           return blackFadeTransition(
             key: state.pageKey,
             child: FlashProblemScreen(
-              kuchi: args?['kuchi'],
-              digits: args?['digits'],
-              secondsPerProblem: args?['secondsPerProblem'],
+              isSingleProblem: args?['isSingleProblem'],
+              selectedLevel: args?['selectedLevel'],
             ),
           );
         },

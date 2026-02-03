@@ -1,6 +1,35 @@
 import 'package:soroban_app/problem_generation/flash.dart';
 
-enum FlashLevel {
+abstract interface class FlashSpec {
+  int get digits;
+  int get kuchi;
+  double get secondsPerProblem;
+  Function get builder;
+  int get probCount;
+}
+
+class FlashSingleProblemSpec implements FlashSpec {
+  @override
+  int kuchi;
+  @override
+  int digits;
+  @override
+  double secondsPerProblem;
+  @override
+  Function builder;
+  @override
+  int probCount;
+
+  FlashSingleProblemSpec({
+    required this.digits,
+    required this.kuchi,
+    required this.secondsPerProblem,
+    required this.builder,
+    this.probCount = 1,
+  });
+}
+
+enum FlashLevel implements FlashSpec {
   zsk20(
     kuchi: 1,
     digits: 1,
@@ -440,10 +469,15 @@ enum FlashLevel {
     this.constrainUnder4 = false,
     this.multiplier = 0,
   });
+  @override
   final int kuchi;
+  @override
   final int digits;
+  @override
   final double secondsPerProblem;
+  @override
   final int probCount;
+  @override
   final Function builder;
   final bool someCarriesAllowed;
   final bool constrainUnder4;

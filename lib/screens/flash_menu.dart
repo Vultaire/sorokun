@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/models/flash_source.dart';
+import 'package:soroban_app/problem_generation/flash.dart';
 
 class FlashMenuPage extends StatefulWidget {
   const FlashMenuPage({super.key});
@@ -39,12 +41,17 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
             ),
             ElevatedButton(
               onPressed: () {
+                FlashSingleProblemSpec spec = FlashSingleProblemSpec(
+                  digits: _digits,
+                  kuchi: _kuchi,
+                  secondsPerProblem: _secondsPerProblem,
+                  builder: mitoriStyle,
+                );
                 context.go(
                   '/flash-problem',
                   extra: {
-                    'digits': _digits,
-                    'kuchi': _kuchi,
-                    'secondsPerProblem': _secondsPerProblem,
+                    'isSingleProblem': true,
+                    'selectedLevel': FlashLevel.kkk1,
                   },
                 );
               },

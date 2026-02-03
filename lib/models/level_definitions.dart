@@ -640,7 +640,7 @@ enum PaperDenomination {
 }
 
 sealed class PaperProblemLevel {
+  Duration get timeLimit;
   PaperDenomination get denomination;
   String get displayString;
-  Duration get timeLimit;
 }

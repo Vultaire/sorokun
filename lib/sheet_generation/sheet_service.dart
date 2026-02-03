@@ -5,7 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:soroban_app/problem_generation/division.dart';
 import 'package:soroban_app/problem_generation/division_source.dart';
-import 'package:soroban_app/problem_generation/generation_spec.dart';
+import 'package:soroban_app/problem_generation/divmult_set.dart';
 import 'package:soroban_app/problem_generation/multiplication.dart';
 import 'package:soroban_app/problem_generation/multiplication_source.dart';
 

@@ -6,7 +6,13 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 
 import '../../problem_generation/helpers.dart';
-import '../paper_problem.dart';
+
+class TextFieldData {
+  String internalString = '';
+  String formatted = '';
+  String beforeCaret = '';
+  double caretPos = 0.0;
+}
 
 class KeypadSounds {
   late final AudioSource keyTap;
@@ -30,7 +36,84 @@ class KeypadSounds {
   }
 }
 
-mixin KeypadMethods<T extends StatefulWidget> on State<T> {
+mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
+  TextFieldData get data;
+  List<String> get allAnswers;
+  int get currentIndex;
+  VoidCallback get onComplete;
+  static final _digitsOnlyRegex = RegExp(r'[,.\-]');
+  KeypadSounds get sound;
+
+  void appendDigit(String digit) {
+    setState(() {
+      if (digit == '-') {
+        if (!data.internalString.startsWith('-')) {
+          data.internalString = '-${data.internalString}';
+          SoLoud.instance.play(sound.keyTap);
+        } else {
+          data.internalString = data.internalString.substring(1);
+          SoLoud.instance.play(sound.delete);
+        }
+      } else if (digit == '.') {
+        if (!data.internalString.contains('.') &&
+            data.internalString.isNotEmpty &&
+            data.internalString != '-') {
+          data.internalString += digit;
+          SoLoud.instance.play(sound.keyTap);
+        }
+      } else if (digit == 'a') {
+        if (!data.internalString.endsWith('a') &&
+            data.internalString.isNotEmpty &&
+            data.internalString != '-') {
+          data.internalString += digit;
+          SoLoud.instance.play(sound.keyTap);
+        }
+      } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length < 11) {
+        data.internalString += digit;
+        SoLoud.instance.play(sound.keyTap);
+      } else {
+        SoLoud.instance.play(sound.invalid);
+      }
+      _updateText(data);
+    });
+  }
+
+  void _updateText(TextFieldData data) {
+    data.formatted = formatWithCommas(data.internalString);
+  }
+
+  void submit() {
+    if (data.formatted != allAnswers[currentIndex]) {
+      SoLoud.instance.play(sound.incorrect);
+      return;
+    } else {
+      SoLoud.instance.play(sound.correct);
+    }
+  }
+
+  void deleteDigit() {
+    if (data.internalString.isNotEmpty) {
+      setState(() {
+        data.internalString = data.internalString.substring(
+          0,
+          data.internalString.length - 1,
+        );
+        _updateText(data);
+        SoLoud.instance.play(sound.delete);
+      });
+    }
+  }
+
+  void clearAll() {
+    setState(() {
+      data.internalString = '';
+      _updateText(data);
+      SoLoud.instance.play(sound.delete);
+    });
+  }
+}
+
+mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
   List<TextFieldData> get textFieldDataList;
   int get currentIndex;
   CarouselSliderController get carouselController;

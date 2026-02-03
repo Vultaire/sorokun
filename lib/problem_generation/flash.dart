@@ -15,37 +15,21 @@ late Map<String, dynamic> difficultyThresholds;
 // Helpers
 // ---------------------------------
 
-class FlashSpec {
-  int probCount;
-  int length;
-  int time;
-  String difficulty;
-  bool digitAllDifferent;
-  bool neverNegative;
-
-  FlashSpec({
-    this.difficulty = "random",
-    this.digitAllDifferent = true,
-    this.length = 8,
-    this.time = 10,
-    this.neverNegative = true,
-    this.probCount = 15,
-  });
-}
-
 class FlashProblemSet {
-  final FlashLevel level;
+  final FlashSpec spec;
   List<List<String>> formattedProblems = [];
   List<String> formattedAnswers = [];
 
-  FlashProblemSet(this.level) {
-    List<List<int>> problems = List.generate(
-      level.probCount,
-      (_) => level.builder(level, Random()),
+  FlashProblemSet(this.spec) {
+    late final List<List<int>> problems = List.generate(
+      spec.probCount,
+      (_) => spec.builder(spec, Random()),
     );
+
     List<int> answers = problems
         .map((problem) => problem.reduce((a, b) => a + b))
         .toList();
+
     formattedProblems = problems
         .map(
           (problem) => problem
@@ -53,6 +37,7 @@ class FlashProblemSet {
               .toList(),
         )
         .toList();
+
     formattedAnswers = answers
         .map((sum) => formatWithCommas(sum.toString()))
         .toList();
@@ -114,12 +99,9 @@ List<int> noCarry(FlashLevel level, Random rand) {
   return numbers;
 }
 
-List<int> mitoriStyle(FlashLevel level) {
+List<int> mitoriStyle(FlashSpec level, Random rand) {
   final List<int> digitList = List.filled(level.kuchi, level.digits);
-  final List<int> numbers = generateMitoriProblemFromDigitList(
-    digitList,
-    Random(),
-  );
+  final List<int> numbers = generateMitoriProblemFromDigitList(digitList, rand);
   return numbers;
 }
 
