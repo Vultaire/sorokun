@@ -5,7 +5,7 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 
 import '../models/level_definitions.dart';
-import 'paper_problem.dart';
+import 'components/keypad.dart';
 
 class PaperResultsScreen extends StatelessWidget {
   final PaperProblemLevel selectedLevel;

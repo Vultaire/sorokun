@@ -320,13 +320,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   }
 }
 
-class TextFieldData {
-  String internalString = '';
-  String formatted = '';
-  String beforeCaret = '';
-  double caretPos = 0.0;
-}
-
 class PaperProblemSounds {
   late final AudioSource startingSine;
   late final AudioSource sineBeep;
@@ -518,7 +511,8 @@ class MitorizanWindow extends StatefulWidget {
   State<MitorizanWindow> createState() => _MitorizanWindowState();
 }
 
-class _MitorizanWindowState extends State<MitorizanWindow> with KeypadMethods {
+class _MitorizanWindowState extends State<MitorizanWindow>
+    with PaperKeypadMethods {
   late final List<List<String>> allProblems;
 
   @override
@@ -679,7 +673,7 @@ class DivMultWindow extends StatefulWidget {
   State<DivMultWindow> createState() => _DivMultWindowState();
 }
 
-class _DivMultWindowState extends State<DivMultWindow> with KeypadMethods {
+class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
   late final List<String> allProblems;
   late final int
   intRoundIndex; // index in allProblems at the first problem to require an answer rounded to integer

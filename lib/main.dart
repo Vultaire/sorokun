@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/flash_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/paper_problem_menu.dart';

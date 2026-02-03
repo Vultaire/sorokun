@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/flash_source.dart';
+import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash.dart';
+import 'package:soroban_app/screens/components/keypad.dart';
 
 class FlashProblemScreen extends StatefulWidget {
   const FlashProblemScreen({
@@ -20,16 +22,20 @@ class FlashProblemScreen extends StatefulWidget {
 class _FlashProblemScreenState extends State<FlashProblemScreen> {
   late final List<Segment> _schedule;
   late final FlashProblemSet fullProblemSet;
-  late final List<List<String>> allProblems;
-  late final List<String> allAnswers;
-  int _index = 0;
+  late final List<List<String>> _allProblems;
+  late final List<String> _allAnswers;
+  int _indexInIndexedStack = 0;
+  int _currentProblemIndex = 0;
 
   final GlobalKey<FlashProblemState> _problemKey = GlobalKey();
 
-  void showInput() => setState(() => _index = 1);
+  void showInput() => setState(() {
+    _indexInIndexedStack = 1;
+  });
 
   void startNextProblem() {
-    setState(() => _index = 0); // show problem screen
+    setState(() => _indexInIndexedStack = 0);
+    _currentProblemIndex++;
     _problemKey.currentState?.nextProblem();
   }
 
@@ -37,8 +43,8 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   void initState() {
     super.initState();
     fullProblemSet = FlashProblemSet(widget.selectedLevel);
-    allProblems = fullProblemSet.formattedProblems;
-    allAnswers = fullProblemSet.formattedAnswers;
+    _allProblems = fullProblemSet.formattedProblems;
+    _allAnswers = fullProblemSet.formattedAnswers;
 
     final kuchi = widget.selectedLevel.kuchi;
     final secondsPerProblem = widget.selectedLevel.secondsPerProblem;
@@ -61,37 +67,90 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   @override
   Widget build(BuildContext context) {
     return IndexedStack(
-      index: _index,
+      index: _indexInIndexedStack,
       children: [
         FlashProblem(
           key: _problemKey,
-          problemSet: allProblems,
+          problemSet: _allProblems,
           schedule: _schedule,
           secondsPerProblem: widget.selectedLevel.secondsPerProblem,
           onEnd: showInput,
+          currentProblemIndex: _currentProblemIndex,
         ),
-        FlashProblemInput(onNextProblem: startNextProblem),
+        FlashProblemInput(
+          onNextProblem: startNextProblem,
+          allAnswers: _allAnswers,
+          currentProblemIndex: _currentProblemIndex,
+        ),
       ],
     );
   }
 }
 
+class FlashTextField extends StatelessWidget {
+  const FlashTextField({super.key, required this.data});
+  final TextFieldData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 55,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
+        child: Text(
+          data.formatted,
+          style: const TextStyle(fontSize: 26, fontFamily: 'abacusFontSpaced'),
+        ),
+      ),
+    );
+  }
+}
+
 class FlashProblemInput extends StatefulWidget {
-  const FlashProblemInput({super.key, required this.onNextProblem});
+  const FlashProblemInput({
+    super.key,
+    required this.onNextProblem,
+    required this.allAnswers,
+    required this.currentProblemIndex,
+  });
   final VoidCallback onNextProblem;
+  final List<String> allAnswers;
+  final int currentProblemIndex;
 
   @override
   State<FlashProblemInput> createState() => _FlashProblemInputState();
 }
 
-class _FlashProblemInputState extends State<FlashProblemInput> {
+class _FlashProblemInputState extends State<FlashProblemInput>
+    with FlashKeypadMethods {
+  @override
+  TextFieldData data = TextFieldData();
+  @override
+  List<String> get allAnswers => widget.allAnswers;
+  @override
+  // TODO: implement onComplete
+  VoidCallback get onComplete => throw UnimplementedError();
+  late final KeypadSounds _sound;
+  @override
+  KeypadSounds get sound => _sound;
+  @override
+  int get currentIndex => widget.currentProblemIndex;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _sound = KeypadSounds();
+    _sound.init();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
         child: Container(
-          width: 250,
+          width: 550,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -107,15 +166,16 @@ class _FlashProblemInputState extends State<FlashProblemInput> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Ready for next problem?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: widget.onNextProblem,
-                child: const Text('Start'),
+              Flexible(flex: 2, child: FlashTextField(data: data)),
+              Expanded(
+                flex: 5,
+                child: Keypad(
+                  onAppendDigit: appendDigit,
+                  onDeleteDigit: deleteDigit,
+                  onClearAll: clearAll,
+                  onSubmit: submit,
+                  levelType: DivMultLevel.dk4,
+                ),
               ),
             ],
           ),
@@ -132,11 +192,13 @@ class FlashProblem extends StatefulWidget {
     required this.secondsPerProblem,
     required this.schedule,
     required this.onEnd,
+    required this.currentProblemIndex,
   });
   final double secondsPerProblem;
   final List<List<String>> problemSet;
   final List<Segment> schedule;
   final VoidCallback onEnd;
+  final int currentProblemIndex;
 
   @override
   State<FlashProblem> createState() => FlashProblemState();
@@ -149,7 +211,6 @@ class FlashProblemState extends State<FlashProblem>
 
   int _currentNumberIndex = 0;
   bool _showNumber = false;
-  int _currentProblemIndex = 0;
 
   late final AudioSource startingSine;
   late final AudioSource sineBeep;
@@ -159,7 +220,7 @@ class FlashProblemState extends State<FlashProblem>
   void initState() {
     super.initState();
 
-    currentProblem = widget.problemSet[_currentProblemIndex];
+    currentProblem = widget.problemSet[widget.currentProblemIndex];
 
     // Animation controller
     _controller =
@@ -224,18 +285,13 @@ class FlashProblemState extends State<FlashProblem>
   }
 
   void nextProblem() async {
-    _currentProblemIndex++;
-
-    if (_currentProblemIndex >= widget.problemSet.length) {
-      _currentProblemIndex = 0;
-    }
     SoLoud.instance.play(startingSine);
 
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
     setState(() {
-      currentProblem = widget.problemSet[_currentProblemIndex];
+      currentProblem = widget.problemSet[widget.currentProblemIndex];
       _currentSegment = 0;
       _currentNumberIndex = 0;
       _showNumber = false;

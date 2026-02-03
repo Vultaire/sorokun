@@ -88,6 +88,8 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
       return;
     } else {
       SoLoud.instance.play(sound.correct);
+      data.internalString = '';
+      _updateText(data);
     }
   }
 
@@ -449,7 +451,6 @@ class Keypad extends StatelessWidget {
             Expanded(flex: 2, child: _buildKey('0')),
             const SizedBox(width: 6),
             Expanded(flex: 1, child: _buildKey('.')),
-            const SizedBox(width: 6),
           ],
         );
     }
