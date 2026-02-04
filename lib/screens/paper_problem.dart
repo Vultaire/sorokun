@@ -107,7 +107,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         onDeleteDigit: () => _mitorizanKey.currentState?.deleteDigit(),
         onClearAll: () => _mitorizanKey.currentState?.clearAll(),
         onSubmit: () => _mitorizanKey.currentState?.submit(),
-        levelType: widget.selectedLevel,
+        levelType: .mitori,
       );
     } else if (widget.selectedLevel is DivMultLevel) {
       return Keypad(
@@ -115,7 +115,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         onDeleteDigit: () => _divMultKey.currentState?.deleteDigit(),
         onClearAll: () => _divMultKey.currentState?.clearAll(),
         onSubmit: () => _divMultKey.currentState?.submit(),
-        levelType: widget.selectedLevel,
+        levelType: .divMult,
       );
     } else {
       return const SizedBox();

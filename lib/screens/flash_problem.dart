@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/flash_source.dart';
-import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 
@@ -24,19 +23,36 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   late final FlashProblemSet fullProblemSet;
   late final List<List<String>> _allProblems;
   late final List<String> _allAnswers;
-  int _indexInIndexedStack = 0;
+  final PageController _pageController = PageController(initialPage: 0);
   int _currentProblemIndex = 0;
+  String _userInputted = '';
 
   final GlobalKey<FlashProblemState> _problemKey = GlobalKey();
 
-  void showInput() => setState(() {
-    _indexInIndexedStack = 1;
-  });
+  void showInput() {
+    _pageController.animateToPage(
+      1,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void setInputAndShowResult(String userInputted) {
+    _userInputted = userInputted;
+    _pageController.animateToPage(
+      2,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
 
   void startNextProblem() {
-    setState(() => _indexInIndexedStack = 0);
     _currentProblemIndex++;
-    _problemKey.currentState?.nextProblem();
+    _pageController.animateToPage(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -65,24 +81,54 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return IndexedStack(
-      index: _indexInIndexedStack,
-      children: [
-        FlashProblem(
-          key: _problemKey,
-          problemSet: _allProblems,
-          schedule: _schedule,
-          secondsPerProblem: widget.selectedLevel.secondsPerProblem,
-          onEnd: showInput,
-          currentProblemIndex: _currentProblemIndex,
-        ),
-        FlashProblemInput(
-          onNextProblem: startNextProblem,
-          allAnswers: _allAnswers,
-          currentProblemIndex: _currentProblemIndex,
-        ),
-      ],
+    final media = MediaQuery.of(context);
+    final Size screenSize = media.size;
+    final bool isPortrait = media.orientation == Orientation.portrait;
+
+    return PageView.builder(
+      controller: _pageController,
+      itemBuilder: (context, index) {
+        switch (index) {
+          case 0:
+            return FlashProblem(
+              key: _problemKey,
+              problemSet: _allProblems,
+              schedule: _schedule,
+              secondsPerProblem: widget.selectedLevel.secondsPerProblem,
+              onEnd: showInput,
+              currentProblemIndex: _currentProblemIndex,
+            );
+
+          case 1:
+            return FlashProblemInput(
+              showResult: setInputAndShowResult,
+              allAnswers: _allAnswers,
+              currentProblemIndex: _currentProblemIndex,
+              screenSize: screenSize,
+              isPortrait: isPortrait,
+            );
+
+          case 2:
+            return FlashResult(
+              onNextProblem: startNextProblem,
+              screenSize: screenSize,
+              isPortrait: isPortrait,
+              allAnswers: _allAnswers,
+              currentProblemIndex: _currentProblemIndex,
+              userInputted: _userInputted,
+            );
+
+          default:
+            return const SizedBox.shrink();
+        }
+      },
     );
   }
 }
@@ -94,12 +140,16 @@ class FlashTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 55,
+      height: 155,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 7),
         child: Text(
           data.formatted,
-          style: const TextStyle(fontSize: 26, fontFamily: 'abacusFontSpaced'),
+          style: TextStyle(
+            fontSize: 95,
+            fontFamily: 'bizUDPGR',
+            color: Theme.of(context).primaryColor,
+          ),
         ),
       ),
     );
@@ -109,13 +159,17 @@ class FlashTextField extends StatelessWidget {
 class FlashProblemInput extends StatefulWidget {
   const FlashProblemInput({
     super.key,
-    required this.onNextProblem,
     required this.allAnswers,
     required this.currentProblemIndex,
+    required this.screenSize,
+    required this.isPortrait,
+    required this.showResult,
   });
-  final VoidCallback onNextProblem;
+  final void Function(String) showResult;
   final List<String> allAnswers;
   final int currentProblemIndex;
+  final Size screenSize;
+  final bool isPortrait;
 
   @override
   State<FlashProblemInput> createState() => _FlashProblemInputState();
@@ -128,8 +182,6 @@ class _FlashProblemInputState extends State<FlashProblemInput>
   @override
   List<String> get allAnswers => widget.allAnswers;
   @override
-  // TODO: implement onComplete
-  VoidCallback get onComplete => throw UnimplementedError();
   late final KeypadSounds _sound;
   @override
   KeypadSounds get sound => _sound;
@@ -146,38 +198,154 @@ class _FlashProblemInputState extends State<FlashProblemInput>
 
   @override
   Widget build(BuildContext context) {
+    Widget landscapeAndPortrait() {
+      if (widget.isPortrait) {
+        return Column(
+          mainAxisAlignment: .end,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: FittedBox(
+                  fit: .contain,
+                  child: FlashTextField(data: data),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Keypad(
+                onAppendDigit: appendDigit,
+                onDeleteDigit: deleteDigit,
+                onClearAll: clearAll,
+                onSubmit: () {
+                  widget.showResult(data.formatted);
+                },
+                levelType: KeypadType.flash,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return Row(
+          mainAxisAlignment: .end,
+          children: [
+            Expanded(
+              child: Center(
+                child: FittedBox(
+                  fit: .contain,
+                  child: FlashTextField(data: data),
+                ),
+              ),
+            ),
+            SizedBox(width: 50),
+            Expanded(
+              child: Keypad(
+                onAppendDigit: appendDigit,
+                onDeleteDigit: deleteDigit,
+                onClearAll: clearAll,
+                onSubmit: () {
+                  widget.showResult(data.formatted);
+                },
+                levelType: KeypadType.flash,
+              ),
+            ),
+          ],
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
-        child: Container(
-          width: 550,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: Offset(0, 5),
-              ),
-            ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: widget.isPortrait
+                ? widget.screenSize.width
+                : widget.screenSize.width * 0.9,
+            maxHeight: widget.isPortrait
+                ? widget.screenSize.height * 0.65
+                : widget.screenSize.height * 0.85,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(flex: 2, child: FlashTextField(data: data)),
-              Expanded(
-                flex: 5,
-                child: Keypad(
-                  onAppendDigit: appendDigit,
-                  onDeleteDigit: deleteDigit,
-                  onClearAll: clearAll,
-                  onSubmit: submit,
-                  levelType: DivMultLevel.dk4,
+          child: Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: landscapeAndPortrait(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FlashResult extends StatefulWidget {
+  const FlashResult({
+    super.key,
+    required this.screenSize,
+    required this.isPortrait,
+    required this.onNextProblem,
+    required this.currentProblemIndex,
+    required this.allAnswers,
+    required this.userInputted,
+  });
+  final VoidCallback onNextProblem;
+  final Size screenSize;
+  final bool isPortrait;
+  final int currentProblemIndex;
+  final List<String> allAnswers;
+  final String userInputted;
+
+  @override
+  State<FlashResult> createState() => _FlashResultState();
+}
+
+class _FlashResultState extends State<FlashResult> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: widget.isPortrait
+                ? widget.screenSize.width
+                : widget.screenSize.width * 0.9,
+            maxHeight: widget.isPortrait
+                ? widget.screenSize.height * 0.65
+                : widget.screenSize.height * 0.85,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  child: Text(
+                    widget.userInputted ==
+                            widget.allAnswers[widget.currentProblemIndex]
+                        ? '正解'
+                        : '不正解',
+                  ),
                 ),
-              ),
-            ],
+                ElevatedButton(
+                  onPressed:
+                      widget.currentProblemIndex == widget.allAnswers.length - 1
+                      ? () {}
+                      : widget.onNextProblem,
+                  child: Text(
+                    widget.currentProblemIndex == widget.allAnswers.length - 1
+                        ? '採点'
+                        : '次の問題',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

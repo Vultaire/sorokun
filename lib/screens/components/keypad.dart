@@ -40,7 +40,6 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
   TextFieldData get data;
   List<String> get allAnswers;
   int get currentIndex;
-  VoidCallback get onComplete;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
   KeypadSounds get sound;
 
@@ -68,7 +67,7 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
           data.internalString += digit;
           SoLoud.instance.play(sound.keyTap);
         }
-      } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length < 11) {
+      } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length < 7) {
         data.internalString += digit;
         SoLoud.instance.play(sound.keyTap);
       } else {
@@ -80,17 +79,6 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
 
   void _updateText(TextFieldData data) {
     data.formatted = formatWithCommas(data.internalString);
-  }
-
-  void submit() {
-    if (data.formatted != allAnswers[currentIndex]) {
-      SoLoud.instance.play(sound.incorrect);
-      return;
-    } else {
-      SoLoud.instance.play(sound.correct);
-      data.internalString = '';
-      _updateText(data);
-    }
   }
 
   void deleteDigit() {
@@ -316,87 +304,85 @@ class Keypad extends StatelessWidget {
   final VoidCallback onDeleteDigit;
   final VoidCallback onClearAll;
   final VoidCallback onSubmit;
-  final PaperProblemLevel levelType;
+  final KeypadType levelType;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 400),
-        // Main keypad
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(child: _buildKeyRow(['7', '8', '9'])),
-                  const SizedBox(height: 6),
-                  Expanded(child: _buildKeyRow(['4', '5', '6'])),
-                  const SizedBox(height: 6),
-                  Expanded(child: _buildKeyRow(['1', '2', '3'])),
-                  const SizedBox(height: 6),
-                  Expanded(child: _buildBottomRow(levelType)),
-                ],
-              ),
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 400),
+      // Main keypad
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: _buildKeyRow(['7', '8', '9'])),
+                const SizedBox(height: 6),
+                Expanded(child: _buildKeyRow(['4', '5', '6'])),
+                const SizedBox(height: 6),
+                Expanded(child: _buildKeyRow(['1', '2', '3'])),
+                const SizedBox(height: 6),
+                Expanded(child: _buildBottomRow(levelType)),
+              ],
             ),
+          ),
 
-            const SizedBox(width: 6),
+          const SizedBox(width: 6),
 
-            // Delete button
-            Expanded(
-              flex: 1,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 80),
-                      child: ElevatedButton(
-                        onPressed: onDeleteDigit,
-                        onLongPress: onClearAll,
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(
-                            double.infinity,
-                            double.infinity,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: EdgeInsets.all(10),
+          // Delete button
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 80),
+                    child: ElevatedButton(
+                      onPressed: onDeleteDigit,
+                      onLongPress: onClearAll,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(
+                          double.infinity,
+                          double.infinity,
                         ),
-                        child: const Icon(Icons.backspace, size: 40),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: EdgeInsets.all(10),
                       ),
+                      child: const Icon(Icons.backspace, size: 40),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                ),
+                const SizedBox(height: 6),
 
-                  // Check Button
-                  Expanded(
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 80),
-                      child: ElevatedButton(
-                        onPressed: onSubmit,
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(
-                            double.infinity,
-                            double.infinity,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: EdgeInsets.all(10),
+                // Check Button
+                Expanded(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 80),
+                    child: ElevatedButton(
+                      onPressed: onSubmit,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(
+                          double.infinity,
+                          double.infinity,
                         ),
-                        child: const Icon(Icons.check, size: 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: EdgeInsets.all(10),
                       ),
+                      child: const Icon(Icons.check, size: 45),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -414,9 +400,9 @@ class Keypad extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomRow(PaperProblemLevel levelType) {
-    switch (levelType) {
-      case MitoriLevel _:
+  Widget _buildBottomRow(KeypadType type) {
+    switch (type) {
+      case .mitori:
         return Row(
           children: [
             Expanded(child: _buildKey('-')),
@@ -445,12 +431,20 @@ class Keypad extends StatelessWidget {
             ),
           ],
         );
-      case DivMultLevel _:
+      case .divMult:
         return Row(
           children: [
             Expanded(flex: 2, child: _buildKey('0')),
             const SizedBox(width: 6),
             Expanded(flex: 1, child: _buildKey('.')),
+          ],
+        );
+      case .flash:
+        return Row(
+          children: [
+            Expanded(flex: 2, child: _buildKey('0')),
+            const SizedBox(width: 6),
+            Expanded(flex: 1, child: _buildKey('-')),
           ],
         );
     }
@@ -477,3 +471,5 @@ class Keypad extends StatelessWidget {
     );
   }
 }
+
+enum KeypadType { divMult, mitori, flash }
