@@ -227,6 +227,12 @@ class _AbacusAppState extends State<AbacusApp> {
       debugShowCheckedModeBanner: false,
       routerConfig: _router,
       theme: ThemeData(
+        fontFamily: 'bizUDGPR',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.pink,
+          brightness: .dark,
+          dynamicSchemeVariant: .rainbow,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 18),

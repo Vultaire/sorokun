@@ -148,7 +148,7 @@ class FlashTextField extends StatelessWidget {
           style: TextStyle(
             fontSize: 95,
             fontFamily: 'bizUDPGR',
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primaryFixed,
           ),
         ),
       ),
@@ -305,32 +305,72 @@ class FlashResult extends StatefulWidget {
 class _FlashResultState extends State<FlashResult> {
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    bool isCorrect =
+        widget.userInputted == widget.allAnswers[widget.currentProblemIndex];
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxWidth: widget.isPortrait
-                ? widget.screenSize.width
-                : widget.screenSize.width * 0.9,
+                ? widget.screenSize.width * 0.9
+                : widget.screenSize.width * 0.7,
             maxHeight: widget.isPortrait
                 ? widget.screenSize.height * 0.65
                 : widget.screenSize.height * 0.85,
           ),
           child: Container(
-            padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
               children: [
                 Container(
-                  child: Text(
-                    widget.userInputted ==
-                            widget.allAnswers[widget.currentProblemIndex]
-                        ? '正解'
-                        : '不正解',
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isCorrect
+                        ? colorScheme.primary
+                        : colorScheme.tertiary,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      isCorrect ? '正解' : '不正解',
+                      style: isCorrect
+                          ? Theme.of(context).textTheme.displayLarge?.copyWith(
+                              color: colorScheme.onPrimary,
+                            )
+                          : Theme.of(context).textTheme.displayLarge?.copyWith(
+                              color: colorScheme.onTertiary,
+                            ),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: .symmetric(horizontal: 40, vertical: 10),
+                  margin: .all(8),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainer,
+                    borderRadius: .all(.circular(16)),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '答え',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      Text(
+                        widget.allAnswers[widget.currentProblemIndex],
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                    ],
                   ),
                 ),
                 ElevatedButton(
