@@ -50,8 +50,8 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
                 context.go(
                   '/flash-problem',
                   extra: {
-                    'isSingleProblem': true,
-                    'selectedLevel': FlashLevel.kkk1,
+                    'isSingleProblem': false,
+                    'selectedLevel': FlashLevel.kkd10,
                   },
                 );
               },

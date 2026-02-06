@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  animations: ^2.0.11
   provider: ^6.1.5
   decimal: ^2.3.3
   rational: 

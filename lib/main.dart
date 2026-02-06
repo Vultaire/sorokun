@@ -229,7 +229,7 @@ class _AbacusAppState extends State<AbacusApp> {
       theme: ThemeData(
         fontFamily: 'bizUDGPR',
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.pink,
+          seedColor: Colors.blue,
           brightness: .dark,
           dynamicSchemeVariant: .rainbow,
         ),

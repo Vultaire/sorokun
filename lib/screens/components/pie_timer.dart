@@ -32,7 +32,7 @@ class _PieTimerState extends State<PieTimer>
       }
     });
 
-    // Start animation if delay is already over
+    // Start animation if delay is over
     if (widget.delayOver) {
       _controller.forward();
       _hasStarted = true;
@@ -43,7 +43,6 @@ class _PieTimerState extends State<PieTimer>
   void didUpdateWidget(PieTimer oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Start animation when delayOver becomes true
     if (!oldWidget.delayOver && widget.delayOver && !_hasStarted) {
       _controller.forward();
       _hasStarted = true;
@@ -61,16 +60,16 @@ class _PieTimerState extends State<PieTimer>
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        width: 38,
-        height: 38,
+        width: 100,
+        height: 100,
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
             return CustomPaint(
               painter: _TimerCirclePainter(
                 progress: 1 - _controller.value,
-                color: Theme.of(context).primaryColor,
-                borderColor: Theme.of(context).dividerColor,
+                color: Theme.of(context).colorScheme.primary,
+                borderColor: Theme.of(context).colorScheme.onSurface,
                 borderWidth: 2,
               ),
             );

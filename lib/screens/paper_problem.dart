@@ -273,10 +273,16 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           actions: [
             if (widget.isExam)
-              PieTimer(
-                duration: widget.time,
-                delayOver: _delayOver,
-                onComplete: () => _onComplete(outOfTime: true),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: FittedBox(
+                  fit: .contain,
+                  child: PieTimer(
+                    duration: widget.time,
+                    delayOver: _delayOver,
+                    onComplete: () => _onComplete(outOfTime: true),
+                  ),
+                ),
               ),
           ],
           shape: RoundedRectangleBorder(
@@ -592,7 +598,10 @@ class _MitorizanWindowState extends State<MitorizanWindow>
                 height: 40.0,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(width: 2),
+                  border: Border.all(
+                    width: 2,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 child: Center(
                   child: Text(
@@ -638,7 +647,7 @@ class _MitorizanWindowState extends State<MitorizanWindow>
                         Container(
                           width: 700,
                           height: 2,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           margin: const EdgeInsets.only(top: 5),
                         ),
                         CustomTextField(
