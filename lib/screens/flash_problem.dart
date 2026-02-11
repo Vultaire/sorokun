@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/flash_source.dart';
 import 'package:soroban_app/problem_generation/flash.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
 
 import 'package:animations/animations.dart';
@@ -27,35 +28,42 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   late final FlashProblemSet fullProblemSet;
   late final List<List<String>> _allProblems;
   late final List<String> _allAnswers;
+  final Stopwatch _stopwatch = Stopwatch();
+  late String _inputTime;
   int _currentPageIndex = 0;
   int _currentProblemIndex = 0;
   String _userInputted = '';
-  Stopwatch _stopwatch = Stopwatch();
-  late String _inputTime;
   bool _delayOver = false;
+  bool _hasSubmitted = false;
 
   void showInput() {
     _stopwatch.start();
     setState(() {
-      _currentPageIndex = 1;
       _delayOver = true;
+      _hasSubmitted = false;
+    });
+    Future.delayed(Duration(milliseconds: 500)).then((_) {
+      if (mounted) {
+        setState(() {
+          _currentPageIndex = 1;
+        });
+      }
     });
   }
 
   void setInputAndShowResult(String userInputted) {
+    if (_hasSubmitted) return;
+    _hasSubmitted = true;
     _userInputted = userInputted;
     _stopwatch.stop();
-    if (!widget.isSingleProblem) {
-      final String trueInputTime = (_stopwatch.elapsedMilliseconds / 1000)
-          .toStringAsFixed(2);
-      _inputTime = double.parse(trueInputTime) > 15 ? '15.00' : trueInputTime;
-    } else {
-      _inputTime = (_stopwatch.elapsedMilliseconds / 1000).toStringAsFixed(2);
-    }
-    _stopwatch.reset();
+    final elapsedSeconds = _stopwatch.elapsedMilliseconds / 1000;
+    _inputTime = (!widget.isSingleProblem && elapsedSeconds > 15)
+        ? '15.00'
+        : elapsedSeconds.toStringAsFixed(2);
     setState(() {
       _currentPageIndex = 2;
     });
+    _stopwatch.reset();
   }
 
   void startNextProblem() {
@@ -63,6 +71,15 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     setState(() {
       _currentPageIndex = 0;
       _delayOver = false;
+      _hasSubmitted = false;
+    });
+  }
+
+  void repeatProblem() {
+    setState(() {
+      _currentPageIndex = 0;
+      _delayOver = false;
+      _hasSubmitted = false;
     });
   }
 
@@ -93,7 +110,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     final media = MediaQuery.of(context);
     final Size screenSize = media.size;
     final bool isPortrait = media.orientation == Orientation.portrait;
-    bool _isCorrect = _userInputted == _allAnswers[_currentProblemIndex];
+    final bool isCorrect = _userInputted == _allAnswers[_currentProblemIndex];
 
     return Scaffold(
       backgroundColor: Colors.black, // TODO: remove hardcode
@@ -108,12 +125,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
             child: child,
           );
         },
-        child: _buildPage(
-          _currentPageIndex,
-          screenSize,
-          isPortrait,
-          _isCorrect,
-        ),
+        child: _buildPage(_currentPageIndex, screenSize, isPortrait, isCorrect),
       ),
     );
   }
@@ -150,6 +162,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
         return FlashResult(
           key: ValueKey('result_$_currentProblemIndex'),
           onNextProblem: startNextProblem,
+          onRepeatProblem: repeatProblem,
           screenSize: screenSize,
           isPortrait: isPortrait,
           allAnswers: _allAnswers,
@@ -157,6 +170,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           userInputted: _userInputted,
           inputTime: _inputTime,
           isCorrect: isCorrect,
+          isSingleProblem: widget.isSingleProblem,
         );
       default:
         return const SizedBox.shrink();
@@ -239,12 +253,22 @@ class _FlashProblemInputState extends State<FlashProblemInput>
         children: [
           Expanded(
             flex: widget.isPortrait ? 2 : 1,
-            child: Column(
+            child: Stack(
+              alignment: .center,
               children: [
-                PieTimer(
-                  duration: Duration(seconds: 15),
-                  delayOver: widget.delayOver,
-                  onComplete: () => widget.showResult(data.formatted),
+                Opacity(
+                  opacity: 0.4,
+                  child: SizedBox(
+                    width: 400,
+                    height: 400,
+                    child: PieTimer(
+                      duration: const Duration(
+                        milliseconds: 14500,
+                      ), // This plus the 500ms before animation gives user 15 seconds to input immedately after last number disappears
+                      delayOver: widget.delayOver,
+                      onComplete: () => widget.showResult(data.formatted),
+                    ),
+                  ),
                 ),
                 FittedBox(
                   fit: BoxFit.contain,
@@ -314,8 +338,11 @@ class FlashResult extends StatefulWidget {
     required this.userInputted,
     required this.inputTime,
     required this.isCorrect,
+    required this.isSingleProblem,
+    required this.onRepeatProblem,
   });
   final VoidCallback onNextProblem;
+  final VoidCallback onRepeatProblem;
   final Size screenSize;
   final bool isPortrait;
   final int currentProblemIndex;
@@ -323,12 +350,42 @@ class FlashResult extends StatefulWidget {
   final String userInputted;
   final String inputTime;
   final bool isCorrect;
+  final bool isSingleProblem;
 
   @override
   State<FlashResult> createState() => _FlashResultState();
 }
 
 class _FlashResultState extends State<FlashResult> {
+  Widget freeOrSetButtons(bool isSingleProblem) {
+    if (isSingleProblem) {
+      return Row(
+        mainAxisAlignment: .center,
+        children: [
+          NavigationButton(
+            onPressed: widget.onRepeatProblem,
+            label: Text('もう一回'),
+          ),
+          NavigationButton(
+            onPressed: () => context.go('/flash-menu'),
+            label: Text('設定画面に戻る'),
+          ),
+        ],
+      );
+    } else {
+      return ElevatedButton(
+        onPressed: widget.currentProblemIndex == widget.allAnswers.length - 1
+            ? () {}
+            : widget.onNextProblem,
+        child: Text(
+          widget.currentProblemIndex == widget.allAnswers.length - 1
+              ? '採点'
+              : '次の問題',
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -422,17 +479,7 @@ class _FlashResultState extends State<FlashResult> {
                     ),
                   ],
                 ),
-                ElevatedButton(
-                  onPressed:
-                      widget.currentProblemIndex == widget.allAnswers.length - 1
-                      ? () {}
-                      : widget.onNextProblem,
-                  child: Text(
-                    widget.currentProblemIndex == widget.allAnswers.length - 1
-                        ? '採点'
-                        : '次の問題',
-                  ),
-                ),
+                freeOrSetButtons(widget.isSingleProblem),
               ],
             ),
           ),

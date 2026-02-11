@@ -69,8 +69,8 @@ class _PieTimerState extends State<PieTimer>
               painter: _TimerCirclePainter(
                 progress: 1 - _controller.value,
                 color: Theme.of(context).colorScheme.primary,
-                borderColor: Theme.of(context).colorScheme.onSurface,
-                borderWidth: 2,
+                borderColor: Theme.of(context).colorScheme.primary,
+                borderWidth: 3,
               ),
             );
           },

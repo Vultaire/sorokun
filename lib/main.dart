@@ -259,24 +259,26 @@ CustomTransitionPage blackFadeTransition({
     child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const double midPoint = 0.5;
+      final animValue = animation.value;
 
-      return AnimatedBuilder(
-        animation: animation,
-        builder: (context, _) {
-          if (animation.value < midPoint) {
-            return Container(
-              color: Colors.black.withValues(alpha: animation.value / midPoint),
-            );
-          } else {
-            double fadeIn = (animation.value - midPoint) / midPoint;
-            return Stack(
-              children: [
-                Container(color: Colors.black),
-                Opacity(opacity: fadeIn, child: child),
-              ],
-            );
-          }
-        },
+      double blackOpacity;
+      double childOpacity;
+
+      if (animValue < midPoint) {
+        blackOpacity = animValue / midPoint;
+        childOpacity = 0.0;
+      } else {
+        blackOpacity = 1.0;
+        childOpacity = (animValue - midPoint) / midPoint;
+      }
+
+      final int blackAlpha = (blackOpacity * 255).round();
+
+      return Stack(
+        children: [
+          Container(color: Colors.black.withAlpha(blackAlpha)),
+          Opacity(opacity: childOpacity, child: child),
+        ],
       );
     },
     transitionDuration: const Duration(milliseconds: 1000),

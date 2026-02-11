@@ -1,0 +1,78 @@
+import 'package:flutter/material.dart';
+
+class NavigationButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  final Widget label;
+  final Duration duration;
+  final Duration debounceTime;
+
+  const NavigationButton({
+    super.key,
+    required this.onPressed,
+    required this.label,
+    this.duration = const Duration(milliseconds: 100),
+    this.debounceTime = const Duration(milliseconds: 1000),
+  });
+
+  @override
+  State<NavigationButton> createState() => _NavigationButtonState();
+}
+
+class _NavigationButtonState extends State<NavigationButton> {
+  bool _isPressed = false;
+  bool _isNavigating = false;
+
+  void _handleTap() {
+    if (_isNavigating) return;
+
+    // Set flag immediately, BEFORE calling onPressed
+    _isNavigating = true;
+
+    widget.onPressed();
+
+    Future.delayed(widget.debounceTime, () {
+      if (mounted) {
+        setState(() => _isNavigating = false);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _isNavigating
+          ? null
+          : (_) {
+              setState(() => _isPressed = true);
+            },
+      onTapUp: _isNavigating
+          ? null
+          : (_) {
+              setState(() => _isPressed = false);
+              _handleTap();
+            },
+      onTapCancel: () {
+        setState(() => _isPressed = false);
+      },
+      child: AnimatedContainer(
+        duration: widget.duration,
+        transform: Matrix4.translationValues(
+          _isPressed ? 2 : 0.0,
+          _isPressed ? 2 : 0.0,
+          0,
+        ),
+        child: Opacity(
+          opacity: _isNavigating ? 0.5 : 1.0,
+          child: Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: widget.label,
+          ),
+        ),
+      ),
+    );
+  }
+}

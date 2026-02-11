@@ -62,7 +62,10 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                             height: 40.0,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(width: 2),
+                              border: Border.all(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
                             child: Center(
                               child: Text(
@@ -109,7 +112,9 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                                     Container(
                                       width: 700,
                                       height: 2,
-                                      color: Colors.black,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       margin: const EdgeInsets.only(top: 5),
                                     ),
                                     Padding(
@@ -122,21 +127,25 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                                           Text(
                                             incorrectProblemScorers[problemIndex]
                                                 .userAnswer,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 26,
                                               fontFamily: 'abacusFontSpaced',
                                               decoration:
                                                   TextDecoration.lineThrough,
-                                              decorationColor: Colors.red,
+                                              decorationColor: Theme.of(
+                                                context,
+                                              ).colorScheme.error,
                                             ),
                                           ),
                                           Text(
                                             incorrectProblemScorers[problemIndex]
                                                 .answer,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 26,
                                               fontFamily: 'abacusFontSpaced',
-                                              color: Colors.red,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.error,
                                             ),
                                           ),
                                         ],
@@ -152,35 +161,37 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                     );
                   },
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: incorrectProblemScorers
-                      .asMap()
-                      .entries
-                      .map((entry) {
-                        return Container(
-                          width: 12.0,
-                          height: 12.0,
-                          margin: EdgeInsets.symmetric(
-                            vertical: 8.0,
-                            horizontal: 4.0,
-                          ),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color:
-                                (Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black)
-                                    .withOpacity(
-                                      currentIndex == entry.key ? 0.9 : 0.4,
-                                    ),
-                          ),
-                        );
-                      })
-                      .toList()
-                      .reversed
-                      .toList(),
-                ),
+                if (incorrectProblemScorers.length > 1)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: incorrectProblemScorers
+                        .asMap()
+                        .entries
+                        .map((entry) {
+                          return Container(
+                            width: 12.0,
+                            height: 12.0,
+                            margin: EdgeInsets.symmetric(
+                              vertical: 8.0,
+                              horizontal: 4.0,
+                            ),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  (Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black)
+                                      .withAlpha(
+                                        currentIndex == entry.key ? 255 : 100,
+                                      ),
+                            ),
+                          );
+                        })
+                        .toList()
+                        .reversed
+                        .toList(),
+                  ),
               ],
             ),
           ),

@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/flash_source.dart';
 import 'package:soroban_app/problem_generation/flash.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/components/spammable_button.dart';
+import 'package:vector_graphics/vector_graphics_compat.dart';
+import 'package:soroban_app/screens/components/incrementer.dart';
 
 class FlashMenuPage extends StatefulWidget {
   const FlashMenuPage({super.key});
@@ -17,29 +23,157 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
   int _kuchi = 15;
   int _digits = 3;
 
+  void _decreaseValue() {
+    double newValue;
+
+    if (_secondsPerProblem > CircularSlider.range1End) {
+      // In range 40-10: decrease by 1
+      newValue = _secondsPerProblem - 1.0;
+    } else {
+      // In range 10-0.9: decrease by 0.1
+      newValue = (_secondsPerProblem * 10 - 1) / 10;
+    }
+
+    newValue = newValue.clamp(CircularSlider.minValue, CircularSlider.maxValue);
+
+    setState(() {
+      _secondsPerProblem = newValue;
+    });
+  }
+
+  void _increaseValue() {
+    double newValue;
+
+    if (_secondsPerProblem >= CircularSlider.range1End) {
+      // In range 40-10: increase by 1
+      newValue = _secondsPerProblem + 1.0;
+    } else {
+      // In range 10-0.9: increase by 0.1
+      newValue = (_secondsPerProblem * 10 + 1) / 10;
+    }
+
+    newValue = newValue.clamp(CircularSlider.minValue, CircularSlider.maxValue);
+
+    setState(() {
+      _secondsPerProblem = newValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Circular Slider')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Wrap(
+          alignment: .center,
           children: [
-            CircularSlider(
-              initialValue: 10.0,
-              size: 300,
-              onChanged: (value) {
-                setState(() {
-                  _secondsPerProblem = value;
-                });
-              },
+            FittedBox(
+              fit: .contain,
+              child: Row(
+                mainAxisAlignment: .spaceEvenly,
+                children: [
+                  Incrementer(
+                    value: _kuchi,
+                    label: '口数',
+                    onChanged: (newValue) => setState(() => _kuchi = newValue),
+                    min: 1,
+                    max: 30,
+                  ),
+                  SizedBox(width: 16),
+                  Incrementer(
+                    value: _digits,
+                    label: '桁数',
+                    onChanged: (newValue) => setState(() => _digits = newValue),
+                    min: 1,
+                    max: 6,
+                  ),
+                ],
+              ),
+            ),
+            FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: 300,
+                height: 300,
+                child: Stack(
+                  children: [
+                    CircularSlider(
+                      initialValue: _secondsPerProblem,
+                      size: 300,
+                      onChanged: (value) {
+                        setState(() {
+                          _secondsPerProblem = value;
+                        });
+                      },
+                    ),
+                    Positioned(
+                      left: 0,
+                      bottom: 0,
+                      child: SpammableButton(
+                        onTapDown: () {
+                          _increaseValue();
+                        },
+                        enableRepeat: true,
+                        offsetX: 3.0,
+                        offsetY: 3.0,
+                        child: Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.all(8),
+                          child: VectorGraphic(
+                            loader: AssetBytesLoader('assets/svg/tortoise.svg'),
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.onSurface,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: SpammableButton(
+                        onTapDown: () {
+                          _decreaseValue();
+                        },
+                        enableRepeat: true,
+                        child: Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: EdgeInsets.all(8),
+                          child: VectorGraphic(
+                            loader: AssetBytesLoader('assets/svg/hare.svg'),
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.onSurface,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 40),
             Text(
               '${(_secondsPerProblem / _kuchi).toStringAsFixed(3)} seconds per number',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            ElevatedButton(
+            NavigationButton(
               onPressed: () {
                 FlashSingleProblemSpec spec = FlashSingleProblemSpec(
                   digits: _digits,
@@ -49,13 +183,13 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
                 );
                 context.go(
                   '/flash-problem',
-                  extra: {
-                    'isSingleProblem': false,
-                    'selectedLevel': FlashLevel.kkd10,
-                  },
+                  extra: {'isSingleProblem': true, 'selectedLevel': spec},
                 );
               },
-              child: Text('Start Flash Problem'),
+              label: Text(
+                'Start Flash Problem',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
           ],
         ),
@@ -71,6 +205,10 @@ class CircularSlider extends StatefulWidget {
   final Color? backgroundColor;
   final double size;
 
+  static const double maxValue = 40.0;
+  static const double minValue = 0.9;
+  static const double range1End = 10.0;
+
   const CircularSlider({
     super.key,
     this.initialValue = 10.0,
@@ -79,6 +217,32 @@ class CircularSlider extends StatefulWidget {
     this.backgroundColor,
     this.size = 200,
   });
+
+  static double valueToProgress(double value) {
+    if (value >= range1End) {
+      return (maxValue - value) / (maxValue - range1End);
+    } else {
+      double range2Progress = (range1End - value) / (range1End - minValue);
+      return 1.0 + range2Progress;
+    }
+  }
+
+  static double progressToValue(double progress) {
+    if (progress < 1.0) {
+      return maxValue - (progress * (maxValue - range1End));
+    } else {
+      double range2Progress = progress - 1.0;
+      return range1End - (range2Progress * (range1End - minValue));
+    }
+  }
+
+  static double roundValue(double value) {
+    if (value >= range1End) {
+      return value.roundToDouble();
+    } else {
+      return (value * 10).round() / 10;
+    }
+  }
 
   @override
   State<CircularSlider> createState() => _CircularSliderState();
@@ -89,77 +253,42 @@ class _CircularSliderState extends State<CircularSlider> {
   double? _lastAngle;
   double _accumulatedDelta = 0.0;
 
-  // Custom scale constants
-  static const double maxValue = 40.0;
-  static const double minValue = 0.9;
-
-  // Range boundaries
-  static const double range1End = 10.0; // 40-10: precision 1
-  // 10-0.9: precision 0.1
-
   @override
   void initState() {
     super.initState();
-    _value = widget.initialValue.clamp(minValue, maxValue);
+    _value = widget.initialValue.clamp(
+      CircularSlider.minValue,
+      CircularSlider.maxValue,
+    );
   }
 
-  // Convert value to progress (0.0 to 2.0)
-  double _valueToProgress(double value) {
-    if (value >= range1End) {
-      // Range 1: 40-10
-      return (maxValue - value) / (maxValue - range1End);
-    } else {
-      // Range 2: 10-0.9
-      double range2Progress = (range1End - value) / (range1End - minValue);
-      return 1.0 + range2Progress;
+  @override
+  void didUpdateWidget(CircularSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      _value = widget.initialValue.clamp(
+        CircularSlider.minValue,
+        CircularSlider.maxValue,
+      );
     }
   }
 
-  // Convert progress (0.0 to 2.0) to value
-  double _progressToValue(double progress) {
-    if (progress < 1.0) {
-      // Range 1: 40-10
-      return maxValue - (progress * (maxValue - range1End));
-    } else {
-      // Range 2: 10-0.9
-      double range2Progress = progress - 1.0;
-      return range1End - (range2Progress * (range1End - minValue));
-    }
-  }
+  // Use the static methods from the widget class
+  double get _progress => CircularSlider.valueToProgress(_value) / 2.0;
 
-  // Round value to appropriate precision
-  double _roundValue(double value) {
-    if (value >= range1End) {
-      // Precision: 1
-      return value.roundToDouble();
-    } else {
-      // Precision: 0.1
-      return (value * 10).round() / 10;
-    }
-  }
-
-  double get _progress =>
-      _valueToProgress(_value) / 2.0; // Normalize to 0-1 for display
-
-  // Calculate the visual angle for the handle (accounting for gap and direction)
   double get _handleAngle {
     const gapSize = pi / 4;
     const gapStart = pi / 2 - gapSize / 2;
     const startAngle = gapStart + gapSize;
     const totalArc = 2 * pi - gapSize;
-
     return startAngle + (totalArc * _progress);
   }
 
   double _calculateAngle(Offset localPosition, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final touchPoint = localPosition - center;
-
     double angle = atan2(touchPoint.dy, touchPoint.dx);
-
-    // Normalize angle to 0-2π range
     if (angle < 0) angle += 2 * pi;
-
     return angle;
   }
 
@@ -170,55 +299,41 @@ class _CircularSliderState extends State<CircularSlider> {
 
   void _handlePanUpdate(Offset localPosition, Size size) {
     final currentAngle = _calculateAngle(localPosition, size);
-
     if (_lastAngle == null) {
       _lastAngle = currentAngle;
       return;
     }
 
     double deltaAngle = currentAngle - _lastAngle!;
-
     if (deltaAngle > pi) {
       deltaAngle -= 2 * pi;
     } else if (deltaAngle < -pi) {
       deltaAngle += 2 * pi;
     }
 
-    // Convert angle delta to progress delta
-    // Account for the speedometer layout (gap at bottom, starts bottom-left)
     const gapSize = pi / 4;
     const totalArc = 2 * pi - gapSize;
     double deltaProgress = (deltaAngle / totalArc) * 2.0;
 
-    // Accumulate the delta
     _accumulatedDelta += deltaProgress;
-
-    // Convert current value to progress
-    double currentProgress = _valueToProgress(_value);
+    double currentProgress = CircularSlider.valueToProgress(_value);
     double newProgress = currentProgress + _accumulatedDelta;
-
-    // Clamp progress to valid range
     newProgress = newProgress.clamp(0.0, 2.0);
 
-    // Convert back to value
-    double newValue = _progressToValue(newProgress);
-
-    // Round to appropriate precision
-    double roundedValue = _roundValue(newValue);
-
-    // Clamp to min/max
-    roundedValue = roundedValue.clamp(minValue, maxValue);
+    double newValue = CircularSlider.progressToValue(newProgress);
+    double roundedValue = CircularSlider.roundValue(newValue);
+    roundedValue = roundedValue.clamp(
+      CircularSlider.minValue,
+      CircularSlider.maxValue,
+    );
 
     if (roundedValue != _value) {
-      // Calculate how much progress was actually used
-      double usedProgress = _valueToProgress(roundedValue) - currentProgress;
-
+      double usedProgress =
+          CircularSlider.valueToProgress(roundedValue) - currentProgress;
       setState(() {
         _value = roundedValue;
       });
       widget.onChanged?.call(_value);
-
-      // Subtract only the used portion from accumulator
       _accumulatedDelta -= usedProgress;
     }
 
@@ -259,7 +374,6 @@ class _CircularSliderState extends State<CircularSlider> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Circular slider track
             CustomPaint(
               size: Size(widget.size, widget.size),
               painter: CircularSliderPainter(
@@ -268,7 +382,6 @@ class _CircularSliderState extends State<CircularSlider> {
                 backgroundColor: backgroundColor,
               ),
             ),
-            // Center display
             SizedBox(
               width: widget.size * 0.5,
               height: widget.size * 0.5,
@@ -289,7 +402,6 @@ class _CircularSliderState extends State<CircularSlider> {
                 ],
               ),
             ),
-            // Handle indicator at the current position
             Transform.rotate(
               angle: _handleAngle + pi / 2,
               child: Transform.translate(
@@ -303,7 +415,7 @@ class _CircularSliderState extends State<CircularSlider> {
                     border: Border.all(color: Colors.white, width: 3),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withAlpha(100),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -362,8 +474,8 @@ class CircularSliderPainter extends CustomPainter {
       ..strokeWidth = 12
       ..strokeCap = StrokeCap.round;
 
-    const startAngle = gapStart + gapSize; // Start right after the gap
-    final sweepAngle = (2 * pi - gapSize) * progress; // Sweep counter-clockwise
+    const startAngle = gapStart + gapSize;
+    final sweepAngle = (2 * pi - gapSize) * progress;
 
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),

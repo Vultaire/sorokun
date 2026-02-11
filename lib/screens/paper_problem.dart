@@ -793,7 +793,10 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
                         margin: const EdgeInsets.all(1.0),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(width: 2),
+                          border: Border.all(
+                            width: 2,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                         child: Center(
                           child: Text(
@@ -889,7 +892,7 @@ class CustomTextField extends StatelessWidget {
               child: Container(
                 width: 2,
                 height: 40,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
         ],
