@@ -25,9 +25,9 @@ class FlashProblemScreen extends StatefulWidget {
 
 class _FlashProblemScreenState extends State<FlashProblemScreen> {
   late final List<Segment> _schedule;
-  late final FlashProblemSet fullProblemSet;
-  late final List<List<String>> _allProblems;
-  late final List<String> _allAnswers;
+  late FlashProblemSet fullProblemSet;
+  late List<List<String>> _allProblems;
+  late List<String> _allAnswers;
   final Stopwatch _stopwatch = Stopwatch();
   late String _inputTime;
   int _currentPageIndex = 0;
@@ -68,6 +68,10 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
 
   void startNextProblem() {
     _currentProblemIndex++;
+    playProblem();
+  }
+
+  void playProblem() {
     setState(() {
       _currentPageIndex = 0;
       _delayOver = false;
@@ -75,20 +79,21 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     });
   }
 
-  void repeatProblem() {
-    setState(() {
-      _currentPageIndex = 0;
-      _delayOver = false;
-      _hasSubmitted = false;
-    });
+  void newProblem() {
+    initProblems();
+    playProblem();
+  }
+
+  void initProblems() {
+    fullProblemSet = FlashProblemSet(widget.selectedLevel);
+    _allProblems = fullProblemSet.formattedProblems;
+    _allAnswers = fullProblemSet.formattedAnswers;
   }
 
   @override
   void initState() {
     super.initState();
-    fullProblemSet = FlashProblemSet(widget.selectedLevel);
-    _allProblems = fullProblemSet.formattedProblems;
-    _allAnswers = fullProblemSet.formattedAnswers;
+    initProblems();
     final kuchi = widget.selectedLevel.kuchi;
     final secondsPerProblem = widget.selectedLevel.secondsPerProblem;
     final hideDuration = secondsPerProblem / (2.5 * kuchi - 1);
@@ -156,13 +161,13 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           isPortrait: isPortrait,
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
-          isCorrect: isCorrect,
         );
       case 2:
         return FlashResult(
           key: ValueKey('result_$_currentProblemIndex'),
           onNextProblem: startNextProblem,
-          onRepeatProblem: repeatProblem,
+          onRepeatProblem: playProblem,
+          onNewProblem: newProblem,
           screenSize: screenSize,
           isPortrait: isPortrait,
           allAnswers: _allAnswers,
@@ -209,7 +214,6 @@ class FlashProblemInput extends StatefulWidget {
     required this.showResult,
     required this.showTimer,
     required this.delayOver,
-    required this.isCorrect,
   });
   final void Function(String) showResult;
   final List<String> allAnswers;
@@ -218,7 +222,6 @@ class FlashProblemInput extends StatefulWidget {
   final bool isPortrait;
   final bool showTimer;
   final bool delayOver;
-  final bool isCorrect;
 
   @override
   State<FlashProblemInput> createState() => _FlashProblemInputState();
@@ -286,8 +289,13 @@ class _FlashProblemInputState extends State<FlashProblemInput>
               onClearAll: clearAll,
               onSubmit: () {
                 if (data.formatted.isNotEmpty) {
+                  final isCorrect =
+                      data.formatted ==
+                      widget.allAnswers[widget.currentProblemIndex];
+
                   widget.showResult(data.formatted);
-                  widget.isCorrect
+
+                  isCorrect
                       ? SoLoud.instance.play(sound.correct)
                       : SoLoud.instance.play(sound.incorrect);
                 } else {
@@ -340,9 +348,11 @@ class FlashResult extends StatefulWidget {
     required this.isCorrect,
     required this.isSingleProblem,
     required this.onRepeatProblem,
+    required this.onNewProblem,
   });
   final VoidCallback onNextProblem;
   final VoidCallback onRepeatProblem;
+  final VoidCallback onNewProblem;
   final Size screenSize;
   final bool isPortrait;
   final int currentProblemIndex;
@@ -363,13 +373,14 @@ class _FlashResultState extends State<FlashResult> {
         mainAxisAlignment: .center,
         children: [
           NavigationButton(
-            onPressed: widget.onRepeatProblem,
-            label: Text('もう一回'),
-          ),
-          NavigationButton(
             onPressed: () => context.go('/flash-menu'),
             label: Text('設定画面に戻る'),
           ),
+          NavigationButton(
+            onPressed: widget.onRepeatProblem,
+            label: Text('もう一回'),
+          ),
+          NavigationButton(onPressed: widget.onNewProblem, label: Text('次へ')),
         ],
       );
     } else {
