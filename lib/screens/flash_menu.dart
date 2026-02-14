@@ -150,7 +150,7 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
                       },
                     ),
                     Positioned(
-                      left: 50,
+                      left: 100,
                       bottom: 0,
                       child: SpammableButton(
                         onTapDown: () {
@@ -180,7 +180,7 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
                       ),
                     ),
                     Positioned(
-                      right: 50,
+                      right: 100,
                       bottom: 0,
                       child: SpammableButton(
                         onTapDown: () {
@@ -408,8 +408,6 @@ class _CircularSliderState extends State<CircularSlider> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final activeColor = widget.activeColor ?? colorScheme.primary;
-    final backgroundColor =
-        widget.backgroundColor ?? colorScheme.surfaceContainerHighest;
 
     return SizedBox(
       width: widget.width,
@@ -438,7 +436,7 @@ class _CircularSliderState extends State<CircularSlider> {
               painter: CircularSliderPainter(
                 progress: _progress,
                 ringColor: activeColor,
-                backgroundColor: backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             SizedBox(
@@ -474,7 +472,7 @@ class _CircularSliderState extends State<CircularSlider> {
                 angle: _handleAngle + pi / 2,
                 child: Transform.translate(
                   offset: Offset(0, -widget.height * 0.5),
-                  child: Icon(Icons.arrow_drop_up_rounded, size: 60),
+                  child: Icon(Icons.arrow_drop_down_rounded, size: 60),
                 ),
               ),
             ),
@@ -510,7 +508,7 @@ class CircularSliderPainter extends CustomPainter {
     final backgroundPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 12
+      ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
 
     // Draw from end of gap, all the way around to start of gap
@@ -538,81 +536,6 @@ class CircularSliderPainter extends CustomPainter {
       sweepAngle,
       false,
       progressPaint,
-    );
-
-    _drawLabel(canvas, center, radius, startAngle, totalArc, 0.0, '40', size);
-    _drawLabel(canvas, center, radius, startAngle, totalArc, 0.5, '10', size);
-    _drawLabel(canvas, center, radius, startAngle, totalArc, 1.0, '0.9', size);
-    _drawLabel(
-      canvas,
-      center,
-      radius,
-      startAngle,
-      totalArc,
-      0.3333,
-      '20',
-      size,
-    );
-    _drawLabel(
-      canvas,
-      center,
-      radius,
-      startAngle,
-      totalArc,
-      0.1667,
-      '30',
-      size,
-    );
-  }
-
-  void _drawLabel(
-    Canvas canvas,
-    Offset center,
-    double radius,
-    double startAngle,
-    double totalArc,
-    double normalizedProgress,
-    String label,
-    Size size,
-  ) {
-    final angle = startAngle + totalArc * normalizedProgress;
-    final tickOuter = Offset(
-      center.dx + radius * cos(angle),
-      center.dy + radius * sin(angle),
-    );
-    final tickInner = Offset(
-      center.dx + (radius - 16) * cos(angle),
-      center.dy + (radius - 16) * sin(angle),
-    );
-    final labelPos = Offset(
-      center.dx + (radius - 40) * cos(angle),
-      center.dy + (radius - 40) * sin(angle),
-    );
-
-    // Draw tick
-    canvas.drawLine(
-      tickInner,
-      tickOuter,
-      Paint()
-        ..color = ringColor
-        ..strokeWidth = 6,
-    );
-
-    // Draw label
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: label,
-        style: TextStyle(
-          color: ringColor,
-          fontSize: size.width * 0.06,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    textPainter.paint(
-      canvas,
-      labelPos - Offset(textPainter.width / 2, textPainter.height / 2),
     );
   }
 

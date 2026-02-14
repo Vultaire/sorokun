@@ -10,8 +10,8 @@ class PaperMenuPage extends StatefulWidget {
 }
 
 class _PaperMenuPageState extends State<PaperMenuPage> {
-  DivMultLevel multiplicationLevel = DivMultLevel.mk6;
-  DivMultLevel divisionLevel = DivMultLevel.dk6;
+  DivMultLevel multiplicationLevel = DivMultLevel.zsmk6;
+  DivMultLevel divisionLevel = DivMultLevel.zsdk6;
   MitoriLevel mitoriLevel = MitoriLevel.zsk6;
   String multiplicationLevelDisplayString = '';
   String divisionLevelDisplayString = '';
@@ -222,16 +222,16 @@ class MultiplicationBottomSheet extends StatelessWidget {
   final Function(DivMultLevel) onLevelChanged;
 
   static const List<DivMultLevel> zslevels = [
-    DivMultLevel.mk9,
-    DivMultLevel.mk8,
-    DivMultLevel.mk7,
-    DivMultLevel.mk6,
-    DivMultLevel.mk5,
-    DivMultLevel.mk4,
-    DivMultLevel.mk3,
-    DivMultLevel.mk2,
-    DivMultLevel.mk1,
-    DivMultLevel.mdan,
+    DivMultLevel.zsmk9,
+    DivMultLevel.zsmk8,
+    DivMultLevel.zsmk7,
+    DivMultLevel.zsmk6,
+    DivMultLevel.zsmk5,
+    DivMultLevel.zsmk4,
+    DivMultLevel.zsmk3,
+    DivMultLevel.zsmk2,
+    DivMultLevel.zsmk1,
+    DivMultLevel.zsmdan,
   ];
 
   @override
@@ -270,15 +270,15 @@ class DivisionBottomSheet extends StatelessWidget {
   final Function(DivMultLevel) onLevelChanged;
 
   static const List<DivMultLevel> zslevels = [
-    DivMultLevel.dk8,
-    DivMultLevel.dk7,
-    DivMultLevel.dk6,
-    DivMultLevel.dk5,
-    DivMultLevel.dk4,
-    DivMultLevel.dk3,
-    DivMultLevel.dk2,
-    DivMultLevel.dk1,
-    DivMultLevel.ddan,
+    DivMultLevel.zsdk8,
+    DivMultLevel.zsdk7,
+    DivMultLevel.zsdk6,
+    DivMultLevel.zsdk5,
+    DivMultLevel.zsdk4,
+    DivMultLevel.zsdk3,
+    DivMultLevel.zsdk2,
+    DivMultLevel.zsdk1,
+    DivMultLevel.zsddan,
   ];
 
   @override

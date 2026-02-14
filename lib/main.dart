@@ -107,7 +107,7 @@ class DebugMockData {
     });
 
     return {
-      'selectedLevel': DivMultLevel.dk8,
+      'selectedLevel': DivMultLevel.zsdk8,
       'allProblems': allProblems,
       'allAnswers': allAnswers,
       'answerBools': answerBools,
@@ -132,7 +132,7 @@ class DebugMockData {
     );
 
     return {
-      'selectedLevel': DivMultLevel.dk8,
+      'selectedLevel': DivMultLevel.zsdk8,
       'allProblems': allProblems,
       'allAnswers': allAnswers,
       'answerBools': answerBools,
@@ -192,7 +192,7 @@ class _AbacusAppState extends State<AbacusApp> {
           return blackFadeTransition(
             key: state.pageKey,
             child: PaperResultsScreen(
-              selectedLevel: args?['selectedLevel'] ?? DivMultLevel.dk8,
+              selectedLevel: args?['selectedLevel'] ?? DivMultLevel.zsdk8,
               isExam: args?['isExam'] ?? true,
               allAnswers: args?['allAnswers'],
               allProblems: args?['allProblems'],

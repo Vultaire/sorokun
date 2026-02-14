@@ -3,7 +3,7 @@ import '../problem_generation/multiplication.dart';
 import '../problem_generation/division.dart';
 
 enum DivMultLevel implements PaperProblemLevel {
-  mk9(
+  zsmk9(
     divMultSplit: MultiplicationSplit.k9,
     divMultSource: MultiplicationSource.k9,
     denomination: .zenshuren,
@@ -11,7 +11,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk8(
+  zsmk8(
     divMultSplit: MultiplicationSplit.k8,
     divMultSource: MultiplicationSource.k8,
     denomination: .zenshuren,
@@ -19,7 +19,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk7(
+  zsmk7(
     divMultSplit: MultiplicationSplit.k7,
     divMultSource: MultiplicationSource.k7,
     denomination: .zenshuren,
@@ -27,7 +27,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk6(
+  zsmk6(
     divMultSplit: MultiplicationSplit.k6,
     divMultSource: MultiplicationSource.k6,
     denomination: .zenshuren,
@@ -35,7 +35,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk5(
+  zsmk5(
     divMultSplit: MultiplicationSplit.k5,
     divMultSource: MultiplicationSource.k5,
     denomination: .zenshuren,
@@ -43,7 +43,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk4(
+  zsmk4(
     divMultSplit: MultiplicationSplit.k4,
     divMultSource: MultiplicationSource.k4,
     denomination: .zenshuren,
@@ -51,7 +51,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk3(
+  zsmk3(
     divMultSplit: MultiplicationSplit.k3,
     divMultSource: MultiplicationSource.k3,
     denomination: .zenshuren,
@@ -59,7 +59,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk2(
+  zsmk2(
     divMultSplit: MultiplicationSplit.k2,
     divMultSource: MultiplicationSource.k2,
     denomination: .zenshuren,
@@ -67,7 +67,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mk1(
+  zsmk1(
     divMultSplit: MultiplicationSplit.k1,
     divMultSource: MultiplicationSource.k1,
     denomination: .zenshuren,
@@ -75,15 +75,15 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  mdan(
+  zsmdan(
     divMultSplit: MultiplicationSplit.dan,
-    divMultSource: MultiplicationSource.dan,
+    divMultSource: MultiplicationSource.zsdan,
     denomination: .zenshuren,
     displayString: '段位のかけ算',
     builder: MultiplicationProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk8(
+  zsdk8(
     divMultSplit: DivisionSplit.k8,
     divMultSource: DivisionSource.k8,
     denomination: .zenshuren,
@@ -91,7 +91,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk7(
+  zsdk7(
     divMultSplit: DivisionSplit.k7,
     divMultSource: DivisionSource.k7,
     denomination: .zenshuren,
@@ -99,7 +99,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk6(
+  zsdk6(
     divMultSplit: DivisionSplit.k6,
     divMultSource: DivisionSource.k6,
     denomination: .zenshuren,
@@ -107,7 +107,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk5(
+  zsdk5(
     divMultSplit: DivisionSplit.k5,
     divMultSource: DivisionSource.k5,
     denomination: .zenshuren,
@@ -115,7 +115,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk4(
+  zsdk4(
     divMultSplit: DivisionSplit.k4,
     divMultSource: DivisionSource.k4,
     denomination: .zenshuren,
@@ -123,7 +123,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk3(
+  zsdk3(
     divMultSplit: DivisionSplit.k3,
     divMultSource: DivisionSource.k3,
     denomination: .zenshuren,
@@ -131,7 +131,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk2(
+  zsdk2(
     divMultSplit: DivisionSplit.k2,
     divMultSource: DivisionSource.k2,
     denomination: .zenshuren,
@@ -139,7 +139,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  dk1(
+  zsdk1(
     divMultSplit: DivisionSplit.k1,
     divMultSource: DivisionSource.k1,
     denomination: .zenshuren,
@@ -147,13 +147,165 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
   ),
-  ddan(
+  zsddan(
     divMultSplit: DivisionSplit.dan,
     divMultSource: DivisionSource.dan,
     denomination: .zenshuren,
     displayString: '段位のわり算',
     builder: DivisionProblem.new,
     timeLimit: Duration(minutes: 7),
+  ),
+  nsmk9(
+    divMultSplit: MultiplicationSplit.k9,
+    divMultSource: MultiplicationSource.nsk9,
+    denomination: .nisshou,
+    displayString: '10/9級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk8(
+    divMultSplit: MultiplicationSplit.k8,
+    divMultSource: MultiplicationSource.nsk8,
+    denomination: .nisshou,
+    displayString: '8級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk7(
+    divMultSplit: MultiplicationSplit.k7,
+    divMultSource: MultiplicationSource.nsk7,
+    denomination: .nisshou,
+    displayString: '7級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk6(
+    divMultSplit: MultiplicationSplit.k6,
+    divMultSource: MultiplicationSource.nsk6,
+    denomination: .nisshou,
+    displayString: '6級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk5(
+    divMultSplit: MultiplicationSplit.k5,
+    divMultSource: MultiplicationSource.nsk5,
+    denomination: .nisshou,
+    displayString: '5級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk4(
+    divMultSplit: MultiplicationSplit.k4,
+    divMultSource: MultiplicationSource.nsk4,
+    denomination: .nisshou,
+    displayString: '4級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmjk3(
+    divMultSplit: MultiplicationSplit.k3,
+    divMultSource: MultiplicationSource.nsjk3,
+    denomination: .nisshou,
+    displayString: '準3級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk3(
+    divMultSplit: MultiplicationSplit.k3,
+    divMultSource: MultiplicationSource.nsk3,
+    denomination: .nisshou,
+    displayString: '3級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmjk2(
+    divMultSplit: MultiplicationSplit.k2,
+    divMultSource: MultiplicationSource.nsjk2,
+    denomination: .nisshou,
+    displayString: '準2級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk2(
+    divMultSplit: MultiplicationSplit.k1,
+    divMultSource: MultiplicationSource.nsk2,
+    denomination: .nisshou,
+    displayString: '2級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmjk1(
+    divMultSplit: MultiplicationSplit.nsjk1,
+    divMultSource: MultiplicationSource.nsjk1,
+    denomination: .nisshou,
+    displayString: '準1級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmk1(
+    divMultSplit: MultiplicationSplit.nsk1,
+    divMultSource: MultiplicationSource.nsk1,
+    denomination: .nisshou,
+    displayString: '1級のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsmdan(
+    divMultSplit: MultiplicationSplit.nsk1,
+    divMultSource: MultiplicationSource.nsdan,
+    denomination: .nisshou,
+    displayString: '段位のかけ算',
+    builder: MultiplicationProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsdk8(
+    divMultSplit: DivisionSplit.k8,
+    divMultSource: DivisionSource.nsk8,
+    denomination: .nisshou,
+    displayString: '8級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsdk7(
+    divMultSplit: DivisionSplit.k7,
+    divMultSource: DivisionSource.nsk7,
+    denomination: .nisshou,
+    displayString: '7級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsdk6(
+    divMultSplit: DivisionSplit.k6,
+    divMultSource: DivisionSource.nsk6,
+    denomination: .nisshou,
+    displayString: '6級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsdk5(
+    divMultSplit: DivisionSplit.k5,
+    divMultSource: DivisionSource.nsk5,
+    denomination: .nisshou,
+    displayString: '5級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsdk4(
+    divMultSplit: DivisionSplit.k4,
+    divMultSource: DivisionSource.nsk4,
+    denomination: .nisshou,
+    displayString: '4級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 10),
+  ),
+  nsdk3(
+    divMultSplit: DivisionSplit.k3,
+    divMultSource: DivisionSource.k7,
+    denomination: .nisshou,
+    displayString: '7級のわり算',
+    builder: DivisionProblem.new,
+    timeLimit: Duration(minutes: 10),
   );
 
   const DivMultLevel({

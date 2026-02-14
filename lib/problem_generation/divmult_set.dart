@@ -1,23 +1,29 @@
 import "dart:math";
 import "../models/level_definitions.dart";
 
-enum ProblemType { type1, type2, type3, type4, type5 }
+enum ProblemType { type1, type2, type3, type4, type5, type6 }
+
+abstract class DivMultProblem {
+  String get formattedThird;
+  String get problem;
+}
 
 class DivMultSpec {
   final int digitCount;
   final ProblemType problemType;
-  final List<List<int>> split;
+  final List<int> split;
+  final bool intRound;
 
   const DivMultSpec({
     required this.digitCount,
     required this.problemType,
     required this.split,
+    required this.intRound,
   });
 }
 
-class DivMultProblemSet<TProblem> {
-  final List<String> formattedProblems = [];
-  final List<String> formattedAnswers = [];
+class DivMultProblemSet {
+  final List<DivMultProblem> fullProblemSet = [];
   DivMultProblemSet({required DivMultLevel level}) {
     final rand = Random();
 
@@ -26,11 +32,13 @@ class DivMultProblemSet<TProblem> {
       final int type3Count = batch['type3Count'] ?? 0;
       final int type4Count = batch['type4Count'] ?? 0;
       final int type5Count = batch['type5Count'] ?? 0;
-      final int intRound =
+      final int type6Count = batch['type6Count'] ?? 0;
+      final bool intRound =
           batch['intRound'] ??
-          0; // marks if the answer should be rounded to the whole number. 1 is yes, 0 is no
+          false; // marks if the answer should be rounded to the whole number.
       final int problemCount = batch['problemCount'] ?? 15;
       final int digits = batch['digits'];
+      final List<int> splitCounts = batch['splitCount'] ?? [15];
       final List<List<int>> split = level.divMultSplit.templates[digits];
 
       final typeList = <ProblemType>[
@@ -38,6 +46,7 @@ class DivMultProblemSet<TProblem> {
         ...List.filled(type3Count, ProblemType.type3),
         ...List.filled(type4Count, ProblemType.type4),
         ...List.filled(type5Count, ProblemType.type5),
+        ...List.filled(type6Count, ProblemType.type6),
       ];
 
       while (typeList.length < problemCount) {
@@ -46,28 +55,43 @@ class DivMultProblemSet<TProblem> {
 
       typeList.shuffle(rand);
 
-      for (final type in typeList) {
-        final DivMultSpec spec = DivMultSpec(
-          problemType: type,
-          digitCount: digits,
-          split: split,
-        );
-        var fullProblem = level.builder(spec: spec);
+      final List<DivMultProblem> problemsInBatch = [];
 
-        while (formattedAnswers.contains(fullProblem.formattedThird)) {
-          fullProblem = level.builder(spec: spec);
-        }
+      int typeIndex = 0;
 
-        // Only add if we found a unique answer
-        if (!formattedAnswers.contains(fullProblem.formattedThird)) {
-          formattedProblems.add(
-            intRound == 1
-                ? fullProblem.problemWithYenSymbol
-                : fullProblem.problem,
+      for (var splitIndex = 0; splitIndex < splitCounts.length; splitIndex++) {
+        for (
+          var remaining = splitCounts[splitIndex];
+          remaining > 0;
+          remaining--
+        ) {
+          final type = typeList[typeIndex++];
+
+          final DivMultSpec spec = DivMultSpec(
+            problemType: type,
+            digitCount: digits,
+            split: split[splitIndex],
+            intRound: intRound,
           );
+
+          var fullProblem = level.builder(spec: spec);
+
+          while (formattedAnswers.contains(fullProblem.formattedThird)) {
+            fullProblem = level.builder(spec: spec);
+          }
+
+          problemsInBatch.add(fullProblem);
           formattedAnswers.add(fullProblem.formattedThird);
         }
       }
+
+      problemsInBatch.shuffle(rand);
+      fullProblemSet.addAll(problemsInBatch);
     }
   }
+  List<String> get formattedAnswers =>
+      fullProblemSet.map((p) => p.formattedThird).toList();
+
+  List<String> get formattedProblems =>
+      fullProblemSet.map((p) => p.problem).toList();
 }

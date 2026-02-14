@@ -130,31 +130,40 @@ Decimal randomDecimalNoTrailingZero(int digits) {
 }
 
 (Decimal, int) scaleValue(
-  Decimal val, {
+  Decimal value, {
   bool avoidOverScale = false,
   bool alwaysThree = false,
   int scalePower = 0,
 }) {
-  var intDigits = val.toString().split('.')[0].length;
-  int maxPower = avoidOverScale ? 3 : intDigits + 1;
+  final String valueString = value.toString();
+  final int valueDigits = value.toString().length;
+  final int maxPower = avoidOverScale ? 3 : valueDigits + 1;
 
-  if (maxPower > 0) {
-    scalePower = alwaysThree ? 3 : 1 + Random().nextInt(maxPower);
-    Decimal divisor = Decimal.fromInt(pow(10, scalePower).toInt());
-    return ((val / divisor).toDecimal(), scalePower);
+  scalePower = alwaysThree ? 3 : Random().nextInt(maxPower) + 1;
+
+  Decimal unscaledValue = value;
+
+  if (scalePower > valueDigits) {
+    unscaledValue = Decimal.parse(
+      valueString.substring(0, valueDigits - (scalePower - valueDigits)),
+    );
+    scalePower -= (scalePower - valueDigits);
   }
-  return (val, scalePower);
+
+  final Decimal divisor = Decimal.fromInt(pow(10, scalePower).toInt());
+  return ((unscaledValue / divisor).toDecimal(), scalePower);
 }
 
-({int firstDigits, int secondDigits}) splitDigits({
-  required List<List<int>> split,
-  required Random rand,
-}) {
-  final selected = split[rand.nextInt(split.length)];
-
-  return (firstDigits: selected[0], secondDigits: selected[1]);
-}
+//
+// ({int firstDigits, int secondDigits}) splitDigits({
+//   required List<List<int>> split,
+//   required Random rand,
+// }) {
+//   final selected = split[rand.nextInt(split.length)];
+//
+//   return (firstDigits: selected[0], secondDigits: selected[1]);
+// }
 
 void main() {
-  print(formatWithCommas('45685b123'));
+  print(scaleValue(Decimal.parse('255')));
 }

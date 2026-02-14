@@ -1,6 +1,6 @@
 sealed class DivMultSource {
   const DivMultSource();
-  List<Map<String, int>> get templates;
+  List<Map<String, dynamic>> get templates;
 }
 
 sealed class DivMultSplit {
@@ -36,7 +36,6 @@ enum MultiplicationSplit implements DivMultSplit {
     6: [
       [2, 4],
       [3, 3],
-      [3, 3],
       [4, 2],
     ],
   }),
@@ -60,7 +59,6 @@ enum MultiplicationSplit implements DivMultSplit {
     8: [
       [3, 5],
       [4, 4],
-      [4, 4],
       [5, 3],
     ],
   }),
@@ -72,32 +70,41 @@ enum MultiplicationSplit implements DivMultSplit {
       [6, 3],
     ],
   }),
+  nsjk1({
+    // TODO: Clean this up
+    10: [
+      [4, 6],
+      [5, 5],
+      [6, 4],
+    ],
+  }),
+  nsk1({
+    11: [
+      [5, 6],
+      [6, 5],
+      [7, 4],
+    ],
+  }),
   dan({
     9: [
-      // 5 problems, 11224
       [3, 6],
       [4, 5],
       [5, 4],
       [6, 3],
     ],
     10: [
-      // 5 problems, 11224
       [4, 6],
-      [5, 5],
       [5, 5],
       [6, 4],
     ],
     11: [
-      // 5 problems, 11224
       [4, 7],
       [5, 6],
       [6, 5],
       [7, 4],
     ],
     12: [
-      // (5 problems, 11555) * 3
       [5, 7],
-      [6, 6],
       [6, 6],
       [7, 5],
     ],
@@ -109,57 +116,358 @@ enum MultiplicationSplit implements DivMultSplit {
   final Map<int, List<List<int>>> templates;
 }
 
-const kyuuSpec = {
-  'type2Count': 3,
-  'type4Count': 1,
-  'type5Count': 4,
-  'totalCount': 15,
-};
-
 enum MultiplicationSource implements DivMultSource {
   k9([
-    {"digits": 3, "problemCount": 15},
+    {
+      "digits": 3,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nsk9([
+    {
+      "digits": 3,
+      "problemCount": 20,
+      "splitCount": [20],
+    },
   ]),
   k8([
-    {"digits": 4, "problemCount": 15},
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nsk8([
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
   ]),
   k7([
-    {"digits": 4, "problemCount": 15},
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nsk7([
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
   ]),
   k6([
-    {"digits": 5, "problemCount": 15},
+    {
+      "digits": 5,
+      "problemCount": 7,
+      "splitCount": [3, 4],
+    },
+    {
+      "digits": 5,
+      "problemCount": 8,
+      "splitCount": [4, 4],
+    },
+  ]),
+  nsk6([
+    {
+      "digits": 5,
+      "problemCount": 10,
+      "splitCount": [5, 5],
+    },
+    {
+      "digits": 5,
+      "problemCount": 10,
+      "splitCount": [5, 5],
+    },
   ]),
   k5([
-    {"digits": 6, "problemCount": 15},
+    {
+      "digits": 6,
+      "problemCount": 7,
+      "splitCount": [1, 4, 2],
+    },
+    {
+      "digits": 6,
+      "problemCount": 8,
+      "splitCount": [2, 5, 1],
+    },
+  ]),
+  nsk5([
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
   ]),
   k4([
-    {"digits": 7, "problemCount": 15},
+    {
+      "digits": 7,
+      "problemCount": 7,
+      "splitCount": [1, 2, 3, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 8,
+      "splitCount": [1, 3, 3, 1],
+    },
+  ]),
+  nsk4([
+    {
+      "digits": 7,
+      "problemCount": 10,
+      "splitCount": [0, 1, 8, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 10,
+      "splitCount": [0, 1, 8, 1],
+    },
   ]),
   k3([
-    {"digits": 7, "problemCount": 7, "type2Count": 3, "type4Count": 1},
-    {"digits": 7, "problemCount": 8, "type5Count": 4, "intRound": 1},
+    {
+      "digits": 7,
+      "problemCount": 7,
+      "type2Count": 3,
+      "type4Count": 1,
+      "splitCount": [1, 2, 3, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 8,
+      "type5Count": 4,
+      "intRound": true,
+      "splitCount": [1, 3, 3, 1],
+    },
+  ]),
+  nsjk3([
+    {
+      "digits": 7,
+      "problemCount": 10,
+      "type2Count": 2,
+      "type5Count": 1,
+      "splitCount": [0, 1, 8, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 10,
+      "type5Count": 3,
+      "intRound": true,
+      "splitCount": [0, 1, 8, 1],
+    },
+  ]),
+  nsk3([
+    {
+      "digits": 7,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [0, 1, 8, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [0, 1, 8, 1],
+    },
   ]),
   k2([
-    {"digits": 8, "problemCount": 7, "type2Count": 3, "type4Count": 1},
-    {"digits": 8, "problemCount": 8, "type5Count": 4, "intRound": 1},
+    {
+      "digits": 8,
+      "problemCount": 7,
+      "type2Count": 3,
+      "type4Count": 1,
+      "splitCount": [1, 4, 2],
+    },
+    {
+      "digits": 8,
+      "problemCount": 8,
+      "type5Count": 4,
+      "intRound": true,
+      "splitCount": [2, 5, 1],
+    },
+  ]),
+  nsjk2([
+    {
+      "digits": 8,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 8,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [1, 8, 1],
+    },
+  ]),
+  nsk2([
+    {
+      "digits": 9,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 9,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [1, 8, 1],
+    },
   ]),
   k1([
-    {"digits": 9, "problemCount": 7, "type2Count": 3, "type4Count": 1},
-    {"digits": 9, "problemCount": 8, "type5Count": 4, "intRound": 1},
+    {
+      "digits": 9,
+      "problemCount": 7,
+      "type2Count": 3,
+      "type4Count": 1,
+      "splitCount": [1, 2, 3, 1],
+    },
+    {
+      "digits": 9,
+      "problemCount": 8,
+      "type5Count": 4,
+      "intRound": true,
+      "splitCount": [1, 3, 3, 1],
+    },
   ]),
-  dan([
-    {"digits": 9, "problemCount": 5, "type2Count": 2, "type4Count": 1},
-    {"digits": 10, "problemCount": 5, "type2Count": 2, "type4Count": 1},
-    {"digits": 11, "problemCount": 5, "type2Count": 2, "type4Count": 1},
-    {"digits": 12, "problemCount": 5, "type5Count": 3, "intRound": 1},
-    {"digits": 12, "problemCount": 5, "type5Count": 3, "intRound": 1},
-    {"digits": 12, "problemCount": 5, "type5Count": 3, "intRound": 1},
+  nsjk1([
+    {
+      "digits": 10,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 10,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [1, 8, 1],
+    },
+  ]),
+  nsk1([
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [1, 8, 1],
+    },
+  ]),
+  nsdan([
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type2Count": 3,
+      "type5Count": 2,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 10,
+      "type5Count": 5,
+      "intRound": true,
+      "splitCount": [1, 8, 1],
+    },
+  ]),
+  zsdan([
+    {
+      "digits": 9,
+      "problemCount": 5,
+      "type2Count": 2,
+      "type4Count": 1,
+      "splitCount": [1, 1, 2, 1],
+    },
+    {
+      "digits": 10,
+      "problemCount": 5,
+      "type2Count": 2,
+      "type4Count": 1,
+      "splitCount": [1, 3, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 5,
+      "type2Count": 2,
+      "type4Count": 1,
+      "splitCount": [1, 1, 2, 1],
+    },
+    {
+      "digits": 11,
+      "problemCount": 5,
+      "type5Count": 3,
+      "intRound": true,
+      "splitCount": [1, 2, 1, 1],
+    },
+    {
+      "digits": 12,
+      "problemCount": 5,
+      "type5Count": 3,
+      "intRound": true,
+      "splitCount": [2, 2, 1],
+    },
+    {
+      "digits": 12,
+      "problemCount": 5,
+      "type5Count": 3,
+      "intRound": true,
+      "splitCount": [1, 2, 2],
+    },
   ]);
 
   const MultiplicationSource(this.templates);
 
   @override
-  final List<Map<String, int>> templates;
+  final List<Map<String, dynamic>> templates;
 }
 
 enum DivisionSplit implements DivMultSplit {
@@ -188,14 +496,12 @@ enum DivisionSplit implements DivMultSplit {
     6: [
       [2, 4],
       [3, 3],
-      [3, 3],
       [4, 2],
     ],
   }),
   k3({
     6: [
       [2, 4],
-      [3, 3],
       [3, 3],
       [4, 2],
     ],
@@ -212,14 +518,12 @@ enum DivisionSplit implements DivMultSplit {
     8: [
       [3, 5],
       [4, 4],
-      [4, 4],
       [5, 3],
     ],
   }),
   dan({
     8: [
       [3, 5],
-      [4, 4],
       [4, 4],
       [5, 3],
     ],
@@ -231,7 +535,6 @@ enum DivisionSplit implements DivMultSplit {
     ],
     10: [
       [4, 6],
-      [5, 5],
       [5, 5],
       [6, 4],
     ],
@@ -250,80 +553,214 @@ enum DivisionSplit implements DivMultSplit {
 }
 
 enum DivisionSource implements DivMultSource {
+  nsk8([
+    {
+      "digits": 3,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
+  ]),
   k8([
-    {"digits": 3, "problemCount": 15},
+    {
+      "digits": 3,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nsk7([
+    {
+      "digits": 3,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
   ]),
   k7([
-    {"digits": 4, "problemCount": 15},
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nsk6([
+    {
+      "digits": 4,
+      "problemCount": 20,
+      "splitCount": [20],
+    },
   ]),
   k6([
-    {"digits": 4, "problemCount": 15},
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nsk5([
+    {
+      "digits": 5,
+      "problemCount": 10,
+      "splitCount": [5, 5],
+    },
+    {
+      "digits": 5,
+      "problemCount": 10,
+      "splitCount": [5, 5],
+    },
   ]),
   k5([
-    {"digits": 5, "problemCount": 15},
+    {
+      "digits": 5,
+      "problemCount": 7,
+      "splitCount": [4, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 8,
+      "splitCount": [4, 4],
+    },
+  ]),
+  nsk4([
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
   ]),
   k4([
-    {"digits": 6, "problemCount": 15},
+    {
+      "digits": 6,
+      "problemCount": 7,
+      "splitCount": [1, 4, 2],
+    },
+    {
+      "digits": 6,
+      "problemCount": 8,
+      "splitCount": [2, 5, 1],
+    },
+  ]),
+  nsk3([
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "type2Count": 1,
+      "type3Count": 3,
+      "type6Count": 1,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "type4Count": 4,
+      "type5Count": 1,
+      "splitCount": [1, 8, 1],
+    },
   ]),
   k3([
-    {"digits": 6, "problemCount": 7, "type2Count": 2, "type3Count": 2},
+    {
+      "digits": 6,
+      "problemCount": 7,
+      "type2Count": 2,
+      "type3Count": 2,
+      "splitCount": [1, 4, 2],
+    },
     {
       "digits": 6,
       "problemCount": 8,
       "type4Count": 2,
       "type5Count": 2,
-      "intRound": 1,
+      "intRound": true,
+      "splitCount": [2, 5, 1],
     },
   ]),
   k2([
-    {"digits": 7, "problemCount": 7, "type2Count": 2, "type3Count": 2},
+    {
+      "digits": 7,
+      "problemCount": 7,
+      "type2Count": 2,
+      "type3Count": 2,
+      "splitCount": [1, 3, 2, 1],
+    },
     {
       "digits": 7,
       "problemCount": 8,
       "type4Count": 2,
       "type5Count": 2,
-      "intRound": 1,
+      "intRound": true,
+      "splitCount": [1, 3, 3, 1],
     },
   ]),
   k1([
-    {"digits": 8, "problemCount": 7, "type2Count": 2, "type3Count": 2},
+    {
+      "digits": 8,
+      "problemCount": 7,
+      "type2Count": 2,
+      "type3Count": 2,
+      "splitCount": [2, 4, 1],
+    },
     {
       "digits": 8,
       "problemCount": 8,
       "type4Count": 2,
       "type5Count": 2,
-      "intRound": 1,
+      "intRound": true,
+      "splitCount": [1, 5, 2],
     },
   ]),
   dan([
-    {"digits": 8, "problemCount": 5, "type2Count": 1, "type3Count": 2},
-    {"digits": 9, "problemCount": 5, "type2Count": 1, "type3Count": 2},
-    {"digits": 10, "problemCount": 5, "type2Count": 1, "type3Count": 2},
+    {
+      "digits": 8,
+      "problemCount": 5,
+      "type2Count": 1,
+      "type3Count": 2,
+      "splitCount": [1, 3, 1],
+    },
+    {
+      "digits": 9,
+      "problemCount": 5,
+      "type2Count": 1,
+      "type3Count": 2,
+      "splitCount": [1, 2, 1, 1],
+    },
+    {
+      "digits": 10,
+      "problemCount": 5,
+      "type2Count": 1,
+      "type3Count": 2,
+      "splitCount": [1, 3, 1],
+    },
     {
       "digits": 10,
       "problemCount": 5,
       "type4Count": 1,
       "type5Count": 2,
-      "intRound": 1,
+      "intRound": true,
+      "splitCount": [1, 3, 1],
     },
     {
       "digits": 11,
       "problemCount": 5,
       "type4Count": 1,
       "type5Count": 2,
-      "intRound": 1,
+      "intRound": true,
+      "splitCount": [1, 1, 2, 1],
     },
     {
       "digits": 11,
       "problemCount": 5,
       "type4Count": 1,
       "type5Count": 2,
-      "intRound": 1,
+      "intRound": true,
+      "splitCount": [1, 2, 1, 1],
     },
   ]);
 
   const DivisionSource(this.templates);
 
   @override
-  final List<Map<String, int>> templates;
+  final List<Map<String, dynamic>> templates;
 }
