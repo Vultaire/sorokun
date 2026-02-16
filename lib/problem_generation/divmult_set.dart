@@ -1,7 +1,7 @@
 import "dart:math";
 import "../models/level_definitions.dart";
 
-enum ProblemType { type1, type2, type3, type4, type5, type6 }
+enum ProblemType { type1, type2, type3, type4, type5, type6, type7 }
 
 abstract class DivMultProblem {
   String get formattedThird;
@@ -33,6 +33,7 @@ class DivMultProblemSet {
       final int type4Count = batch['type4Count'] ?? 0;
       final int type5Count = batch['type5Count'] ?? 0;
       final int type6Count = batch['type6Count'] ?? 0;
+      final int type7Count = batch['type7Count'] ?? 0;
       final bool intRound =
           batch['intRound'] ??
           false; // marks if the answer should be rounded to the whole number.
@@ -47,6 +48,7 @@ class DivMultProblemSet {
         ...List.filled(type4Count, ProblemType.type4),
         ...List.filled(type5Count, ProblemType.type5),
         ...List.filled(type6Count, ProblemType.type6),
+        ...List.filled(type7Count, ProblemType.type7),
       ];
 
       while (typeList.length < problemCount) {

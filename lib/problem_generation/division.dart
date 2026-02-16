@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:decimal/decimal.dart';
+import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
-import '../models/level_definitions.dart';
 import 'divmult_set.dart';
 
 class DivisionProblem extends DivMultProblem {
@@ -21,36 +21,64 @@ class DivisionProblem extends DivMultProblem {
 
     switch (spec.problemType) {
       case .type1: //Integer dividend, integer divisor, neat
-        return _type1(divisorDigits, quotientDigits, spec.intRound);
+        return _type1(divisorDigits, quotientDigits, spec.intRound, rand);
       case .type2: //Non-integer dividend, non-integer divisor, neat
-        return _type2(divisorDigits, quotientDigits, spec.intRound);
+        return _type2(divisorDigits, quotientDigits, spec.intRound, rand);
       case .type3: //Non-integer dividend, non-integer divisor, unneat
         return _type3(divisorDigits, quotientDigits, spec.intRound, rand);
       case .type4: //Integer dividend, non-integer divisor, neat
         return _type4(divisorDigits, quotientDigits, spec.intRound, rand);
       case .type5: //Integer dividend, non-integer divisor, unneat
-        return _type5(totalDigits, divisorDigits, spec.intRound);
+        return _type5(totalDigits, divisorDigits, spec.intRound, rand);
       case .type6: //Non-integer dividend, integer divisor, neat
-        return _type6(totalDigits, divisorDigits, spec.intRound);
+        return _type6(totalDigits, divisorDigits, spec.intRound, rand);
+      case .type7: //Non-integer dividend, integer divisor, unneat
+        return _type7(divisorDigits, quotientDigits, spec.intRound, rand);
     }
   }
 
-  static DivisionProblem _type1(int dDigits, int qDigits, bool intRound) {
-    final divisor = randomDecimalNoTrailingZero(dDigits);
-    final quotient = randomDecimalNoTrailingZero(qDigits);
+  String get formattedFirst => formatWithCommas(dividend.toString());
+  String get formattedSecond => formatWithCommas(divisor.toString());
+  @override
+  String get formattedThird => formatWithCommas(quotient.toString());
+
+  @override
+  String get problem => intRound
+      ? '\\ $formattedFirst / $formattedSecond' // yen symbol
+      : '$formattedFirst / $formattedSecond';
+
+  @override
+  String toString() {
+    return '$formattedFirst / $formattedSecond = $formattedThird';
+  }
+
+  static DivisionProblem _type1(
+    int dDigits,
+    int qDigits,
+    bool intRound,
+    Random rand,
+  ) {
+    final divisor = randomDecimalNoTrailingZero(dDigits, rand);
+    final quotient = randomDecimalNoTrailingZero(qDigits, rand);
     final dividend = divisor * quotient;
     return DivisionProblem._(dividend, divisor, quotient, intRound);
   }
 
-  static DivisionProblem _type2(int dDigits, int qDigits, bool intRound) {
-    final Decimal divisor = randomDecimalNoTrailingZero(dDigits);
-    final Decimal quotient = randomDecimalNoTrailingZero(qDigits);
+  static DivisionProblem _type2(
+    int dDigits,
+    int qDigits,
+    bool intRound,
+    Random rand,
+  ) {
+    final Decimal divisor = randomDecimalNoTrailingZero(dDigits, rand);
+    final Decimal quotient = randomDecimalNoTrailingZero(qDigits, rand);
 
-    final (Decimal scaledDivisor, _) = scaleValue(divisor);
+    final (Decimal scaledDivisor, _) = scaleValue(divisor, rand);
 
     final (Decimal scaledQuotient, _) = scaleValue(
       quotient,
-      avoidOverScale: true,
+      rand,
+      avoidScaleOverThree: true,
     );
 
     final Decimal dividend = scaledDivisor * scaledQuotient;
@@ -64,15 +92,15 @@ class DivisionProblem extends DivMultProblem {
     bool intRound,
     Random rand,
   ) {
-    final Decimal divisor = randomDecimalNoTrailingZero(dDigits);
-    final Decimal quotient = randomDecimalNoTrailingZero(qDigits);
-
-    final (Decimal scaledDivisor, int _) = scaleValue(divisor);
-
-    final (Decimal scaledQuotient, int _) = scaleValue(
-      quotient,
-      alwaysThree: true,
+    final (Decimal scaledDivisor, _) = scaleValue(
+      randomDecimalNoTrailingZero(dDigits, rand),
+      rand,
     );
+
+    final Decimal scaledQuotient = randomDecimalNoTrailingZero(
+      qDigits,
+      rand,
+    ).shift(-3);
 
     Decimal dividend = scaledDivisor * scaledQuotient;
     dividend = _makeDivisionUnneat(
@@ -133,48 +161,72 @@ class DivisionProblem extends DivMultProblem {
     }
   }
 
-  static DivisionProblem _type5(int totalDigits, int dDigits, bool intRound) {
-    final (divisor, divisorScale) = scaleValue(
-      randomDecimalNoTrailingZero(dDigits),
+  static DivisionProblem _type5(
+    int totalDigits,
+    int dDigits,
+    bool intRound,
+    Random rand,
+  ) {
+    final (Decimal divisor, int divisorScale) = scaleValue(
+      randomDecimalNoTrailingZero(dDigits, rand),
+      rand,
     );
 
-    Decimal dividend = randomDecimal(totalDigits - divisorScale);
+    Decimal dividend = randomDecimal(totalDigits - divisorScale, rand);
     Decimal quotient = (dividend / divisor).round().toDecimal();
-    RegExp sigFigRegEx = RegExp(r'^0*\.?');
+    RegExp sigFigRegEx = RegExp(r'^0+|\.');
 
     final sigFigsDivisor = divisor
         .toString()
-        .replaceFirst(sigFigRegEx, '')
-        .replaceAll('.', '')
+        .replaceAll(sigFigRegEx, '')
         .length;
     final sigFigsQuotient = quotient
         .toString()
-        .replaceFirst(sigFigRegEx, '')
-        .replaceAll('.', '')
+        .replaceAll(sigFigRegEx, '')
         .length;
     final totalSigFigs = sigFigsDivisor + sigFigsQuotient;
 
-    if (totalSigFigs < totalDigits) {
+    Decimal newDividend = dividend;
+
+    if (totalSigFigs != totalDigits) {
       final diff = totalDigits - totalSigFigs;
-      dividend *= Decimal.fromInt(pow(10, diff).toInt());
-      dividend = dividend.round();
-    } else if (totalSigFigs > totalDigits) {
-      final diff = totalSigFigs - totalDigits;
-      dividend = (dividend / Decimal.fromInt(pow(10, diff).toInt()))
-          .toDecimal();
-      dividend = dividend.round();
+      newDividend = dividend.shift(diff).floor();
     }
 
-    quotient = (dividend / divisor).round().toDecimal();
+    quotient = (newDividend / divisor).round().toDecimal();
+    return DivisionProblem._(newDividend, divisor, quotient, intRound);
+  }
+
+  static DivisionProblem _type6(
+    int dDigits,
+    int qDigits,
+    bool intRound,
+    Random rand,
+  ) {
+    final Decimal divisor = randomDecimalNoTrailingZero(dDigits, rand);
+    Decimal quotient = randomDecimalNoTrailingZero(qDigits, rand);
+    (quotient, _) = scaleValue(quotient, rand);
+    final dividend = divisor * quotient;
     return DivisionProblem._(dividend, divisor, quotient, intRound);
   }
 
-  static DivisionProblem _type6(int dDigits, int qDigits, bool intRound) {
-    final Decimal divisor = randomDecimalNoTrailingZero(dDigits);
-    Decimal quotient = randomDecimalNoTrailingZero(qDigits);
-    (quotient, _) = scaleValue(quotient);
-    final dividend = divisor * quotient;
-    return DivisionProblem._(dividend, divisor, quotient, intRound);
+  static DivisionProblem _type7(
+    int dDigits,
+    int qDigits,
+    bool intRound,
+    Random rand,
+  ) {
+    final Decimal divisor = randomDecimalNoTrailingZero(dDigits, rand);
+
+    final Decimal scaledQuotient = randomDecimalNoTrailingZero(
+      qDigits,
+      rand,
+    ).shift(-3);
+
+    Decimal dividend = divisor * scaledQuotient;
+    dividend = _makeDivisionUnneat(dividend, divisor, scaledQuotient, rand);
+
+    return DivisionProblem._(dividend, divisor, scaledQuotient, intRound);
   }
 
   static _makeDivisionUnneat(
@@ -256,10 +308,6 @@ class DivisionProblem extends DivMultProblem {
             '${parts[0]}.${parts[1]}${'0' * (decimalPlaces - parts[1].length)}';
         newDividend = Decimal.parse(newDividendStr);
       }
-    } else if (decimalPlaces > 0) {
-      // Add decimal point with zeros
-      newDividendStr = '$newDividendStr.${'0' * decimalPlaces}';
-      newDividend = Decimal.parse(newDividendStr);
     }
 
     return newDividend;
@@ -325,21 +373,6 @@ class DivisionProblem extends DivMultProblem {
 
   static int buildDenominatorForExactlyK({int a = 0, int b = 0}) {
     return pow(2, a).toInt() * pow(5, b).toInt();
-  }
-
-  String get formattedFirst => formatWithCommas(dividend.toString());
-  String get formattedSecond => formatWithCommas(divisor.toString());
-  @override
-  String get formattedThird => formatWithCommas(quotient.toString());
-
-  @override
-  String get problem => intRound
-      ? '\\ $formattedFirst / $formattedSecond' // yen symbol
-      : '$formattedFirst / $formattedSecond';
-
-  @override
-  String toString() {
-    return '$formattedFirst / $formattedSecond = $formattedThird';
   }
 }
 
@@ -469,7 +502,7 @@ Map<String, dynamic> getModoshi(
 }
 
 void main() {
-  // var problems = DivMultProblemSet(level: DivMultLevel.zsdk8);
+  // var problems = DivMultProblemSet(level: DivMultLevel.nsddan);
 
   // // Print each item individually to see they're strings
   // for (var problem in problems.formattedProblems) {
@@ -486,10 +519,10 @@ void main() {
 
   DivisionProblem problem = DivisionProblem(
     spec: DivMultSpec(
-      digitCount: 8,
-      problemType: .type4,
-      split: [3, 5],
-      intRound: false,
+      digitCount: 10,
+      problemType: .type5,
+      split: [6, 4],
+      intRound: true,
     ),
   );
 

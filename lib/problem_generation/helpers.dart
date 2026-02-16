@@ -91,8 +91,7 @@ int getRandomFlashInt(
   }
 }
 
-Decimal randomDecimal(int digits) {
-  final rand = Random();
+Decimal randomDecimal(int digits, Random rand) {
   late String result;
 
   if (digits == 1) {
@@ -111,7 +110,7 @@ Decimal randomDecimal(int digits) {
   return Decimal.parse(result);
 }
 
-Decimal randomDecimalNoTrailingZero(int digits) {
+Decimal randomDecimalNoTrailingZero(int digits, Random rand) {
   int low, high;
   if (digits == 1) {
     low = 2;
@@ -123,23 +122,31 @@ Decimal randomDecimalNoTrailingZero(int digits) {
 
   int value;
   do {
-    value = low + Random().nextInt(high - low + 1);
+    value = low + rand.nextInt(high - low + 1);
   } while (value % 10 == 0);
 
   return Decimal.fromInt(value);
 }
 
 (Decimal, int) scaleValue(
-  Decimal value, {
-  bool avoidOverScale = false,
-  bool alwaysThree = false,
-  int scalePower = 0,
+  Decimal value,
+  Random rand, {
+  bool avoidScaleOverThree = false,
+  bool avoidScaleOverValueDigits = false,
 }) {
   final String valueString = value.toString();
-  final int valueDigits = value.toString().length;
-  final int maxPower = avoidOverScale ? 3 : valueDigits + 1;
+  final int valueDigits = valueString.length;
+  int maxPower;
 
-  scalePower = alwaysThree ? 3 : Random().nextInt(maxPower) + 1;
+  if (avoidScaleOverValueDigits) {
+    maxPower = valueDigits;
+  } else if (avoidScaleOverThree) {
+    maxPower = 3;
+  } else {
+    maxPower = valueDigits + 1;
+  }
+
+  int scalePower = rand.nextInt(maxPower) + 1;
 
   Decimal unscaledValue = value;
 
@@ -150,20 +157,9 @@ Decimal randomDecimalNoTrailingZero(int digits) {
     scalePower -= (scalePower - valueDigits);
   }
 
-  final Decimal divisor = Decimal.fromInt(pow(10, scalePower).toInt());
-  return ((unscaledValue / divisor).toDecimal(), scalePower);
+  return (unscaledValue.shift(-scalePower), scalePower);
 }
 
-//
-// ({int firstDigits, int secondDigits}) splitDigits({
-//   required List<List<int>> split,
-//   required Random rand,
-// }) {
-//   final selected = split[rand.nextInt(split.length)];
-//
-//   return (firstDigits: selected[0], secondDigits: selected[1]);
-// }
-
 void main() {
-  print(scaleValue(Decimal.parse('255')));
+  print(scaleValue(Decimal.parse('255'), Random()));
 }
