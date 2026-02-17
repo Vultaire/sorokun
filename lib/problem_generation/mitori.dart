@@ -1,5 +1,21 @@
 import 'dart:math';
 
+import 'package:soroban_app/problem_generation/helpers.dart';
+
+class MitoriProblem {
+  List<int> problem;
+  MitoriProblem(this.problem);
+
+  List<String> get formattedProblem =>
+      problem.map((number) => formatWithCommas(number.toString())).toList();
+  String get formattedAnswer =>
+      formatWithCommas(problem.reduce((a, b) => a + b).toString());
+
+  set newProblem(List<int> list) {
+    problem = list;
+  }
+}
+
 List<int> generateMitoriProblemFromDigitList(List<int> digitList, Random rand) {
   // Calculate sum and generate pool
   int sum = digitList.fold(0, (a, b) => a + b);

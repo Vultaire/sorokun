@@ -233,6 +233,20 @@ class MultiplicationBottomSheet extends StatelessWidget {
     DivMultLevel.zsmk1,
     DivMultLevel.zsmdan,
   ];
+  static const List<DivMultLevel> nslevels = [
+    DivMultLevel.nsmk8,
+    DivMultLevel.nsmk7,
+    DivMultLevel.nsmk6,
+    DivMultLevel.nsmk5,
+    DivMultLevel.nsmk4,
+    DivMultLevel.nsmjk3,
+    DivMultLevel.nsmk3,
+    DivMultLevel.nsmjk2,
+    DivMultLevel.nsmk2,
+    DivMultLevel.nsmjk1,
+    DivMultLevel.nsmk1,
+    DivMultLevel.nsmdan,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +257,7 @@ class MultiplicationBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: zslevels.map((level) {
+            children: nslevels.map((level) {
               return ElevatedButton(
                 onPressed: () {
                   onLevelChanged(level);
@@ -280,6 +294,20 @@ class DivisionBottomSheet extends StatelessWidget {
     DivMultLevel.zsdk1,
     DivMultLevel.zsddan,
   ];
+  static const List<DivMultLevel> nslevels = [
+    DivMultLevel.nsdk8,
+    DivMultLevel.nsdk7,
+    DivMultLevel.nsdk6,
+    DivMultLevel.nsdk5,
+    DivMultLevel.nsdk4,
+    DivMultLevel.nsdjk3,
+    DivMultLevel.nsdk3,
+    DivMultLevel.nsdjk2,
+    DivMultLevel.nsdk2,
+    DivMultLevel.nsdjk1,
+    DivMultLevel.nsdk1,
+    DivMultLevel.nsddan,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -290,7 +318,7 @@ class DivisionBottomSheet extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: zslevels.map((level) {
+            children: nslevels.map((level) {
               return ElevatedButton(
                 onPressed: () {
                   onLevelChanged(level);

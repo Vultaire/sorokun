@@ -40,7 +40,7 @@ class DivMultProblemSet {
       final int problemCount = batch['problemCount'] ?? 15;
       final int digits = batch['digits'];
       final List<int> splitCounts = batch['splitCount'] ?? [15];
-      final List<List<int>> split = level.divMultSplit.templates[digits];
+      final List<List<int>> split = level.split.templates[digits]!;
 
       final typeList = <ProblemType>[
         ...List.filled(type2Count, ProblemType.type2),

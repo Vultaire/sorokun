@@ -3,43 +3,106 @@ sealed class DivMultSource {
   List<Map<String, dynamic>> get templates;
 }
 
-sealed class DivMultSplit {
-  const DivMultSplit();
-  dynamic get templates;
-}
-
-enum MultiplicationSplit implements DivMultSplit {
-  k9({
+enum Split {
+  threeDigitA({
     // easy
     3: [
       [2, 1],
     ],
   }),
-  k8({
+  threeDigitB({
+    3: [
+      [1, 2],
+    ],
+  }),
+  fourDigitA({
     // easy
     4: [
       [3, 1],
     ],
   }),
-  k7({
+  fourDigitB({
     4: [
       [2, 2],
     ],
   }),
-  k6({
+  fourDigitC({
+    4: [
+      [1, 3],
+    ],
+  }),
+  nsdakj3({
+    3: [
+      [1, 2],
+    ],
+    4: [
+      [1, 3],
+    ],
+  }),
+  nsmakj3({
+    3: [
+      [2, 1],
+    ],
+    4: [
+      [3, 1],
+    ],
+  }),
+  nsdakj2({
+    0: [
+      // Actually four
+      [1, 3],
+    ],
+    4: [
+      [2, 2],
+    ],
+  }),
+  nsmakj2({
+    0: [
+      // Actually four
+      [3, 1],
+    ],
+    4: [
+      [2, 2],
+    ],
+  }),
+  nsakj1({
+    4: [
+      [2, 2],
+    ],
     5: [
       [2, 3],
       [3, 2],
     ],
   }),
-  k5({
+  nsadan({
+    5: [
+      [2, 3],
+      [3, 2],
+    ],
+    6: [
+      [2, 4],
+      [3, 3],
+      [4, 2],
+    ],
+    7: [
+      [3, 4],
+      [4, 3],
+    ],
+  }),
+  fiveDigit({
+    5: [
+      [2, 3],
+      [3, 2],
+    ],
+  }),
+  sixDigit({
     6: [
       [2, 4],
       [3, 3],
       [4, 2],
     ],
   }),
-  k4({
+  sevenDigit({
     7: [
       [2, 5],
       [3, 4],
@@ -47,22 +110,14 @@ enum MultiplicationSplit implements DivMultSplit {
       [5, 2],
     ],
   }),
-  k3({
-    7: [
-      [2, 5],
-      [3, 4],
-      [4, 3],
-      [5, 2],
-    ],
-  }),
-  k2({
+  eightDigit({
     8: [
       [3, 5],
       [4, 4],
       [5, 3],
     ],
   }),
-  k1({
+  nineDigit({
     9: [
       [3, 6],
       [4, 5],
@@ -70,22 +125,21 @@ enum MultiplicationSplit implements DivMultSplit {
       [6, 3],
     ],
   }),
-  nsjk1({
-    // TODO: Clean this up
+  tenDigit({
     10: [
       [4, 6],
       [5, 5],
       [6, 4],
     ],
   }),
-  nsk1({
+  elevenDigit({
     11: [
       [5, 6],
       [6, 5],
       [7, 4],
     ],
   }),
-  dan({
+  zsmdan({
     9: [
       [3, 6],
       [4, 5],
@@ -108,16 +162,39 @@ enum MultiplicationSplit implements DivMultSplit {
       [6, 6],
       [7, 5],
     ],
+  }),
+  zsddan({
+    8: [
+      [3, 5],
+      [4, 4],
+      [5, 3],
+    ],
+    9: [
+      [3, 6],
+      [4, 5],
+      [5, 4],
+      [6, 3],
+    ],
+    10: [
+      [4, 6],
+      [5, 5],
+      [6, 4],
+    ],
+    11: [
+      [4, 7],
+      [5, 6],
+      [6, 5],
+      [7, 4],
+    ],
   });
 
-  const MultiplicationSplit(this.templates);
+  const Split(this.templates);
 
-  @override
   final Map<int, List<List<int>>> templates;
 }
 
 enum MultiplicationSource implements DivMultSource {
-  k9([
+  zsk9([
     {
       "digits": 3,
       "problemCount": 15,
@@ -131,7 +208,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [20],
     },
   ]),
-  k8([
+  zsk8([
     {
       "digits": 4,
       "problemCount": 15,
@@ -145,7 +222,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [10],
     },
   ]),
-  k7([
+  zsk7([
     {
       "digits": 4,
       "problemCount": 15,
@@ -159,7 +236,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [10],
     },
   ]),
-  k6([
+  zsk6([
     {
       "digits": 5,
       "problemCount": 7,
@@ -171,19 +248,30 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [4, 4],
     },
   ]),
+
   nsk6([
     {
       "digits": 5,
-      "problemCount": 10,
-      "splitCount": [5, 5],
+      "problemCount": 5,
+      "splitCount": [2, 3],
     },
     {
       "digits": 5,
-      "problemCount": 10,
-      "splitCount": [5, 5],
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
     },
   ]),
-  k5([
+  zsk5([
     {
       "digits": 6,
       "problemCount": 7,
@@ -207,7 +295,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  k4([
+  zsk4([
     {
       "digits": 7,
       "problemCount": 7,
@@ -217,6 +305,13 @@ enum MultiplicationSource implements DivMultSource {
       "digits": 7,
       "problemCount": 8,
       "splitCount": [1, 3, 3, 1],
+    },
+  ]),
+  nsak4([
+    {
+      "digits": 3,
+      "problemCount": 30,
+      "splitCount": [30],
     },
   ]),
   nsk4([
@@ -231,7 +326,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [0, 1, 8, 1],
     },
   ]),
-  k3([
+  zsk3([
     {
       "digits": 7,
       "problemCount": 7,
@@ -247,7 +342,19 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [1, 3, 3, 1],
     },
   ]),
-  nsjk3([
+  nsakj3([
+    {
+      "digits": 3,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nskj3([
     {
       "digits": 7,
       "problemCount": 10,
@@ -263,6 +370,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [0, 1, 8, 1],
     },
   ]),
+
   nsk3([
     {
       "digits": 7,
@@ -279,7 +387,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [0, 1, 8, 1],
     },
   ]),
-  k2([
+  zsk2([
     {
       "digits": 8,
       "problemCount": 7,
@@ -295,7 +403,19 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [2, 5, 1],
     },
   ]),
-  nsjk2([
+  nsakj2([
+    {
+      "digits": 0,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+  ]),
+  nskj2([
     {
       "digits": 8,
       "problemCount": 10,
@@ -309,6 +429,13 @@ enum MultiplicationSource implements DivMultSource {
       "type5Count": 5,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  nsak2([
+    {
+      "digits": 4,
+      "problemCount": 30,
+      "splitCount": [30],
     },
   ]),
   nsk2([
@@ -327,7 +454,7 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  k1([
+  zsk1([
     {
       "digits": 9,
       "problemCount": 7,
@@ -343,7 +470,29 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [1, 3, 3, 1],
     },
   ]),
-  nsjk1([
+  nsakj1([
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+  ]),
+  nskj1([
     {
       "digits": 10,
       "problemCount": 10,
@@ -357,6 +506,38 @@ enum MultiplicationSource implements DivMultSource {
       "type5Count": 5,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  nsak1([
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
     },
   ]),
   nsk1([
@@ -373,6 +554,58 @@ enum MultiplicationSource implements DivMultSource {
       "type5Count": 5,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  nsadan([
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [2, 3],
     },
   ]),
   nsdan([
@@ -470,102 +703,6 @@ enum MultiplicationSource implements DivMultSource {
   final List<Map<String, dynamic>> templates;
 }
 
-enum DivisionSplit implements DivMultSplit {
-  k8({
-    3: [
-      [1, 2],
-    ],
-  }),
-  k7({
-    4: [
-      [1, 3],
-    ],
-  }),
-  k6({
-    4: [
-      [2, 2],
-    ],
-  }),
-  k5({
-    5: [
-      [2, 3],
-      [3, 2],
-    ],
-  }),
-  k4({
-    6: [
-      [2, 4],
-      [3, 3],
-      [4, 2],
-    ],
-  }),
-  k3({
-    6: [
-      [2, 4],
-      [3, 3],
-      [4, 2],
-    ],
-  }),
-  k2({
-    7: [
-      [2, 5],
-      [3, 4],
-      [4, 3],
-      [5, 2],
-    ],
-  }),
-  k1({
-    8: [
-      [3, 5],
-      [4, 4],
-      [5, 3],
-    ],
-  }),
-  nsjk1({
-    9: [
-      [4, 5],
-      [5, 4],
-      [6, 3],
-    ],
-  }),
-  nsk1({
-    10: [
-      [4, 6],
-      [5, 5],
-      [6, 4],
-    ],
-  }),
-  dan({
-    8: [
-      [3, 5],
-      [4, 4],
-      [5, 3],
-    ],
-    9: [
-      [3, 6],
-      [4, 5],
-      [5, 4],
-      [6, 3],
-    ],
-    10: [
-      [4, 6],
-      [5, 5],
-      [6, 4],
-    ],
-    11: [
-      [4, 7],
-      [5, 6],
-      [6, 5],
-      [7, 4],
-    ],
-  });
-
-  const DivisionSplit(this.templates);
-
-  @override
-  final Map<int, List<List<int>>> templates;
-}
-
 enum DivisionSource implements DivMultSource {
   nsk8([
     {
@@ -574,7 +711,7 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [10],
     },
   ]),
-  k8([
+  zsk8([
     {
       "digits": 3,
       "problemCount": 15,
@@ -583,12 +720,12 @@ enum DivisionSource implements DivMultSource {
   ]),
   nsk7([
     {
-      "digits": 3,
+      "digits": 4,
       "problemCount": 10,
       "splitCount": [10],
     },
   ]),
-  k7([
+  zsk7([
     {
       "digits": 4,
       "problemCount": 15,
@@ -602,7 +739,8 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [20],
     },
   ]),
-  k6([
+
+  zsk6([
     {
       "digits": 4,
       "problemCount": 15,
@@ -612,16 +750,26 @@ enum DivisionSource implements DivMultSource {
   nsk5([
     {
       "digits": 5,
-      "problemCount": 10,
-      "splitCount": [5, 5],
+      "problemCount": 5,
+      "splitCount": [2, 3],
     },
     {
       "digits": 5,
-      "problemCount": 10,
-      "splitCount": [5, 5],
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
     },
   ]),
-  k5([
+  zsk5([
     {
       "digits": 5,
       "problemCount": 7,
@@ -631,6 +779,13 @@ enum DivisionSource implements DivMultSource {
       "digits": 5,
       "problemCount": 8,
       "splitCount": [4, 4],
+    },
+  ]),
+  nsak4([
+    {
+      "digits": 3,
+      "problemCount": 30,
+      "splitCount": [30],
     },
   ]),
   nsk4([
@@ -645,7 +800,7 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  k4([
+  zsk4([
     {
       "digits": 6,
       "problemCount": 7,
@@ -655,6 +810,18 @@ enum DivisionSource implements DivMultSource {
       "digits": 6,
       "problemCount": 8,
       "splitCount": [2, 5, 1],
+    },
+  ]),
+  nsajk3([
+    {
+      "digits": 3,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
     },
   ]),
   nsjk3([
@@ -670,6 +837,13 @@ enum DivisionSource implements DivMultSource {
       "type4Count": 3,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  nsak3([
+    {
+      "digits": 4,
+      "problemCount": 30,
+      "splitCount": [30],
     },
   ]),
   nsk3([
@@ -690,7 +864,7 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  k3([
+  zsk3([
     {
       "digits": 6,
       "problemCount": 7,
@@ -705,6 +879,18 @@ enum DivisionSource implements DivMultSource {
       "type5Count": 2,
       "intRound": true,
       "splitCount": [2, 5, 1],
+    },
+  ]),
+  nsakj2([
+    {
+      "digits": 0,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
     },
   ]),
   nsjk2([
@@ -725,6 +911,13 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
+  nsak2([
+    {
+      "digits": 4,
+      "problemCount": 30,
+      "splitCount": [30],
+    },
+  ]),
   nsk2([
     {
       "digits": 8,
@@ -743,7 +936,7 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  k2([
+  zsk2([
     {
       "digits": 7,
       "problemCount": 7,
@@ -758,6 +951,28 @@ enum DivisionSource implements DivMultSource {
       "type5Count": 2,
       "intRound": true,
       "splitCount": [1, 3, 3, 1],
+    },
+  ]),
+  nsakj1([
+    {
+      "digits": 4,
+      "problemCount": 15,
+      "splitCount": [15],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
     },
   ]),
   nsjk1([
@@ -778,6 +993,38 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
+  nsak1([
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+  ]),
   nsk1([
     {
       "digits": 10,
@@ -796,7 +1043,7 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  k1([
+  zsk1([
     {
       "digits": 8,
       "problemCount": 7,
@@ -811,6 +1058,58 @@ enum DivisionSource implements DivMultSource {
       "type5Count": 2,
       "intRound": true,
       "splitCount": [1, 5, 2],
+    },
+  ]),
+  nsadan([
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 6,
+      "problemCount": 10,
+      "splitCount": [1, 8, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "splitCount": [3, 2],
     },
   ]),
   nsdan([
@@ -863,7 +1162,7 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  dan([
+  dzsan([
     {
       "digits": 8,
       "problemCount": 5,

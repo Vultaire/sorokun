@@ -502,29 +502,29 @@ Map<String, dynamic> getModoshi(
 }
 
 void main() {
-  // var problems = DivMultProblemSet(level: DivMultLevel.nsddan);
+  var problems = DivMultProblemSet(level: DivMultLevel.nsddan);
 
-  // // Print each item individually to see they're strings
-  // for (var problem in problems.formattedProblems) {
-  //   print('Problem: "$problem" (type: ${problem.runtimeType})');
-  // }
+  // Print each item individually to see they're strings
+  for (var problem in problems.formattedProblems) {
+    print('Problem: "$problem" (type: ${problem.runtimeType})');
+  }
 
-  // for (var answer in problems.formattedAnswers) {
-  //   print('Answer: "$answer" (type: ${answer.runtimeType})');
-  // }
+  for (var answer in problems.formattedAnswers) {
+    print('Answer: "$answer" (type: ${answer.runtimeType})');
+  }
 
-  // // Or use join to print clearly
-  // print('Problems: ${problems.formattedProblems.join(", ")}');
-  // print('Answers: ${problems.formattedAnswers.join(", ")}');
+  // Or use join to print clearly
+  print('Problems: ${problems.formattedProblems.join(", ")}');
+  print('Answers: ${problems.formattedAnswers.join(", ")}');
 
-  DivisionProblem problem = DivisionProblem(
-    spec: DivMultSpec(
-      digitCount: 10,
-      problemType: .type5,
-      split: [6, 4],
-      intRound: true,
-    ),
-  );
+  // DivisionProblem problem = DivisionProblem(
+  //   spec: DivMultSpec(
+  //     digitCount: 10,
+  //     problemType: .type5,
+  //     split: [6, 4],
+  //     intRound: true,
+  //   ),
+  // );
 
-  print(problem);
+  // print(problem);
 }
