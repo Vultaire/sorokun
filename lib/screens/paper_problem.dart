@@ -142,7 +142,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     );
     Overlay.of(context).insert(blockingOverlay);
 
-    if (widget.selectedLevel is MitoriLevel) {
+    if (widget.selectedLevel is ComplexMitoriLevel) {
       final state = _mitorizanKey.currentState;
       if (state != null) {
         selectedLevel = widget.selectedLevel;
@@ -586,7 +586,7 @@ class _MitorizanWindowState extends State<MitorizanWindow>
       ),
       itemCount: allProblems.length,
       itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
-        final currentProblem = allProblems[problemIndex];
+        final List<String> currentProblem = allProblems[problemIndex];
         final isFocused = problemIndex == currentIndex;
         return Stack(
           children: [
@@ -627,21 +627,42 @@ class _MitorizanWindowState extends State<MitorizanWindow>
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            ...currentProblem.map(
-                              (n) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 3.0,
-                                  horizontal: 10.0,
-                                ),
-                                child: Text(
-                                  n.toString(),
-                                  style: const TextStyle(
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 3.0,
+                                horizontal: 10.0,
+                              ),
+                              child: Text(
+                                currentProblem[0],
+                                style: switch (widget.selectedLevel) {
+                                  SimpleMitoriLevel() => TextStyle(
+                                    fontSize: 57,
+                                    fontFamily: 'ogutama',
+                                  ),
+                                  _ => TextStyle(
                                     fontSize: 26,
                                     fontFamily: 'abacusFontSpaced',
                                   ),
-                                ),
+                                },
                               ),
                             ),
+                            ...currentProblem
+                                .sublist(1)
+                                .map(
+                                  (n) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 3.0,
+                                      horizontal: 10.0,
+                                    ),
+                                    child: Text(
+                                      n,
+                                      style: const TextStyle(
+                                        fontSize: 26,
+                                        fontFamily: 'abacusFontSpaced',
+                                      ),
+                                    ),
+                                  ),
+                                ),
                           ],
                         ),
                         Container(

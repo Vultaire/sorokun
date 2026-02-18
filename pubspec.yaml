@@ -77,3 +77,6 @@ flutter:
     - family: robotoMono
       fonts:
         - asset: assets/RobotoMono-VariableFont_wght.ttf
+    - family: ogutama
+      fonts:
+        - asset: assets/ogutamafontS2.ttf

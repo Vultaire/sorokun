@@ -153,7 +153,7 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .nisshou,
     builder: MultiplicationProblem.new,
   ),
-  nsmjk3(
+  nsmkj3(
     split: Split.eightDigit,
     divMultSource: MultiplicationSource.nskj3,
     denomination: .nisshou,
@@ -165,7 +165,7 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .nisshou,
     builder: MultiplicationProblem.new,
   ),
-  nsmjk2(
+  nsmkj2(
     split: Split.eightDigit,
     divMultSource: MultiplicationSource.nskj2,
     denomination: .nisshou,
@@ -177,7 +177,7 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .nisshou,
     builder: MultiplicationProblem.new,
   ),
-  nsmjk1(
+  nsmkj1(
     split: Split.tenDigit,
     divMultSource: MultiplicationSource.nskj1,
     denomination: .nisshou,
@@ -225,7 +225,7 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .nisshou,
     builder: DivisionProblem.new,
   ),
-  nsdjk3(
+  nsdkj3(
     split: Split.sixDigit,
     divMultSource: DivisionSource.nsjk3,
     denomination: .nisshou,
@@ -237,7 +237,7 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .nisshou,
     builder: DivisionProblem.new,
   ),
-  nsdjk2(
+  nsdkj2(
     split: Split.sevenDigit,
     divMultSource: DivisionSource.nsjk2,
     denomination: .nisshou,
@@ -249,7 +249,7 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .nisshou,
     builder: DivisionProblem.new,
   ),
-  nsdjk1(
+  nsdkj1(
     split: Split.nineDigit,
     divMultSource: DivisionSource.nsjk1,
     denomination: .nisshou,
@@ -382,7 +382,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
   ),
   nsmadan(
-    split: Split.tenDigit,
+    split: Split.nsadan,
     divMultSource: MultiplicationSource.nsdan,
     denomination: .nisshou,
     builder: MultiplicationProblem.new,
@@ -401,7 +401,7 @@ enum DivMultLevel implements PaperProblemLevel {
   final Function builder;
 }
 
-enum MitoriLevel implements PaperProblemLevel {
+enum ComplexMitoriLevel implements MitoriLevel {
   zsk10a(
     templates: [
       [
@@ -882,6 +882,17 @@ enum MitoriLevel implements PaperProblemLevel {
     templateCountPerGroup: [10, 10],
     repeat: 1,
   ),
+  nsak1(
+    templates: [
+      [
+        {"digits": 3, "count": 10},
+      ],
+    ],
+    minusCount: 4,
+    denomination: .nisshou,
+    templateCountPerGroup: [20],
+    repeat: 1,
+  ),
   nsadan(
     templates: [
       [
@@ -894,7 +905,7 @@ enum MitoriLevel implements PaperProblemLevel {
     repeat: 1,
   );
 
-  const MitoriLevel({
+  const ComplexMitoriLevel({
     required this.templates,
     required this.minusCount,
     this.minusProblemsPerTemplate,
@@ -929,230 +940,260 @@ sealed class PaperProblemLevel {
   PaperDenomination get denomination;
 }
 
+sealed class MitoriLevel implements PaperProblemLevel {}
+
 enum Kyuui {
   nsk10(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '10級',
   ),
   nsk9(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: .nsmk9,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '9級',
   ),
   nsk8(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
+    mitoriSoroban: .nsk8,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
+    multSoroban: .nsmk8,
     multAnzan: null,
-    divSoroban: null,
+    divSoroban: .nsdk8,
     divAnzan: null,
+    kyuuString: '8級',
   ),
   nsk7(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
+    mitoriSoroban: .nsk7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
+    multSoroban: .nsmk7,
     multAnzan: null,
-    divSoroban: null,
+    divSoroban: .nsdk7,
     divAnzan: null,
+    kyuuString: '7級',
   ),
   nsk6(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nsk6,
+    mitoriAnzan: ComplexMitoriLevel.nsak6,
+    multSoroban: .nsmk6,
+    multAnzan: .nsmak6,
+    divSoroban: .nsdk6,
+    divAnzan: .nsdak6,
+    kyuuString: '6級',
   ),
   nsk5(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nsk5,
+    mitoriAnzan: ComplexMitoriLevel.nsak5,
+    multSoroban: .nsmk5,
+    multAnzan: .nsmak5,
+    divSoroban: .nsdk5,
+    divAnzan: .nsdak5,
+    kyuuString: '5級',
   ),
   nsk4(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nsk4,
+    mitoriAnzan: ComplexMitoriLevel.nsak4,
+    multSoroban: .nsmk4,
+    multAnzan: .nsmak4,
+    divSoroban: .nsdk4,
+    divAnzan: .nsdak4,
+    kyuuString: '4級',
   ),
   nskj3(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nskj3,
+    mitoriAnzan: ComplexMitoriLevel.nsakj3,
+    multSoroban: .nsmkj3,
+    multAnzan: .nsmakj3,
+    divSoroban: .nsdkj3,
+    divAnzan: .nsdakj3,
+    kyuuString: '準3級',
   ),
   nsk3(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nsk3,
+    mitoriAnzan: ComplexMitoriLevel.nsak3,
+    multSoroban: .nsmk3,
+    multAnzan: .nsmak3,
+    divSoroban: .nsdk3,
+    divAnzan: .nsdak3,
+    kyuuString: '3級',
   ),
   nskj2(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nskj2,
+    mitoriAnzan: ComplexMitoriLevel.nsakj2,
+    multSoroban: .nsmkj2,
+    multAnzan: .nsmakj2,
+    divSoroban: .nsdkj2,
+    divAnzan: .nsdakj2,
+    kyuuString: '準2級',
   ),
   nsk2(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nsk2,
+    mitoriAnzan: ComplexMitoriLevel.nsak2,
+    multSoroban: .nsmk2,
+    multAnzan: .nsmak2,
+    divSoroban: .nsdk2,
+    divAnzan: .nsdak2,
+    kyuuString: '2級',
   ),
   nskj1(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nskj1,
+    mitoriAnzan: ComplexMitoriLevel.nsakj1,
+    multSoroban: .nsmkj1,
+    multAnzan: .nsmakj1,
+    divSoroban: .nsdkj1,
+    divAnzan: .nsdakj1,
+    kyuuString: '準1級',
   ),
   nsk1(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nsk1,
+    mitoriAnzan: ComplexMitoriLevel.nsak1,
+    multSoroban: .nsmk1,
+    multAnzan: .nsmak1,
+    divSoroban: .nsdk1,
+    divAnzan: .nsdak1,
+    kyuuString: '1級',
   ),
   nsdan(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .nsdan,
+    mitoriAnzan: ComplexMitoriLevel.nsadan,
+    multSoroban: .nsmdan,
+    multAnzan: .nsmadan,
+    divSoroban: .nsddan,
+    divAnzan: .nsdadan,
+    kyuuString: '段位',
   ),
   zsk10(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: SimpleMitoriLevel.zsak10,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '10級',
   ),
   zsk9(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: SimpleMitoriLevel.zsak9,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '9級',
   ),
   zsk8(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: SimpleMitoriLevel.zsak8,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '8級',
   ),
   zsk7(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '7級',
   ),
   zsk6(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '6級',
   ),
   zsk5(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '5級',
   ),
   zsk4(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '4級',
   ),
   zskj3(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '準3級',
   ),
   zsk3(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '3級',
   ),
   zskj2(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '準2級',
   ),
   zsk2(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '2級',
   ),
   zskj1(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '準1級',
   ),
   zsk1(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '1級',
   ),
   zsdan(
     mitoriSoroban: .nsk9,
-    mitoriAnzan: .nsak7,
+    mitoriAnzan: ComplexMitoriLevel.nsak7,
     multSoroban: null,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    kyuuString: '段位',
   );
 
   const Kyuui({
@@ -1162,13 +1203,25 @@ enum Kyuui {
     required this.multAnzan,
     required this.divSoroban,
     required this.divAnzan,
+    required this.kyuuString,
   });
-  final MitoriLevel mitoriSoroban;
+  final ComplexMitoriLevel mitoriSoroban;
   final MitoriLevel mitoriAnzan;
   final DivMultLevel? multSoroban;
   final DivMultLevel? multAnzan;
   final DivMultLevel? divSoroban;
   final DivMultLevel? divAnzan;
+  final String kyuuString;
+}
+
+enum SimpleMitoriLevel implements MitoriLevel {
+  zsak10(denomination: .zenshuren),
+  zsak9(denomination: .zenshuren),
+  zsak8(denomination: .zenshuren);
+
+  const SimpleMitoriLevel({required this.denomination});
+  @override
+  final PaperDenomination denomination;
 }
 
 enum KyuuiDenomination {

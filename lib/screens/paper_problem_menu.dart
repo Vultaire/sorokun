@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
 import '../models/level_definitions.dart';
 
 class PaperMenuPage extends StatefulWidget {
@@ -10,14 +11,8 @@ class PaperMenuPage extends StatefulWidget {
 }
 
 class _PaperMenuPageState extends State<PaperMenuPage> {
-  DivMultLevel multiplicationLevel = DivMultLevel.zsmk6;
-  DivMultLevel divisionLevel = DivMultLevel.zsdk6;
-  MitoriLevel mitoriLevel = MitoriLevel.zsk6;
-  String multiplicationLevelDisplayString = '';
-  String divisionLevelDisplayString = '';
-  String mitoriLevelDisplayString = '';
+  Kyuui kyuui = .nsk1;
   bool isExam = false;
-  Duration? time = MitoriLevel.zsk6.timeLimit;
 
   @override
   Widget build(BuildContext context) {
@@ -38,51 +33,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                   });
                 },
               ),
-              _buildProblemTypeSection(
-                label: '${mitoriLevel.displayString}をはじめる',
-                selectLabel: 'みとり算の級位を選ぶ',
-                currentLevel: mitoriLevel,
-                bottomSheet: MitoriBottomSheet(
-                  mitoriLevel: mitoriLevel,
-                  onLevelChanged: (newLevel) {
-                    setState(() {
-                      mitoriLevel = newLevel;
-                      mitoriLevelDisplayString = newLevel.displayString;
-                      time = newLevel.timeLimit;
-                    });
-                  },
-                ),
-              ),
-              _buildProblemTypeSection(
-                label: '${multiplicationLevel.displayString}をはじめる',
-                selectLabel: 'かけ算の級位を選ぶ',
-                currentLevel: multiplicationLevel,
-                bottomSheet: MultiplicationBottomSheet(
-                  multiplicationLevel: multiplicationLevel,
-                  onLevelChanged: (newLevel) {
-                    setState(() {
-                      multiplicationLevel = newLevel;
-                      multiplicationLevelDisplayString = newLevel.displayString;
-                      time = newLevel.timeLimit;
-                    });
-                  },
-                ),
-              ),
-              _buildProblemTypeSection(
-                label: '${divisionLevel.displayString}をはじめる',
-                selectLabel: 'わり算の級位を選ぶ',
-                currentLevel: divisionLevel,
-                bottomSheet: DivisionBottomSheet(
-                  divisionLevel: divisionLevel,
-                  onLevelChanged: (newLevel) {
-                    setState(() {
-                      divisionLevel = newLevel;
-                      divisionLevelDisplayString = newLevel.displayString;
-                      time = newLevel.timeLimit;
-                    });
-                  },
-                ),
-              ),
+              _buildStartButtons(startButtonType: .mitori),
             ],
           ),
         ),
@@ -90,33 +41,46 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
     );
   }
 
-  Widget _buildProblemTypeSection({
-    required String label,
-    required String selectLabel,
-    required PaperProblemLevel currentLevel,
-    required Widget bottomSheet,
-  }) {
-    return Column(
+  Widget _buildStartButtons({required StartButtonType startButtonType}) {
+    late final String label;
+
+    switch (startButtonType) {
+      case .mitori:
+        label = 'みとり算';
+      case .wari:
+        label = 'わり算';
+      case .kake:
+        label = 'かけ算';
+      case .mitorian:
+        label = 'みとり暗算';
+      case .warian:
+        label = 'わり暗算';
+      case .kakean:
+        label = 'かけ暗算';
+    }
+
+    return Row(
       children: [
-        ElevatedButton(
+        NavigationButton(
+          label: Text('${kyuui.kyuuString}の$label'),
           onPressed: () {
             context.push(
               '/paper-problem',
               extra: {
-                'selectedLevel': currentLevel,
+                'selectedLevel': kyuui.mitoriAnzan,
                 'isExam': isExam,
-                'time': time,
-                'appBarTitle': currentLevel.displayString,
+                'time': kyuui.mitoriAnzan.denomination.timeLimit,
+                'appBarTitle': 'placeholder',
               },
             );
           },
-          child: Text(label),
         ),
-        OpenLevelSelectButton(label: selectLabel, page: bottomSheet),
       ],
     );
   }
 }
+
+enum StartButtonType { mitori, mitorian, wari, warian, kake, kakean }
 
 class OpenLevelSelectButton extends StatelessWidget {
   const OpenLevelSelectButton({
@@ -142,194 +106,6 @@ class OpenLevelSelectButton extends StatelessWidget {
         );
       },
       child: Text(label),
-    );
-  }
-}
-
-class MitoriBottomSheet extends StatelessWidget {
-  const MitoriBottomSheet({
-    super.key,
-    required this.mitoriLevel,
-    required this.onLevelChanged,
-  });
-
-  final MitoriLevel mitoriLevel;
-  final Function(MitoriLevel) onLevelChanged;
-
-  static const List<MitoriLevel> zslevels = [
-    MitoriLevel.zsk10a,
-    MitoriLevel.zsk10b,
-    MitoriLevel.zsk9,
-    MitoriLevel.zsk8,
-    MitoriLevel.zsk7,
-    MitoriLevel.zsk6,
-    MitoriLevel.zsk5,
-    MitoriLevel.zsk4,
-    MitoriLevel.zsk3,
-    MitoriLevel.zsk2,
-    MitoriLevel.zsk1,
-    MitoriLevel.zsdan,
-  ];
-
-  static const List<MitoriLevel> nslevels = [
-    MitoriLevel.nsk9,
-    MitoriLevel.nsk8,
-    MitoriLevel.nsk7,
-    MitoriLevel.nsk6,
-    MitoriLevel.nsk5,
-    MitoriLevel.nsk4,
-    MitoriLevel.nsk3,
-    MitoriLevel.nskj2,
-    MitoriLevel.nsk2,
-    MitoriLevel.nskj1,
-    MitoriLevel.nsk1,
-    MitoriLevel.nsdan,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: nslevels.map((level) {
-              return ElevatedButton(
-                onPressed: () {
-                  onLevelChanged(level);
-                  Navigator.pop(context);
-                },
-                child: Text(level.displayString),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MultiplicationBottomSheet extends StatelessWidget {
-  const MultiplicationBottomSheet({
-    super.key,
-    required this.multiplicationLevel,
-    required this.onLevelChanged,
-  });
-
-  final DivMultLevel multiplicationLevel;
-  final Function(DivMultLevel) onLevelChanged;
-
-  static const List<DivMultLevel> zslevels = [
-    DivMultLevel.zsmk9,
-    DivMultLevel.zsmk8,
-    DivMultLevel.zsmk7,
-    DivMultLevel.zsmk6,
-    DivMultLevel.zsmk5,
-    DivMultLevel.zsmk4,
-    DivMultLevel.zsmk3,
-    DivMultLevel.zsmk2,
-    DivMultLevel.zsmk1,
-    DivMultLevel.zsmdan,
-  ];
-  static const List<DivMultLevel> nslevels = [
-    DivMultLevel.nsmk8,
-    DivMultLevel.nsmk7,
-    DivMultLevel.nsmk6,
-    DivMultLevel.nsmk5,
-    DivMultLevel.nsmk4,
-    DivMultLevel.nsmjk3,
-    DivMultLevel.nsmk3,
-    DivMultLevel.nsmjk2,
-    DivMultLevel.nsmk2,
-    DivMultLevel.nsmjk1,
-    DivMultLevel.nsmk1,
-    DivMultLevel.nsmdan,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: nslevels.map((level) {
-              return ElevatedButton(
-                onPressed: () {
-                  onLevelChanged(level);
-                  Navigator.pop(context);
-                },
-                child: Text(level.displayString),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class DivisionBottomSheet extends StatelessWidget {
-  const DivisionBottomSheet({
-    super.key,
-    required this.divisionLevel,
-    required this.onLevelChanged,
-  });
-
-  final DivMultLevel divisionLevel;
-  final Function(DivMultLevel) onLevelChanged;
-
-  static const List<DivMultLevel> zslevels = [
-    DivMultLevel.zsdk8,
-    DivMultLevel.zsdk7,
-    DivMultLevel.zsdk6,
-    DivMultLevel.zsdk5,
-    DivMultLevel.zsdk4,
-    DivMultLevel.zsdk3,
-    DivMultLevel.zsdk2,
-    DivMultLevel.zsdk1,
-    DivMultLevel.zsddan,
-  ];
-  static const List<DivMultLevel> nslevels = [
-    DivMultLevel.nsdk8,
-    DivMultLevel.nsdk7,
-    DivMultLevel.nsdk6,
-    DivMultLevel.nsdk5,
-    DivMultLevel.nsdk4,
-    DivMultLevel.nsdjk3,
-    DivMultLevel.nsdk3,
-    DivMultLevel.nsdjk2,
-    DivMultLevel.nsdk2,
-    DivMultLevel.nsdjk1,
-    DivMultLevel.nsdk1,
-    DivMultLevel.nsddan,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: nslevels.map((level) {
-              return ElevatedButton(
-                onPressed: () {
-                  onLevelChanged(level);
-                  Navigator.pop(context);
-                },
-                child: Text(level.displayString),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -78,8 +78,8 @@ class PaperResultsScreen extends StatelessWidget {
                   extra: {
                     'selectedLevel': selectedLevel,
                     'isExam': isExam,
-                    'time': selectedLevel.timeLimit,
-                    'appBarTitle': selectedLevel.displayString,
+                    'time': selectedLevel.denomination.timeLimit,
+                    'appBarTitle': 'placeholder',
                   },
                 );
               },

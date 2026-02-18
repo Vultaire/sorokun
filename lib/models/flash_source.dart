@@ -1,4 +1,4 @@
-import 'package:soroban_app/problem_generation/flash.dart';
+import 'package:soroban_app/problem_generation/flash_set.dart';
 
 abstract interface class FlashSpec {
   int get digits;

@@ -1,14 +1,31 @@
 import 'dart:math';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/problem_generation/flash_set.dart';
 import 'mitori.dart';
 
-class MitoriProblemSet {
-  final MitoriLevel level;
-  late List<MitoriProblem> fullProblemSet = [];
+sealed class MitoriProblemSet {
+  MitoriProblemSet._();
+  final List<MitoriProblem> fullProblemSet = [];
 
-  MitoriProblemSet({required this.level}) {
+  factory MitoriProblemSet({required MitoriLevel level}) {
+    print('factory called with $level ${level.runtimeType}');
+    return switch (level) {
+      final SimpleMitoriLevel l => SimpleMitoriProblemSet(level: l),
+      final ComplexMitoriLevel l => ComplexMitoriProblemSet(level: l),
+    };
+  }
+
+  List<List<String>> get formattedProblems =>
+      fullProblemSet.map((i) => i.formattedProblem).toList();
+  List<String> get formattedAnswers =>
+      fullProblemSet.map((i) => i.formattedAnswer).toList();
+}
+
+class ComplexMitoriProblemSet extends MitoriProblemSet {
+  final ComplexMitoriLevel level;
+
+  ComplexMitoriProblemSet({required this.level}) : super._() {
     final rand = Random();
-
     final templateLists = level.templates as List;
     final int repeat = level.repeat;
     final int minusCount = level.minusCount;
@@ -74,10 +91,59 @@ class MitoriProblemSet {
       );
     }
   }
-  List<List<String>> get formattedProblems =>
-      fullProblemSet.map((i) => i.formattedProblem).toList();
-  List<String> get formattedAnswers =>
-      fullProblemSet.map((i) => i.formattedAnswer).toList();
+}
+
+class SimpleMitoriProblemSet extends MitoriProblemSet {
+  final SimpleMitoriLevel level;
+
+  SimpleMitoriProblemSet({required this.level}) : super._() {
+    Random rand = Random();
+
+    switch (level) {
+      case .zsak10:
+        for (var i = 0; i < 5; i++) {
+          List<int> numbers = noCarry(.zsk18, rand);
+          MitoriProblem problem = MitoriProblem(numbers);
+          fullProblemSet.add(problem);
+        }
+        for (var i = 0; i < 5; i++) {
+          List<int> numbers = noCarry(.zsk17, rand);
+          MitoriProblem problem = MitoriProblem(numbers);
+          fullProblemSet.add(problem);
+        }
+      case .zsak9:
+        for (var i = 0; i < 10; i++) {
+          List<int> numbers = generateMitoriProblemFromDigitList([
+            1,
+            1,
+            1,
+            1,
+          ], rand);
+          MitoriProblem problem = MitoriProblem(numbers);
+          fullProblemSet.add(problem);
+        }
+      case .zsak8:
+        for (var i = 0; i < 5; i++) {
+          List<int> numbers = generateMitoriProblemFromDigitList([
+            1,
+            1,
+            1,
+            1,
+          ], rand);
+          MitoriProblem problem = MitoriProblem(numbers);
+          fullProblemSet.add(problem);
+        }
+        for (var i = 0; i < 5; i++) {
+          List<int> numbers = generateMitoriProblemFromDigitList([
+            2,
+            1,
+            1,
+          ], rand);
+          MitoriProblem problem = MitoriProblem(numbers);
+          fullProblemSet.add(problem);
+        }
+    }
+  }
 }
 
 void applyNisshouMinus({
@@ -215,7 +281,7 @@ void applyNisshouMinus({
 
 void applyZenshurenMinus({
   required List<MitoriProblem> templateProblems,
-  required MitoriLevel level,
+  required ComplexMitoriLevel level,
   required int problemsInGroup,
   required int minusCount,
   required Random rand,
@@ -271,7 +337,7 @@ void applyZenshurenMinus({
 }
 
 void main() {
-  var problem = MitoriProblemSet(level: MitoriLevel.nsdan);
+  var problem = MitoriProblemSet(level: SimpleMitoriLevel.zsak8);
 
   print(problem.formattedProblems);
   print(problem.formattedAnswers);
