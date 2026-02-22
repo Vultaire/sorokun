@@ -22,7 +22,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Switch(
@@ -33,7 +33,46 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                   });
                 },
               ),
-              _buildStartButtons(startButtonType: .mitori),
+              Expanded(
+                child: OrientationBuilder(
+                  builder: (context, orientation) {
+                    return Flex(
+                      direction: orientation == Orientation.portrait
+                          ? Axis.vertical
+                          : Axis.horizontal,
+                      children: [
+                        Flex(
+                          direction: orientation == Orientation.portrait
+                              ? Axis.horizontal
+                              : Axis.vertical,
+                          children: [
+                            _buildStartButton(startButtonType: .mitori),
+                            _buildStartButton(startButtonType: .mitorian),
+                          ],
+                        ),
+                        Flex(
+                          direction: orientation == Orientation.portrait
+                              ? Axis.horizontal
+                              : Axis.vertical,
+                          children: [
+                            _buildStartButton(startButtonType: .kake),
+                            _buildStartButton(startButtonType: .kakean),
+                          ],
+                        ),
+                        Flex(
+                          direction: orientation == Orientation.portrait
+                              ? Axis.horizontal
+                              : Axis.vertical,
+                          children: [
+                            _buildStartButton(startButtonType: .wari),
+                            _buildStartButton(startButtonType: .warian),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -41,41 +80,53 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
     );
   }
 
-  Widget _buildStartButtons({required StartButtonType startButtonType}) {
+  Widget _buildStartButton({required StartButtonType startButtonType}) {
     late final String label;
+    late final PaperProblemLevel? selectedLevel;
 
     switch (startButtonType) {
       case .mitori:
         label = 'みとり算';
+        selectedLevel = kyuui.mitoriSoroban;
       case .wari:
         label = 'わり算';
+        selectedLevel = kyuui.divSoroban;
       case .kake:
         label = 'かけ算';
+        selectedLevel = kyuui.multSoroban;
       case .mitorian:
         label = 'みとり暗算';
+        selectedLevel = kyuui.mitoriAnzan;
       case .warian:
         label = 'わり暗算';
+        selectedLevel = kyuui.divAnzan;
       case .kakean:
         label = 'かけ暗算';
+        selectedLevel = kyuui.multAnzan;
     }
 
-    return Row(
-      children: [
-        NavigationButton(
-          label: Text('${kyuui.kyuuString}の$label'),
-          onPressed: () {
-            context.push(
-              '/paper-problem',
-              extra: {
-                'selectedLevel': kyuui.mitoriAnzan,
-                'isExam': isExam,
-                'time': kyuui.mitoriAnzan.denomination.timeLimit,
-                'appBarTitle': 'placeholder',
-              },
-            );
-          },
-        ),
-      ],
+    if (selectedLevel == null) {
+      return SizedBox.shrink();
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface),
+      ),
+      child: NavigationButton(
+        label: Text(label),
+        onPressed: () {
+          context.push(
+            '/paper-problem',
+            extra: {
+              'selectedLevel': selectedLevel,
+              'isExam': isExam,
+              'time': selectedLevel!.denomination.timeLimit,
+              'appBarTitle': '${kyuui.kyuuString}の$label',
+            },
+          );
+        },
+      ),
     );
   }
 }
