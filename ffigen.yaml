@@ -1,0 +1,8 @@
+name: VoicevoxCore
+description: Bindings for voicevox_core
+output: 'lib/src/voicevox_core_bindings.dart'
+headers:
+  entry-points:
+    - 'assets/voicevox/include/voicevox_core.h'
+compiler-opts:
+  - '-I/usr/lib/clang/21/include'

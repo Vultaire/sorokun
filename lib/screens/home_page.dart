@@ -70,6 +70,13 @@ class HomePage extends StatelessWidget {
                 },
                 child: const Text('Train In The App'),
               ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  context.push('/aloud-menu');
+                },
+                child: const Text('Aloud Problem'),
+              ),
             ],
           ),
         ),

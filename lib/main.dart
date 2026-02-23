@@ -3,27 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/screens/aloud_menu.dart';
+import 'package:soroban_app/screens/aloud_problem.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/flash_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/paper_problem_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
+import 'package:soroban_app/src/voicevox_paths.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final paths = await extractVoicevoxAssets();
   await SoLoud.instance.init(
     sampleRate: 44100, // Audio quality
     bufferSize: 256, // Buffer size affects latency
     channels: Channels.stereo,
   );
 
-  runApp(const AbacusApp());
+  runApp(AbacusApp(voicevoxPaths: paths));
 }
 
 class AbacusApp extends StatefulWidget {
-  const AbacusApp({super.key});
+  const AbacusApp({super.key, required this.voicevoxPaths});
+  final VoicevoxPaths voicevoxPaths;
 
   @override
   State<AbacusApp> createState() => _AbacusAppState();
@@ -180,6 +186,19 @@ class _AbacusAppState extends State<AbacusApp> {
             selectedLevel: args?['selectedLevel'],
             problemScorerList: args?['problemScorerList'],
           );
+        },
+      ),
+      GoRoute(
+        path: '/aloud-menu',
+        builder: (context, state) =>
+            AloudMenuPage(voicevoxPaths: widget.voicevoxPaths),
+      ),
+      GoRoute(
+        path: '/aloud-problem',
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>?;
+
+          return AloudProblemScreen(paths: args?['voicevoxPaths']);
         },
       ),
       GoRoute(

@@ -24,12 +24,14 @@ dependencies:
   go_router: ^17.0.1
   vector_graphics: ^1.1.19
   shared_preferences: ^2.5.4
+  hooks: ^1.0.1
+  code_assets: ^1.0.0
+  ffigen: ^20.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  ffigen: ^11.0.0
   integration_test:
     sdk: flutter
   vector_graphics_compiler: ^1.1.20
@@ -37,6 +39,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/voicevox/dict/open_jtalk_dic_utf_8-1.11/
+    - assets/voicevox/models/vvms/
     - assets/complexityThresholdMap.json
     - assets/open_jtalk_dic_utf_8-1.11/
     - assets/correct.png
