@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
@@ -22,6 +23,40 @@ class VoicevoxSing {
   String _getOnnxruntimePath() {
     final execDir = File(Platform.resolvedExecutable).parent.path;
     return '$execDir/lib/libvoicevox_onnxruntime.so.1.17.3';
+  }
+
+  String? _cachedQueryJson;
+
+  Uint8List synthesizeWithF0({
+    required String scoreJson,
+    required int singingTeacherStyleId,
+    required int singerStyleId,
+  }) {
+    assert(_cachedQueryJson != null, 'Call getF0 first');
+
+    String queryJson = _cachedQueryJson!;
+
+    final modifiedQueryPtr = queryJson.toNativeUtf8();
+    final wavLengthPtr = calloc<UintPtr>();
+    final wavPtr = calloc<Pointer<Uint8>>();
+    _check(
+      _bindings.voicevox_synthesizer_frame_synthesis(
+        _synthesizer,
+        modifiedQueryPtr.cast(),
+        singerStyleId,
+        wavLengthPtr,
+        wavPtr,
+      ),
+    );
+    calloc.free(modifiedQueryPtr);
+
+    final wavBytes = Uint8List.fromList(
+      wavPtr.value.asTypedList(wavLengthPtr.value),
+    );
+    _bindings.voicevox_wav_free(wavPtr.value);
+    calloc.free(wavLengthPtr);
+    calloc.free(wavPtr);
+    return wavBytes;
   }
 
   void initialize() {
@@ -74,15 +109,27 @@ class VoicevoxSing {
     );
   }
 
-  /// Returns WAV bytes for the given score JSON
-  Uint8List synthesize({
+  List<double> smoothF0(List<double> f0, {int windowSize = 10}) {
+    final smoothed = List<double>.filled(f0.length, 0.0);
+    for (int i = 0; i < f0.length; i++) {
+      int count = 0;
+      double sum = 0.0;
+      for (int j = i - windowSize ~/ 2; j <= i + windowSize ~/ 2; j++) {
+        if (j >= 0 && j < f0.length && f0[j] > 0.0) {
+          sum += f0[j];
+          count++;
+        }
+      }
+      smoothed[i] = count > 0 ? sum / count : 0.0;
+    }
+    return smoothed;
+  }
+
+  List<double> getF0({
     required String scoreJson,
     required int singingTeacherStyleId,
-    required int singerStyleId,
   }) {
     final scorePtr = scoreJson.toNativeUtf8();
-
-    // Create frame audio query
     final queryPtr = calloc<Pointer<Char>>();
     _check(
       _bindings.voicevox_synthesizer_create_sing_frame_audio_query(
@@ -94,31 +141,25 @@ class VoicevoxSing {
     );
     calloc.free(scorePtr);
 
-    // Frame synthesis
-    final wavLengthPtr = calloc<UintPtr>();
-    final wavPtr = calloc<Pointer<Uint8>>();
-    _check(
-      _bindings.voicevox_synthesizer_frame_synthesis(
-        _synthesizer,
-        queryPtr.value,
-        singerStyleId,
-        wavLengthPtr,
-        wavPtr,
-      ),
-    );
-
-    // Copy wav data to Dart before freeing
-    final wavBytes = Uint8List.fromList(
-      wavPtr.value.asTypedList(wavLengthPtr.value),
-    );
-
-    _bindings.voicevox_wav_free(wavPtr.value);
+    final queryJson = queryPtr.value.cast<Utf8>().toDartString();
     _bindings.voicevox_json_free(queryPtr.value);
     calloc.free(queryPtr);
-    calloc.free(wavLengthPtr);
-    calloc.free(wavPtr);
 
-    return wavBytes;
+    // Cache the query JSON for later synthesis
+    _cachedQueryJson = queryJson;
+
+    final query = jsonDecode(queryJson) as Map<String, dynamic>;
+    final rawF0 = (query['f0'] as List)
+        .map((e) => (e as num).toDouble())
+        .toList();
+    final smoothedF0 = smoothF0(rawF0);
+
+    // Store smoothed version in cache
+    final modifiedQuery = query;
+    modifiedQuery['f0'] = smoothedF0;
+    _cachedQueryJson = jsonEncode(modifiedQuery);
+
+    return smoothedF0;
   }
 
   void dispose() {

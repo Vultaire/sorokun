@@ -5,7 +5,7 @@ import 'mitori.dart';
 
 sealed class MitoriProblemSet {
   MitoriProblemSet._();
-  final List<MitoriProblem> fullProblemSet = [];
+  final List<MitoriProblem> unformattedProblems = [];
 
   factory MitoriProblemSet({required MitoriLevel level}) {
     print('factory called with $level ${level.runtimeType}');
@@ -16,9 +16,9 @@ sealed class MitoriProblemSet {
   }
 
   List<List<String>> get formattedProblems =>
-      fullProblemSet.map((i) => i.formattedProblem).toList();
+      unformattedProblems.map((i) => i.formattedProblem).toList();
   List<String> get formattedAnswers =>
-      fullProblemSet.map((i) => i.formattedAnswer).toList();
+      unformattedProblems.map((i) => i.formattedAnswer).toList();
 }
 
 class ComplexMitoriProblemSet extends MitoriProblemSet {
@@ -81,11 +81,11 @@ class ComplexMitoriProblemSet extends MitoriProblemSet {
         groupProblems.addAll(templateProblems);
       }
       groupProblems.shuffle(rand);
-      fullProblemSet.addAll(groupProblems);
+      unformattedProblems.addAll(groupProblems);
     }
     if (minusCount > 0 && level.denomination == .nisshou) {
       applyNisshouMinus(
-        fullProblemSet: fullProblemSet,
+        fullProblemSet: unformattedProblems,
         minusCount: minusCount,
         rand: rand,
       );
@@ -104,12 +104,12 @@ class SimpleMitoriProblemSet extends MitoriProblemSet {
         for (var i = 0; i < 5; i++) {
           List<int> numbers = noCarry(.zsk18, rand);
           MitoriProblem problem = MitoriProblem(numbers);
-          fullProblemSet.add(problem);
+          unformattedProblems.add(problem);
         }
         for (var i = 0; i < 5; i++) {
           List<int> numbers = noCarry(.zsk17, rand);
           MitoriProblem problem = MitoriProblem(numbers);
-          fullProblemSet.add(problem);
+          unformattedProblems.add(problem);
         }
       case .zsak9:
         for (var i = 0; i < 10; i++) {
@@ -120,7 +120,7 @@ class SimpleMitoriProblemSet extends MitoriProblemSet {
             1,
           ], rand);
           MitoriProblem problem = MitoriProblem(numbers);
-          fullProblemSet.add(problem);
+          unformattedProblems.add(problem);
         }
       case .zsak8:
         for (var i = 0; i < 5; i++) {
@@ -131,7 +131,7 @@ class SimpleMitoriProblemSet extends MitoriProblemSet {
             1,
           ], rand);
           MitoriProblem problem = MitoriProblem(numbers);
-          fullProblemSet.add(problem);
+          unformattedProblems.add(problem);
         }
         for (var i = 0; i < 5; i++) {
           List<int> numbers = generateMitoriProblemFromDigitList([
@@ -140,7 +140,7 @@ class SimpleMitoriProblemSet extends MitoriProblemSet {
             1,
           ], rand);
           MitoriProblem problem = MitoriProblem(numbers);
-          fullProblemSet.add(problem);
+          unformattedProblems.add(problem);
         }
     }
   }

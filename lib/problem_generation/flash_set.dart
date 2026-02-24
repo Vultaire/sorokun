@@ -5,11 +5,6 @@ import 'package:soroban_app/problem_generation/mitori.dart';
 
 import 'helpers.dart';
 import 'abacus.dart';
-import 'dart:convert';
-import 'dart:io';
-
-const int generateRetryLimit = 100;
-late Map<String, dynamic> difficultyThresholds;
 
 // ---------------------------------
 // Helpers
@@ -52,11 +47,7 @@ List<int> zsk7Builder(FlashLevel level, Random rand) {
   List<int> randomDigits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   randomDigits.shuffle(rand);
   final List<int> picked = randomDigits.take(4).toList();
-  List<int> numbers = [
-    picked[0] * 10,
-    picked[1] * 10,
-    picked[2] * 10 + picked[3],
-  ];
+  List<int> numbers = [picked[0] * 10, picked[1] * 10];
   numbers.shuffle(rand);
   return numbers;
 }
@@ -322,11 +313,6 @@ List<int> multiplierBuilder(FlashLevel level, Random rand) {
 // }
 
 Future<void> main() async {
-  // Load JSON thresholds into global
-  final file = File('assets/complexityThresholdMap.json');
-  final jsonString = await file.readAsString();
-  difficultyThresholds = jsonDecode(jsonString);
-
   // Example usage
 
   var problems = FlashProblemSet(FlashLevel.zsk10);
