@@ -4,107 +4,196 @@ import 'package:soroban_app/problem_generation/mitori_set.dart';
 
 List<LyricWord> scoreLyrics(List<int> numbers) {
   List<LyricWord> scoreLyrics = [];
+  bool isNegative = false;
   for (final (i, n) in numbers.indexed) {
-    bool isNegative = false;
-    if (n < 0) {
+    if (n < 0 && !isNegative) {
       scoreLyrics.add(NumberWord.hiitewa);
       isNegative = true;
     }
-    if (n > 0 || isNegative) {
+    if (n > 0 && isNegative) {
       scoreLyrics.add(NumberWord.kuwaete);
       isNegative = false;
     }
-    scoreLyrics.addAll(convertToKatakana(n));
+    scoreLyrics.addAll(convertToKatakana(n.abs()));
 
     scoreLyrics.add(
       i < numbers.length - 1 ? MyriadPower.ennari : MyriadPower.endewa,
     );
+    scoreLyrics.add(NumberWord.none);
   }
   return scoreLyrics;
 }
 
-enum Pitch { zero, one, two, three, odaka, odakaTransformation }
+List<Mora> scoreMora(List<int> numbers) {
+  final lyrics = scoreLyrics(numbers);
+  final result = <Mora>[];
+  bool currentHigh = false; // pitch of last word
+
+  // Helper to rebuild previous word as odaka
+  void applyOdaka(int start, int end) {
+    final length = end - start;
+    if (length == 1) {
+      result[start].isHighPitch = true;
+    } else {
+      // first mora keeps previous pitch
+      result[start].isHighPitch = start == 0
+          ? false
+          : result[start - 1].isHighPitch;
+
+      // all middle moras high
+      for (int i = 1; i < length; i++) {
+        result[start + i].isHighPitch = true;
+      }
+
+      // last mora special case
+      final last = result[end - 1];
+      if (last.lyric == 'ウ' || last.lyric == 'ン') {
+        result[end - 1].isHighPitch = false;
+      }
+    }
+  }
+
+  int prevWordStart = 0;
+
+  for (final word in lyrics) {
+    final moras = word.lyrics;
+    final accent = word.pitch;
+
+    // --- ODAKA TRANSFORMATION ---
+    if (accent == PitchAccent.odakaTransformation) {
+      if (prevWordStart < result.length) {
+        applyOdaka(prevWordStart, result.length);
+      }
+      // this word itself is all low
+      result.addAll(moras.map((m) => Mora(lyric: m, isHighPitch: false)));
+      currentHigh = false;
+      prevWordStart = result.length;
+      continue;
+    }
+
+    // --- Determine downstep for numbered accents ---
+    final downstep = switch (accent) {
+      PitchAccent.zero => 0,
+      PitchAccent.one => 1,
+      PitchAccent.two => 2,
+      PitchAccent.three => 3,
+      PitchAccent.none => 0,
+      _ => 0,
+    };
+
+    // --- Add moras ---
+    for (int i = 0; i < moras.length; i++) {
+      final isHigh = switch (accent) {
+        PitchAccent.zero => i == 0 ? currentHigh : true,
+        PitchAccent.one ||
+        PitchAccent.two ||
+        PitchAccent.three => i < downstep && (i > 0 || downstep == 1),
+        PitchAccent.none => false,
+        _ => true,
+      };
+      result.add(Mora(lyric: moras[i], isHighPitch: isHigh));
+    }
+
+    // update state
+    currentHigh = accent == PitchAccent.zero ? true : false;
+    prevWordStart = result.length - moras.length;
+  }
+
+  return result;
+}
+
+class Mora {
+  Mora({required this.lyric, required this.isHighPitch});
+  final String lyric;
+  bool isHighPitch;
+
+  @override
+  String toString() => lyric.isEmpty ? '\n' : (isHighPitch ? "$lyric'" : lyric);
+}
+
+enum PitchAccent { zero, one, two, three, odakaTransformation, none }
 
 sealed class LyricWord {
-  const LyricWord({required this.lyric, required this.pitch});
-  final List<String> lyric;
-  final Pitch pitch;
+  const LyricWord({required this.lyrics, required this.pitch});
+  final List<String> lyrics;
+  final PitchAccent pitch;
 }
 
 enum NumberWord implements LyricWord {
   // Single digits (1–9)
-  ichi(lyric: ['イ', 'チ'], pitch: .zero),
-  ni(lyric: ['ニ'], pitch: .odaka),
-  san(lyric: ['サ', 'ン'], pitch: .zero),
-  yon(lyric: ['ヨ', 'ン'], pitch: .one),
-  go(lyric: ['ゴ'], pitch: .odaka),
-  roku(lyric: ['ロ', 'ク'], pitch: .odaka),
-  nana(lyric: ['ナ', 'ナ'], pitch: .one),
-  hachi(lyric: ['ハ', 'チ'], pitch: .odaka),
-  kyuu(lyric: ['キュ', 'ウ'], pitch: .one),
+  ichi(lyrics: ['イ', 'チ'], pitch: .zero),
+  ni(lyrics: ['ニ'], pitch: .zero), //technically odaka
+  san(lyrics: ['サ', 'ン'], pitch: .zero),
+  yon(lyrics: ['ヨ', 'ン'], pitch: .zero), //technically one
+  go(lyrics: ['ゴ'], pitch: .zero), //technically odaka
+  roku(lyrics: ['ロ', 'ク'], pitch: .zero), //technically odaka
+  nana(lyrics: ['ナ', 'ナ'], pitch: .zero), //technically one
+  hachi(lyrics: ['ハ', 'チ'], pitch: .zero), //technically odaka
+  kyuu(lyrics: ['キュ', 'ウ'], pitch: .zero), //technically one
 
   // Tens (10–90)
-  juu(lyric: ['ジュ', 'ウ'], pitch: .zero), //technically one
-  nijuu(lyric: ['ニ', 'ジュ', 'ウ'], pitch: .one),
-  sanjuu(lyric: ['サ', 'ン', 'ジュ', 'ウ'], pitch: .one),
-  yonjuu(lyric: ['ヨ', 'ン', 'ジュ', 'ウ'], pitch: .one),
-  gojuu(lyric: ['ゴ', 'ジュ', 'ウ'], pitch: .zero), //technically two
-  rokujuu(lyric: ['ロ', 'ク', 'ジュ', 'ウ'], pitch: .zero), //technically three
-  nanajuu(lyric: ['ナ', 'ナ', 'ジュ', 'ウ'], pitch: .zero), //technically two
-  hachijuu(lyric: ['ハ', 'チ', 'ジュ', 'ウ'], pitch: .zero), //technically three
-  kyuujuu(lyric: ['キュ', 'ウ', 'ジュ', 'ウ'], pitch: .one),
+  juu(lyrics: ['ジュ', 'ウ'], pitch: .zero), //technically one
+  nijuu(lyrics: ['ニ', 'ジュ', 'ウ'], pitch: .one),
+  sanjuu(lyrics: ['サ', 'ン', 'ジュ', 'ウ'], pitch: .one),
+  yonjuu(lyrics: ['ヨ', 'ン', 'ジュ', 'ウ'], pitch: .one),
+  gojuu(lyrics: ['ゴ', 'ジュ', 'ウ'], pitch: .zero), //technically two
+  rokujuu(lyrics: ['ロ', 'ク', 'ジュ', 'ウ'], pitch: .zero), //technically three
+  nanajuu(lyrics: ['ナ', 'ナ', 'ジュ', 'ウ'], pitch: .zero), //technically two
+  hachijuu(lyrics: ['ハ', 'チ', 'ジュ', 'ウ'], pitch: .zero), //technically three
+  kyuujuu(lyrics: ['キュ', 'ウ', 'ジュ', 'ウ'], pitch: .one),
 
   // Hundreds (100–900)
-  hyaku(lyric: ['ヒャ', 'ク'], pitch: .zero), //technically odaka
-  nihyaku(lyric: ['ニ', 'ヒャ', 'ク'], pitch: .zero), //technically odaka
-  sanbyaku(lyric: ['サ', 'ン', 'ビャ', 'ク'], pitch: .one),
-  yonhyaku(lyric: ['ヨ', 'ン', 'ヒャ', 'ク'], pitch: .one),
-  gohyaku(lyric: ['ゴ', 'ヒャ', 'ク'], pitch: .zero), //technically odaka
-  roppyaku(lyric: ['ロ', 'ッ', 'ピャ', 'ク'], pitch: .zero), //technically odaka
-  nanahyaku(lyric: ['ナ', 'ナ', 'ヒャ', 'ク'], pitch: .two),
-  happyaku(lyric: ['ハ', 'ッ', 'ピャ', 'ク'], pitch: .zero), //technically odaka
-  kyuuhyaku(lyric: ['キュ', 'ウ', 'ヒャ', 'ク'], pitch: .one),
+  hyaku(lyrics: ['ヒャ', 'ク'], pitch: .zero), //technically odaka
+  nihyaku(lyrics: ['ニ', 'ヒャ', 'ク'], pitch: .zero), //technically odaka
+  sanbyaku(lyrics: ['サ', 'ン', 'ビャ', 'ク'], pitch: .one),
+  yonhyaku(lyrics: ['ヨ', 'ン', 'ヒャ', 'ク'], pitch: .one),
+  gohyaku(lyrics: ['ゴ', 'ヒャ', 'ク'], pitch: .zero), //technically odaka
+  roppyaku(lyrics: ['ロ', 'ッ', 'ピャ', 'ク'], pitch: .zero), //technically odaka
+  nanahyaku(lyrics: ['ナ', 'ナ', 'ヒャ', 'ク'], pitch: .two),
+  happyaku(lyrics: ['ハ', 'ッ', 'ピャ', 'ク'], pitch: .zero), //technically odaka
+  kyuuhyaku(lyrics: ['キュ', 'ウ', 'ヒャ', 'ク'], pitch: .one),
 
   // Thousands (1000–9000)
-  sen(lyric: ['セ', 'ン'], pitch: .one),
-  nisen(lyric: ['ニ', 'セ', 'ン'], pitch: .two),
-  sanzen(lyric: ['サ', 'ン', 'ゼ', 'ン'], pitch: .three),
-  yonsen(lyric: ['ヨ', 'ン', 'セ', 'ン'], pitch: .three),
-  gosen(lyric: ['ゴ', 'セ', 'ン'], pitch: .two),
-  rokusen(lyric: ['ロ', 'ク', 'セ', 'ン'], pitch: .three),
-  nanasen(lyric: ['ナ', 'ナ', 'セ', 'ン'], pitch: .three),
-  hassen(lyric: ['ハ', 'ッ', 'セ', 'ン'], pitch: .three),
-  kyuusen(lyric: ['キュ', 'ウ', 'セ', 'ン'], pitch: .three),
+  sen(lyrics: ['セ', 'ン'], pitch: .one),
+  nisen(lyrics: ['ニ', 'セ', 'ン'], pitch: .two),
+  sanzen(lyrics: ['サ', 'ン', 'ゼ', 'ン'], pitch: .three),
+  yonsen(lyrics: ['ヨ', 'ン', 'セ', 'ン'], pitch: .three),
+  gosen(lyrics: ['ゴ', 'セ', 'ン'], pitch: .two),
+  rokusen(lyrics: ['ロ', 'ク', 'セ', 'ン'], pitch: .three),
+  nanasen(lyrics: ['ナ', 'ナ', 'セ', 'ン'], pitch: .three),
+  hassen(lyrics: ['ハ', 'ッ', 'セ', 'ン'], pitch: .three),
+  kyuusen(lyrics: ['キュ', 'ウ', 'セ', 'ン'], pitch: .three),
 
   // Add and Subtract
-  kuwaete(lyric: ['ク', 'ワ', 'エ', 'テ'], pitch: .two),
-  hiitewa(lyric: ['ヒ', 'イ', 'テ', 'ワ'], pitch: .one);
+  kuwaete(lyrics: ['ク', 'ワ', 'エ', 'テ'], pitch: .two),
+  hiitewa(lyrics: ['ヒ', 'イ', 'テ', 'ワ'], pitch: .one),
+  none(lyrics: [''], pitch: .none);
 
   // Exceptions
 
-  const NumberWord({required this.lyric, required this.pitch});
+  const NumberWord({required this.lyrics, required this.pitch});
   @override
-  final List<String> lyric;
+  final List<String> lyrics;
   @override
-  final Pitch pitch;
+  final PitchAccent pitch;
 }
 
 enum MyriadPower implements LyricWord {
-  ennari(lyric: ['エ', 'ン', 'ナ', 'リ'], pitch: .odakaTransformation),
-  endewa(lyric: ['エ', 'ン', 'デ', 'ワ'], pitch: .odakaTransformation),
-  man(lyric: ['マ', 'ン'], pitch: .one),
-  oku(lyric: ['オ', 'ク'], pitch: .odakaTransformation),
-  icchou(lyric: ['イ', 'ッ', 'チョ', 'ウ'], pitch: .one),
-  jucchou(lyric: ['ジュ', 'ッ', 'チョ', 'ウ'], pitch: .one),
-  chou(lyric: ['チョ', 'ウ'], pitch: .odakaTransformation),
-  ikkei(lyric: ['イ', 'ッ', 'ケ', 'イ'], pitch: .one),
-  kei(lyric: ['ケ', 'イ'], pitch: .odakaTransformation);
+  ennari(lyrics: ['エ', 'ン', 'ナ', 'リ'], pitch: .odakaTransformation),
+  endewa(lyrics: ['エ', 'ン', 'デ', 'ワ'], pitch: .odakaTransformation),
+  man(lyrics: ['マ', 'ン'], pitch: .one),
+  oku(lyrics: ['オ', 'ク'], pitch: .odakaTransformation),
+  icchou(lyrics: ['イ', 'ッ', 'チョ', 'ウ'], pitch: .one),
+  jucchou(lyrics: ['ジュ', 'ッ', 'チョ', 'ウ'], pitch: .one),
+  chou(lyrics: ['チョ', 'ウ'], pitch: .odakaTransformation),
+  ikkei(lyrics: ['イ', 'ッ', 'ケ', 'イ'], pitch: .one),
+  kei(lyrics: ['ケ', 'イ'], pitch: .odakaTransformation);
 
-  const MyriadPower({required this.lyric, required this.pitch});
+  const MyriadPower({required this.lyrics, required this.pitch});
   @override
-  final List<String> lyric;
+  final List<String> lyrics;
   @override
-  final Pitch pitch;
+  final PitchAccent pitch;
 }
 
 List<LyricWord> convertToKatakana(int n) {
@@ -222,5 +311,5 @@ void main() {
   List<MitoriProblem> allProblems = fullProblemSet.unformattedProblems;
   List<String> allAnswers = fullProblemSet.formattedAnswers;
 
-  print(convertToKatakana(21012085826347));
+  print(scoreMora(allProblems[0].problem));
 }
