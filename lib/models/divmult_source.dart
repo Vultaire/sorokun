@@ -31,7 +31,7 @@ enum Split {
       [1, 3],
     ],
   }),
-  nsdakj3({
+  threeAndFourA({
     3: [
       [1, 2],
     ],
@@ -39,7 +39,7 @@ enum Split {
       [1, 3],
     ],
   }),
-  nsmakj3({
+  threeAndFourB({
     3: [
       [2, 1],
     ],
@@ -47,7 +47,7 @@ enum Split {
       [3, 1],
     ],
   }),
-  nsdakj2({
+  fourSpecialA({
     0: [
       // Actually four
       [1, 3],
@@ -56,7 +56,7 @@ enum Split {
       [2, 2],
     ],
   }),
-  nsmakj2({
+  fourSpecialB({
     0: [
       // Actually four
       [3, 1],
@@ -65,7 +65,7 @@ enum Split {
       [2, 2],
     ],
   }),
-  nsakj1({
+  fourAndFive({
     4: [
       [2, 2],
     ],
@@ -137,6 +137,29 @@ enum Split {
       [5, 6],
       [6, 5],
       [7, 4],
+    ],
+  }),
+  fourToEight({
+    4: [
+      [2, 2],
+    ],
+    5: [
+      [2, 3],
+      [3, 2],
+    ],
+    6: [
+      [2, 4],
+      [3, 3],
+      [4, 2],
+    ],
+    7: [
+      [3, 4],
+      [4, 3],
+    ],
+    8: [
+      [3, 5],
+      [4, 4],
+      [5, 3],
     ],
   }),
   zsmdan({
@@ -248,7 +271,6 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [4, 4],
     },
   ]),
-
   nsk6([
     {
       "digits": 5,
@@ -269,6 +291,13 @@ enum MultiplicationSource implements DivMultSource {
       "digits": 5,
       "problemCount": 5,
       "splitCount": [3, 2],
+    },
+  ]),
+  zsak5([
+    {
+      "digits": 3,
+      "problemCount": 20,
+      "splitCount": [20],
     },
   ]),
   zsk5([
@@ -293,6 +322,18 @@ enum MultiplicationSource implements DivMultSource {
       "digits": 6,
       "problemCount": 10,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  zsak4([
+    {
+      "digits": 3,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
     },
   ]),
   zsk4([
@@ -324,6 +365,18 @@ enum MultiplicationSource implements DivMultSource {
       "digits": 7,
       "problemCount": 10,
       "splitCount": [0, 1, 8, 1],
+    },
+  ]),
+  zsak3([
+    {
+      "digits": 0,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
     },
   ]),
   zsk3([
@@ -370,7 +423,6 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [0, 1, 8, 1],
     },
   ]),
-
   nsk3([
     {
       "digits": 7,
@@ -385,6 +437,13 @@ enum MultiplicationSource implements DivMultSource {
       "type5Count": 5,
       "intRound": true,
       "splitCount": [0, 1, 8, 1],
+    },
+  ]),
+  zsak2([
+    {
+      "digits": 4,
+      "problemCount": 20,
+      "splitCount": [20],
     },
   ]),
   zsk2([
@@ -452,6 +511,23 @@ enum MultiplicationSource implements DivMultSource {
       "type5Count": 5,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  zsak1([
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
     },
   ]),
   zsk1([
@@ -652,6 +728,60 @@ enum MultiplicationSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
+  zsadan([
+    {
+      "digits": 4,
+      "problemCount": 5,
+      "splitCount": [5],
+    },
+    {
+      "digits": 4,
+      "problemCount": 5,
+      "type4Count": 1,
+      "type5Count": 1,
+      "splitCount": [5],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "type2Count": 2,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "type2Count": 2,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 6,
+      "problemCount": 5,
+      "type2Count": 1,
+      "type5Count": 1,
+      "splitCount": [1, 3, 1],
+    },
+    {
+      "digits": 6,
+      "problemCount": 5,
+      "type2Count": 1,
+      "type5Count": 1,
+      "splitCount": [1, 3, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "type2Count": 1,
+      "type5Count": 1,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 8,
+      "problemCount": 5,
+      "type2Count": 1,
+      "type5Count": 1,
+      "splitCount": [1, 3, 1],
+    },
+  ]),
   zsdan([
     {
       "digits": 9,
@@ -769,6 +899,13 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [3, 2],
     },
   ]),
+  zsak5([
+    {
+      "digits": 3,
+      "problemCount": 20,
+      "splitCount": [20],
+    },
+  ]),
   zsk5([
     {
       "digits": 5,
@@ -798,6 +935,18 @@ enum DivisionSource implements DivMultSource {
       "digits": 6,
       "problemCount": 10,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  zsak4([
+    {
+      "digits": 3,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
     },
   ]),
   zsk4([
@@ -862,6 +1011,18 @@ enum DivisionSource implements DivMultSource {
       "type5Count": 1,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  zsak3([
+    {
+      "digits": 0,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
     },
   ]),
   zsk3([
@@ -934,6 +1095,13 @@ enum DivisionSource implements DivMultSource {
       "type5Count": 2,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  zsak2([
+    {
+      "digits": 4,
+      "problemCount": 20,
+      "splitCount": [20],
     },
   ]),
   zsk2([
@@ -1041,6 +1209,23 @@ enum DivisionSource implements DivMultSource {
       "type5Count": 3,
       "intRound": true,
       "splitCount": [1, 8, 1],
+    },
+  ]),
+  zsak1([
+    {
+      "digits": 4,
+      "problemCount": 10,
+      "splitCount": [10],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "splitCount": [3, 2],
     },
   ]),
   zsk1([
@@ -1162,7 +1347,61 @@ enum DivisionSource implements DivMultSource {
       "splitCount": [1, 8, 1],
     },
   ]),
-  dzsan([
+  zsadan([
+    {
+      "digits": 4,
+      "problemCount": 5,
+      "splitCount": [5],
+    },
+    {
+      "digits": 4,
+      "problemCount": 5,
+      "type6count": 1,
+      "type2count": 1,
+      "splitCount": [5],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "type2count": 2,
+      "splitCount": [3, 2],
+    },
+    {
+      "digits": 5,
+      "problemCount": 5,
+      "type3count": 2,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 6,
+      "problemCount": 5,
+      "type2count": 1,
+      "type3count": 1,
+      "splitCount": [1, 3, 1],
+    },
+    {
+      "digits": 6,
+      "problemCount": 5,
+      "type2count": 1,
+      "type7count": 1,
+      "splitCount": [1, 3, 1],
+    },
+    {
+      "digits": 7,
+      "problemCount": 5,
+      "type2count": 1,
+      "type3count": 1,
+      "splitCount": [2, 3],
+    },
+    {
+      "digits": 8,
+      "problemCount": 5,
+      "type3count": 1,
+      "type6count": 1,
+      "splitCount": [1, 3, 1],
+    },
+  ]),
+  zsdan([
     {
       "digits": 8,
       "problemCount": 5,

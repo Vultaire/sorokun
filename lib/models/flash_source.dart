@@ -322,70 +322,70 @@ enum FlashLevel implements FlashSpec {
     digits: 2,
     secondsPerProblem: 4,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk9(
     kuchi: 3,
     digits: 2,
     secondsPerProblem: 6,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk8(
     kuchi: 4,
     digits: 2,
     secondsPerProblem: 7,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk7(
     kuchi: 5,
     digits: 2,
     secondsPerProblem: 8,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk6(
     kuchi: 6,
     digits: 2,
     secondsPerProblem: 9,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk5(
     kuchi: 7,
     digits: 2,
     secondsPerProblem: 10,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk4(
     kuchi: 8,
     digits: 2,
     secondsPerProblem: 11,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk3(
     kuchi: 10,
     digits: 2,
     secondsPerProblem: 12,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk2(
     kuchi: 12,
     digits: 2,
     secondsPerProblem: 12,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkk1(
     kuchi: 15,
     digits: 2,
     secondsPerProblem: 13,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkd1(
     kuchi: 15,
@@ -399,14 +399,14 @@ enum FlashLevel implements FlashSpec {
     digits: 3,
     secondsPerProblem: 4,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkd3(
     kuchi: 6,
     digits: 3,
     secondsPerProblem: 5,
     probCount: 10,
-    builder: mitoriStyle, // no 2-carries, might have to change this later.
+    builder: mitoriStyle, // no 2-carries,
   ),
   kkd4(
     kuchi: 8,

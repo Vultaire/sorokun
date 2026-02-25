@@ -27,9 +27,21 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .zenshuren,
     builder: MultiplicationProblem.new,
   ),
+  zsmak5(
+    split: Split.threeDigitA,
+    divMultSource: MultiplicationSource.zsak5,
+    denomination: .zenshuren,
+    builder: MultiplicationProblem.new,
+  ),
   zsmk5(
     split: Split.sixDigit,
     divMultSource: MultiplicationSource.zsk5,
+    denomination: .zenshuren,
+    builder: MultiplicationProblem.new,
+  ),
+  zsmak4(
+    split: Split.threeAndFourB,
+    divMultSource: MultiplicationSource.zsak4,
     denomination: .zenshuren,
     builder: MultiplicationProblem.new,
   ),
@@ -39,15 +51,33 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .zenshuren,
     builder: MultiplicationProblem.new,
   ),
+  zsmak3(
+    split: Split.fourSpecialB,
+    divMultSource: MultiplicationSource.zsak3,
+    denomination: .zenshuren,
+    builder: MultiplicationProblem.new,
+  ),
   zsmk3(
     split: Split.sevenDigit,
     divMultSource: MultiplicationSource.zsk3,
     denomination: .zenshuren,
     builder: MultiplicationProblem.new,
   ),
+  zsmak2(
+    split: Split.fourDigitB,
+    divMultSource: MultiplicationSource.zsak2,
+    denomination: .zenshuren,
+    builder: MultiplicationProblem.new,
+  ),
   zsmk2(
     split: Split.eightDigit,
     divMultSource: MultiplicationSource.zsk2,
+    denomination: .zenshuren,
+    builder: MultiplicationProblem.new,
+  ),
+  zsmak1(
+    split: Split.fourAndFive,
+    divMultSource: MultiplicationSource.zsak1,
     denomination: .zenshuren,
     builder: MultiplicationProblem.new,
   ),
@@ -60,6 +90,12 @@ enum DivMultLevel implements PaperProblemLevel {
   zsmdan(
     split: Split.zsmdan,
     divMultSource: MultiplicationSource.zsdan,
+    denomination: .zenshuren,
+    builder: MultiplicationProblem.new,
+  ),
+  zsmadan(
+    split: Split.fourToEight,
+    divMultSource: MultiplicationSource.zsadan,
     denomination: .zenshuren,
     builder: MultiplicationProblem.new,
   ),
@@ -81,9 +117,21 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .zenshuren,
     builder: DivisionProblem.new,
   ),
+  zsdak5(
+    split: Split.threeDigitB,
+    divMultSource: DivisionSource.zsak5,
+    denomination: .zenshuren,
+    builder: DivisionProblem.new,
+  ),
   zsdk5(
     split: Split.fiveDigit,
     divMultSource: DivisionSource.zsk5,
+    denomination: .zenshuren,
+    builder: DivisionProblem.new,
+  ),
+  zsdak4(
+    split: Split.threeAndFourA,
+    divMultSource: DivisionSource.zsak4,
     denomination: .zenshuren,
     builder: DivisionProblem.new,
   ),
@@ -93,9 +141,21 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .zenshuren,
     builder: DivisionProblem.new,
   ),
+  zsdak3(
+    split: Split.fourSpecialA,
+    divMultSource: DivisionSource.zsak3,
+    denomination: .zenshuren,
+    builder: DivisionProblem.new,
+  ),
   zsdk3(
     split: Split.sixDigit,
     divMultSource: DivisionSource.zsk3,
+    denomination: .zenshuren,
+    builder: DivisionProblem.new,
+  ),
+  zsdak2(
+    split: Split.fourDigitB,
+    divMultSource: DivisionSource.zsak2,
     denomination: .zenshuren,
     builder: DivisionProblem.new,
   ),
@@ -105,15 +165,27 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .zenshuren,
     builder: DivisionProblem.new,
   ),
+  zsdak1(
+    split: Split.fourAndFive,
+    divMultSource: DivisionSource.zsak1,
+    denomination: .zenshuren,
+    builder: DivisionProblem.new,
+  ),
   zsdk1(
     split: Split.eightDigit,
     divMultSource: DivisionSource.zsk1,
     denomination: .zenshuren,
     builder: DivisionProblem.new,
   ),
+  zsdadan(
+    split: Split.fourToEight,
+    divMultSource: DivisionSource.zsadan,
+    denomination: .zenshuren,
+    builder: DivisionProblem.new,
+  ),
   zsddan(
     split: Split.zsddan,
-    divMultSource: DivisionSource.dzsan,
+    divMultSource: DivisionSource.zsdan,
     denomination: .zenshuren,
     builder: DivisionProblem.new,
   ),
@@ -286,7 +358,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
   ),
   nsdakj3(
-    split: Split.nsdakj3,
+    split: Split.threeAndFourA,
     divMultSource: DivisionSource.nsajk3,
     denomination: .nisshou,
     builder: DivisionProblem.new,
@@ -298,7 +370,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
   ),
   nsdakj2(
-    split: Split.nsdakj2,
+    split: Split.fourSpecialA,
     divMultSource: DivisionSource.nsakj2,
     denomination: .nisshou,
     builder: DivisionProblem.new,
@@ -310,7 +382,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: DivisionProblem.new,
   ),
   nsdakj1(
-    split: Split.nsakj1,
+    split: Split.fourAndFive,
     divMultSource: DivisionSource.nsakj1,
     denomination: .nisshou,
     builder: DivisionProblem.new,
@@ -327,18 +399,6 @@ enum DivMultLevel implements PaperProblemLevel {
     denomination: .nisshou,
     builder: DivisionProblem.new,
   ),
-  nsmak6(
-    split: Split.threeDigitA,
-    divMultSource: MultiplicationSource.nsak4, // sic
-    denomination: .nisshou,
-    builder: MultiplicationProblem.new,
-  ),
-  nsmak5(
-    split: Split.threeDigitA,
-    divMultSource: MultiplicationSource.nsak4, // sic
-    denomination: .nisshou,
-    builder: MultiplicationProblem.new,
-  ),
   nsmak4(
     split: Split.threeDigitA,
     divMultSource: MultiplicationSource.nsak4, // sic
@@ -346,7 +406,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
   ),
   nsmakj3(
-    split: Split.nsmakj3,
+    split: Split.threeAndFourB,
     divMultSource: MultiplicationSource.nsakj3,
     denomination: .nisshou,
     builder: MultiplicationProblem.new,
@@ -358,7 +418,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
   ),
   nsmakj2(
-    split: Split.nsmakj2,
+    split: Split.fourSpecialB,
     divMultSource: MultiplicationSource.nsakj2,
     denomination: .nisshou,
     builder: MultiplicationProblem.new,
@@ -370,7 +430,7 @@ enum DivMultLevel implements PaperProblemLevel {
     builder: MultiplicationProblem.new,
   ),
   nsmakj1(
-    split: Split.nsakj1,
+    split: Split.fourAndFive,
     divMultSource: MultiplicationSource.nsakj1,
     denomination: .nisshou,
     builder: MultiplicationProblem.new,
@@ -456,6 +516,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     repeat: 3,
     neverNegative: true,
   ),
+
   zsk7(
     templates: [
       [
@@ -619,6 +680,141 @@ enum ComplexMitoriLevel implements MitoriLevel {
     templateCountPerGroup: [5, 5, 5, 5, 5, 5],
     repeat: 1,
     neverNegative: false,
+  ),
+  zsak7(
+    templates: [
+      [
+        {"digits": 1, "count": 2},
+        {"digits": 2, "count": 1},
+      ],
+    ],
+    minusCount: 0,
+    minusProblemsPerTemplate: 0,
+    denomination: .zenshuren,
+    templateCountPerGroup: [20],
+    repeat: 1,
+  ),
+  zsak6(
+    templates: [
+      [
+        {"digits": 1, "count": 1},
+        {"digits": 2, "count": 2},
+      ],
+    ],
+    minusCount: 0,
+    minusProblemsPerTemplate: 0,
+    denomination: .zenshuren,
+    templateCountPerGroup: [20],
+    repeat: 1,
+  ),
+  zsak5(
+    templates: [
+      [
+        {"digits": 1, "count": 2},
+        {"digits": 2, "count": 2},
+      ],
+      [
+        {"digits": 2, "count": 3},
+      ],
+    ],
+    minusCount: 0,
+    minusProblemsPerTemplate: 0,
+    denomination: .zenshuren,
+    templateCountPerGroup: [10, 10],
+    repeat: 1,
+  ),
+  zsak4(
+    templates: [
+      [
+        {"digits": 2, "count": 4},
+      ],
+    ],
+    minusCount: 0,
+    minusProblemsPerTemplate: 0,
+    denomination: .zenshuren,
+    templateCountPerGroup: [20],
+    repeat: 1,
+  ),
+  zsak3(
+    templates: [
+      [
+        {"digits": 2, "count": 5},
+      ],
+    ],
+    minusCount: 0,
+    minusProblemsPerTemplate: 0,
+    denomination: .zenshuren,
+    templateCountPerGroup: [20],
+    repeat: 1,
+  ),
+  zsak2(
+    templates: [
+      [
+        {"digits": 2, "count": 3},
+        {"digits": 3, "count": 2},
+      ],
+    ],
+    minusCount: 2,
+    minusProblemsPerTemplate: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 4,
+    neverNegative: true,
+  ),
+  zsak1(
+    templates: [
+      [
+        {"digits": 3, "count": 5},
+      ],
+    ],
+    minusCount: 2,
+    minusProblemsPerTemplate: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [5],
+    repeat: 4,
+    neverNegative: true,
+  ),
+  zsadan(
+    templates: [
+      [
+        {"digits": 3, "count": 5},
+      ],
+      [
+        {"digits": 3, "count": 5},
+      ],
+      [
+        {"digits": 3, "count": 3},
+        {"digits": 4, "count": 2},
+      ],
+      [
+        {"digits": 3, "count": 4},
+        {"digits": 4, "count": 2},
+      ],
+      [
+        {"digits": 3, "count": 3},
+        {"digits": 4, "count": 3},
+      ],
+      [
+        {"digits": 3, "count": 4},
+        {"digits": 4, "count": 3},
+      ],
+      [
+        {"digits": 3, "count": 4},
+        {"digits": 4, "count": 4},
+      ],
+      [
+        {"digits": 3, "count": 2},
+        {"digits": 4, "count": 3},
+        {"digits": 5, "count": 3},
+      ],
+    ],
+    minusCount: 2, //actually starts with 2 minus
+    minusCountPerGroup: [2, 2, 2, 2, 2, 3, 3, 3],
+    minusProblemsPerTemplate: 2,
+    denomination: .zenshuren,
+    templateCountPerGroup: [4, 4, 7, 5, 5, 5, 5, 5],
+    repeat: 1,
+    neverNegative: true,
   ),
   nsk9(
     templates: [
@@ -909,6 +1105,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     required this.templates,
     required this.minusCount,
     this.minusProblemsPerTemplate,
+    this.minusCountPerGroup,
     required this.denomination,
     required this.templateCountPerGroup,
     required this.repeat,
@@ -916,6 +1113,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
   });
   final List<List<Map<String, int>>> templates;
   final int minusCount;
+  final List<int>? minusCountPerGroup;
   final int? minusProblemsPerTemplate;
   @override
   final PaperDenomination denomination;
@@ -983,7 +1181,7 @@ enum Kyuui {
     mitoriSoroban: .nsk6,
     mitoriAnzan: ComplexMitoriLevel.nsak6,
     multSoroban: .nsmk6,
-    multAnzan: .nsmak6,
+    multAnzan: .nsmak4, //sic
     divSoroban: .nsdk6,
     divAnzan: .nsdak6,
     kyuuString: '6級',
@@ -992,7 +1190,7 @@ enum Kyuui {
     mitoriSoroban: .nsk5,
     mitoriAnzan: ComplexMitoriLevel.nsak5,
     multSoroban: .nsmk5,
-    multAnzan: .nsmak5,
+    multAnzan: .nsmak4, //sic
     divSoroban: .nsdk5,
     divAnzan: .nsdak5,
     kyuuString: '5級',
@@ -1070,7 +1268,7 @@ enum Kyuui {
     kyuuString: '段位',
   ),
   zsk10(
-    mitoriSoroban: .nsk9,
+    mitoriSoroban: .zsk10a, //TODO
     mitoriAnzan: SimpleMitoriLevel.zsak10,
     multSoroban: null,
     multAnzan: null,
@@ -1079,120 +1277,93 @@ enum Kyuui {
     kyuuString: '10級',
   ),
   zsk9(
-    mitoriSoroban: .nsk9,
+    mitoriSoroban: .zsk9,
     mitoriAnzan: SimpleMitoriLevel.zsak9,
-    multSoroban: null,
+    multSoroban: .zsmk9,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
     kyuuString: '9級',
   ),
   zsk8(
-    mitoriSoroban: .nsk9,
+    mitoriSoroban: .zsk8,
     mitoriAnzan: SimpleMitoriLevel.zsak8,
-    multSoroban: null,
+    multSoroban: .zsmk8,
     multAnzan: null,
-    divSoroban: null,
+    divSoroban: .zsdk8,
     divAnzan: null,
     kyuuString: '8級',
   ),
   zsk7(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
+    mitoriSoroban: .zsk7,
+    mitoriAnzan: ComplexMitoriLevel.zsak7,
+    multSoroban: .zsmk7,
+    multAnzan: .zsmak5, //sic
+    divSoroban: .zsdk7,
     divAnzan: null,
     kyuuString: '7級',
   ),
   zsk6(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .zsk6,
+    mitoriAnzan: ComplexMitoriLevel.zsak6,
+    multSoroban: .zsmk6,
+    multAnzan: .zsmak5, //sic
+    divSoroban: .zsdk6,
+    divAnzan: .zsdak5, //sic
     kyuuString: '6級',
   ),
   zsk5(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .zsk5,
+    mitoriAnzan: ComplexMitoriLevel.zsak5,
+    multSoroban: .zsmk5,
+    multAnzan: .zsmak5,
+    divSoroban: .zsdk5,
+    divAnzan: .zsdak5,
     kyuuString: '5級',
   ),
   zsk4(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .zsk4,
+    mitoriAnzan: ComplexMitoriLevel.zsak4,
+    multSoroban: .zsmk4,
+    multAnzan: .zsmak4,
+    divSoroban: .zsdk4,
+    divAnzan: .zsdak4,
     kyuuString: '4級',
   ),
-  zskj3(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
-    kyuuString: '準3級',
-  ),
   zsk3(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .zsk3,
+    mitoriAnzan: ComplexMitoriLevel.zsak3,
+    multSoroban: .zsmk3,
+    multAnzan: .zsmak3,
+    divSoroban: .zsdk3,
+    divAnzan: .zsdak3,
     kyuuString: '3級',
   ),
-  zskj2(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
-    kyuuString: '準2級',
-  ),
   zsk2(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .zsk2,
+    mitoriAnzan: ComplexMitoriLevel.zsak2,
+    multSoroban: .zsmk2,
+    multAnzan: .zsmak2,
+    divSoroban: .zsdk2,
+    divAnzan: .zsdak2,
     kyuuString: '2級',
   ),
-  zskj1(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
-    kyuuString: '準1級',
-  ),
   zsk1(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .zsk1,
+    mitoriAnzan: ComplexMitoriLevel.zsak1,
+    multSoroban: .zsmk1,
+    multAnzan: .zsmak1,
+    divSoroban: .zsdk1,
+    divAnzan: .zsdak1,
     kyuuString: '1級',
   ),
   zsdan(
-    mitoriSoroban: .nsk9,
-    mitoriAnzan: ComplexMitoriLevel.nsak7,
-    multSoroban: null,
-    multAnzan: null,
-    divSoroban: null,
-    divAnzan: null,
+    mitoriSoroban: .zsdan,
+    mitoriAnzan: ComplexMitoriLevel.zsadan,
+    multSoroban: .zsmdan,
+    multAnzan: .zsmadan,
+    divSoroban: .zsddan,
+    divAnzan: .zsdadan,
     kyuuString: '段位',
   );
 
@@ -1233,11 +1404,8 @@ enum KyuuiDenomination {
     k6: .zsk6,
     k5: .zsk5,
     k4: .zsk4,
-    kj3: .zskj3,
     k3: .zsk3,
-    kj2: .zskj2,
     k2: .zsk2,
-    kj1: .zskj1,
     k1: .zsk1,
     dan: .zsdan,
   ),
@@ -1261,11 +1429,11 @@ enum KyuuiDenomination {
   const KyuuiDenomination({
     required this.dan,
     required this.k1,
-    required this.kj1,
+    this.kj1,
     required this.k2,
-    required this.kj2,
+    this.kj2,
     required this.k3,
-    required this.kj3,
+    this.kj3,
     required this.k4,
     required this.k5,
     required this.k6,
@@ -1277,11 +1445,11 @@ enum KyuuiDenomination {
 
   final Kyuui dan;
   final Kyuui k1;
-  final Kyuui kj1;
+  final Kyuui? kj1;
   final Kyuui k2;
-  final Kyuui kj2;
+  final Kyuui? kj2;
   final Kyuui k3;
-  final Kyuui kj3;
+  final Kyuui? kj3;
   final Kyuui k4;
   final Kyuui k5;
   final Kyuui k6;

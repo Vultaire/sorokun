@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/mitori.dart';
 import 'package:soroban_app/problem_generation/mitori_set.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
@@ -32,17 +33,8 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   late final List<MitoriProblem> allProblems;
   late final List<String> allAnswers;
   static const int _singingTeacher = 6000;
-  static const _score = '''
-{
-  "notes": [
-    { "key": null, "frame_length": 15, "lyric": "" },
-    { "key": 60, "frame_length": 45, "lyric": "ド" },
-    { "key": 62, "frame_length": 45, "lyric": "レ" },
-    { "key": 64, "frame_length": 45, "lyric": "ミ" },
-    { "key": null, "frame_length": 15, "lyric": "" }
-  ]
-}
-''';
+  late final List<String> _scores;
+  late final String _score;
 
   void _initializeProblem(MitoriLevel level) {
     MitoriProblemSet fullProblemSet = MitoriProblemSet(
@@ -50,6 +42,13 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     );
     allProblems = fullProblemSet.unformattedProblems;
     allAnswers = fullProblemSet.formattedAnswers;
+  }
+
+  String _initializeScore() {
+    for (MitoriProblem mitoriProblem in allProblems) {
+      List<Mora> problemMora = scoreMora(mitoriProblem.problem);
+      moraListToJson(moraList: problemMora, targetSeconds: targetSeconds);
+    }
   }
 
   @override

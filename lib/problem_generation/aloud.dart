@@ -2,26 +2,21 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/mitori.dart';
 import 'package:soroban_app/problem_generation/mitori_set.dart';
 
-List<LyricWord> scoreLyrics(List<int> numbers) {
-  List<LyricWord> scoreLyrics = [];
-  bool isNegative = false;
-  for (final (i, n) in numbers.indexed) {
-    if (n < 0 && !isNegative) {
-      scoreLyrics.add(NumberWord.hiitewa);
-      isNegative = true;
-    }
-    if (n > 0 && isNegative) {
-      scoreLyrics.add(NumberWord.kuwaete);
-      isNegative = false;
-    }
-    scoreLyrics.addAll(convertToKatakana(n.abs()));
+String moraListToJson({
+  required List<Mora> moraList,
+  required double targetSeconds,
+}) {
+  final totalFrames = targetSeconds * 93.75;
+  final framesPerMora = (totalFrames / moraList.length).round();
 
-    scoreLyrics.add(
-      i < numbers.length - 1 ? MyriadPower.ennari : MyriadPower.endewa,
-    );
-    scoreLyrics.add(NumberWord.none);
-  }
-  return scoreLyrics;
+  final notes = moraList
+      .map((mora) {
+        final key = mora.lyric.isEmpty ? null : (mora.isHighPitch ? 63 : 60);
+        return '    { "key": ${key ?? 'null'}, "frame_length": $framesPerMora, "lyric": "${mora.lyric}" }';
+      })
+      .join(',\n');
+
+  return '{\n  "notes": [\n$notes\n  ]\n}';
 }
 
 List<Mora> scoreMora(List<int> numbers) {
@@ -45,7 +40,7 @@ List<Mora> scoreMora(List<int> numbers) {
         result[start + i].isHighPitch = true;
       }
 
-      // last mora special case
+      // last mora low if ウ or ン
       final last = result[end - 1];
       if (last.lyric == 'ウ' || last.lyric == 'ン') {
         result[end - 1].isHighPitch = false;
@@ -102,6 +97,28 @@ List<Mora> scoreMora(List<int> numbers) {
   return result;
 }
 
+List<LyricWord> scoreLyrics(List<int> numbers) {
+  List<LyricWord> scoreLyrics = [];
+  bool isNegative = false;
+  for (final (i, n) in numbers.indexed) {
+    if (n < 0 && !isNegative) {
+      scoreLyrics.add(NumberWord.hiitewa);
+      isNegative = true;
+    }
+    if (n > 0 && isNegative) {
+      scoreLyrics.add(NumberWord.kuwaete);
+      isNegative = false;
+    }
+    scoreLyrics.addAll(convertToKatakana(n.abs()));
+
+    scoreLyrics.add(
+      i < numbers.length - 1 ? MyriadPower.ennari : MyriadPower.endewa,
+    );
+    scoreLyrics.add(NumberWord.none);
+  }
+  return scoreLyrics;
+}
+
 class Mora {
   Mora({required this.lyric, required this.isHighPitch});
   final String lyric;
@@ -131,7 +148,7 @@ enum NumberWord implements LyricWord {
   hachi(lyrics: ['ハ', 'チ'], pitch: .zero), //technically odaka
   kyuu(lyrics: ['キュ', 'ウ'], pitch: .zero), //technically one
 
-  // Tens (10–90)
+  // Tens
   juu(lyrics: ['ジュ', 'ウ'], pitch: .zero), //technically one
   nijuu(lyrics: ['ニ', 'ジュ', 'ウ'], pitch: .one),
   sanjuu(lyrics: ['サ', 'ン', 'ジュ', 'ウ'], pitch: .one),
@@ -142,7 +159,7 @@ enum NumberWord implements LyricWord {
   hachijuu(lyrics: ['ハ', 'チ', 'ジュ', 'ウ'], pitch: .zero), //technically three
   kyuujuu(lyrics: ['キュ', 'ウ', 'ジュ', 'ウ'], pitch: .one),
 
-  // Hundreds (100–900)
+  // Hundreds
   hyaku(lyrics: ['ヒャ', 'ク'], pitch: .zero), //technically odaka
   nihyaku(lyrics: ['ニ', 'ヒャ', 'ク'], pitch: .zero), //technically odaka
   sanbyaku(lyrics: ['サ', 'ン', 'ビャ', 'ク'], pitch: .one),
@@ -153,7 +170,7 @@ enum NumberWord implements LyricWord {
   happyaku(lyrics: ['ハ', 'ッ', 'ピャ', 'ク'], pitch: .zero), //technically odaka
   kyuuhyaku(lyrics: ['キュ', 'ウ', 'ヒャ', 'ク'], pitch: .one),
 
-  // Thousands (1000–9000)
+  // Thousands
   sen(lyrics: ['セ', 'ン'], pitch: .one),
   nisen(lyrics: ['ニ', 'セ', 'ン'], pitch: .two),
   sanzen(lyrics: ['サ', 'ン', 'ゼ', 'ン'], pitch: .three),
@@ -311,5 +328,10 @@ void main() {
   List<MitoriProblem> allProblems = fullProblemSet.unformattedProblems;
   List<String> allAnswers = fullProblemSet.formattedAnswers;
 
-  print(scoreMora(allProblems[0].problem));
+  print(
+    moraListToJson(
+      moraList: scoreMora(allProblems[0].problem),
+      targetSeconds: 35,
+    ),
+  );
 }

@@ -28,8 +28,9 @@ class ComplexMitoriProblemSet extends MitoriProblemSet {
     final rand = Random();
     final templateLists = level.templates as List;
     final int repeat = level.repeat;
-    final int minusCount = level.minusCount;
+    int minusCount = level.minusCount;
     final List<int> templateCounts = level.templateCountPerGroup;
+    final List<int>? minusCountPerGroup = level.minusCountPerGroup;
 
     // Repeat all template groups together
     for (int r = 0; r < repeat; r++) {
@@ -68,7 +69,9 @@ class ComplexMitoriProblemSet extends MitoriProblemSet {
           MitoriProblem fullProblem = MitoriProblem(problem);
           templateProblems.add(fullProblem);
         }
+
         if (minusCount > 0 && level.denomination == .zenshuren) {
+          minusCount = minusCountPerGroup?[templategroupIdx] ?? minusCount;
           applyZenshurenMinus(
             templateProblems: templateProblems,
             level: level,
@@ -80,7 +83,6 @@ class ComplexMitoriProblemSet extends MitoriProblemSet {
 
         groupProblems.addAll(templateProblems);
       }
-      groupProblems.shuffle(rand);
       unformattedProblems.addAll(groupProblems);
     }
     if (minusCount > 0 && level.denomination == .nisshou) {
@@ -337,7 +339,7 @@ void applyZenshurenMinus({
 }
 
 void main() {
-  var problem = MitoriProblemSet(level: SimpleMitoriLevel.zsak8);
+  var problem = MitoriProblemSet(level: ComplexMitoriLevel.zsadan);
 
   print(problem.formattedProblems);
   print(problem.formattedAnswers);
