@@ -24,17 +24,16 @@ class FlashProblemScreen extends StatefulWidget {
 }
 
 class _FlashProblemScreenState extends State<FlashProblemScreen> {
-  late final List<Segment> _schedule;
-  late FlashProblemSet fullProblemSet;
-  late List<List<String>> _allProblems;
-  late List<String> _allAnswers;
-  final Stopwatch _stopwatch = Stopwatch();
-  late String _inputTime;
-  int _currentPageIndex = 0;
-  int _currentProblemIndex = 0;
   String _userInputted = '';
   bool _delayOver = false;
   bool _hasSubmitted = false;
+  final Stopwatch _stopwatch = Stopwatch();
+  int _currentPageIndex = 0;
+  int _currentProblemIndex = 0;
+  late List<List<String>> _allProblems;
+  late List<String> _allAnswers;
+  late String _inputTime;
+  late final List<Segment> _schedule;
 
   void showInput() {
     _stopwatch.start();
@@ -80,12 +79,12 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   }
 
   void newProblem() {
-    initProblems();
+    _initProblems();
     playProblem();
   }
 
-  void initProblems() {
-    fullProblemSet = FlashProblemSet(widget.selectedLevel);
+  void _initProblems() {
+    FlashProblemSet fullProblemSet = FlashProblemSet(widget.selectedLevel);
     _allProblems = fullProblemSet.formattedProblems;
     _allAnswers = fullProblemSet.formattedAnswers;
   }
@@ -93,7 +92,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   @override
   void initState() {
     super.initState();
-    initProblems();
+    _initProblems();
     final kuchi = widget.selectedLevel.kuchi;
     final secondsPerProblem = widget.selectedLevel.secondsPerProblem;
     final hideDuration = secondsPerProblem / (2.5 * kuchi - 1);
@@ -117,70 +116,93 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     final bool isPortrait = media.orientation == Orientation.portrait;
     final bool isCorrect = _userInputted == _allAnswers[_currentProblemIndex];
 
-    return Scaffold(
-      backgroundColor: Colors.black, // TODO: remove hardcode
-      body: PageTransitionSwitcher(
-        duration: const Duration(milliseconds: 300),
-        reverse: _currentPageIndex == 0,
-        transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-          return FadeThroughTransition(
-            animation: primaryAnimation,
-            secondaryAnimation: secondaryAnimation,
-            fillColor: Colors.black, // Add this
-            child: child,
-          );
-        },
-        child: _buildPage(_currentPageIndex, screenSize, isPortrait, isCorrect),
+    return FlashAndAloudProblemData<String>(
+      screenSize: screenSize,
+      isPortrait: isPortrait,
+      currentProblemIndex: _currentProblemIndex,
+      allAnswers: _allAnswers,
+      allProblems: _allProblems,
+      child: Scaffold(
+        backgroundColor: Colors.black, // TODO: remove hardcode
+        body: PageTransitionSwitcher(
+          duration: const Duration(milliseconds: 300),
+          reverse: _currentPageIndex == 0,
+          transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+            return FadeThroughTransition(
+              animation: primaryAnimation,
+              secondaryAnimation: secondaryAnimation,
+              fillColor: Colors.black, // Add this
+              child: child,
+            );
+          },
+          child: _buildPage(_currentPageIndex, isCorrect),
+        ),
       ),
     );
   }
 
-  Widget _buildPage(
-    int index,
-    Size screenSize,
-    bool isPortrait,
-    bool isCorrect,
-  ) {
+  Widget _buildPage(int index, bool isCorrect) {
     switch (index) {
       case 0:
         return FlashProblem(
           key: ValueKey('problem_$_currentProblemIndex'),
-          problemSet: _allProblems,
           schedule: _schedule,
           secondsPerProblem: widget.selectedLevel.secondsPerProblem,
           onEnd: showInput,
-          currentProblemIndex: _currentProblemIndex,
         );
       case 1:
-        return FlashProblemInput(
+        return FlashAndAloudProblemInput(
           key: ValueKey('input_$_currentProblemIndex'),
           showResult: setInputAndShowResult,
-          allAnswers: _allAnswers,
-          currentProblemIndex: _currentProblemIndex,
-          screenSize: screenSize,
-          isPortrait: isPortrait,
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
+          duration: 14500,
         );
       case 2:
-        return FlashResult(
+        return FlashAndAloudResult(
           key: ValueKey('result_$_currentProblemIndex'),
           onNextProblem: startNextProblem,
           onRepeatProblem: playProblem,
           onNewProblem: newProblem,
-          screenSize: screenSize,
-          isPortrait: isPortrait,
-          allAnswers: _allAnswers,
-          currentProblemIndex: _currentProblemIndex,
-          userInputted: _userInputted,
           inputTime: _inputTime,
           isCorrect: isCorrect,
           isSingleProblem: widget.isSingleProblem,
+          answer: _allAnswers[_currentProblemIndex],
         );
       default:
         return const SizedBox.shrink();
     }
   }
+}
+
+class FlashAndAloudProblemData<T> extends InheritedWidget {
+  const FlashAndAloudProblemData({
+    super.key,
+    required this.screenSize,
+    required this.isPortrait,
+    required this.currentProblemIndex,
+    required this.allAnswers,
+    required this.allProblems,
+    required super.child,
+  });
+
+  final Size screenSize;
+  final bool isPortrait;
+  final int currentProblemIndex;
+  final List<String> allAnswers;
+  final List<List<T>> allProblems;
+
+  static FlashAndAloudProblemData<T> of<T>(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<FlashAndAloudProblemData<T>>()!;
+  }
+
+  @override
+  bool updateShouldNotify(FlashAndAloudProblemData<T> old) =>
+      screenSize != old.screenSize ||
+      isPortrait != old.isPortrait ||
+      currentProblemIndex != old.currentProblemIndex ||
+      allAnswers != old.allAnswers;
 }
 
 class FlashTextField extends StatelessWidget {
@@ -204,40 +226,37 @@ class FlashTextField extends StatelessWidget {
   }
 }
 
-class FlashProblemInput extends StatefulWidget {
-  const FlashProblemInput({
+class FlashAndAloudProblemInput extends StatefulWidget {
+  const FlashAndAloudProblemInput({
     super.key,
-    required this.allAnswers,
-    required this.currentProblemIndex,
-    required this.screenSize,
-    required this.isPortrait,
     required this.showResult,
     required this.showTimer,
     required this.delayOver,
+    required this.duration,
   });
   final void Function(String) showResult;
-  final List<String> allAnswers;
-  final int currentProblemIndex;
-  final Size screenSize;
-  final bool isPortrait;
   final bool showTimer;
   final bool delayOver;
+  final int duration;
 
   @override
-  State<FlashProblemInput> createState() => _FlashProblemInputState();
+  State<FlashAndAloudProblemInput> createState() =>
+      _FlashAndAloudProblemInputState();
 }
 
-class _FlashProblemInputState extends State<FlashProblemInput>
+class _FlashAndAloudProblemInputState extends State<FlashAndAloudProblemInput>
     with FlashKeypadMethods {
+  FlashAndAloudProblemData get _data =>
+      FlashAndAloudProblemData.of<String>(context);
   @override
-  TextFieldData data = TextFieldData();
+  TextFieldData textData = TextFieldData();
   @override
-  List<String> get allAnswers => widget.allAnswers;
+  List<String> get allAnswers => _data.allAnswers;
   late final KeypadSounds _sound;
   @override
   KeypadSounds get sound => _sound;
   @override
-  int get currentIndex => widget.currentProblemIndex;
+  int get currentIndex => _data.currentProblemIndex;
 
   @override
   void initState() {
@@ -247,79 +266,77 @@ class _FlashProblemInputState extends State<FlashProblemInput>
     _sound.init();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Widget landscapeAndPortrait() {
-      return Flex(
-        direction: widget.isPortrait ? Axis.vertical : Axis.horizontal,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Expanded(
-            flex: widget.isPortrait ? 2 : 1,
-            child: Stack(
-              alignment: .center,
-              children: [
-                Opacity(
-                  opacity: 0.4,
-                  child: SizedBox(
-                    width: 400,
-                    height: 400,
-                    child: PieTimer(
-                      duration: const Duration(
-                        milliseconds: 14500,
-                      ), // This plus the 500ms before animation gives user 15 seconds to input immedately after last number disappears
-                      delayOver: widget.delayOver,
-                      onComplete: () => widget.showResult(data.formatted),
-                    ),
+  Widget _landscapeAndPortrait() {
+    return Flex(
+      direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          flex: _data.isPortrait ? 2 : 1,
+          child: Stack(
+            alignment: .center,
+            children: [
+              Opacity(
+                opacity: 0.4,
+                child: SizedBox(
+                  width: 400,
+                  height: 400,
+                  child: PieTimer(
+                    duration: Duration(milliseconds: widget.duration),
+                    delayOver: widget.delayOver,
+                    onComplete: () => widget.showResult(textData.formatted),
                   ),
                 ),
-                FittedBox(
-                  fit: BoxFit.contain,
-                  child: FlashTextField(data: data),
-                ),
-              ],
-            ),
+              ),
+              FittedBox(
+                fit: BoxFit.contain,
+                child: FlashTextField(data: textData),
+              ),
+            ],
           ),
-          if (!widget.isPortrait) const SizedBox(width: 50),
-          Expanded(
-            flex: widget.isPortrait ? 3 : 1,
-            child: Keypad(
-              onAppendDigit: appendDigit,
-              onDeleteDigit: deleteDigit,
-              onClearAll: clearAll,
-              onSubmit: () {
-                if (data.formatted.isNotEmpty) {
-                  final isCorrect =
-                      data.formatted ==
-                      widget.allAnswers[widget.currentProblemIndex];
+        ),
+        if (!_data.isPortrait) const SizedBox(width: 50),
+        Expanded(
+          flex: _data.isPortrait ? 3 : 1,
+          child: Keypad(
+            onAppendDigit: appendDigit,
+            onDeleteDigit: deleteDigit,
+            onClearAll: clearAll,
+            onSubmit: () {
+              if (textData.formatted.isNotEmpty) {
+                final isCorrect =
+                    textData.formatted ==
+                    _data.allAnswers[_data.currentProblemIndex];
 
-                  widget.showResult(data.formatted);
+                widget.showResult(textData.formatted);
 
-                  isCorrect
-                      ? SoLoud.instance.play(sound.correct)
-                      : SoLoud.instance.play(sound.incorrect);
-                } else {
-                  SoLoud.instance.play(sound.invalid);
-                }
-              },
-              levelType: KeypadType.flash,
-            ),
+                isCorrect
+                    ? SoLoud.instance.play(sound.correct)
+                    : SoLoud.instance.play(sound.incorrect);
+              } else {
+                SoLoud.instance.play(sound.invalid);
+              }
+            },
+            levelType: KeypadType.flash,
           ),
-        ],
-      );
-    }
+        ),
+      ],
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: widget.isPortrait
-                ? widget.screenSize.width
-                : widget.screenSize.width * 0.9,
-            maxHeight: widget.isPortrait
-                ? widget.screenSize.height * 0.65
-                : widget.screenSize.height * 0.85,
+            maxWidth: _data.isPortrait
+                ? _data.screenSize.width
+                : _data.screenSize.width * 0.9,
+            maxHeight: _data.isPortrait
+                ? _data.screenSize.height * 0.65
+                : _data.screenSize.height * 0.85,
           ),
           child: Container(
             padding: const EdgeInsets.all(2),
@@ -327,7 +344,7 @@ class _FlashProblemInputState extends State<FlashProblemInput>
               color: Colors.black,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: landscapeAndPortrait(),
+            child: _landscapeAndPortrait(),
           ),
         ),
       ),
@@ -335,38 +352,32 @@ class _FlashProblemInputState extends State<FlashProblemInput>
   }
 }
 
-class FlashResult extends StatefulWidget {
-  const FlashResult({
+class FlashAndAloudResult extends StatefulWidget {
+  const FlashAndAloudResult({
     super.key,
-    required this.screenSize,
-    required this.isPortrait,
     required this.onNextProblem,
-    required this.currentProblemIndex,
-    required this.allAnswers,
-    required this.userInputted,
     required this.inputTime,
     required this.isCorrect,
     required this.isSingleProblem,
     required this.onRepeatProblem,
     required this.onNewProblem,
+    required this.answer,
   });
   final VoidCallback onNextProblem;
   final VoidCallback onRepeatProblem;
   final VoidCallback onNewProblem;
-  final Size screenSize;
-  final bool isPortrait;
-  final int currentProblemIndex;
-  final List<String> allAnswers;
-  final String userInputted;
   final String inputTime;
   final bool isCorrect;
   final bool isSingleProblem;
+  final String answer;
 
   @override
-  State<FlashResult> createState() => _FlashResultState();
+  State<FlashAndAloudResult> createState() => _FlashAndAloudResultState();
 }
 
-class _FlashResultState extends State<FlashResult> {
+class _FlashAndAloudResultState extends State<FlashAndAloudResult> {
+  FlashAndAloudProblemData<String> get _data =>
+      FlashAndAloudProblemData.of<String>(context);
   Widget freeOrSetButtons(bool isSingleProblem) {
     if (isSingleProblem) {
       return Row(
@@ -385,11 +396,11 @@ class _FlashResultState extends State<FlashResult> {
       );
     } else {
       return ElevatedButton(
-        onPressed: widget.currentProblemIndex == widget.allAnswers.length - 1
+        onPressed: _data.currentProblemIndex == _data.allAnswers.length - 1
             ? () {}
             : widget.onNextProblem,
         child: Text(
-          widget.currentProblemIndex == widget.allAnswers.length - 1
+          _data.currentProblemIndex == _data.allAnswers.length - 1
               ? '採点'
               : '次の問題',
         ),
@@ -406,12 +417,12 @@ class _FlashResultState extends State<FlashResult> {
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: widget.isPortrait
-                ? widget.screenSize.width * 0.9
-                : widget.screenSize.width * 0.7,
-            maxHeight: widget.isPortrait
-                ? widget.screenSize.height * 0.65
-                : widget.screenSize.height * 0.85,
+            maxWidth: _data.isPortrait
+                ? _data.screenSize.width * 0.9
+                : _data.screenSize.width * 0.7,
+            maxHeight: _data.isPortrait
+                ? _data.screenSize.height * 0.65
+                : _data.screenSize.height * 0.85,
           ),
           child: Container(
             decoration: BoxDecoration(
@@ -435,13 +446,11 @@ class _FlashResultState extends State<FlashResult> {
                   child: Center(
                     child: Text(
                       widget.isCorrect ? '正解' : '不正解',
-                      style: widget.isCorrect
-                          ? Theme.of(context).textTheme.displayLarge?.copyWith(
-                              color: colorScheme.onPrimary,
-                            )
-                          : Theme.of(context).textTheme.displayLarge?.copyWith(
-                              color: colorScheme.onTertiary,
-                            ),
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        color: widget.isCorrect
+                            ? colorScheme.onPrimary
+                            : colorScheme.onTertiary,
+                      ),
                     ),
                   ),
                 ),
@@ -462,7 +471,7 @@ class _FlashResultState extends State<FlashResult> {
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
                           Text(
-                            widget.allAnswers[widget.currentProblemIndex],
+                            widget.answer,
                             style: Theme.of(context).textTheme.displayMedium,
                           ),
                         ],
@@ -503,17 +512,13 @@ class _FlashResultState extends State<FlashResult> {
 class FlashProblem extends StatefulWidget {
   const FlashProblem({
     super.key,
-    required this.problemSet,
     required this.secondsPerProblem,
     required this.schedule,
     required this.onEnd,
-    required this.currentProblemIndex,
   });
   final double secondsPerProblem;
-  final List<List<String>> problemSet;
   final List<Segment> schedule;
   final VoidCallback onEnd;
-  final int currentProblemIndex;
 
   @override
   State<FlashProblem> createState() => FlashProblemState();
@@ -521,21 +526,22 @@ class FlashProblem extends StatefulWidget {
 
 class FlashProblemState extends State<FlashProblem>
     with SingleTickerProviderStateMixin {
+  FlashAndAloudProblemData<String> get _data =>
+      FlashAndAloudProblemData.of<String>(context);
   late final AnimationController _controller;
-  late List<String> currentProblem;
+  List<String> get currentProblem =>
+      _data.allProblems[_data.currentProblemIndex];
 
   int _currentNumberIndex = 0;
   bool _showNumber = false;
+  int _currentSegment = 0;
 
   late final AudioSource startingSine;
   late final AudioSource sineBeep;
-  int _currentSegment = 0;
 
   @override
   void initState() {
     super.initState();
-
-    currentProblem = widget.problemSet[widget.currentProblemIndex];
 
     // Animation controller
     _controller =
@@ -602,7 +608,6 @@ class FlashProblemState extends State<FlashProblem>
     if (!mounted) return;
 
     setState(() {
-      currentProblem = widget.problemSet[widget.currentProblemIndex];
       _currentSegment = 0;
       _currentNumberIndex = 0;
       _showNumber = false;

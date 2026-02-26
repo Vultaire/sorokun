@@ -16,7 +16,7 @@ String moraListToJson({
       })
       .join(',\n');
 
-  return '{\n  "notes": [\n$notes\n  ]\n}';
+  return '{\n  "notes": [\n    { "key": null, "frame_length": 69, "lyric": "" },\n$notes\n  ]\n}';
 }
 
 List<Mora> scoreMora(List<int> numbers) {
@@ -44,6 +44,7 @@ List<Mora> scoreMora(List<int> numbers) {
       final last = result[end - 1];
       if (last.lyric == 'ウ' || last.lyric == 'ン') {
         result[end - 1].isHighPitch = false;
+        result[end - 2].isHighPitch = true;
       }
     }
   }

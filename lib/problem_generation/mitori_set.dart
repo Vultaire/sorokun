@@ -5,7 +5,7 @@ import 'mitori.dart';
 
 sealed class MitoriProblemSet {
   MitoriProblemSet._();
-  final List<MitoriProblem> unformattedProblems = [];
+  late final List<MitoriProblem> unformattedProblems;
 
   factory MitoriProblemSet({required MitoriLevel level}) {
     print('factory called with $level ${level.runtimeType}');
@@ -26,73 +26,81 @@ class ComplexMitoriProblemSet extends MitoriProblemSet {
 
   ComplexMitoriProblemSet({required this.level}) : super._() {
     final rand = Random();
-    final templateLists = level.templates as List;
-    final int repeat = level.repeat;
-    int minusCount = level.minusCount;
-    final List<int> templateCounts = level.templateCountPerGroup;
-    final List<int>? minusCountPerGroup = level.minusCountPerGroup;
 
-    // Repeat all template groups together
-    for (int r = 0; r < repeat; r++) {
-      List<MitoriProblem> groupProblems = [];
-
-      for (
-        var templategroupIdx = 0;
-        templategroupIdx < templateLists.length;
-        templategroupIdx++
-      ) {
-        List<MitoriProblem> templateProblems = [];
-        var templateGroup = templateLists[templategroupIdx];
-        if (templateGroup is! List) continue;
-
-        final templates = List<Map<String, int>>.from(templateGroup);
-
-        // Determine number of problems for this template group
-        int problemsInGroup = templateCounts[templategroupIdx];
-
-        for (int p = 0; p < problemsInGroup; p++) {
-          List<int> randomLayout = [];
-          for (var template in templates) {
-            final digits = template["digits"]!;
-            final count = template["count"]!;
-            for (int n = 0; n < count; n++) {
-              randomLayout.add(digits);
-            }
-          }
-          randomLayout.shuffle();
-
-          List<int> problem = generateMitoriProblemFromDigitList(
-            randomLayout,
-            rand,
-          );
-
-          MitoriProblem fullProblem = MitoriProblem(problem);
-          templateProblems.add(fullProblem);
-        }
-
-        if (minusCount > 0 && level.denomination == .zenshuren) {
-          minusCount = minusCountPerGroup?[templategroupIdx] ?? minusCount;
-          applyZenshurenMinus(
-            templateProblems: templateProblems,
-            level: level,
-            problemsInGroup: problemsInGroup,
-            minusCount: minusCount,
-            rand: rand,
-          );
-        }
-
-        groupProblems.addAll(templateProblems);
-      }
-      unformattedProblems.addAll(groupProblems);
+    for (int r = 0; r < level.repeat; r++) {
+      unformattedProblems.addAll(
+        _generateGroupProblems(level: level, rand: rand),
+      );
     }
-    if (minusCount > 0 && level.denomination == .nisshou) {
+
+    if (level.denomination == .nisshou && level.minusCount > 0) {
       applyNisshouMinus(
         fullProblemSet: unformattedProblems,
-        minusCount: minusCount,
+        minusCount: level.minusCount,
         rand: rand,
       );
     }
   }
+}
+
+List<MitoriProblem> _generateGroupProblems({
+  required ComplexMitoriLevel level,
+  required Random rand,
+}) {
+  final templateLists = level.templates as List;
+  final groupProblems = <MitoriProblem>[];
+
+  for (int groupIdx = 0; groupIdx < templateLists.length; groupIdx++) {
+    final templateGroup = templateLists[groupIdx];
+    if (templateGroup is! List) continue;
+
+    final templates = List<Map<String, int>>.from(templateGroup);
+    final problemsPerTemplate = level.problemCountPerTemplate[groupIdx];
+    final templateProblems = _generateTemplateProblems(
+      templates: templates,
+      count: problemsPerTemplate,
+      rand: rand,
+    );
+
+    if (level.denomination == .zenshuren && level.minusCount > 0) {
+      final minusCount =
+          level.minusCountPerGroup?[groupIdx] ?? level.minusCount;
+      final bool isNeverNegative = level.neverNegative!;
+      final int minusProblemsPerTemplate = level.minusProblemsPerTemplate!;
+      applyZenshurenMinus(
+        templateProblems: templateProblems,
+        isNeverNegative: isNeverNegative,
+        minusProblemsPerTemplate: minusProblemsPerTemplate,
+        problemsPerTemplate: problemsPerTemplate,
+        minusCount: minusCount,
+        rand: rand,
+      );
+    }
+
+    groupProblems.addAll(templateProblems);
+  }
+
+  return groupProblems;
+}
+
+List<MitoriProblem> _generateTemplateProblems({
+  required List<Map<String, int>> templates,
+  required int count,
+  required Random rand,
+}) {
+  final problems = <MitoriProblem>[];
+  for (int p = 0; p < count; p++) {
+    final randomLayout = <int>[];
+    for (final template in templates) {
+      for (int n = 0; n < template["count"]!; n++) {
+        randomLayout.add(template["digits"]!);
+      }
+    }
+    randomLayout.shuffle();
+    final problem = generateMitoriProblemFromDigitList(randomLayout, rand);
+    problems.add(MitoriProblem(problem));
+  }
+  return problems;
 }
 
 class SimpleMitoriProblemSet extends MitoriProblemSet {
@@ -283,18 +291,18 @@ void applyNisshouMinus({
 
 void applyZenshurenMinus({
   required List<MitoriProblem> templateProblems,
-  required ComplexMitoriLevel level,
-  required int problemsInGroup,
+  required bool isNeverNegative,
+  required int minusProblemsPerTemplate,
+  required int problemsPerTemplate,
   required int minusCount,
   required Random rand,
 }) {
-  final bool neverNegative = level.neverNegative!;
-  final int minusProblemsPerTemplate = level.minusProblemsPerTemplate!;
-  List<int> indices = List.generate(problemsInGroup, (i) => i)..shuffle(rand);
+  List<int> indices = List.generate(problemsPerTemplate, (i) => i)
+    ..shuffle(rand);
   Iterable<int> selectedIndices = indices.take(minusProblemsPerTemplate);
 
   for (var relativeIdx in selectedIndices) {
-    int actualIdx = templateProblems.length - problemsInGroup + relativeIdx;
+    int actualIdx = templateProblems.length - problemsPerTemplate + relativeIdx;
     List<int> problem = templateProblems[actualIdx].problem;
 
     var minusIndices = List.generate(problem.length - 1, (i) => i + 1)
@@ -312,7 +320,7 @@ void applyZenshurenMinus({
         problem[minusIndices[k]] = -problem[minusIndices[k]].abs();
       }
 
-      if (neverNegative) {
+      if (isNeverNegative) {
         int runningSum = 0;
         valid = true;
         for (var n in problem) {

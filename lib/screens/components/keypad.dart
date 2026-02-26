@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:soroban_app/models/level_definitions.dart';
 
 import '../../problem_generation/helpers.dart';
 
@@ -37,7 +36,7 @@ class KeypadSounds {
 }
 
 mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
-  TextFieldData get data;
+  TextFieldData get textData;
   List<String> get allAnswers;
   int get currentIndex;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
@@ -46,34 +45,35 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
   void appendDigit(String digit) {
     setState(() {
       if (digit == '-') {
-        if (!data.internalString.startsWith('-')) {
-          data.internalString = '-${data.internalString}';
+        if (!textData.internalString.startsWith('-')) {
+          textData.internalString = '-${textData.internalString}';
           SoLoud.instance.play(sound.keyTap);
         } else {
-          data.internalString = data.internalString.substring(1);
+          textData.internalString = textData.internalString.substring(1);
           SoLoud.instance.play(sound.delete);
         }
       } else if (digit == '.') {
-        if (!data.internalString.contains('.') &&
-            data.internalString.isNotEmpty &&
-            data.internalString != '-') {
-          data.internalString += digit;
+        if (!textData.internalString.contains('.') &&
+            textData.internalString.isNotEmpty &&
+            textData.internalString != '-') {
+          textData.internalString += digit;
           SoLoud.instance.play(sound.keyTap);
         }
       } else if (digit == 'a') {
-        if (!data.internalString.endsWith('a') &&
-            data.internalString.isNotEmpty &&
-            data.internalString != '-') {
-          data.internalString += digit;
+        if (!textData.internalString.endsWith('a') &&
+            textData.internalString.isNotEmpty &&
+            textData.internalString != '-') {
+          textData.internalString += digit;
           SoLoud.instance.play(sound.keyTap);
         }
-      } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length < 7) {
-        data.internalString += digit;
+      } else if (textData.formatted.replaceAll(_digitsOnlyRegex, '').length <
+          7) {
+        textData.internalString += digit;
         SoLoud.instance.play(sound.keyTap);
       } else {
         SoLoud.instance.play(sound.invalid);
       }
-      _updateText(data);
+      _updateText(textData);
     });
   }
 
@@ -82,13 +82,13 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
   }
 
   void deleteDigit() {
-    if (data.internalString.isNotEmpty) {
+    if (textData.internalString.isNotEmpty) {
       setState(() {
-        data.internalString = data.internalString.substring(
+        textData.internalString = textData.internalString.substring(
           0,
-          data.internalString.length - 1,
+          textData.internalString.length - 1,
         );
-        _updateText(data);
+        _updateText(textData);
         SoLoud.instance.play(sound.delete);
       });
     }
@@ -96,8 +96,8 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
 
   void clearAll() {
     setState(() {
-      data.internalString = '';
-      _updateText(data);
+      textData.internalString = '';
+      _updateText(textData);
       SoLoud.instance.play(sound.delete);
     });
   }

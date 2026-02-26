@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:soroban_app/models/flash_source.dart';
 import 'package:soroban_app/problem_generation/mitori.dart';
 
-import 'helpers.dart';
 import 'abacus.dart';
 
 // ---------------------------------
@@ -12,31 +11,18 @@ import 'abacus.dart';
 
 class FlashProblemSet {
   final FlashSpec spec;
-  List<List<String>> formattedProblems = [];
-  List<String> formattedAnswers = [];
+  final List<MitoriProblem> mitoriProblemList;
 
-  FlashProblemSet(this.spec) {
-    late final List<List<int>> problems = List.generate(
-      spec.probCount,
-      (_) => spec.builder(spec, Random()),
-    );
+  FlashProblemSet(this.spec)
+    : mitoriProblemList = List.generate(
+        spec.probCount,
+        (_) => MitoriProblem(spec.builder(spec, Random())),
+      );
 
-    List<int> answers = problems
-        .map((problem) => problem.reduce((a, b) => a + b))
-        .toList();
-
-    formattedProblems = problems
-        .map(
-          (problem) => problem
-              .map((number) => formatWithCommas(number.toString()))
-              .toList(),
-        )
-        .toList();
-
-    formattedAnswers = answers
-        .map((sum) => formatWithCommas(sum.toString()))
-        .toList();
-  }
+  List<List<String>> get formattedProblems =>
+      mitoriProblemList.map((i) => i.formattedProblem).toList();
+  List<String> get formattedAnswers =>
+      mitoriProblemList.map((i) => i.formattedAnswer).toList();
 }
 
 List<int> zsk19Builder(FlashLevel level, Random rand) {

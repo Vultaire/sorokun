@@ -1,13 +1,14 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/models/aloud_source.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
-import 'package:soroban_app/problem_generation/mitori.dart';
-import 'package:soroban_app/problem_generation/mitori_set.dart';
+import 'package:soroban_app/problem_generation/aloud_set.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
+import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 import 'package:soroban_app/src/voicevox_sing.dart';
 
@@ -15,40 +16,44 @@ class AloudProblemScreen extends StatefulWidget {
   const AloudProblemScreen({
     super.key,
     required this.paths,
+    required this.isSingleProblem,
     required this.selectedLevel,
   });
   final VoicevoxPaths paths;
-  final MitoriLevel selectedLevel;
+  final bool isSingleProblem;
+  final AloudLevel selectedLevel;
 
   @override
   State<AloudProblemScreen> createState() => _AloudProblemScreenState();
 }
 
 class _AloudProblemScreenState extends State<AloudProblemScreen> {
+  int _currentPageIndex = 0;
+  int _currentProblemIndex = 0;
+  String _userInputted = '';
   late final VoicevoxSing _singer;
-  SoundHandle? _soundHandle;
-  bool _isPlaying = false;
-  late final Future<List<double>> _f0Future;
+  late final Future<Uint8List> _wavBytesFuture;
   late final KeypadSounds _sound;
-  late final List<MitoriProblem> allProblems;
-  late final List<String> allAnswers;
+  late final List<List<int>> _allProblems;
+  late final List<String> _allAnswers;
   static const int _singingTeacher = 6000;
   late final List<String> _scores;
-  late final String _score;
+  bool _delayOver = false;
 
-  void _initializeProblem(MitoriLevel level) {
-    MitoriProblemSet fullProblemSet = MitoriProblemSet(
-      level: widget.selectedLevel,
-    );
-    allProblems = fullProblemSet.unformattedProblems;
-    allAnswers = fullProblemSet.formattedAnswers;
+  void _initProblem(AloudSpec spec) {
+    AloudProblemSet fullProblemSet = AloudProblemSet(spec: spec);
+    _allProblems = fullProblemSet.unformattedProblems;
+    _allAnswers = fullProblemSet.formattedAnswers;
+    _scores = _initScore();
   }
 
-  String _initializeScore() {
-    for (MitoriProblem mitoriProblem in allProblems) {
-      List<Mora> problemMora = scoreMora(mitoriProblem.problem);
-      moraListToJson(moraList: problemMora, targetSeconds: targetSeconds);
+  List<String> _initScore() {
+    List<String> scores = [];
+    for (List<int> unformattedProblem in _allProblems) {
+      List<Mora> problemMora = scoreMora(unformattedProblem);
+      scores.add(moraListToJson(moraList: problemMora, targetSeconds: 19));
     }
+    return scores;
   }
 
   @override
@@ -58,14 +63,15 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       dictDir: widget.paths.dictDir,
       vvmPath: '${widget.paths.vvmDir}/s0.vvm',
     );
-    _initializeProblem(widget.selectedLevel);
+    _initProblem(widget.selectedLevel);
     _sound = KeypadSounds();
     _sound.init();
-    _f0Future = Future(() {
+    _wavBytesFuture = Future(() {
       _singer.initialize();
-      return _singer.getF0(
-        scoreJson: _score,
+      return _singer.synthesizeWithF0(
+        scoreJson: _scores[0],
         singingTeacherStyleId: _singingTeacher,
+        singerStyleId: 3024,
       );
     });
   }
@@ -76,21 +82,84 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     _singer.dispose();
   }
 
-  Future<void> _play() async {
+  Widget _buildPage(
+    int index,
+    Size screenSize,
+    bool isPortrait,
+    bool isCorrect,
+  ) {
+    switch (index) {
+      case 0:
+        return AloudProblem(wavBytesFuture: _wavBytesFuture);
+      case 1:
+        return Placeholder();
+      case 2:
+        return Placeholder();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final Size screenSize = media.size;
+    final bool isPortrait = media.orientation == Orientation.portrait;
+    final bool isCorrect = _userInputted == _allAnswers[_currentProblemIndex];
+
+    return FlashAndAloudProblemData(
+      screenSize: screenSize,
+      isPortrait: isPortrait,
+      currentProblemIndex: _currentProblemIndex,
+      allAnswers: _allAnswers,
+      allProblems: _allProblems,
+      child: Scaffold(
+        body: PageTransitionSwitcher(
+          duration: const Duration(milliseconds: 300),
+          reverse: _currentPageIndex == 0,
+          transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+            return FadeThroughTransition(
+              animation: primaryAnimation,
+              secondaryAnimation: secondaryAnimation,
+              fillColor: Colors.black, // Add this
+              child: child,
+            );
+          },
+          child: _buildPage(
+            _currentPageIndex,
+            screenSize,
+            isPortrait,
+            isCorrect,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AloudProblem extends StatefulWidget {
+  const AloudProblem({super.key, required this.wavBytesFuture});
+  final Future<Uint8List> wavBytesFuture;
+
+  @override
+  State<AloudProblem> createState() => _AloudProblemState();
+}
+
+class _AloudProblemState extends State<AloudProblem> {
+  bool _isPlaying = false;
+  SoundHandle? _soundHandle;
+
+  Future<void> _play(Uint8List wavBytes) async {
     if (_isPlaying) {
       await SoLoud.instance.stop(_soundHandle!);
       setState(() => _isPlaying = false);
       return;
     }
-    final wavBytes = await Future(
-      () => _singer.synthesizeWithF0(
-        scoreJson: _score,
-        singingTeacherStyleId: _singingTeacher,
-        singerStyleId: 3074,
-      ),
-    );
     final source = await SoLoud.instance.loadMem('voicevox_out.wav', wavBytes);
+    source.filters.pitchShiftFilter.activate();
     final handle = await SoLoud.instance.play(source);
+    source.filters.pitchShiftFilter.shift(soundHandle: handle).value = 0.8;
+    SoLoud.instance.setRelativePlaySpeed(handle, 1.2);
     setState(() {
       _soundHandle = handle;
       _isPlaying = true;
@@ -99,33 +168,21 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Aloud Problem')),
-      body: FutureBuilder<List<double>>(
-        future: _f0Future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          final f0 = snapshot.data!;
-
-          return Column(
-            children: [
-              Expanded(child: F0Graph(f0: f0)),
-              IconButton(
-                iconSize: 64,
-                icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-                onPressed: _play,
-              ),
-              const SizedBox(height: 16),
-            ],
-          );
-        },
-      ),
+    return FutureBuilder<Uint8List>(
+      future: widget.wavBytesFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const CircularProgressIndicator();
+        return Column(
+          children: [
+            IconButton(
+              iconSize: 64,
+              icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
+              onPressed: () => _play(snapshot.data!),
+            ),
+            const SizedBox(height: 16),
+          ],
+        );
+      },
     );
   }
 }

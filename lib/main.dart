@@ -198,7 +198,11 @@ class _AbacusAppState extends State<AbacusApp> {
         builder: (context, state) {
           final args = state.extra as Map<String, dynamic>?;
 
-          return AloudProblemScreen(paths: args?['voicevoxPaths']);
+          return AloudProblemScreen(
+            paths: args?['voicevoxPaths'],
+            isSingleProblem: args?['isSingleProblem'],
+            selectedLevel: args?['selectedLevel'],
+          );
         },
       ),
       GoRoute(
