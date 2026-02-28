@@ -5,7 +5,7 @@ import 'mitori.dart';
 
 sealed class MitoriProblemSet {
   MitoriProblemSet._();
-  late final List<MitoriProblem> unformattedProblems;
+  late final List<MitoriProblem> unformattedProblems = [];
 
   factory MitoriProblemSet({required MitoriLevel level}) {
     print('factory called with $level ${level.runtimeType}');

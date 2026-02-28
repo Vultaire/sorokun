@@ -40,7 +40,7 @@ Future<VoicevoxPaths> extractVoicevoxAssets() async {
   }
 
   // Extract only the vvms you bundled
-  const vvmFiles = ['0.vvm', '3.vvm', 's0.vvm']; // whatever you included
+  const vvmFiles = ['14.vvm', 's0.vvm']; // whatever you included
   for (final file in vvmFiles) {
     await _extractAsset('assets/voicevox/models/vvms/$file', '$vvmDest/$file');
   }

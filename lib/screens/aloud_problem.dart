@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -31,14 +33,16 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   int _currentPageIndex = 0;
   int _currentProblemIndex = 0;
   String _userInputted = '';
-  late final VoicevoxSing _singer;
   late final Future<Uint8List> _wavBytesFuture;
   late final KeypadSounds _sound;
   late final List<List<int>> _allProblems;
   late final List<String> _allAnswers;
   static const int _singingTeacher = 6000;
-  late final List<String> _scores;
+  late final List<List<String>> _scores;
   bool _delayOver = false;
+  late final Stream<Uint8List> _chunkStream;
+  List<Uint8List> _wavChunks = [];
+  StreamSubscription<Uint8List>? _chunkSubscription;
 
   void _initProblem(AloudSpec spec) {
     AloudProblemSet fullProblemSet = AloudProblemSet(spec: spec);
@@ -47,39 +51,66 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     _scores = _initScore();
   }
 
-  List<String> _initScore() {
-    List<String> scores = [];
+  List<List<String>> _initScore() {
+    List<List<String>> scores = [];
     for (List<int> unformattedProblem in _allProblems) {
       List<Mora> problemMora = scoreMora(unformattedProblem);
-      scores.add(moraListToJson(moraList: problemMora, targetSeconds: 19));
+      scores.add(
+        moraListToJsonChunks(
+          moraList: problemMora,
+          speed: 4,
+          msPerInterval: 1000,
+        ),
+      );
     }
     return scores;
+  }
+
+  Stream<Uint8List> _synthesizeChunks(
+    List<String> scores,
+    String dictDir,
+    String vvmPath,
+  ) async* {
+    for (final score in scores) {
+      yield await Isolate.run(() {
+        final singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
+        singer.initialize();
+        return speedUpWav(
+          singer.synthesizeWithF0(
+            scoreJson: score,
+            singingTeacherStyleId: _singingTeacher,
+            singerStyleId: 3029,
+            keyRangeAdjustment: 2,
+          ),
+          1.2,
+        );
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    _singer = VoicevoxSing(
-      dictDir: widget.paths.dictDir,
-      vvmPath: '${widget.paths.vvmDir}/s0.vvm',
-    );
     _initProblem(widget.selectedLevel);
     _sound = KeypadSounds();
     _sound.init();
-    _wavBytesFuture = Future(() {
-      _singer.initialize();
-      return _singer.synthesizeWithF0(
-        scoreJson: _scores[0],
-        singingTeacherStyleId: _singingTeacher,
-        singerStyleId: 3024,
-      );
+
+    final dictDir = widget.paths.dictDir;
+    final vvmPath = '${widget.paths.vvmDir}/s0.vvm';
+    final scores = _scores[0];
+    print(scores);
+
+    _wavChunks = [];
+    _chunkStream = _synthesizeChunks(scores, dictDir, vvmPath);
+    _chunkSubscription = _chunkStream.listen((chunk) {
+      setState(() => _wavChunks.add(chunk));
     });
   }
 
   @override
   void dispose() {
+    _chunkSubscription?.cancel();
     super.dispose();
-    _singer.dispose();
   }
 
   Widget _buildPage(
@@ -90,7 +121,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   ) {
     switch (index) {
       case 0:
-        return AloudProblem(wavBytesFuture: _wavBytesFuture);
+        return AloudProblem(chunks: _wavChunks, chunkStream: _chunkStream);
       case 1:
         return Placeholder();
       case 2:
@@ -114,6 +145,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       allAnswers: _allAnswers,
       allProblems: _allProblems,
       child: Scaffold(
+        appBar: AppBar(title: Text('Aloud Problem')),
         body: PageTransitionSwitcher(
           duration: const Duration(milliseconds: 300),
           reverse: _currentPageIndex == 0,
@@ -138,8 +170,13 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 }
 
 class AloudProblem extends StatefulWidget {
-  const AloudProblem({super.key, required this.wavBytesFuture});
-  final Future<Uint8List> wavBytesFuture;
+  const AloudProblem({
+    super.key,
+    required this.chunks,
+    required this.chunkStream,
+  });
+  final List<Uint8List> chunks;
+  final Stream<Uint8List> chunkStream;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -147,44 +184,200 @@ class AloudProblem extends StatefulWidget {
 
 class _AloudProblemState extends State<AloudProblem> {
   bool _isPlaying = false;
-  SoundHandle? _soundHandle;
+  int _currentChunk = 0;
 
-  Future<void> _play(Uint8List wavBytes) async {
-    if (_isPlaying) {
-      await SoLoud.instance.stop(_soundHandle!);
-      setState(() => _isPlaying = false);
+  SoundHandle? _currentHandle;
+  AudioSource? _currentSource;
+
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    if (_currentHandle != null) {
+      SoLoud.instance.stop(_currentHandle!);
+    }
+    if (_currentSource != null) {
+      SoLoud.instance.disposeSource(_currentSource!);
+    }
+    super.dispose();
+  }
+
+  Future<void> _playNextChunk() async {
+    if (_disposed || !_isPlaying || _currentChunk >= widget.chunks.length) {
+      if (!_disposed)
+        setState(() {
+          _isPlaying = false;
+          _currentChunk = 0;
+        });
       return;
     }
-    final source = await SoLoud.instance.loadMem('voicevox_out.wav', wavBytes);
-    source.filters.pitchShiftFilter.activate();
+
+    final source = await SoLoud.instance.loadMem(
+      'chunk_$_currentChunk.wav',
+      widget.chunks[_currentChunk],
+    );
+
+    if (_disposed) {
+      SoLoud.instance.disposeSource(source);
+      return;
+    }
+
+    _currentSource = source;
     final handle = await SoLoud.instance.play(source);
-    source.filters.pitchShiftFilter.shift(soundHandle: handle).value = 0.8;
-    SoLoud.instance.setRelativePlaySpeed(handle, 1.2);
-    setState(() {
-      _soundHandle = handle;
-      _isPlaying = true;
+    _currentHandle = handle;
+
+    final duration = SoLoud.instance.getLength(source);
+    _currentChunk++;
+
+    Future.delayed(duration, () async {
+      await SoLoud.instance.disposeSource(source);
+      if (!_disposed && _isPlaying) _playNextChunk();
     });
+  }
+
+  Future<void> _play() async {
+    if (_isPlaying) {
+      if (_currentHandle != null) {
+        await SoLoud.instance.stop(_currentHandle!);
+      }
+      setState(() {
+        _isPlaying = false;
+        _currentChunk = 0;
+      });
+      return;
+    }
+    setState(() {
+      _isPlaying = true;
+      _currentChunk = 0;
+    });
+    _playNextChunk();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List>(
-      future: widget.wavBytesFuture,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const CircularProgressIndicator();
-        return Column(
-          children: [
-            IconButton(
-              iconSize: 64,
-              icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-              onPressed: () => _play(snapshot.data!),
-            ),
-            const SizedBox(height: 16),
-          ],
-        );
-      },
+    final hasFirstChunk = widget.chunks.isNotEmpty;
+    return Column(
+      children: [
+        IconButton(
+          iconSize: 64,
+          icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
+          onPressed: hasFirstChunk ? _play : null,
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
+}
+
+Uint8List speedUpWav(Uint8List wavBytes, double speed) {
+  final byteData = ByteData.sublistView(wavBytes);
+  final numChannels = byteData.getUint16(22, Endian.little);
+  final sampleRate = byteData.getUint32(24, Endian.little);
+  final bitsPerSample = byteData.getUint16(34, Endian.little);
+  final bytesPerSample = bitsPerSample ~/ 8;
+  final blockAlign = numChannels * bytesPerSample;
+
+  final audioData = wavBytes.sublist(44);
+  final totalFrames = audioData.length ~/ blockAlign;
+
+  // Read all samples interleaved
+  final samples = Int16List(totalFrames * numChannels);
+  for (int i = 0; i < samples.length; i++) {
+    samples[i] = byteData.getInt16(44 + i * bytesPerSample, Endian.little);
+  }
+
+  // WSOLA parameters — larger window reduces buzzing
+  final windowFrames = (sampleRate * 0.08).round(); // 80ms window
+  final outputHop = (sampleRate * 0.04).round(); // 40ms hop (50% overlap)
+  final inputHop = (outputHop * speed).round();
+  final searchRadius = (sampleRate * 0.02).round(); // 20ms search
+
+  // Hann window
+  final window = Float64List(windowFrames);
+  for (int i = 0; i < windowFrames; i++) {
+    window[i] = 0.5 * (1 - cos(2 * pi * i / (windowFrames - 1)));
+  }
+
+  final estimatedOutputFrames = (totalFrames / speed).ceil() + windowFrames * 2;
+  final output = Float64List(estimatedOutputFrames * numChannels);
+  final normalization = Float64List(estimatedOutputFrames * numChannels);
+
+  // Cross-correlation on channel 0 only, but compare against the
+  // *normalized* output so far (i.e. what the waveform actually looks like)
+  int findBestOffset(int inputPos, int outputPos) {
+    double bestCorr = double.negativeInfinity;
+    int bestOffset = 0;
+
+    for (int offset = -searchRadius; offset <= searchRadius; offset++) {
+      final candidatePos = inputPos + offset;
+      if (candidatePos < 0 || candidatePos + windowFrames > totalFrames)
+        continue;
+
+      double corr = 0;
+      for (int frame = 0; frame < windowFrames; frame++) {
+        final outIdx = (outputPos + frame) * numChannels;
+        final inIdx = (candidatePos + frame) * numChannels;
+        if (outIdx >= output.length) break;
+
+        // Normalize the output sample before correlating
+        final norm = normalization[outIdx] > 0 ? normalization[outIdx] : 1.0;
+        final outSample = output[outIdx] / norm;
+        corr += outSample * samples[inIdx];
+      }
+
+      if (corr > bestCorr) {
+        bestCorr = corr;
+        bestOffset = offset;
+      }
+    }
+    return bestOffset;
+  }
+
+  int inputPos = 0;
+  int outputPos = 0;
+
+  while (inputPos + windowFrames <= totalFrames) {
+    final offset = outputPos == 0 ? 0 : findBestOffset(inputPos, outputPos);
+    final alignedInput = (inputPos + offset).clamp(
+      0,
+      totalFrames - windowFrames,
+    );
+
+    for (int frame = 0; frame < windowFrames; frame++) {
+      final w = window[frame];
+      for (int ch = 0; ch < numChannels; ch++) {
+        final inIdx = (alignedInput + frame) * numChannels + ch;
+        final outIdx = (outputPos + frame) * numChannels + ch;
+        if (inIdx >= samples.length || outIdx >= output.length) continue;
+        output[outIdx] += samples[inIdx] * w;
+        normalization[outIdx] += w;
+      }
+    }
+
+    inputPos += inputHop;
+    outputPos += outputHop;
+  }
+
+  // Normalize and convert back to Int16
+  final outFrameCount = outputPos + windowFrames;
+  final outSamples = Int16List(outFrameCount * numChannels);
+  for (int i = 0; i < outSamples.length; i++) {
+    if (i >= output.length) break;
+    final norm = normalization[i] > 0 ? normalization[i] : 1.0;
+    outSamples[i] = (output[i] / norm).round().clamp(-32768, 32767);
+  }
+
+  // Rebuild WAV
+  final newAudioBytes = outSamples.buffer.asUint8List();
+  final newFileSize = 44 + newAudioBytes.length;
+  final outputWav = Uint8List(newFileSize);
+  outputWav.setRange(0, 44, wavBytes);
+  final outByteData = ByteData.sublistView(outputWav);
+  outByteData.setUint32(4, newFileSize - 8, Endian.little);
+  outByteData.setUint32(40, newAudioBytes.length, Endian.little);
+  outputWav.setRange(44, newFileSize, newAudioBytes);
+  return outputWav;
 }
 
 class F0Graph extends StatelessWidget {

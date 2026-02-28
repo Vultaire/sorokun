@@ -1,28 +1,61 @@
+import 'package:soroban_app/models/aloud_source.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/problem_generation/aloud_set.dart';
 import 'package:soroban_app/problem_generation/mitori.dart';
 import 'package:soroban_app/problem_generation/mitori_set.dart';
 
-String moraListToJson({
+List<String> moraListToJsonChunks({
   required List<Mora> moraList,
-  required double targetSeconds,
+  required int speed,
+  required int msPerInterval,
 }) {
-  final totalFrames = targetSeconds * 93.75;
-  final framesPerMora = (totalFrames / moraList.length).round();
+  final int intervalFrames = ((msPerInterval * 93.75) / 1000).round();
+  final int halfInterval = (intervalFrames / 2).round();
+  final int framesPerMora = (25 + (speed - 1) * (10 - 25) / (9 - 1)).round();
 
-  final notes = moraList
-      .map((mora) {
-        final key = mora.lyric.isEmpty ? null : (mora.isHighPitch ? 63 : 60);
-        return '    { "key": ${key ?? 'null'}, "frame_length": $framesPerMora, "lyric": "${mora.lyric}" }';
-      })
-      .join(',\n');
+  // Split into chunks of non-empty moras
+  final List<List<Mora>> chunks = [];
+  List<Mora> current = [];
 
-  return '{\n  "notes": [\n    { "key": null, "frame_length": 69, "lyric": "" },\n$notes\n  ]\n}';
+  for (final mora in moraList) {
+    if (mora.lyric.isEmpty) {
+      if (current.isNotEmpty) {
+        chunks.add(current);
+        current = [];
+      }
+    } else {
+      current.add(mora);
+    }
+  }
+  if (current.isNotEmpty) chunks.add(current);
+
+  return chunks.map((chunk) {
+    final notes = <String>[];
+
+    notes.add(
+      '    { "key": null, "frame_length": $halfInterval, "lyric": "" }',
+    );
+
+    for (final mora in chunk) {
+      final key = mora.isHighPitch ? 64 : 62;
+      notes.add(
+        '    { "key": $key, "frame_length": $framesPerMora, "lyric": "${mora.lyric}" }',
+      );
+    }
+
+    notes.add(
+      '    { "key": null, "frame_length": $halfInterval, "lyric": "" }',
+    );
+
+    return '{\n  "notes": [\n${notes.join(',\n')}\n  ]\n}';
+  }).toList();
 }
 
 List<Mora> scoreMora(List<int> numbers) {
   final lyrics = scoreLyrics(numbers);
   final result = <Mora>[];
   bool currentHigh = false; // pitch of last word
+  bool preserveAccent = true;
 
   // Helper to rebuild previous word as odaka
   void applyOdaka(int start, int end) {
@@ -63,6 +96,7 @@ List<Mora> scoreMora(List<int> numbers) {
       // this word itself is all low
       result.addAll(moras.map((m) => Mora(lyric: m, isHighPitch: false)));
       currentHigh = false;
+      preserveAccent = true;
       prevWordStart = result.length;
       continue;
     }
@@ -79,19 +113,31 @@ List<Mora> scoreMora(List<int> numbers) {
 
     // --- Add moras ---
     for (int i = 0; i < moras.length; i++) {
-      final isHigh = switch (accent) {
-        PitchAccent.zero => i == 0 ? currentHigh : true,
-        PitchAccent.one ||
-        PitchAccent.two ||
-        PitchAccent.three => i < downstep && (i > 0 || downstep == 1),
-        PitchAccent.none => false,
-        _ => true,
-      };
-      result.add(Mora(lyric: moras[i], isHighPitch: isHigh));
+      if (preserveAccent || currentHigh) {
+        currentHigh = switch (accent) {
+          PitchAccent.zero => i == 0 ? currentHigh : true,
+          PitchAccent.one ||
+          PitchAccent.two ||
+          PitchAccent.three => i < downstep && (i > 0 || downstep == 1),
+          PitchAccent.none => false,
+          _ => true,
+        };
+      } else {
+        currentHigh = false;
+      }
+      result.add(Mora(lyric: moras[i], isHighPitch: currentHigh));
+      if (preserveAccent && word == NumberWord.ni || word == NumberWord.go) {
+        currentHigh = true;
+      }
     }
 
     // update state
-    currentHigh = accent == PitchAccent.zero ? true : false;
+    preserveAccent =
+        word == NumberWord.none ||
+            word == NumberWord.hiitewa ||
+            word == NumberWord.kuwaete
+        ? true
+        : false;
     prevWordStart = result.length - moras.length;
   }
 
@@ -101,6 +147,7 @@ List<Mora> scoreMora(List<int> numbers) {
 List<LyricWord> scoreLyrics(List<int> numbers) {
   List<LyricWord> scoreLyrics = [];
   bool isNegative = false;
+  scoreLyrics.add(NumberWord.none);
   for (final (i, n) in numbers.indexed) {
     if (n < 0 && !isNegative) {
       scoreLyrics.add(NumberWord.hiitewa);
@@ -202,6 +249,7 @@ enum MyriadPower implements LyricWord {
   man(lyrics: ['マ', 'ン'], pitch: .one),
   oku(lyrics: ['オ', 'ク'], pitch: .odakaTransformation),
   icchou(lyrics: ['イ', 'ッ', 'チョ', 'ウ'], pitch: .one),
+  hacchou(lyrics: ['ハ', 'ッ', 'チョ', 'ウ'], pitch: .one),
   jucchou(lyrics: ['ジュ', 'ッ', 'チョ', 'ウ'], pitch: .one),
   chou(lyrics: ['チョ', 'ウ'], pitch: .odakaTransformation),
   ikkei(lyrics: ['イ', 'ッ', 'ケ', 'イ'], pitch: .one),
@@ -301,6 +349,7 @@ List<LyricWord> myriadAbbreviation(List<LyricWord> words) {
   const rules = {
     (NumberWord.ichi, MyriadPower.chou): MyriadPower.icchou,
     (NumberWord.juu, MyriadPower.chou): MyriadPower.jucchou,
+    (NumberWord.hachi, MyriadPower.chou): MyriadPower.hacchou,
     (NumberWord.ichi, MyriadPower.kei): MyriadPower.ikkei,
   };
 
@@ -323,16 +372,15 @@ List<LyricWord> myriadAbbreviation(List<LyricWord> words) {
 }
 
 void main() {
-  MitoriProblemSet fullProblemSet = MitoriProblemSet(
-    level: ComplexMitoriLevel.zsk5,
-  );
-  List<MitoriProblem> allProblems = fullProblemSet.unformattedProblems;
+  AloudProblemSet fullProblemSet = AloudProblemSet(spec: AloudLevel.zsd8);
+  List<MitoriProblem> allProblems = fullProblemSet.mitoriProblemList;
   List<String> allAnswers = fullProblemSet.formattedAnswers;
 
   print(
-    moraListToJson(
+    moraListToJsonChunks(
       moraList: scoreMora(allProblems[0].problem),
-      targetSeconds: 35,
+      speed: 3,
+      msPerInterval: 1000,
     ),
   );
 }

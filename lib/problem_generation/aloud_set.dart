@@ -62,5 +62,5 @@ List<int> generateDigitList({
 }
 
 void main() {
-  print(AloudProblemSet(spec: AloudLevel.zsd4).unformattedProblems);
+  print(AloudProblemSet(spec: AloudLevel.zsd8).unformattedProblems);
 }

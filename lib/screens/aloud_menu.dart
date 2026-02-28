@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/models/aloud_source.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 
@@ -19,12 +19,12 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
       appBar: AppBar(),
       body: NavigationButton(
         onPressed: () {
-          context.go(
+          context.push(
             '/aloud-problem',
             extra: {
               'voicevoxPaths': widget.voicevoxPaths,
               'isSingleProblem': false,
-              'selectedLevel': ComplexMitoriLevel.zsdan,
+              'selectedLevel': AloudLevel.zsd1,
             },
           );
         },

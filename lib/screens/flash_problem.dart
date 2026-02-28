@@ -361,7 +361,7 @@ class FlashAndAloudResult extends StatefulWidget {
     required this.isSingleProblem,
     required this.onRepeatProblem,
     required this.onNewProblem,
-    required this.answer,
+    required this.answer, //must be passed or next answer shows before page transition completes
   });
   final VoidCallback onNextProblem;
   final VoidCallback onRepeatProblem;

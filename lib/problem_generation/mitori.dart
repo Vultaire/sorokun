@@ -17,25 +17,24 @@ class MitoriProblem {
 }
 
 List<int> generateMitoriProblemFromDigitList(List<int> digitList, Random rand) {
-  // Calculate sum and generate pool
+  final bool hasLargeRows = digitList.any((d) => d > 10);
   int sum = digitList.fold(0, (a, b) => a + b);
   List<int> pool = _generatePool(sum, rand, digitList);
-
   for (int attempt = 0; attempt < 100; attempt++) {
     pool.shuffle(rand);
-
-    // Build initial array by distributing pool
     List<List<int>> array = _buildInitialArray(digitList, pool);
-
-    // Fix violations through swapping
-    if (_fixViolations(array, rand, maxIterations: 10000)) {
+    if (_fixViolations(
+      array,
+      rand,
+      maxIterations: 10000,
+      hasLargeRows: hasLargeRows,
+    )) {
       return array.map((row) {
         final unreversed = row.reversed;
         return int.parse(unreversed.join());
       }).toList();
     }
   }
-
   throw Exception('Cannot satisfy constraints after 100 attempts');
 }
 
@@ -61,54 +60,60 @@ bool _fixViolations(
   List<List<int>> array,
   Random random, {
   required int maxIterations,
+  required bool hasLargeRows,
 }) {
   int iterations = 0;
-
   while (iterations < maxIterations) {
-    List<Violation> violations = _findViolations(array);
-
-    if (violations.isEmpty) {
-      return true;
-    }
-
+    List<Violation> violations = _findViolations(
+      array,
+      hasLargeRows: hasLargeRows,
+    );
+    if (violations.isEmpty) return true;
     iterations++;
-
-    // Pick a random violation to fix
     Violation violation = violations[random.nextInt(violations.length)];
-
-    // Try to fix it with swaps
-    if (_tryFixViolation(array, violation, random)) {
-      continue; // Fixed, check for more violations
-    }
-
-    // If we can't fix this violation, try swapping randomly to escape local minimum
-    if (iterations % 100 == 0) {
-      _randomSwap(array, random);
-    }
+    if (_tryFixViolation(array, violation, random)) continue;
+    if (iterations % 100 == 0) _randomSwap(array, random);
   }
-
-  return false; // Failed to fix within iteration limit
+  return false;
 }
 
-List<Violation> _findViolations(List<List<int>> array) {
+List<Violation> _findViolations(
+  List<List<int>> array, {
+  required bool hasLargeRows,
+}) {
   List<Violation> violations = [];
-
   for (int row = 0; row < array.length; row++) {
-    // Check for duplicates within row
-    Set<int> seen = {};
-    for (int col = 0; col < array[row].length; col++) {
-      int digit = array[row][col];
-      if (seen.contains(digit)) {
-        violations.add(
-          Violation(
-            type: ViolationType.rowDuplicate,
-            row: row,
-            col: col,
-            digit: digit,
-          ),
-        );
+    if (hasLargeRows) {
+      // Check adjacent duplicates instead of row duplicates
+      for (int col = 0; col < array[row].length - 1; col++) {
+        if (array[row][col] == array[row][col + 1]) {
+          violations.add(
+            Violation(
+              type: ViolationType.adjacentDuplicate,
+              row: row,
+              col: col,
+              digit: array[row][col],
+            ),
+          );
+        }
       }
-      seen.add(digit);
+    } else {
+      // Check for duplicates within row
+      Set<int> seen = {};
+      for (int col = 0; col < array[row].length; col++) {
+        int digit = array[row][col];
+        if (seen.contains(digit)) {
+          violations.add(
+            Violation(
+              type: ViolationType.rowDuplicate,
+              row: row,
+              col: col,
+              digit: digit,
+            ),
+          );
+        }
+        seen.add(digit);
+      }
     }
 
     // Check last column for zero
@@ -143,7 +148,6 @@ List<Violation> _findViolations(List<List<int>> array) {
       }
     }
   }
-
   return violations;
 }
 
@@ -292,4 +296,9 @@ class Violation {
   });
 }
 
-enum ViolationType { rowDuplicate, verticalDuplicate, lastColZero }
+enum ViolationType {
+  rowDuplicate,
+  adjacentDuplicate,
+  verticalDuplicate,
+  lastColZero,
+}
