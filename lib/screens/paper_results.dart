@@ -7,15 +7,15 @@ import 'package:go_router/go_router.dart';
 import '../models/level_definitions.dart';
 import 'components/keypad.dart';
 
-class PaperResultsScreen extends StatelessWidget {
-  final PaperProblemLevel selectedLevel;
+class ResultsScreen extends StatelessWidget {
+  final Level selectedLevel;
   final bool isExam;
   final List<String> allAnswers;
   final List<dynamic> allProblems;
   final List<TextFieldData> textFieldDataList;
   final Duration elapsed;
 
-  const PaperResultsScreen({
+  const ResultsScreen({
     super.key,
     required this.selectedLevel,
     required this.isExam,
@@ -52,7 +52,8 @@ class PaperResultsScreen extends StatelessWidget {
             CountUpText(
               score: getScore(selectedLevel, problemScorerList),
               durationBase: Duration(milliseconds: 10),
-              passThreshold: selectedLevel.denomination.passThreshold,
+              passThreshold: selectedLevel.levelInfo.passThreshold,
+              rangedThreshold: selectedLevel.levelInfo.rangedThreshold,
               style: TextStyle(
                 fontSize: 78,
                 fontWeight: .bold,
@@ -78,7 +79,7 @@ class PaperResultsScreen extends StatelessWidget {
                   extra: {
                     'selectedLevel': selectedLevel,
                     'isExam': isExam,
-                    'time': selectedLevel.denomination.timeLimit,
+                    'time': selectedLevel.levelInfo.timeLimit,
                     'appBarTitle': 'placeholder',
                   },
                 );
@@ -121,7 +122,7 @@ class ProblemScorer {
 }
 
 (int, int) getScore(
-  PaperProblemLevel selectedLevel,
+  Level selectedLevel,
   List<ProblemScorer> problemScoringList,
 ) {
   switch (selectedLevel) {
@@ -135,11 +136,11 @@ class ProblemScorer {
     case DivMultLevel _:
       final int outOf =
           problemScoringList.length *
-          (selectedLevel.denomination == .nisshou ? 5 : 10);
+          (selectedLevel.levelInfo == .nisshou ? 5 : 10);
       final int score = problemScoringList.fold(
         0,
         (total, scorer) => (total += scorer.isCorrect
-            ? (selectedLevel.denomination == .nisshou ? 5 : 10)
+            ? (selectedLevel.levelInfo == .nisshou ? 5 : 10)
             : 0),
       );
       return (score, outOf);
@@ -152,6 +153,7 @@ class CountUpText extends StatefulWidget {
   final TextStyle style;
   final String suffix;
   final double passThreshold;
+  final List<(String, int)>? rangedThreshold;
 
   const CountUpText({
     super.key,
@@ -160,6 +162,7 @@ class CountUpText extends StatefulWidget {
     required this.style,
     this.suffix = '点',
     required this.passThreshold,
+    required this.rangedThreshold,
   });
 
   @override
@@ -177,6 +180,7 @@ class _CountUpTextState extends State<CountUpText>
   int _lastSoundTrigger = 0;
   bool _animatePassFail = false;
   bool _thresholdSoundPlayed = false;
+  late final String passFailText;
 
   bool get userPassed =>
       widget.score.$1 / widget.score.$2 > widget.passThreshold;
@@ -184,6 +188,17 @@ class _CountUpTextState extends State<CountUpText>
   @override
   void initState() {
     super.initState();
+    if (widget.rangedThreshold != null) {
+      for (final threshold in widget.rangedThreshold!) {
+        if (widget.score.$1 >= threshold.$2) {
+          passFailText = threshold.$1;
+        }
+      }
+    } else {
+      passFailText = (widget.score.$1 / widget.score.$2 > widget.passThreshold)
+          ? '合格'
+          : '不合格';
+    }
     Duration duration =
         Duration(milliseconds: 800) + widget.durationBase * widget.score.$1;
     _controller = AnimationController(duration: duration, vsync: this);
@@ -268,9 +283,6 @@ class _CountUpTextState extends State<CountUpText>
 
   @override
   Widget build(BuildContext context) {
-    final bool userPassed =
-        widget.score.$1 / widget.score.$2 > widget.passThreshold;
-
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return AnimatedBuilder(
       animation: _controller,
@@ -359,6 +371,7 @@ class _CountUpTextState extends State<CountUpText>
                     animate: _animatePassFail,
                     userPassed: userPassed,
                     passFailAppearSound: passFailAppearSound,
+                    passFailText: passFailText,
                   ),
                 ],
               ),
@@ -459,12 +472,14 @@ class PassFail extends StatefulWidget {
   final bool animate;
   final bool userPassed;
   final AudioSource? passFailAppearSound;
+  final String passFailText;
 
   const PassFail({
     super.key,
     required this.animate,
     required this.userPassed,
     required this.passFailAppearSound,
+    required this.passFailText,
   });
 
   @override
@@ -517,7 +532,7 @@ class _PassFailState extends State<PassFail>
       child: ScaleTransition(
         scale: _scale,
         child: Text(
-          widget.userPassed ? '合格!' : '不合格',
+          widget.passFailText,
           style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
         ),
       ),

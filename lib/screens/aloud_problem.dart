@@ -9,7 +9,6 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:soroban_app/models/aloud_source.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
-import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 import 'package:soroban_app/src/voicevox_sing.dart';
@@ -33,19 +32,22 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   int _currentPageIndex = 0;
   int _currentProblemIndex = 0;
   String _userInputted = '';
-  late final Future<Uint8List> _wavBytesFuture;
-  late final KeypadSounds _sound;
+  final Stopwatch _stopwatch = Stopwatch();
   late final List<List<int>> _allProblems;
   late final List<String> _allAnswers;
-  static const int _singingTeacher = 6000;
   late final List<List<String>> _scores;
+  late final String dictDir;
+  late final String vvmPath;
+  late String _inputTime;
   bool _delayOver = false;
-  late final Stream<Uint8List> _chunkStream;
-  List<Uint8List> _wavChunks = [];
-  StreamSubscription<Uint8List>? _chunkSubscription;
+  Stream<Uint8List>? _chunkStream;
+  StreamSubscription? _chunkSubscription;
+  final List<Uint8List> _wavChunks = [];
 
-  void _initProblem(AloudSpec spec) {
-    AloudProblemSet fullProblemSet = AloudProblemSet(spec: spec);
+  void _initProblems() {
+    AloudProblemSet fullProblemSet = AloudProblemSet(
+      spec: widget.selectedLevel,
+    );
     _allProblems = fullProblemSet.unformattedProblems;
     _allAnswers = fullProblemSet.formattedAnswers;
     _scores = _initScore();
@@ -58,19 +60,15 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       scores.add(
         moraListToJsonChunks(
           moraList: problemMora,
-          speed: 4,
-          msPerInterval: 1000,
+          speed: 3,
+          msPerInterval: 1500,
         ),
       );
     }
     return scores;
   }
 
-  Stream<Uint8List> _synthesizeChunks(
-    List<String> scores,
-    String dictDir,
-    String vvmPath,
-  ) async* {
+  Stream<Uint8List> _synthesizeChunks(List<String> scores) async* {
     for (final score in scores) {
       yield await Isolate.run(() {
         final singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
@@ -78,31 +76,77 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
         return speedUpWav(
           singer.synthesizeWithF0(
             scoreJson: score,
-            singingTeacherStyleId: _singingTeacher,
+            singingTeacherStyleId: 6000,
             singerStyleId: 3029,
             keyRangeAdjustment: 2,
           ),
-          1.2,
+          1.3,
         );
       });
     }
   }
 
+  void showInput() {
+    _stopwatch.start();
+    setState(() {
+      _delayOver = true;
+    });
+    Future.delayed(Duration(milliseconds: 500)).then((_) {
+      if (mounted) {
+        setState(() {
+          _currentPageIndex = 1;
+        });
+      }
+    });
+    _chunkSubscription?.cancel();
+    _wavChunks.clear();
+    _chunkStream = _synthesizeChunks(_scores[_currentProblemIndex + 1]);
+    _chunkSubscription = _chunkStream!.listen((chunk) {
+      setState(() => _wavChunks.add(chunk));
+    });
+  }
+
+  void setInputAndShowResult(String userInputted) {
+    _userInputted = userInputted;
+    _stopwatch.stop();
+    final elapsedSeconds = _stopwatch.elapsedMilliseconds / 1000;
+    _inputTime = (!widget.isSingleProblem && elapsedSeconds > 30)
+        ? '30.00'
+        : elapsedSeconds.toStringAsFixed(2);
+    setState(() {
+      _currentPageIndex = 2;
+    });
+    _stopwatch.reset();
+  }
+
+  void startNextProblem() {
+    _currentProblemIndex++;
+    playProblem();
+  }
+
+  void playProblem() {
+    setState(() {
+      _currentPageIndex = 0;
+      _delayOver = false;
+    });
+  }
+
+  void newProblem() {
+    _initProblems();
+    playProblem();
+  }
+
   @override
   void initState() {
     super.initState();
-    _initProblem(widget.selectedLevel);
-    _sound = KeypadSounds();
-    _sound.init();
+    dictDir = widget.paths.dictDir;
+    vvmPath = '${widget.paths.vvmDir}/s0.vvm';
+    _initProblems();
 
-    final dictDir = widget.paths.dictDir;
-    final vvmPath = '${widget.paths.vvmDir}/s0.vvm';
-    final scores = _scores[0];
-    print(scores);
+    final List<String> firstScore = _scores[0];
 
-    _wavChunks = [];
-    _chunkStream = _synthesizeChunks(scores, dictDir, vvmPath);
-    _chunkSubscription = _chunkStream.listen((chunk) {
+    _chunkStream = _synthesizeChunks(firstScore);
+    _chunkSubscription = _chunkStream?.listen((chunk) {
       setState(() => _wavChunks.add(chunk));
     });
   }
@@ -113,19 +157,31 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     super.dispose();
   }
 
-  Widget _buildPage(
-    int index,
-    Size screenSize,
-    bool isPortrait,
-    bool isCorrect,
-  ) {
+  Widget _buildPage(int index, bool isCorrect) {
     switch (index) {
       case 0:
-        return AloudProblem(chunks: _wavChunks, chunkStream: _chunkStream);
+        return AloudProblem(
+          chunks: _wavChunks,
+          chunkStream: _chunkStream,
+          onComplete: showInput,
+        );
       case 1:
-        return Placeholder();
+        return FlashAndAloudProblemInput<int>(
+          showResult: setInputAndShowResult,
+          showTimer: !widget.isSingleProblem,
+          delayOver: _delayOver,
+          duration: 29500,
+        );
       case 2:
-        return Placeholder();
+        return FlashAndAloudResult<int>(
+          onNextProblem: startNextProblem,
+          onRepeatProblem: playProblem,
+          onNewProblem: newProblem,
+          inputTime: _inputTime,
+          isCorrect: isCorrect,
+          isSingleProblem: widget.isSingleProblem,
+          answer: _allAnswers[_currentProblemIndex],
+        );
       default:
         return const SizedBox.shrink();
     }
@@ -138,7 +194,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     final bool isPortrait = media.orientation == Orientation.portrait;
     final bool isCorrect = _userInputted == _allAnswers[_currentProblemIndex];
 
-    return FlashAndAloudProblemData(
+    return FlashAndAloudProblemData<int>(
       screenSize: screenSize,
       isPortrait: isPortrait,
       currentProblemIndex: _currentProblemIndex,
@@ -157,12 +213,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
               child: child,
             );
           },
-          child: _buildPage(
-            _currentPageIndex,
-            screenSize,
-            isPortrait,
-            isCorrect,
-          ),
+          child: _buildPage(_currentPageIndex, isCorrect),
         ),
       ),
     );
@@ -174,9 +225,11 @@ class AloudProblem extends StatefulWidget {
     super.key,
     required this.chunks,
     required this.chunkStream,
+    required this.onComplete,
   });
   final List<Uint8List> chunks;
-  final Stream<Uint8List> chunkStream;
+  final Stream<Uint8List>? chunkStream;
+  final VoidCallback onComplete;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -205,11 +258,17 @@ class _AloudProblemState extends State<AloudProblem> {
 
   Future<void> _playNextChunk() async {
     if (_disposed || !_isPlaying || _currentChunk >= widget.chunks.length) {
-      if (!_disposed)
+      final completed =
+          !_disposed && _isPlaying && _currentChunk >= widget.chunks.length;
+      if (!_disposed) {
         setState(() {
           _isPlaying = false;
           _currentChunk = 0;
         });
+        if (completed) {
+          widget.onComplete.call();
+        }
+      }
       return;
     }
 
@@ -257,15 +316,17 @@ class _AloudProblemState extends State<AloudProblem> {
   @override
   Widget build(BuildContext context) {
     final hasFirstChunk = widget.chunks.isNotEmpty;
-    return Column(
-      children: [
-        IconButton(
-          iconSize: 64,
-          icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-          onPressed: hasFirstChunk ? _play : null,
-        ),
-        const SizedBox(height: 16),
-      ],
+    return Center(
+      child: Column(
+        children: [
+          IconButton(
+            iconSize: 64,
+            icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
+            onPressed: hasFirstChunk ? _play : null,
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 }
@@ -378,68 +439,4 @@ Uint8List speedUpWav(Uint8List wavBytes, double speed) {
   outByteData.setUint32(40, newAudioBytes.length, Endian.little);
   outputWav.setRange(44, newFileSize, newAudioBytes);
   return outputWav;
-}
-
-class F0Graph extends StatelessWidget {
-  const F0Graph({super.key, required this.f0});
-  final List<double> f0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: CustomPaint(
-        painter: _F0Painter(f0: f0),
-        child: const SizedBox.expand(),
-      ),
-    );
-  }
-}
-
-class _F0Painter extends CustomPainter {
-  final List<double> f0;
-  _F0Painter({required this.f0});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (f0.isEmpty) return;
-
-    final nonZero = f0.where((v) => v > 0);
-    if (nonZero.isEmpty) return;
-
-    final minF0 = nonZero.reduce(min);
-    final maxF0 = nonZero.reduce(max);
-    final range = maxF0 - minF0;
-
-    final paint = Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    final silencePaint = Paint()
-      ..color = Colors.grey.withOpacity(0.3)
-      ..strokeWidth = 2;
-
-    for (int i = 0; i < f0.length - 1; i++) {
-      final x1 = size.width * i / (f0.length - 1);
-      final x2 = size.width * (i + 1) / (f0.length - 1);
-
-      if (f0[i] == 0 || f0[i + 1] == 0) {
-        // Draw silence as flat line at bottom
-        canvas.drawLine(
-          Offset(x1, size.height),
-          Offset(x2, size.height),
-          silencePaint,
-        );
-        continue;
-      }
-
-      final y1 = size.height - (size.height * (f0[i] - minF0) / range);
-      final y2 = size.height - (size.height * (f0[i + 1] - minF0) / range);
-      canvas.drawLine(Offset(x1, y1), Offset(x2, y2), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_F0Painter old) => old.f0 != f0;
 }

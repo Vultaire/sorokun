@@ -151,7 +151,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           onEnd: showInput,
         );
       case 1:
-        return FlashAndAloudProblemInput(
+        return FlashAndAloudProblemInput<String>(
           key: ValueKey('input_$_currentProblemIndex'),
           showResult: setInputAndShowResult,
           showTimer: !widget.isSingleProblem,
@@ -159,7 +159,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           duration: 14500,
         );
       case 2:
-        return FlashAndAloudResult(
+        return FlashAndAloudResult<String>(
           key: ValueKey('result_$_currentProblemIndex'),
           onNextProblem: startNextProblem,
           onRepeatProblem: playProblem,
@@ -226,7 +226,7 @@ class FlashTextField extends StatelessWidget {
   }
 }
 
-class FlashAndAloudProblemInput extends StatefulWidget {
+class FlashAndAloudProblemInput<T> extends StatefulWidget {
   const FlashAndAloudProblemInput({
     super.key,
     required this.showResult,
@@ -240,14 +240,15 @@ class FlashAndAloudProblemInput extends StatefulWidget {
   final int duration;
 
   @override
-  State<FlashAndAloudProblemInput> createState() =>
-      _FlashAndAloudProblemInputState();
+  State<FlashAndAloudProblemInput<T>> createState() =>
+      _FlashAndAloudProblemInputState<T>();
 }
 
-class _FlashAndAloudProblemInputState extends State<FlashAndAloudProblemInput>
+class _FlashAndAloudProblemInputState<T>
+    extends State<FlashAndAloudProblemInput<T>>
     with FlashKeypadMethods {
-  FlashAndAloudProblemData get _data =>
-      FlashAndAloudProblemData.of<String>(context);
+  FlashAndAloudProblemData<T> get _data =>
+      FlashAndAloudProblemData.of<T>(context);
   @override
   TextFieldData textData = TextFieldData();
   @override
@@ -276,18 +277,19 @@ class _FlashAndAloudProblemInputState extends State<FlashAndAloudProblemInput>
           child: Stack(
             alignment: .center,
             children: [
-              Opacity(
-                opacity: 0.4,
-                child: SizedBox(
-                  width: 400,
-                  height: 400,
-                  child: PieTimer(
-                    duration: Duration(milliseconds: widget.duration),
-                    delayOver: widget.delayOver,
-                    onComplete: () => widget.showResult(textData.formatted),
+              if (widget.showTimer)
+                Opacity(
+                  opacity: 0.4,
+                  child: SizedBox(
+                    width: 400,
+                    height: 400,
+                    child: PieTimer(
+                      duration: Duration(milliseconds: widget.duration),
+                      delayOver: widget.delayOver,
+                      onComplete: () => widget.showResult(textData.formatted),
+                    ),
                   ),
                 ),
-              ),
               FittedBox(
                 fit: BoxFit.contain,
                 child: FlashTextField(data: textData),
@@ -352,7 +354,7 @@ class _FlashAndAloudProblemInputState extends State<FlashAndAloudProblemInput>
   }
 }
 
-class FlashAndAloudResult extends StatefulWidget {
+class FlashAndAloudResult<T> extends StatefulWidget {
   const FlashAndAloudResult({
     super.key,
     required this.onNextProblem,
@@ -372,12 +374,12 @@ class FlashAndAloudResult extends StatefulWidget {
   final String answer;
 
   @override
-  State<FlashAndAloudResult> createState() => _FlashAndAloudResultState();
+  State<FlashAndAloudResult<T>> createState() => _FlashAndAloudResultState<T>();
 }
 
-class _FlashAndAloudResultState extends State<FlashAndAloudResult> {
-  FlashAndAloudProblemData<String> get _data =>
-      FlashAndAloudProblemData.of<String>(context);
+class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
+  FlashAndAloudProblemData<T> get _data =>
+      FlashAndAloudProblemData.of<T>(context);
   Widget freeOrSetButtons(bool isSingleProblem) {
     if (isSingleProblem) {
       return Row(

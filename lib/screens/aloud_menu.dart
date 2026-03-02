@@ -24,7 +24,7 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
             extra: {
               'voicevoxPaths': widget.voicevoxPaths,
               'isSingleProblem': false,
-              'selectedLevel': AloudLevel.zsd1,
+              'selectedLevel': AloudLevel.zsk8,
             },
           );
         },
