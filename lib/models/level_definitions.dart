@@ -1,4 +1,4 @@
-import 'sources.dart';
+import 'package:soroban_app/models/divmult_source.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import '../problem_generation/multiplication.dart';
 import '../problem_generation/division.dart';

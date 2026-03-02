@@ -33,7 +33,7 @@ class ComplexMitoriProblemSet extends MitoriProblemSet {
       );
     }
 
-    if (level.denomination == .nisshou && level.minusCount > 0) {
+    if (level.levelInfo.denomination == .nisshou && level.minusCount > 0) {
       applyNisshouMinus(
         fullProblemSet: unformattedProblems,
         minusCount: level.minusCount,
@@ -62,7 +62,7 @@ List<MitoriProblem> _generateGroupProblems({
       rand: rand,
     );
 
-    if (level.denomination == .zenshuren && level.minusCount > 0) {
+    if (level.levelInfo.denomination == .zenshuren && level.minusCount > 0) {
       final minusCount =
           level.minusCountPerGroup?[groupIdx] ?? level.minusCount;
       final bool isNeverNegative = level.neverNegative!;

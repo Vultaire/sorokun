@@ -5,7 +5,7 @@ import 'dart:math';
 
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:soroban_app/models/flash_source.dart';
+import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/components/spammable_button.dart';

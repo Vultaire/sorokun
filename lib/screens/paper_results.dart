@@ -50,7 +50,7 @@ class ResultsScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             CountUpText(
-              score: getScore(selectedLevel, problemScorerList),
+              score: getScore(selectedLevel.levelInfo, problemScorerList),
               durationBase: Duration(milliseconds: 10),
               passThreshold: selectedLevel.levelInfo.passThreshold,
               rangedThreshold: selectedLevel.levelInfo.rangedThreshold,
@@ -122,29 +122,16 @@ class ProblemScorer {
 }
 
 (int, int) getScore(
-  Level selectedLevel,
+  LevelInfo levelInfo,
   List<ProblemScorer> problemScoringList,
 ) {
-  switch (selectedLevel) {
-    case MitoriLevel _:
-      final int outOf = problemScoringList.length * 10;
-      final int score = problemScoringList.fold(
-        0,
-        (total, scorer) => (total += scorer.isCorrect ? 10 : 0),
-      );
-      return (score, outOf);
-    case DivMultLevel _:
-      final int outOf =
-          problemScoringList.length *
-          (selectedLevel.levelInfo == .nisshou ? 5 : 10);
-      final int score = problemScoringList.fold(
-        0,
-        (total, scorer) => (total += scorer.isCorrect
-            ? (selectedLevel.levelInfo == .nisshou ? 5 : 10)
-            : 0),
-      );
-      return (score, outOf);
-  }
+  final int score = problemScoringList.fold(
+    0,
+    (total, scorer) =>
+        (total += scorer.isCorrect ? levelInfo.pointsPerProblem : 0),
+  );
+  final int outOf = problemScoringList.length * levelInfo.pointsPerProblem;
+  return (score, outOf);
 }
 
 class CountUpText extends StatefulWidget {
@@ -195,9 +182,7 @@ class _CountUpTextState extends State<CountUpText>
         }
       }
     } else {
-      passFailText = (widget.score.$1 / widget.score.$2 > widget.passThreshold)
-          ? '合格'
-          : '不合格';
+      passFailText = (userPassed) ? '合格' : '不合格';
     }
     Duration duration =
         Duration(milliseconds: 800) + widget.durationBase * widget.score.$1;

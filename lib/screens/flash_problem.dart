@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soroban_app/models/flash_source.dart';
+import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';

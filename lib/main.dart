@@ -214,7 +214,7 @@ class _AbacusAppState extends State<AbacusApp> {
 
           return blackFadeTransition(
             key: state.pageKey,
-            child: PaperResultsScreen(
+            child: ResultsScreen(
               selectedLevel: args?['selectedLevel'] ?? DivMultLevel.zsdk8,
               isExam: args?['isExam'] ?? true,
               allAnswers: args?['allAnswers'],

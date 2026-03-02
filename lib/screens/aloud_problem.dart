@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:soroban_app/models/aloud_source.dart';
+import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
 import 'package:soroban_app/screens/flash_problem.dart';

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:soroban_app/models/flash_source.dart';
+import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/mitori.dart';
 
 import 'abacus.dart';

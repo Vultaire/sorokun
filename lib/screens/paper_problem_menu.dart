@@ -121,7 +121,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
             extra: {
               'selectedLevel': selectedLevel,
               'isExam': isExam,
-              'time': selectedLevel!.denomination.timeLimit,
+              'time': selectedLevel!.levelInfo.timeLimit,
               'appBarTitle': '${kyuui.kyuuString}の$label',
             },
           );
