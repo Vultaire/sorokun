@@ -40,6 +40,7 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
   List<String> get allAnswers;
   int get currentIndex;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
+  int get maxDigits => 7;
   KeypadSounds get sound;
 
   void appendDigit(String digit) {
@@ -67,7 +68,7 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
           SoLoud.instance.play(sound.keyTap);
         }
       } else if (textData.formatted.replaceAll(_digitsOnlyRegex, '').length <
-          7) {
+          maxDigits) {
         textData.internalString += digit;
         SoLoud.instance.play(sound.keyTap);
       } else {
@@ -417,6 +418,7 @@ class Keypad extends StatelessWidget {
                   onPressed: () => onAppendDigit('a'),
 
                   style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, double.infinity),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

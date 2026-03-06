@@ -176,13 +176,14 @@ class _CountUpTextState extends State<CountUpText>
   void initState() {
     super.initState();
     if (widget.rangedThreshold != null) {
+      passFailText = '不合格';
       for (final threshold in widget.rangedThreshold!) {
         if (widget.score.$1 >= threshold.$2) {
           passFailText = threshold.$1;
         }
       }
     } else {
-      passFailText = (userPassed) ? '合格' : '不合格';
+      passFailText = userPassed ? '合格' : '不合格';
     }
     Duration duration =
         Duration(milliseconds: 800) + widget.durationBase * widget.score.$1;

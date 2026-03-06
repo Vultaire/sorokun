@@ -69,6 +69,8 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   }
 
   Stream<Uint8List> _synthesizeChunks(List<String> scores) async* {
+    final dictDir = this.dictDir;
+    final vvmPath = this.vvmPath;
     for (final score in scores) {
       yield await Isolate.run(() {
         final singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
@@ -171,6 +173,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
           duration: 29500,
+          maxDigits: 16,
         );
       case 2:
         return FlashAndAloudResult<int>(

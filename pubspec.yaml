@@ -44,7 +44,6 @@ flutter:
   assets:
     - assets/voicevox/dict/open_jtalk_dic_utf_8-1.11/
     - assets/voicevox/models/vvms/
-    - assets/complexityThresholdMap.json
     - assets/open_jtalk_dic_utf_8-1.11/
     - assets/correct.png
     - assets/incorrect.png
@@ -52,6 +51,13 @@ flutter:
     - assets/timesup.png
     - assets/kanryou.png
     - assets/finished.png
+    - assets/soroban-grey.png
+    - assets/mitori.png
+    - assets/mitorian.png
+    - assets/kake.png
+    - assets/kakean.png
+    - assets/wari.png
+    - assets/warian.png
     - assets/tick.wav
     - assets/passthreshold.wav
     - assets/pass.wav

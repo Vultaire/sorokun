@@ -92,40 +92,48 @@ int getRandomFlashInt(
 }
 
 Decimal randomDecimal(int digits, Random rand) {
-  late String result;
+  assert(digits <= 10, 'Cannot have more than 10 unique digits');
 
   if (digits == 1) {
-    // single digit can't be 0 or 1, too easy.
-    result = (2 + rand.nextInt(8)).toString();
-  } else {
-    // First digit can't be 0
-    result = (1 + rand.nextInt(9)).toString();
-
-    // Remaining digits can be 0-9
-    for (int i = 1; i < digits; i++) {
-      result += rand.nextInt(10).toString();
-    }
+    return Decimal.parse((2 + rand.nextInt(8)).toString());
   }
 
-  return Decimal.parse(result);
+  List<int> available = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..shuffle(rand);
+
+  if (available[0] == 0) {
+    int swapIndex = 1 + rand.nextInt(9);
+    available[0] = available[swapIndex];
+    available[swapIndex] = 0;
+  }
+
+  return Decimal.parse(available.take(digits).join());
 }
 
 Decimal randomDecimalNoTrailingZero(int digits, Random rand) {
-  int low, high;
+  assert(digits <= 10, 'Cannot have more than 10 unique digits');
+
   if (digits == 1) {
-    low = 2;
-    high = 9;
-  } else {
-    low = pow(10, digits - 1).toInt();
-    high = pow(10, digits).toInt() - 1;
+    return Decimal.parse((2 + rand.nextInt(8)).toString());
   }
 
-  int value;
-  do {
-    value = low + rand.nextInt(high - low + 1);
-  } while (value % 10 == 0);
+  List<int> available = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..shuffle(rand);
 
-  return Decimal.fromInt(value);
+  if (available[0] == 0) {
+    int swapIndex = 1 + rand.nextInt(9);
+    available[0] = available[swapIndex];
+    available[swapIndex] = 0;
+  }
+
+  if (available[digits - 1] == 0) {
+    int swapIndex;
+    do {
+      swapIndex = 1 + rand.nextInt(9);
+    } while (swapIndex == digits - 1);
+    available[digits - 1] = available[swapIndex];
+    available[swapIndex] = 0;
+  }
+
+  return Decimal.parse(available.take(digits).join());
 }
 
 (Decimal, int) scaleValue(

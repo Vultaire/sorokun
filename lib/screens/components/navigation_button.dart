@@ -5,6 +5,7 @@ class NavigationButton extends StatefulWidget {
   final Widget label;
   final Duration duration;
   final Duration debounceTime;
+  final Widget? image; // add this
 
   const NavigationButton({
     super.key,
@@ -12,6 +13,7 @@ class NavigationButton extends StatefulWidget {
     required this.label,
     this.duration = const Duration(milliseconds: 100),
     this.debounceTime = const Duration(milliseconds: 1000),
+    this.image,
   });
 
   @override
@@ -69,7 +71,18 @@ class _NavigationButtonState extends State<NavigationButton> {
               color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: widget.label,
+            child: widget.image != null
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      widget.image!,
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: widget.label,
+                      ),
+                    ],
+                  )
+                : widget.label,
           ),
         ),
       ),

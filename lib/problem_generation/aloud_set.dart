@@ -29,6 +29,15 @@ class AloudProblemSet {
       isNeverNegative: true,
       minusProblemsPerTemplate: 2,
       problemsPerTemplate: spec.probCount,
+      regenerateProblem: (rand) {
+        final randomLayout = generateDigitList(
+          minDigits: spec.minDigits,
+          maxDigits: spec.maxDigits,
+          kuchi: spec.kuchi,
+          rand: rand,
+        );
+        return generateMitoriProblemFromDigitList(randomLayout, rand);
+      },
       minusCount: minusCount,
       rand: rand,
     );

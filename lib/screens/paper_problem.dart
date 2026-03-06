@@ -142,27 +142,26 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     );
     Overlay.of(context).insert(blockingOverlay);
 
-    if (widget.selectedLevel is ComplexMitoriLevel) {
-      final state = _mitorizanKey.currentState;
-      if (state != null) {
-        selectedLevel = widget.selectedLevel;
-        isExam = widget.isExam;
-        allAnswers = state.allAnswers;
-        allProblems = state.allProblems;
-        textFieldDataList = state.textFieldDataList;
-        elapsed = _stopwatch.elapsed;
-      }
-    } else if (widget.selectedLevel is DivMultLevel) {
-      final state = _divMultKey.currentState;
-      if (state != null) {
-        selectedLevel = widget.selectedLevel;
-        isExam = widget.isExam;
-        allAnswers = state.allAnswers;
-        allProblems = state.allProblems;
-        textFieldDataList = state.textFieldDataList;
-        elapsed = _stopwatch.elapsed;
-      }
+    switch (widget.selectedLevel) {
+      case MitoriLevel():
+        final state = _mitorizanKey.currentState;
+        if (state != null) {
+          allAnswers = state.allAnswers;
+          allProblems = state.allProblems;
+          textFieldDataList = state.textFieldDataList;
+        }
+      case DivMultLevel():
+        final state = _divMultKey.currentState;
+        if (state != null) {
+          allAnswers = state.allAnswers;
+          allProblems = state.allProblems;
+          textFieldDataList = state.textFieldDataList;
+        }
     }
+
+    selectedLevel = widget.selectedLevel;
+    isExam = widget.isExam;
+    elapsed = _stopwatch.elapsed;
 
     if (!mounted) return;
     final overlay = Overlay.of(context);
@@ -636,7 +635,7 @@ class _MitorizanWindowState extends State<MitorizanWindow>
                                 currentProblem[0],
                                 style: switch (widget.selectedLevel) {
                                   SimpleMitoriLevel() => TextStyle(
-                                    fontSize: 57,
+                                    fontSize: 120,
                                     fontFamily: 'ogutama',
                                   ),
                                   _ => TextStyle(
@@ -850,6 +849,7 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 5),
                     const Text('||', style: TextStyle(fontSize: 26)),
                     CustomTextField(
                       data: textFieldDataList[problemIndex],

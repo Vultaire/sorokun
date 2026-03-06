@@ -157,6 +157,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
           duration: 14500,
+          maxDigits: 7,
         );
       case 2:
         return FlashAndAloudResult<String>(
@@ -233,11 +234,13 @@ class FlashAndAloudProblemInput<T> extends StatefulWidget {
     required this.showTimer,
     required this.delayOver,
     required this.duration,
+    required this.maxDigits,
   });
   final void Function(String) showResult;
   final bool showTimer;
   final bool delayOver;
   final int duration;
+  final int maxDigits;
 
   @override
   State<FlashAndAloudProblemInput<T>> createState() =>
@@ -258,6 +261,8 @@ class _FlashAndAloudProblemInputState<T>
   KeypadSounds get sound => _sound;
   @override
   int get currentIndex => _data.currentProblemIndex;
+  @override
+  int get maxDigits => widget.maxDigits;
 
   @override
   void initState() {

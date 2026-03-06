@@ -8,7 +8,6 @@ sealed class MitoriProblemSet {
   late final List<MitoriProblem> unformattedProblems = [];
 
   factory MitoriProblemSet({required MitoriLevel level}) {
-    print('factory called with $level ${level.runtimeType}');
     return switch (level) {
       final SimpleMitoriLevel l => SimpleMitoriProblemSet(level: l),
       final ComplexMitoriLevel l => ComplexMitoriProblemSet(level: l),
@@ -54,10 +53,10 @@ List<MitoriProblem> _generateGroupProblems({
     final templateGroup = templateLists[groupIdx];
     if (templateGroup is! List) continue;
 
-    final templates = List<Map<String, int>>.from(templateGroup);
+    final template = List<Map<String, int>>.from(templateGroup);
     final problemsPerTemplate = level.problemCountPerTemplate[groupIdx];
     final templateProblems = _generateTemplateProblems(
-      templates: templates,
+      templates: template,
       count: problemsPerTemplate,
       rand: rand,
     );
@@ -74,6 +73,14 @@ List<MitoriProblem> _generateGroupProblems({
         problemsPerTemplate: problemsPerTemplate,
         minusCount: minusCount,
         rand: rand,
+        regenerateProblem: (rand) {
+          final randomLayout =
+              template
+                  .expand((t) => List.filled(t["count"]!, t["digits"]!))
+                  .toList()
+                ..shuffle(rand);
+          return generateMitoriProblemFromDigitList(randomLayout, rand);
+        },
       );
     }
 
@@ -296,30 +303,25 @@ void applyZenshurenMinus({
   required int problemsPerTemplate,
   required int minusCount,
   required Random rand,
+  required List<int> Function(Random rand) regenerateProblem,
 }) {
   List<int> indices = List.generate(problemsPerTemplate, (i) => i)
     ..shuffle(rand);
   Iterable<int> selectedIndices = indices.take(minusProblemsPerTemplate);
-
   for (var relativeIdx in selectedIndices) {
     int actualIdx = templateProblems.length - problemsPerTemplate + relativeIdx;
     List<int> problem = templateProblems[actualIdx].problem;
-
     var minusIndices = List.generate(problem.length - 1, (i) => i + 1)
       ..shuffle(rand);
-
     int attempts = 0;
     const maxAttempts = 100;
     bool valid = false;
-
     while (!valid && attempts < maxAttempts) {
       attempts++;
       problem = problem.map((x) => x.abs()).toList();
-
       for (int k = 0; k < minusCount && k < problem.length; k++) {
         problem[minusIndices[k]] = -problem[minusIndices[k]].abs();
       }
-
       if (isNeverNegative) {
         int runningSum = 0;
         valid = true;
@@ -327,7 +329,14 @@ void applyZenshurenMinus({
           runningSum += n;
           if (runningSum < 0) {
             valid = false;
-            problem.shuffle(rand);
+            if (attempts >= maxAttempts) {
+              print(
+                '[applyZenshurenMinus] Could not find valid minus combination after $attempts attempts. Regenerating problem. problem: $problem, minusCount: $minusCount',
+              );
+              problem = regenerateProblem(rand);
+              attempts = 0;
+            }
+            minusIndices.shuffle(rand);
             break;
           }
         }
@@ -335,13 +344,9 @@ void applyZenshurenMinus({
         valid = true;
       }
     }
-
     if (!valid) {
-      throw Exception(
-        'maxAttempts at minus application exceeded.',
-      ); //TODO: Remove this.
+      throw Exception('maxAttempts at minus application exceeded.');
     }
-
     templateProblems[actualIdx].newProblem = problem;
   }
 }

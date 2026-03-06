@@ -768,7 +768,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     minusProblemsPerTemplate: 2,
     levelInfo: .zs,
     problemCountPerTemplate: [5],
-    repeat: 1,
+    repeat: 4,
     neverNegative: true,
   ),
   zsak1(
@@ -781,7 +781,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     minusProblemsPerTemplate: 2,
     levelInfo: .zs,
     problemCountPerTemplate: [5],
-    repeat: 1,
+    repeat: 4,
     neverNegative: true,
   ),
   zsadan(
@@ -1555,6 +1555,16 @@ enum Kyuui {
     divAnzan: .nsdadan,
     kyuuString: '段位',
   ),
+  zsk20(flash: .zsd1, kyuuString: '20級'),
+  zsk19(flash: .zsd2, kyuuString: '19級'),
+  zsk18(flash: .zsd3, kyuuString: '18級'),
+  zsk17(flash: .zsd4, kyuuString: '17級'),
+  zsk16(flash: .zsd5, kyuuString: '16級'),
+  zsk15(flash: .zsd6, kyuuString: '15級'),
+  zsk14(flash: .zsd7, kyuuString: '14級'),
+  zsk13(flash: .zsd8, kyuuString: '13級'),
+  zsk12(flash: .zsd9, kyuuString: '12級'),
+  zsk11(flash: .zsd10, kyuuString: '11級'),
   zsk10(
     mitoriSoroban: .zsk10a, //TODO
     mitoriAnzan: SimpleMitoriLevel.zsak10,
@@ -1562,6 +1572,8 @@ enum Kyuui {
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    aloud: .zsk10,
+    flash: .zsk10,
     kyuuString: '10級',
   ),
   zsk9(
@@ -1571,6 +1583,8 @@ enum Kyuui {
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
+    aloud: .zsk9,
+    flash: .zsk9,
     kyuuString: '9級',
   ),
   zsk8(
@@ -1580,6 +1594,8 @@ enum Kyuui {
     multAnzan: null,
     divSoroban: .zsdk8,
     divAnzan: null,
+    aloud: .zsk8,
+    flash: .zsk8,
     kyuuString: '8級',
   ),
   zsk7(
@@ -1589,6 +1605,8 @@ enum Kyuui {
     multAnzan: .zsmak5, //sic
     divSoroban: .zsdk7,
     divAnzan: null,
+    aloud: .zsk7,
+    flash: .zsk7,
     kyuuString: '7級',
   ),
   zsk6(
@@ -1598,6 +1616,8 @@ enum Kyuui {
     multAnzan: .zsmak5, //sic
     divSoroban: .zsdk6,
     divAnzan: .zsdak5, //sic
+    aloud: .zsk6,
+    flash: .zsk6,
     kyuuString: '6級',
   ),
   zsk5(
@@ -1607,6 +1627,8 @@ enum Kyuui {
     multAnzan: .zsmak5,
     divSoroban: .zsdk5,
     divAnzan: .zsdak5,
+    aloud: .zsk5,
+    flash: .zsk5,
     kyuuString: '5級',
   ),
   zsk4(
@@ -1616,6 +1638,8 @@ enum Kyuui {
     multAnzan: .zsmak4,
     divSoroban: .zsdk4,
     divAnzan: .zsdak4,
+    aloud: .zsk4,
+    flash: .zsk4,
     kyuuString: '4級',
   ),
   zsk3(
@@ -1625,6 +1649,8 @@ enum Kyuui {
     multAnzan: .zsmak3,
     divSoroban: .zsdk3,
     divAnzan: .zsdak3,
+    aloud: .zsk3,
+    flash: .zsk3,
     kyuuString: '3級',
   ),
   zsk2(
@@ -1634,6 +1660,8 @@ enum Kyuui {
     multAnzan: .zsmak2,
     divSoroban: .zsdk2,
     divAnzan: .zsdak2,
+    aloud: .zsk2,
+    flash: .zsk2,
     kyuuString: '2級',
   ),
   zsk1(
@@ -1643,6 +1671,8 @@ enum Kyuui {
     multAnzan: .zsmak1,
     divSoroban: .zsdk1,
     divAnzan: .zsdak1,
+    aloud: .zsk1,
+    flash: .zsk1,
     kyuuString: '1級',
   ),
   zsdan(
@@ -1653,23 +1683,67 @@ enum Kyuui {
     divSoroban: .zsddan,
     divAnzan: .zsdadan,
     kyuuString: '段位',
-  );
+  ),
+  zsd1(aloud: .zsd1, flash: .zsd1, kyuuString: '初段'),
+  zsd2(aloud: .zsd2, flash: .zsd2, kyuuString: '2段'),
+  zsd3(aloud: .zsd3, flash: .zsd3, kyuuString: '3段'),
+  zsd4(aloud: .zsd4, flash: .zsd4, kyuuString: '4段'),
+  zsd5(aloud: .zsd5, flash: .zsd5, kyuuString: '5段'),
+  zsd6(aloud: .zsd4, flash: .zsd6, kyuuString: '6段'),
+  zsd7(aloud: .zsd4, flash: .zsd7, kyuuString: '7段'),
+  zsd8(aloud: .zsd4, flash: .zsd8, kyuuString: '8段'),
+  zsd9(aloud: .zsd4, flash: .zsd9, kyuuString: '9段'),
+  zsd10(aloud: .zsd4, flash: .zsd10, kyuuString: '10段'),
+  kkk20(flash: .zsk20, kyuuString: '20級'),
+  kkk19(flash: .kkk19, kyuuString: '19級'),
+  kkk18(flash: .kkk18, kyuuString: '18級'),
+  kkk17(flash: .kkk17, kyuuString: '17級'),
+  kkk16(flash: .kkk16, kyuuString: '16級'),
+  kkk15(flash: .kkk15, kyuuString: '15級'),
+  kkk14(flash: .kkk14, kyuuString: '14級'),
+  kkk13(flash: .kkk13, kyuuString: '13級'),
+  kkk12(flash: .kkk12, kyuuString: '12級'),
+  kkk11(flash: .kkk11, kyuuString: '11級'),
+  kkk10(flash: .zsk10, kyuuString: '10級'),
+  kkk9(flash: .kkk9, kyuuString: '9級'),
+  kkk8(flash: .kkk8, kyuuString: '8級'),
+  kkk7(flash: .kkk7, kyuuString: '7級'),
+  kkk6(flash: .kkk6, kyuuString: '6級'),
+  kkk5(flash: .kkk5, kyuuString: '5級'),
+  kkk4(flash: .kkk4, kyuuString: '4級'),
+  kkk3(flash: .kkk3, kyuuString: '3級'),
+  kkk2(flash: .kkk2, kyuuString: '2級'),
+  kkk1(flash: .kkk1, kyuuString: '1級'),
+  kkd1(flash: .kkd1, kyuuString: '初段'),
+  kkd2(flash: .kkd2, kyuuString: '2段'),
+  kkd3(flash: .kkd3, kyuuString: '3段'),
+  kkd4(flash: .kkd4, kyuuString: '4段'),
+  kkd5(flash: .kkd5, kyuuString: '5段'),
+  kkd6(flash: .kkd6, kyuuString: '6段'),
+  kkd7(flash: .kkd7, kyuuString: '7段'),
+  kkd8(flash: .kkd8, kyuuString: '8段'),
+  kkd9(flash: .kkd9, kyuuString: '9段'),
+  kkd10(flash: .zsd10, kyuuString: '10段');
 
   const Kyuui({
-    required this.mitoriSoroban,
-    required this.mitoriAnzan,
-    required this.multSoroban,
-    required this.multAnzan,
-    required this.divSoroban,
-    required this.divAnzan,
+    this.mitoriSoroban,
+    this.mitoriAnzan,
+    this.multSoroban,
+    this.multAnzan,
+    this.divSoroban,
+    this.divAnzan,
+    this.aloud,
+    this.flash,
     required this.kyuuString,
   });
-  final ComplexMitoriLevel mitoriSoroban;
-  final MitoriLevel mitoriAnzan;
+  final ComplexMitoriLevel? mitoriSoroban;
+  final MitoriLevel? mitoriAnzan;
   final DivMultLevel? multSoroban;
   final DivMultLevel? multAnzan;
   final DivMultLevel? divSoroban;
   final DivMultLevel? divAnzan;
+  final AloudLevel? aloud;
+  final FlashLevel? flash;
   final String kyuuString;
 }
 
@@ -1697,6 +1771,60 @@ enum KyuuiDenomination {
     k1: .zsk1,
     dan: .zsdan,
   ),
+  zsAloudAndFlash(
+    k10: .zsk10,
+    k9: .zsk9,
+    k8: .zsk8,
+    k7: .zsk7,
+    k6: .zsk6,
+    k5: .zsk5,
+    k4: .zsk4,
+    k3: .zsk3,
+    k2: .zsk2,
+    k1: .zsk1,
+    d1: .zsd1,
+    d2: .zsd2,
+    d3: .zsd3,
+    d4: .zsd4,
+    d5: .zsd5,
+    d6: .zsd6,
+    d7: .zsd7,
+    d8: .zsd8,
+    d9: .zsd9,
+    d10: .zsd10,
+  ),
+  kkFlash(
+    k20: .kkk10,
+    k19: .kkk9,
+    k18: .kkk8,
+    k17: .kkk7,
+    k16: .kkk6,
+    k15: .kkk5,
+    k14: .kkk4,
+    k13: .kkk3,
+    k12: .kkk2,
+    k11: .kkk1,
+    k10: .kkk10,
+    k9: .kkk9,
+    k8: .kkk8,
+    k7: .kkk7,
+    k6: .kkk6,
+    k5: .kkk5,
+    k4: .kkk4,
+    k3: .kkk3,
+    k2: .kkk2,
+    k1: .kkk1,
+    d1: .kkd1,
+    d2: .kkd2,
+    d3: .kkd3,
+    d4: .kkd4,
+    d5: .kkd5,
+    d6: .kkd6,
+    d7: .kkd7,
+    d8: .kkd8,
+    d9: .kkd9,
+    d10: .kkd10,
+  ),
   ns(
     k10: .nsk10,
     k9: .nsk9,
@@ -1715,7 +1843,27 @@ enum KyuuiDenomination {
   );
 
   const KyuuiDenomination({
-    required this.dan,
+    this.k11,
+    this.k12,
+    this.k13,
+    this.k14,
+    this.k15,
+    this.k16,
+    this.k17,
+    this.k18,
+    this.k19,
+    this.k20,
+    this.d10,
+    this.d9,
+    this.d8,
+    this.d7,
+    this.d6,
+    this.d5,
+    this.d4,
+    this.d3,
+    this.d2,
+    this.d1,
+    this.dan,
     required this.k1,
     this.kj1,
     required this.k2,
@@ -1731,7 +1879,17 @@ enum KyuuiDenomination {
     required this.k10,
   });
 
-  final Kyuui dan;
+  final Kyuui? d10;
+  final Kyuui? d9;
+  final Kyuui? d8;
+  final Kyuui? d7;
+  final Kyuui? d6;
+  final Kyuui? d5;
+  final Kyuui? d4;
+  final Kyuui? d3;
+  final Kyuui? d2;
+  final Kyuui? d1;
+  final Kyuui? dan;
   final Kyuui k1;
   final Kyuui? kj1;
   final Kyuui k2;
@@ -1745,4 +1903,14 @@ enum KyuuiDenomination {
   final Kyuui k8;
   final Kyuui k9;
   final Kyuui k10;
+  final Kyuui? k11;
+  final Kyuui? k12;
+  final Kyuui? k13;
+  final Kyuui? k14;
+  final Kyuui? k15;
+  final Kyuui? k16;
+  final Kyuui? k17;
+  final Kyuui? k18;
+  final Kyuui? k19;
+  final Kyuui? k20;
 }

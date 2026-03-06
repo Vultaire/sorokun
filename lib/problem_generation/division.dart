@@ -58,7 +58,7 @@ class DivisionProblem extends DivMultProblem {
     bool intRound,
     Random rand,
   ) {
-    final divisor = randomDecimalNoTrailingZero(dDigits, rand);
+    final divisor = randomDecimal(dDigits, rand);
     final quotient = randomDecimalNoTrailingZero(qDigits, rand);
     final dividend = divisor * quotient;
     return DivisionProblem._(dividend, divisor, quotient, intRound);
@@ -147,11 +147,15 @@ class DivisionProblem extends DivMultProblem {
       Decimal divisor =
           (Decimal.fromInt(numerator) / Decimal.fromInt(denominator))
               .toDecimal();
+      String divisorDigits = divisor.toString().replaceAll('.', '');
+      if (divisorDigits.length != divisorDigits.split('').toSet().length) {
+        continue;
+      }
 
       int qInt = randomMultipleForDenominator(denominator, qDigits, rand);
 
       if (qInt == -1) {
-        continue; // retry
+        continue;
       }
 
       Decimal quotient = Decimal.fromInt(qInt);
@@ -203,7 +207,7 @@ class DivisionProblem extends DivMultProblem {
     bool intRound,
     Random rand,
   ) {
-    final Decimal divisor = randomDecimalNoTrailingZero(dDigits, rand);
+    final Decimal divisor = randomDecimal(dDigits, rand);
     Decimal quotient = randomDecimalNoTrailingZero(qDigits, rand);
     (quotient, _) = scaleValue(quotient, rand);
     final dividend = divisor * quotient;
@@ -216,7 +220,7 @@ class DivisionProblem extends DivMultProblem {
     bool intRound,
     Random rand,
   ) {
-    final Decimal divisor = randomDecimalNoTrailingZero(dDigits, rand);
+    final Decimal divisor = randomDecimal(dDigits, rand);
 
     final Decimal scaledQuotient = randomDecimalNoTrailingZero(
       qDigits,
@@ -362,13 +366,19 @@ class DivisionProblem extends DivMultProblem {
   static int randomMultipleForDenominator(int den, int qDigits, Random rand) {
     int minK = (pow(10, qDigits - 1) / den).ceil();
     int maxK = (pow(10, qDigits) / den).floor() - 1;
+    if (maxK < minK) return -1;
 
-    if (maxK < minK) {
-      return -1;
+    List<int> candidates = [];
+    for (int k = minK; k <= maxK; k++) {
+      int multiple = den * k;
+      String s = multiple.toString();
+      if (s.length == s.split('').toSet().length) {
+        candidates.add(multiple);
+      }
     }
 
-    int k = minK + rand.nextInt(maxK - minK + 1);
-    return den * k;
+    if (candidates.isEmpty) return -1;
+    return candidates[rand.nextInt(candidates.length)];
   }
 
   static int buildDenominatorForExactlyK({int a = 0, int b = 0}) {
@@ -502,29 +512,29 @@ Map<String, dynamic> getModoshi(
 }
 
 void main() {
-  var problems = DivMultProblemSet(level: DivMultLevel.nsddan);
+  // var problems = DivMultProblemSet(level: DivMultLevel.nsddan);
 
-  // Print each item individually to see they're strings
-  for (var problem in problems.formattedProblems) {
-    print('Problem: "$problem" (type: ${problem.runtimeType})');
-  }
+  // // Print each item individually to see they're strings
+  // for (var problem in problems.formattedProblems) {
+  //   print('Problem: "$problem" (type: ${problem.runtimeType})');
+  // }
 
-  for (var answer in problems.formattedAnswers) {
-    print('Answer: "$answer" (type: ${answer.runtimeType})');
-  }
+  // for (var answer in problems.formattedAnswers) {
+  //   print('Answer: "$answer" (type: ${answer.runtimeType})');
+  // }
 
-  // Or use join to print clearly
-  print('Problems: ${problems.formattedProblems.join(", ")}');
-  print('Answers: ${problems.formattedAnswers.join(", ")}');
+  // // Or use join to print clearly
+  // print('Problems: ${problems.formattedProblems.join(", ")}');
+  // print('Answers: ${problems.formattedAnswers.join(", ")}');
 
-  // DivisionProblem problem = DivisionProblem(
-  //   spec: DivMultSpec(
-  //     digitCount: 10,
-  //     problemType: .type5,
-  //     split: [6, 4],
-  //     intRound: true,
-  //   ),
-  // );
+  DivisionProblem problem = DivisionProblem(
+    spec: DivMultSpec(
+      digitCount: 10,
+      problemType: .type4,
+      split: [6, 5],
+      intRound: true,
+    ),
+  );
 
-  // print(problem);
+  print(problem);
 }

@@ -211,7 +211,6 @@ class _AbacusAppState extends State<AbacusApp> {
           final args =
               state.extra as Map<String, dynamic>? ??
               (kDebugMode ? DebugMockData.paperResultsState : {});
-
           return blackFadeTransition(
             key: state.pageKey,
             child: ResultsScreen(
