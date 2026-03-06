@@ -119,5 +119,4 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 assets/voicevox/
-assets/audio/
 assets/open_jtalk_dic_utf_8-1.11/
