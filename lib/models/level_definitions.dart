@@ -453,7 +453,7 @@ enum DivMultLevel implements PaperProblemLevel {
   ),
   nsmadan(
     split: .nsadan,
-    divMultSource: MultiplicationSource.nsdan,
+    divMultSource: MultiplicationSource.nsadan,
     levelInfo: .nsadanDivMult,
     builder: MultiplicationProblem.new,
   );

@@ -159,7 +159,7 @@ class MultiplicationProblem extends DivMultProblem {
 }
 
 void main() {
-  final problems = DivMultProblemSet(level: DivMultLevel.nsmk2);
+  final problems = DivMultProblemSet(level: DivMultLevel.nsmadan);
 
   print(problems.formattedProblems);
   print(problems.formattedAnswers);

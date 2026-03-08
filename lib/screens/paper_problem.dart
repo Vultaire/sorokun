@@ -765,12 +765,13 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
 
   @override
   Widget build(BuildContext context) {
+    final bool isPortrait = MediaQuery.orientationOf(context) == .portrait;
     return CarouselSlider.builder(
       carouselController: carouselController,
       options: CarouselOptions(
         height: widget.height,
         scrollDirection: .vertical,
-        viewportFraction: 0.5,
+        viewportFraction: isPortrait ? 0.45 : 0.7,
         enlargeCenterPage: true,
         enlargeStrategy: .zoom,
         enlargeFactor: 0.25,

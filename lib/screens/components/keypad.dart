@@ -274,8 +274,12 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
                   : Alignment.centerRight,
               child: Padding(
                 padding: MediaQuery.orientationOf(context) == .portrait
-                    ? const EdgeInsets.only(bottom: 52)
-                    : const EdgeInsets.only(right: 92),
+                    ? EdgeInsets.only(
+                        bottom: MediaQuery.sizeOf(context).height * 0.03,
+                      )
+                    : EdgeInsets.only(
+                        right: MediaQuery.sizeOf(context).width * 0.03,
+                      ),
                 child: Opacity(
                   opacity: value,
                   child: Image.asset(

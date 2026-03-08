@@ -7,6 +7,7 @@ class NavigationButton extends StatefulWidget {
   final Duration debounceTime;
   final Widget? image;
   final Color color;
+  final bool? imageAbove;
 
   const NavigationButton({
     super.key,
@@ -16,6 +17,7 @@ class NavigationButton extends StatefulWidget {
     this.debounceTime = const Duration(milliseconds: 1000),
     this.image,
     required this.color,
+    this.imageAbove,
   });
 
   @override
@@ -68,23 +70,38 @@ class _NavigationButtonState extends State<NavigationButton> {
         child: Opacity(
           opacity: _isNavigating ? 0.5 : 1.0,
           child: Container(
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: widget.color,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: widget.image != null
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      widget.image!,
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: widget.label,
-                      ),
-                    ],
-                  )
-                : widget.label,
+
+            child: Container(
+              padding: EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: widget.color,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: widget.image != null
+                  ? Flex(
+                      direction: widget.imageAbove!
+                          ? Axis.vertical
+                          : Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: widget.imageAbove! ? 3 : 1,
+                          child: widget.image!,
+                        ),
+                        Expanded(
+                          flex: widget.imageAbove! ? 1 : 2,
+                          child: widget.label,
+                        ),
+                      ],
+                    )
+                  : Center(child: widget.label),
+            ),
           ),
         ),
       ),

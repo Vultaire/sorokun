@@ -138,17 +138,18 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
         margin: EdgeInsets.all(6),
         child: NavigationButton(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          label: Text(label, style: Theme.of(context).textTheme.titleLarge),
+          label: Text(
+            label,
+            style: Theme.of(context).textTheme.titleLarge,
+            textAlign: .center,
+          ),
+          imageAbove: isPortrait,
           image: Align(
-            alignment: Alignment.topCenter,
-            child: FractionallySizedBox(
-              heightFactor: 0.85,
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.contain,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                colorBlendMode: BlendMode.srcIn,
-              ),
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.contain,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              colorBlendMode: BlendMode.srcIn,
             ),
           ),
           onPressed: () {
