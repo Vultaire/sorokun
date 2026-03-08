@@ -36,7 +36,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   bool _showLoading = false;
   late final PaperProblemSounds _sound;
   Stopwatch _stopwatch = Stopwatch();
-
   @override
   void initState() {
     super.initState();
@@ -79,12 +78,13 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     return shouldPop ?? false;
   }
 
-  Widget _buildWindow() {
+  Widget _buildWindow({required double height}) {
     if (widget.selectedLevel is MitoriLevel) {
       return MitorizanWindow(
         selectedLevel: widget.selectedLevel as MitoriLevel,
         isExam: widget.isExam,
         onComplete: () => _onComplete(outOfTime: false),
+        height: height,
         key: _mitorizanKey,
       );
     } else if (widget.selectedLevel is DivMultLevel) {
@@ -92,6 +92,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         selectedLevel: widget.selectedLevel as DivMultLevel,
         isExam: widget.isExam,
         onComplete: () => _onComplete(outOfTime: false),
+        height: height,
         key: _divMultKey,
       );
     } else {
@@ -146,16 +147,16 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
       case MitoriLevel():
         final state = _mitorizanKey.currentState;
         if (state != null) {
-          allAnswers = state.allAnswers;
-          allProblems = state.allProblems;
-          textFieldDataList = state.textFieldDataList;
+          allAnswers = state._allAnswers;
+          allProblems = state._allProblems;
+          textFieldDataList = state._textFieldDataList;
         }
       case DivMultLevel():
         final state = _divMultKey.currentState;
         if (state != null) {
-          allAnswers = state.allAnswers;
-          allProblems = state.allProblems;
-          textFieldDataList = state.textFieldDataList;
+          allAnswers = state._allAnswers;
+          allProblems = state._allProblems;
+          textFieldDataList = state._textFieldDataList;
         }
     }
 
@@ -246,6 +247,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isPortrait = MediaQuery.orientationOf(context) == .portrait;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -289,35 +291,41 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           ),
         ),
         body: SafeArea(
-          child: Column(
-            children: [
-              Flexible(
-                flex: 8,
-                child: Stack(
-                  children: [
-                    _buildWindow(),
-                    if (!_delayOver)
-                      DelayWindow(
-                        showLoading: _showLoading,
-                        sounds: _sound,
-                        onFinished: () {
-                          setState(() {
-                            _delayOver = true;
-                          });
-                          _stopwatch.start();
-                        },
+          child: Center(
+            child: Flex(
+              direction: isPortrait ? .vertical : .horizontal,
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: Stack(
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) =>
+                            _buildWindow(height: constraints.maxHeight),
                       ),
-                  ],
+                      if (!_delayOver)
+                        DelayWindow(
+                          showLoading: _showLoading,
+                          sounds: _sound,
+                          onFinished: () {
+                            setState(() {
+                              _delayOver = true;
+                            });
+                            _stopwatch.start();
+                          },
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 5,
-                child: IgnorePointer(
-                  ignoring: !_delayOver,
-                  child: _buildKeypad(),
+                Expanded(
+                  flex: 5,
+                  child: IgnorePointer(
+                    ignoring: !_delayOver,
+                    child: _buildKeypad(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -506,11 +514,13 @@ class MitorizanWindow extends StatefulWidget {
     required this.selectedLevel,
     required this.isExam,
     required this.onComplete,
+    required this.height,
     super.key,
   });
   final MitoriLevel selectedLevel;
   final bool isExam;
   final VoidCallback onComplete;
+  final double height;
 
   @override
   State<MitorizanWindow> createState() => _MitorizanWindowState();
@@ -518,30 +528,28 @@ class MitorizanWindow extends StatefulWidget {
 
 class _MitorizanWindowState extends State<MitorizanWindow>
     with PaperKeypadMethods {
-  late final List<List<String>> allProblems;
-
-  @override
-  late final bool isExam = widget.isExam;
-
-  @override
-  late final List<String> allAnswers;
-
-  @override
-  late final List<TextFieldData> textFieldDataList;
-
+  late final List<List<String>> _allProblems;
+  late final List<String> _allAnswers;
+  late final List<TextFieldData> _textFieldDataList;
   late final KeypadSounds _sound;
+  late final int _maxDigits;
 
+  @override
+  bool get isExam => widget.isExam;
+  @override
+  int get maxDigits => _maxDigits;
+  @override
+  List<String> get allAnswers => _allAnswers;
+  @override
+  List<TextFieldData> get textFieldDataList => _textFieldDataList;
   @override
   KeypadSounds get sound => _sound;
-
   @override
   VoidCallback get onComplete => widget.onComplete;
-
   @override
   int currentIndex = 0;
-
   @override
-  late final CarouselSliderController carouselController =
+  final CarouselSliderController carouselController =
       CarouselSliderController();
 
   @override
@@ -550,8 +558,8 @@ class _MitorizanWindowState extends State<MitorizanWindow>
 
     _initializeProblem(widget.selectedLevel);
 
-    textFieldDataList = List.generate(
-      allProblems.length,
+    _textFieldDataList = List.generate(
+      _allProblems.length,
       (_) => TextFieldData(),
     );
 
@@ -563,8 +571,9 @@ class _MitorizanWindowState extends State<MitorizanWindow>
     MitoriProblemSet fullProblemSet = MitoriProblemSet(
       level: widget.selectedLevel,
     );
-    allProblems = fullProblemSet.formattedProblems;
-    allAnswers = fullProblemSet.formattedAnswers;
+    _allProblems = fullProblemSet.formattedProblems;
+    _allAnswers = fullProblemSet.formattedAnswers;
+    _maxDigits = fullProblemSet.maxDigits;
   }
 
   @override
@@ -572,7 +581,7 @@ class _MitorizanWindowState extends State<MitorizanWindow>
     return CarouselSlider.builder(
       carouselController: carouselController,
       options: CarouselOptions(
-        height: 500,
+        height: widget.height,
         reverse: true,
         viewportFraction: 0.95,
         enlargeCenterPage: true,
@@ -583,9 +592,9 @@ class _MitorizanWindowState extends State<MitorizanWindow>
           });
         },
       ),
-      itemCount: allProblems.length,
+      itemCount: _allProblems.length,
       itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
-        final List<String> currentProblem = allProblems[problemIndex];
+        final List<String> currentProblem = _allProblems[problemIndex];
         final isFocused = problemIndex == currentIndex;
         return Stack(
           children: [
@@ -692,43 +701,42 @@ class DivMultWindow extends StatefulWidget {
     required this.selectedLevel,
     required this.isExam,
     required this.onComplete,
+    required this.height,
     super.key,
   });
   final DivMultLevel selectedLevel;
   final bool isExam;
   final VoidCallback onComplete;
+  final double height;
 
   @override
   State<DivMultWindow> createState() => _DivMultWindowState();
 }
 
 class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
-  late final List<String> allProblems;
-  late final int
-  intRoundIndex; // index in allProblems at the first problem to require an answer rounded to integer
-
-  @override
-  late final bool isExam = widget.isExam;
-
-  @override
-  late final List<String> allAnswers;
-
-  @override
-  late final List<TextFieldData> textFieldDataList;
-
+  late final List<String> _allProblems;
+  late final List<String> _allAnswers;
+  late final List<TextFieldData> _textFieldDataList;
   late final KeypadSounds _sound;
+  // index in allProblems at the first problem to require an answer rounded to integer
+  late final int _intRoundIndex;
 
+  @override
+  bool get isExam => widget.isExam;
+  @override
+  List<String> get allAnswers => _allAnswers;
+  @override
+  List<TextFieldData> get textFieldDataList => _textFieldDataList;
   @override
   KeypadSounds get sound => _sound;
-
+  @override
+  final maxDigits = 11;
   @override
   VoidCallback get onComplete => widget.onComplete;
-
   @override
   int currentIndex = 0;
-
   @override
-  late final CarouselSliderController carouselController =
+  final CarouselSliderController carouselController =
       CarouselSliderController();
 
   @override
@@ -737,8 +745,8 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
 
     _initializeProblem(widget.selectedLevel);
 
-    textFieldDataList = List.generate(
-      allProblems.length,
+    _textFieldDataList = List.generate(
+      _allProblems.length,
       (_) => TextFieldData(),
     );
 
@@ -750,9 +758,9 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
     DivMultProblemSet fullProblemSet = DivMultProblemSet(
       level: widget.selectedLevel,
     );
-    allProblems = fullProblemSet.formattedProblems;
-    allAnswers = fullProblemSet.formattedAnswers;
-    intRoundIndex = allProblems.indexWhere((item) => item.startsWith('\\'));
+    _allProblems = fullProblemSet.formattedProblems;
+    _allAnswers = fullProblemSet.formattedAnswers;
+    _intRoundIndex = _allProblems.indexWhere((item) => item.startsWith('\\'));
   }
 
   @override
@@ -760,7 +768,7 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
     return CarouselSlider.builder(
       carouselController: carouselController,
       options: CarouselOptions(
-        height: 700,
+        height: widget.height,
         scrollDirection: .vertical,
         viewportFraction: 0.5,
         enlargeCenterPage: true,
@@ -772,15 +780,15 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
           });
         },
       ),
-      itemCount: allProblems.length,
+      itemCount: _allProblems.length,
       itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
-        final currentProblem = allProblems[problemIndex];
+        final currentProblem = _allProblems[problemIndex];
         final isFocused = problemIndex == currentIndex;
         return Opacity(
           opacity: isFocused ? 1.0 : 0.6,
           child: Stack(
             children: [
-              if (problemIndex == 0 && intRoundIndex != -1)
+              if (problemIndex == 0 && _intRoundIndex != -1)
                 Align(
                   alignment: .topCenter,
                   child: Transform.translate(
@@ -791,7 +799,7 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
                     ),
                   ),
                 ),
-              if (problemIndex == intRoundIndex)
+              if (problemIndex == _intRoundIndex)
                 Align(
                   alignment: .topCenter,
                   child: Transform.translate(

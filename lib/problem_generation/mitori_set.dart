@@ -18,6 +18,8 @@ sealed class MitoriProblemSet {
       unformattedProblems.map((i) => i.formattedProblem).toList();
   List<String> get formattedAnswers =>
       unformattedProblems.map((i) => i.formattedAnswer).toList();
+  int get maxDigits =>
+      unformattedProblems.map((i) => i.unformattedAnswer.length).reduce(max);
 }
 
 class ComplexMitoriProblemSet extends MitoriProblemSet {
@@ -104,8 +106,10 @@ List<MitoriProblem> _generateTemplateProblems({
       }
     }
     randomLayout.shuffle();
-    final problem = generateMitoriProblemFromDigitList(randomLayout, rand);
-    problems.add(MitoriProblem(problem));
+    final MitoriProblem problem = MitoriProblem(
+      generateMitoriProblemFromDigitList(randomLayout, rand),
+    );
+    problems.add(problem);
   }
   return problems;
 }
@@ -352,7 +356,7 @@ void applyZenshurenMinus({
 }
 
 void main() {
-  var problem = MitoriProblemSet(level: ComplexMitoriLevel.zsadan);
+  var problem = MitoriProblemSet(level: ComplexMitoriLevel.nsdan);
 
   print(problem.formattedProblems);
   print(problem.formattedAnswers);

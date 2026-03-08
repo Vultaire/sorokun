@@ -231,6 +231,7 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
             ),
 
             NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainer,
               onPressed: () {
                 FlashSingleProblemSpec spec = FlashSingleProblemSpec(
                   digits: _digits,

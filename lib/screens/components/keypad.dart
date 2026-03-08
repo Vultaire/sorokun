@@ -107,6 +107,7 @@ mixin FlashKeypadMethods<T extends StatefulWidget> on State<T> {
 mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
   List<TextFieldData> get textFieldDataList;
   int get currentIndex;
+  int get maxDigits;
   CarouselSliderController get carouselController;
   List<String> get allAnswers;
   bool get isExam;
@@ -141,7 +142,8 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
           data.internalString += digit;
           SoLoud.instance.play(sound.keyTap);
         }
-      } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length < 11) {
+      } else if (data.formatted.replaceAll(_digitsOnlyRegex, '').length <
+          maxDigits) {
         data.internalString += digit;
         SoLoud.instance.play(sound.keyTap);
       } else {
@@ -267,13 +269,20 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
           },
           builder: (context, value, child) {
             return Align(
-              alignment: Alignment.bottomCenter,
-              child: Opacity(
-                opacity: value,
-                child: Image.asset(
-                  isCorrect ? 'assets/correct.png' : 'assets/incorrect.png',
-                  width: 300,
-                  height: 300,
+              alignment: MediaQuery.orientationOf(context) == .portrait
+                  ? Alignment.bottomCenter
+                  : Alignment.centerRight,
+              child: Padding(
+                padding: MediaQuery.orientationOf(context) == .portrait
+                    ? const EdgeInsets.only(bottom: 52)
+                    : const EdgeInsets.only(right: 92),
+                child: Opacity(
+                  opacity: value,
+                  child: Image.asset(
+                    isCorrect ? 'assets/correct.png' : 'assets/incorrect.png',
+                    width: 300,
+                    height: 300,
+                  ),
                 ),
               ),
             );
@@ -310,7 +319,7 @@ class Keypad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 400),
+      constraints: const BoxConstraints(maxWidth: 400, maxHeight: 500),
       // Main keypad
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,

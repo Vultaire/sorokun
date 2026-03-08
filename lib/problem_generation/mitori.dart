@@ -10,6 +10,7 @@ class MitoriProblem {
       problem.map((number) => formatWithCommas(number.toString())).toList();
   String get formattedAnswer =>
       formatWithCommas(problem.reduce((a, b) => a + b).toString());
+  String get unformattedAnswer => problem.reduce((a, b) => a + b).toString();
 
   set newProblem(List<int> list) {
     problem = list;
@@ -17,9 +18,10 @@ class MitoriProblem {
 }
 
 List<int> generateMitoriProblemFromDigitList(List<int> digitList, Random rand) {
-  final bool hasLargeRows = digitList.any((d) => d > 10);
+  final bool hasRowsOverTen = digitList.any((d) => d > 10);
+  final bool hasRowsOverSix = digitList.any((d) => d > 6);
   int sum = digitList.fold(0, (a, b) => a + b);
-  List<int> pool = _generatePool(sum, rand, digitList);
+  List<int> pool = _generatePool(sum, digitList, (!hasRowsOverSix), rand);
   for (int attempt = 0; attempt < 100; attempt++) {
     pool.shuffle(rand);
     List<List<int>> array = _buildInitialArray(digitList, pool);
@@ -27,7 +29,7 @@ List<int> generateMitoriProblemFromDigitList(List<int> digitList, Random rand) {
       array,
       rand,
       maxIterations: 10000,
-      hasLargeRows: hasLargeRows,
+      hasLargeRows: hasRowsOverTen,
     )) {
       return array.map((row) {
         final unreversed = row.reversed;
@@ -254,7 +256,12 @@ void _randomSwap(List<List<int>> array, Random random) {
   _swap(array, r1, c1, r2, c2);
 }
 
-List<int> _generatePool(int sum, Random random, List<int> input) {
+List<int> _generatePool(
+  int sum,
+  List<int> input,
+  bool shouldDuplicate,
+  Random random,
+) {
   final bool allOnes = input.every((len) => len == 1);
 
   final List<int> digits = allOnes
@@ -277,6 +284,14 @@ List<int> _generatePool(int sum, Random random, List<int> input) {
   if (remainder > 0) {
     final shuffled = List<int>.from(digits)..shuffle(random);
     pool.addAll(shuffled.take(remainder));
+  }
+
+  if (shouldDuplicate) {
+    for (int i = 0; i < completeSets; i++) {
+      final int randomIndex = random.nextInt(pool.length);
+      final List<int> options = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      pool[randomIndex] = options[random.nextInt(options.length)];
+    }
   }
 
   return pool;

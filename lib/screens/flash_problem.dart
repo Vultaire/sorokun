@@ -391,14 +391,20 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
         mainAxisAlignment: .center,
         children: [
           NavigationButton(
+            color: Theme.of(context).colorScheme.surfaceContainer,
             onPressed: () => context.go('/flash-menu'),
             label: Text('設定画面に戻る'),
           ),
           NavigationButton(
+            color: Theme.of(context).colorScheme.surfaceContainer,
             onPressed: widget.onRepeatProblem,
             label: Text('もう一回'),
           ),
-          NavigationButton(onPressed: widget.onNewProblem, label: Text('次へ')),
+          NavigationButton(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            onPressed: widget.onNewProblem,
+            label: Text('次へ'),
+          ),
         ],
       );
     } else {

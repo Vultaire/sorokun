@@ -1,9 +1,10 @@
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
-import 'package:soroban_app/screens/paper_problem_menu.dart';
+import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 
 class AloudMenuPage extends StatefulWidget {
@@ -16,7 +17,7 @@ class AloudMenuPage extends StatefulWidget {
 
 class _AloudMenuPageState extends State<AloudMenuPage> {
   Kyuui _kyuui = .zsk9;
-  KyuuiDenomination _kyuuiDenomination = .zsAloud;
+  KyuuiDenomination _kyuuiDenomination = .zsAloudAndFlash;
   int _currentIndex = 0;
   late final SharedPreferencesWithCache _prefs;
   @override
@@ -58,6 +59,7 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
             },
           ),
           NavigationButton(
+            color: Theme.of(context).colorScheme.surfaceContainer,
             onPressed: () {
               context.push(
                 '/aloud-problem',
