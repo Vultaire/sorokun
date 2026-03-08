@@ -93,6 +93,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   Widget _buildStartButton({
     required StartButtonType startButtonType,
     required double size,
+    required bool isPortrait,
   }) {
     late final String label;
     late final PaperProblemLevel? selectedLevel;
@@ -128,10 +129,13 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
     if (selectedLevel == null) {
       return SizedBox.shrink();
     }
-    return SizedBox.square(
-      dimension: size,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: isPortrait ? size : size * 2,
+        maxHeight: isPortrait ? size : size,
+      ),
       child: Container(
-        margin: EdgeInsets.all(12),
+        margin: EdgeInsets.all(6),
         child: NavigationButton(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           label: Text(label, style: Theme.of(context).textTheme.titleLarge),
@@ -194,141 +198,99 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
             } else {
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SegmentedButton<KyuuiDenomination>(
-                        segments: const <ButtonSegment<KyuuiDenomination>>[
-                          ButtonSegment(
-                            value: KyuuiDenomination.zs,
-                            label: Text('全国珠算教育連盟'),
-                          ),
-                          ButtonSegment(
-                            value: KyuuiDenomination.ns,
-                            label: Text('日本珠算連盟'),
-                          ),
-                        ],
-                        selected: {_kyuuiDenomination},
-                        onSelectionChanged:
-                            (Set<KyuuiDenomination> newSelection) {
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  child: OrientationBuilder(
+                    builder: (context, orientation) {
+                      final isPortrait = orientation == Orientation.portrait;
+                      final rows = [
+                        [StartButtonType.mitori, StartButtonType.mitorian],
+                        [StartButtonType.kake, StartButtonType.kakean],
+                        [StartButtonType.wari, StartButtonType.warian],
+                      ];
+                      final visibleRows = rows
+                          .where((pair) => pair.any((type) => _hasLevel(type)))
+                          .toList();
+                      final indexedStack = IndexedStack(
+                        index: _kyuuiDenomination == KyuuiDenomination.zs
+                            ? 0
+                            : 1,
+                        children: [
+                          KyuuiSelector(
+                            kyuuiList: _buildKyuuiList(KyuuiDenomination.zs),
+                            currentIndex: _zsIndex,
+                            onChanged: (index, kyuui) {
                               setState(() {
-                                _kyuuiDenomination = newSelection.first;
+                                _zsIndex = index;
+                                _kyuui = kyuui;
                               });
                             },
-                      ),
-                      Expanded(
-                        child: OrientationBuilder(
-                          builder: (context, orientation) {
-                            final isPortrait =
-                                orientation == Orientation.portrait;
-                            final rows = [
-                              [
-                                StartButtonType.mitori,
-                                StartButtonType.mitorian,
-                              ],
-                              [StartButtonType.kake, StartButtonType.kakean],
-                              [StartButtonType.wari, StartButtonType.warian],
-                            ];
-                            final visibleRows = rows
-                                .where(
-                                  (pair) => pair.any((type) => _hasLevel(type)),
-                                )
-                                .toList();
-                            final indexedStack = IndexedStack(
-                              index: _kyuuiDenomination == KyuuiDenomination.zs
-                                  ? 0
-                                  : 1,
-                              children: [
-                                KyuuiSelector(
-                                  kyuuiList: _buildKyuuiList(
-                                    KyuuiDenomination.zs,
-                                  ),
-                                  currentIndex: _zsIndex,
-                                  onChanged: (index, kyuui) {
-                                    setState(() {
-                                      _zsIndex = index;
-                                      _kyuui = kyuui;
-                                    });
-                                  },
-                                ),
-                                KyuuiSelector(
-                                  kyuuiList: _buildKyuuiList(
-                                    KyuuiDenomination.ns,
-                                  ),
-                                  currentIndex: _nsIndex,
-                                  onChanged: (index, kyuui) {
-                                    setState(() {
-                                      _nsIndex = index;
-                                      _kyuui = kyuui;
-                                    });
-                                  },
-                                ),
-                              ],
-                            );
-                            final buttonGrid = Column(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.surfaceContainer,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Flex(
-                                      direction: isPortrait
-                                          ? Axis.vertical
-                                          : Axis.horizontal,
-                                      children: visibleRows
-                                          .map(
-                                            (pair) => Expanded(
-                                              child: LayoutBuilder(
-                                                builder: (context, constraints) {
-                                                  final size = isPortrait
-                                                      ? constraints.maxWidth / 2
-                                                      : constraints.maxHeight /
-                                                            2;
-                                                  return Flex(
-                                                    direction: isPortrait
-                                                        ? Axis.horizontal
-                                                        : Axis.vertical,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: pair
-                                                        .map(
-                                                          (type) =>
-                                                              _buildStartButton(
-                                                                startButtonType:
-                                                                    type,
-                                                                size: size,
-                                                              ),
-                                                        )
-                                                        .toList(),
-                                                  );
-                                                },
+                          ),
+                          KyuuiSelector(
+                            kyuuiList: _buildKyuuiList(KyuuiDenomination.ns),
+                            currentIndex: _nsIndex,
+                            onChanged: (index, kyuui) {
+                              setState(() {
+                                _nsIndex = index;
+                                _kyuui = kyuui;
+                              });
+                            },
+                          ),
+                        ],
+                      );
+                      final buttonGrid = Container(
+                        padding: .all(6),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Flex(
+                          direction: isPortrait
+                              ? Axis.vertical
+                              : Axis.horizontal,
+                          children: visibleRows
+                              .map(
+                                (pair) => Expanded(
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final startButtonSizeConstraint =
+                                          isPortrait
+                                          ? constraints.maxWidth / 2
+                                          : constraints.maxHeight / 2;
+                                      return Flex(
+                                        direction: isPortrait
+                                            ? Axis.horizontal
+                                            : Axis.vertical,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: pair
+                                            .map(
+                                              (type) => _buildStartButton(
+                                                startButtonType: type,
+                                                size: startButtonSizeConstraint,
+                                                isPortrait: isPortrait,
                                               ),
-                                            ),
-                                          )
-                                          .toList(),
-                                    ),
+                                            )
+                                            .toList(),
+                                      );
+                                    },
                                   ),
                                 ),
-                                Switch(
-                                  value: _isExam,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _isExam = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            );
-                            return Flex(
+                              )
+                              .toList(),
+                        ),
+                      );
+                      final textStyle = Theme.of(context).textTheme;
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: Flex(
                               direction: isPortrait
                                   ? Axis.vertical
                                   : Axis.horizontal,
@@ -341,11 +303,70 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                   child: buttonGrid,
                                 ),
                               ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Flex(
+                            mainAxisAlignment: .spaceEvenly,
+                            direction: isPortrait
+                                ? Axis.vertical
+                                : Axis.horizontal,
+                            children: [
+                              SegmentedButton<KyuuiDenomination>(
+                                segments: <ButtonSegment<KyuuiDenomination>>[
+                                  ButtonSegment(
+                                    value: KyuuiDenomination.zs,
+                                    label: Text(
+                                      '全国珠算教育連盟',
+                                      style: textStyle.titleMedium,
+                                    ),
+                                  ),
+                                  ButtonSegment(
+                                    value: KyuuiDenomination.ns,
+                                    label: Text(
+                                      '日本珠算連盟',
+                                      style: textStyle.titleMedium,
+                                    ),
+                                  ),
+                                ],
+                                selected: {_kyuuiDenomination},
+                                onSelectionChanged:
+                                    (Set<KyuuiDenomination> newSelection) {
+                                      setState(() {
+                                        _kyuuiDenomination = newSelection.first;
+                                        final newList = _buildKyuuiList(
+                                          newSelection.first,
+                                        );
+                                        final newIndex =
+                                            newSelection.first ==
+                                                KyuuiDenomination.zs
+                                            ? _zsIndex
+                                            : _nsIndex;
+                                        _kyuui = newList[newIndex];
+                                      });
+                                    },
+                              ),
+                              Row(
+                                mainAxisAlignment: .center,
+                                crossAxisAlignment: .center,
+                                children: [
+                                  Text('検定モード', style: textStyle.titleLarge),
+                                  Switch(
+                                    value: _isExam,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _isExam = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6),
+                        ],
+                      );
+                    },
                   ),
                 ),
               );
