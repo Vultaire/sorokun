@@ -1,3 +1,4 @@
+import 'package:flutter/semantics.dart';
 import 'package:soroban_app/models/divmult_source.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import '../problem_generation/multiplication.dart';
@@ -469,6 +470,16 @@ enum DivMultLevel implements PaperProblemLevel {
   @override
   final LevelInfo levelInfo;
   final Function builder;
+  @override
+  Set<int>? get letterCounts => null;
+  @override
+  int get problemCount => divMultSource.templates.fold(
+    0,
+    (sum, map) => sum + (map['problemCount'] as int),
+  );
+  @override
+  Set<int> get houshouJippou =>
+      divMultSource.templates.map((map) => map['digits'] as int).toSet();
 }
 
 enum ComplexMitoriLevel implements MitoriLevel {
@@ -1192,9 +1203,28 @@ enum ComplexMitoriLevel implements MitoriLevel {
   final List<int> problemCountPerTemplate;
   final int repeat;
   final bool? neverNegative; // nisshou is always neverNegative
+
+  @override
+  Set<int> get letterCounts => templates
+      .map(
+        (group) =>
+            group.fold(0, (sum, map) => sum + (map['digits']! * map['count']!)),
+      )
+      .toSet();
+  @override
+  int get problemCount => problemCountPerTemplate.reduce((a, b) => a + b);
+  @override
+  Set<int>? get houshouJippou => null;
 }
 
-enum Denomination { nisshou, zenshuren, kyoukai }
+enum Denomination {
+  nisshou(denominationString: '日本珠算連盟'),
+  zenshuren(denominationString: '全国珠算教育連盟'),
+  kyoukai(denominationString: '日本フラッシュ暗算協会');
+
+  const Denomination({required this.denominationString});
+  final String denominationString;
+}
 
 const List<(String, int)> nsdanRangedThreshold = [
   ('準初段', 90),
@@ -1424,7 +1454,11 @@ sealed class Level {
   LevelInfo get levelInfo;
 }
 
-sealed class PaperProblemLevel implements Level {}
+sealed class PaperProblemLevel implements Level {
+  Set<int>? get letterCounts => null;
+  int get problemCount => 10;
+  Set<int>? get houshouJippou => null;
+}
 
 sealed class MitoriLevel implements PaperProblemLevel {}
 
@@ -1755,6 +1789,16 @@ enum SimpleMitoriLevel implements MitoriLevel {
   const SimpleMitoriLevel({required this.levelInfo});
   @override
   final LevelInfo levelInfo;
+
+  @override
+  Set<int>? get letterCounts => switch (this) {
+    zsak10 => {3, 4},
+    zsak9 || zsak8 => {4},
+  };
+  @override
+  int get problemCount => 10;
+  @override
+  Set<int>? get houshouJippou => null;
 }
 
 enum KyuuiDenomination {
@@ -1770,8 +1814,19 @@ enum KyuuiDenomination {
     k2: .zsk2,
     k1: .zsk1,
     dan: .zsdan,
+    displayString: '全国珠算教育連盟',
   ),
   zsAloudAndFlash(
+    k20: .zsk20,
+    k19: .zsk19,
+    k18: .zsk18,
+    k17: .zsk17,
+    k16: .zsk16,
+    k15: .zsk15,
+    k14: .zsk14,
+    k13: .zsk13,
+    k12: .zsk12,
+    k11: .zsk11,
     k10: .zsk10,
     k9: .zsk9,
     k8: .zsk8,
@@ -1792,18 +1847,19 @@ enum KyuuiDenomination {
     d8: .zsd8,
     d9: .zsd9,
     d10: .zsd10,
+    displayString: '全国珠算教育連盟',
   ),
   kkFlash(
-    k20: .kkk10,
-    k19: .kkk9,
-    k18: .kkk8,
-    k17: .kkk7,
-    k16: .kkk6,
-    k15: .kkk5,
-    k14: .kkk4,
-    k13: .kkk3,
-    k12: .kkk2,
-    k11: .kkk1,
+    k20: .kkk20,
+    k19: .kkk19,
+    k18: .kkk18,
+    k17: .kkk17,
+    k16: .kkk16,
+    k15: .kkk15,
+    k14: .kkk14,
+    k13: .kkk13,
+    k12: .kkk12,
+    k11: .kkk11,
     k10: .kkk10,
     k9: .kkk9,
     k8: .kkk8,
@@ -1824,6 +1880,7 @@ enum KyuuiDenomination {
     d8: .kkd8,
     d9: .kkd9,
     d10: .kkd10,
+    displayString: '日本フラッシュ暗算協会',
   ),
   ns(
     k10: .nsk10,
@@ -1840,6 +1897,7 @@ enum KyuuiDenomination {
     kj1: .nskj1,
     k1: .nsk1,
     dan: .nsdan,
+    displayString: '日本珠算連盟',
   );
 
   const KyuuiDenomination({
@@ -1877,6 +1935,7 @@ enum KyuuiDenomination {
     required this.k8,
     required this.k9,
     required this.k10,
+    required this.displayString,
   });
 
   final Kyuui? d10;
@@ -1913,4 +1972,5 @@ enum KyuuiDenomination {
   final Kyuui? k18;
   final Kyuui? k19;
   final Kyuui? k20;
+  final String displayString;
 }

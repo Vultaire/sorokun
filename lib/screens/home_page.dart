@@ -64,12 +64,12 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
                 ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Make A Problem Sheet'),
+                  onPressed: () => context.push('/flash-free-menu'),
+                  child: const Text('Flash Anzan Levels'),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => context.push('/flash-menu'),
+                  onPressed: () => context.push('/flash-level-menu'),
                   child: const Text('Flash Anzan'),
                 ),
                 const SizedBox(height: 16),

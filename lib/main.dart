@@ -7,6 +7,7 @@ import 'package:soroban_app/screens/aloud_level_menu.dart';
 import 'package:soroban_app/screens/aloud_problem.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/flash_free_menu.dart';
+import 'package:soroban_app/screens/flash_level_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
@@ -156,8 +157,12 @@ class _AbacusAppState extends State<AbacusApp> {
     routes: [
       GoRoute(path: '/home', builder: (context, state) => HomePage()),
       GoRoute(
-        path: '/flash-menu',
+        path: '/flash-level-menu',
         builder: (context, state) => FlashMenuPage(),
+      ),
+      GoRoute(
+        path: '/flash-free-menu',
+        builder: (context, state) => FlashFreeMenuPage(),
       ),
       GoRoute(
         path: '/flash-problem',
@@ -245,16 +250,18 @@ class _AbacusAppState extends State<AbacusApp> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: Brightness.dark,
+      dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
+    );
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: _router,
       theme: ThemeData(
         fontFamily: 'bizUDGPR',
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: .dark,
-          dynamicSchemeVariant: .rainbow,
-        ),
+        colorScheme: colorScheme,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 18),
@@ -266,6 +273,14 @@ class _AbacusAppState extends State<AbacusApp> {
               fontWeight: FontWeight.w600,
             ),
           ),
+        ),
+        dialogTheme: DialogThemeData(
+          titleTextStyle: TextStyle(fontSize: 26, color: colorScheme.onSurface),
+          contentTextStyle: TextStyle(
+            fontSize: 20,
+            color: colorScheme.onSurface,
+          ),
+          alignment: .center,
         ),
       ),
     );

@@ -13,7 +13,7 @@ class PaperMenuPage extends StatefulWidget {
 }
 
 class _PaperMenuPageState extends State<PaperMenuPage> {
-  Kyuui _kyuui = .zsk9;
+  Kyuui _kyuui = .zsk10;
   bool _isExam = false;
   KyuuiDenomination _kyuuiDenomination = .zs;
   int _zsIndex = 0;
@@ -62,23 +62,6 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
     }
   }
 
-  List<Kyuui> _buildKyuuiList(KyuuiDenomination denomination) => [
-    denomination.k10,
-    denomination.k9,
-    denomination.k8,
-    denomination.k7,
-    denomination.k6,
-    denomination.k5,
-    denomination.k4,
-    denomination.kj3,
-    denomination.k3,
-    denomination.kj2,
-    denomination.k2,
-    denomination.kj1,
-    denomination.k1,
-    denomination.dan,
-  ].whereType<Kyuui>().toList();
-
   bool _hasLevel(StartButtonType startButtonType) {
     return switch (startButtonType) {
       StartButtonType.mitori => _kyuui.mitoriSoroban != null,
@@ -88,84 +71,6 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
       StartButtonType.warian => _kyuui.divAnzan != null,
       StartButtonType.kakean => _kyuui.multAnzan != null,
     };
-  }
-
-  Widget _buildStartButton({
-    required StartButtonType startButtonType,
-    required double size,
-    required bool isPortrait,
-  }) {
-    late final String label;
-    late final PaperProblemLevel? selectedLevel;
-    late final String imagePath;
-
-    switch (startButtonType) {
-      case .mitori:
-        label = 'みとり算';
-        selectedLevel = _kyuui.mitoriSoroban;
-        imagePath = 'assets/mitori.png';
-      case .wari:
-        label = 'わり算';
-        selectedLevel = _kyuui.divSoroban;
-        imagePath = 'assets/wari.png';
-      case .kake:
-        label = 'かけ算';
-        selectedLevel = _kyuui.multSoroban;
-        imagePath = 'assets/kake.png';
-      case .mitorian:
-        label = 'みとり暗算';
-        selectedLevel = _kyuui.mitoriAnzan;
-        imagePath = 'assets/mitorian.png';
-      case .warian:
-        label = 'わり暗算';
-        selectedLevel = _kyuui.divAnzan;
-        imagePath = 'assets/warian.png';
-      case .kakean:
-        label = 'かけ暗算';
-        selectedLevel = _kyuui.multAnzan;
-        imagePath = 'assets/kakean.png';
-    }
-
-    if (selectedLevel == null) {
-      return SizedBox.shrink();
-    }
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: isPortrait ? size : size * 2,
-        maxHeight: isPortrait ? size : size,
-      ),
-      child: Container(
-        margin: EdgeInsets.all(6),
-        child: NavigationButton(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          label: Text(
-            label,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: .center,
-          ),
-          imageAbove: isPortrait,
-          image: Align(
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.contain,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              colorBlendMode: BlendMode.srcIn,
-            ),
-          ),
-          onPressed: () {
-            context.go(
-              '/paper-problem',
-              extra: {
-                'selectedLevel': selectedLevel,
-                'isExam': _isExam,
-                'time': selectedLevel!.levelInfo.timeLimit,
-                'appBarTitle': '${_kyuui.kyuuString}の$label',
-              },
-            );
-          },
-        ),
-      ),
-    );
   }
 
   @override
@@ -214,33 +119,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                       final visibleRows = rows
                           .where((pair) => pair.any((type) => _hasLevel(type)))
                           .toList();
-                      final indexedStack = IndexedStack(
-                        index: _kyuuiDenomination == KyuuiDenomination.zs
-                            ? 0
-                            : 1,
-                        children: [
-                          KyuuiSelector(
-                            kyuuiList: _buildKyuuiList(KyuuiDenomination.zs),
-                            currentIndex: _zsIndex,
-                            onChanged: (index, kyuui) {
-                              setState(() {
-                                _zsIndex = index;
-                                _kyuui = kyuui;
-                              });
-                            },
-                          ),
-                          KyuuiSelector(
-                            kyuuiList: _buildKyuuiList(KyuuiDenomination.ns),
-                            currentIndex: _nsIndex,
-                            onChanged: (index, kyuui) {
-                              setState(() {
-                                _nsIndex = index;
-                                _kyuui = kyuui;
-                              });
-                            },
-                          ),
-                        ],
-                      );
+
                       final buttonGrid = Container(
                         padding: .all(6),
                         decoration: BoxDecoration(
@@ -269,10 +148,12 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: pair
                                             .map(
-                                              (type) => _buildStartButton(
+                                              (type) => StartButton(
                                                 startButtonType: type,
                                                 size: startButtonSizeConstraint,
                                                 isPortrait: isPortrait,
+                                                kyuui: _kyuui,
+                                                isExam: _isExam,
                                               ),
                                             )
                                             .toList(),
@@ -285,6 +166,23 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                         ),
                       );
                       final textStyle = Theme.of(context).textTheme;
+                      final selectorStack = KyuuiSelectorStack(
+                        primaryDenomination: KyuuiDenomination.zs,
+                        secondaryDenomination: KyuuiDenomination.ns,
+                        initialPrimaryIndex: _zsIndex,
+                        initialSecondaryIndex: _nsIndex,
+                        activeDenomination: _kyuuiDenomination,
+                        onChanged: (denomination, index, kyuui) {
+                          setState(() {
+                            _kyuui = kyuui;
+                            if (denomination == KyuuiDenomination.zs) {
+                              _zsIndex = index;
+                            } else {
+                              _nsIndex = index;
+                            }
+                          });
+                        },
+                      );
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -297,8 +195,11 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                   : Axis.horizontal,
                               children: [
                                 isPortrait
-                                    ? SizedBox(height: 100, child: indexedStack)
-                                    : Expanded(flex: 1, child: indexedStack),
+                                    ? SizedBox(
+                                        height: 100,
+                                        child: selectorStack,
+                                      )
+                                    : Expanded(flex: 1, child: selectorStack),
                                 Expanded(
                                   flex: isPortrait ? 1 : 5,
                                   child: buttonGrid,
@@ -314,6 +215,8 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                 : Axis.horizontal,
                             children: [
                               SegmentedButton<KyuuiDenomination>(
+                                showSelectedIcon: false,
+                                emptySelectionAllowed: false,
                                 segments: <ButtonSegment<KyuuiDenomination>>[
                                   ButtonSegment(
                                     value: KyuuiDenomination.zs,
@@ -375,6 +278,269 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
           },
         ),
       ),
+    );
+  }
+}
+
+class StartButton extends StatelessWidget {
+  const StartButton({
+    super.key,
+    required this.startButtonType,
+    required this.size,
+    required this.isPortrait,
+    required this.kyuui,
+    required this.isExam,
+  });
+
+  final StartButtonType startButtonType;
+  final double size;
+  final bool isPortrait;
+  final Kyuui kyuui;
+  final bool isExam;
+
+  @override
+  Widget build(BuildContext context) {
+    late final String label;
+    late final PaperProblemLevel? selectedLevel;
+    late final String imagePath;
+    Set<int>? letterCounts;
+    Set<int>? houshou;
+    Set<int>? jippou;
+
+    switch (startButtonType) {
+      case .mitori:
+        label = 'みとり算';
+        selectedLevel = kyuui.mitoriSoroban;
+        imagePath = 'assets/mitori.png';
+        letterCounts = selectedLevel?.letterCounts;
+      case .wari:
+        label = 'わり算';
+        selectedLevel = kyuui.divSoroban;
+        imagePath = 'assets/wari.png';
+        houshou = selectedLevel?.houshouJippou;
+      case .kake:
+        label = 'かけ算';
+        selectedLevel = kyuui.multSoroban;
+        imagePath = 'assets/kake.png';
+        jippou = selectedLevel?.houshouJippou;
+      case .mitorian:
+        label = 'みとり暗算';
+        selectedLevel = kyuui.mitoriAnzan;
+        imagePath = 'assets/mitorian.png';
+        letterCounts = selectedLevel?.letterCounts;
+      case .warian:
+        label = 'わり暗算';
+        selectedLevel = kyuui.divAnzan;
+        imagePath = 'assets/warian.png';
+        houshou = selectedLevel?.houshouJippou;
+      case .kakean:
+        label = 'かけ暗算';
+        selectedLevel = kyuui.multAnzan;
+        imagePath = 'assets/kakean.png';
+        jippou = selectedLevel?.houshouJippou;
+    }
+
+    if (selectedLevel == null) return const SizedBox.shrink();
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: isPortrait ? size : size * 2,
+        maxHeight: isPortrait ? size : size,
+      ),
+      child: Stack(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(6),
+            child: NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              label: Text(
+                label,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              imageAbove: isPortrait,
+              image: Align(
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.contain,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+              ),
+              onPressed: () {
+                context.go(
+                  '/paper-problem',
+                  extra: {
+                    'selectedLevel': selectedLevel,
+                    'isExam': isExam,
+                    'time': selectedLevel!.levelInfo.timeLimit,
+                    'appBarTitle': '${kyuui.kyuuString}の$label',
+                  },
+                );
+              },
+            ),
+          ),
+          Positioned(
+            top: 4,
+            right: 4,
+            child: IconButton(
+              icon: const Icon(Icons.info_outline, size: 28),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('${kyuui.kyuuString}の$label'),
+                    content: InfoAlert(
+                      selectedLevel: selectedLevel!,
+                      letterCounts: letterCounts,
+                      houshou: houshou,
+                      jippou: jippou,
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                    actionsAlignment: .center,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InfoAlert extends StatelessWidget {
+  const InfoAlert({
+    super.key,
+    required this.selectedLevel,
+    required this.letterCounts,
+    required this.houshou,
+    required this.jippou,
+  });
+
+  final PaperProblemLevel selectedLevel;
+  final Set<int>? letterCounts;
+  final Set<int>? houshou;
+  final Set<int>? jippou;
+
+  String _rangeOrSingle(Set<int> values, String prefix, String suffix) {
+    final min = values.reduce((a, b) => a < b ? a : b);
+    final max = values.reduce((a, b) => a > b ? a : b);
+    return values.length == 1
+        ? '$prefix$min$suffix'
+        : '$prefix$min〜$max$suffix';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String denominationString =
+        selectedLevel.levelInfo.denomination.denominationString;
+    final Duration timeLimit = selectedLevel.levelInfo.timeLimit;
+    final String timeLimitString = '${timeLimit.inMinutes}分';
+    final int pointsPerProblem = selectedLevel.levelInfo.pointsPerProblem;
+    final int problemCount = selectedLevel.problemCount;
+    final int passThreshold =
+        (selectedLevel.levelInfo.passThreshold * problemCount).ceil() *
+        pointsPerProblem;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(denominationString),
+        Text('制限時間：$timeLimitString'),
+        Text('問題数：$problemCount題'),
+        Text('一題$pointsPerProblem点 (${pointsPerProblem * problemCount}点満点)'),
+        Text('合格点：$passThreshold点以上'),
+        if (letterCounts != null)
+          Text('一題あたり${_rangeOrSingle(letterCounts!, '', '字')}'),
+        if (jippou != null) Text('実法あわせて${_rangeOrSingle(jippou!, '', '桁')}'),
+        if (houshou != null) Text('法商あわせて${_rangeOrSingle(houshou!, '', '桁')}'),
+      ],
+    );
+  }
+}
+
+List<Kyuui> _buildKyuuiList(KyuuiDenomination denomination) => [
+  denomination.k10,
+  denomination.k9,
+  denomination.k8,
+  denomination.k7,
+  denomination.k6,
+  denomination.k5,
+  denomination.k4,
+  denomination.kj3,
+  denomination.k3,
+  denomination.kj2,
+  denomination.k2,
+  denomination.kj1,
+  denomination.k1,
+  denomination.dan,
+].whereType<Kyuui>().toList();
+
+class KyuuiSelectorStack extends StatefulWidget {
+  const KyuuiSelectorStack({
+    super.key,
+    required this.primaryDenomination,
+    required this.secondaryDenomination,
+    required this.activeDenomination,
+    required this.onChanged,
+    this.initialPrimaryIndex = 0,
+    this.initialSecondaryIndex = 0,
+  });
+
+  final KyuuiDenomination primaryDenomination;
+  final KyuuiDenomination secondaryDenomination;
+  final KyuuiDenomination activeDenomination;
+  final void Function(KyuuiDenomination denomination, int index, Kyuui kyuui)
+  onChanged;
+  final int initialPrimaryIndex;
+  final int initialSecondaryIndex;
+
+  @override
+  State<KyuuiSelectorStack> createState() => _KyuuiSelectorStackState();
+}
+
+class _KyuuiSelectorStackState extends State<KyuuiSelectorStack> {
+  late int _primaryIndex;
+  late int _secondaryIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _primaryIndex = widget.initialPrimaryIndex;
+    _secondaryIndex = widget.initialSecondaryIndex;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IndexedStack(
+      index: widget.activeDenomination == widget.primaryDenomination ? 0 : 1,
+      children: [
+        KyuuiSelector(
+          kyuuiList: _buildKyuuiList(widget.primaryDenomination),
+          currentIndex: _primaryIndex,
+          onChanged: (index, kyuui) {
+            setState(() => _primaryIndex = index);
+            widget.onChanged(widget.primaryDenomination, index, kyuui);
+          },
+        ),
+        KyuuiSelector(
+          kyuuiList: _buildKyuuiList(widget.secondaryDenomination),
+          currentIndex: _secondaryIndex,
+          onChanged: (index, kyuui) {
+            setState(() => _secondaryIndex = index);
+            widget.onChanged(widget.secondaryDenomination, index, kyuui);
+          },
+        ),
+      ],
     );
   }
 }
