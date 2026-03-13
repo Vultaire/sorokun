@@ -54,7 +54,7 @@ List<int> noCarry(FlashLevel level, Random rand) {
   while (numbers.length < level.kuchi) {
     final candidates = <int>[];
     for (int i = -absoluteRange; i <= absoluteRange; i++) {
-      if (!numbers.contains(i) && i != 0 && !numbers.contains(-i)) {
+      if (i != -numbers.last && i != 0 && i != numbers.last) {
         candidates.add(i);
       }
     }
@@ -298,10 +298,10 @@ List<int> multiplierBuilder(FlashLevel level, Random rand) {
 //   throw Exception("Retry limit exceeded");
 // }
 
-Future<void> main() async {
+void main() {
   // Example usage
 
-  var problems = FlashProblemSet(FlashLevel.zsk10);
+  var problems = FlashProblemSet(FlashLevel.zsk11);
   print(problems.formattedProblems);
   print(problems.formattedAnswers);
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class NavigationButton extends StatefulWidget {
   final VoidCallback onPressed;
-  final Widget label;
+  final String label;
   final Duration duration;
   final Duration debounceTime;
   final Widget? image;
@@ -31,7 +31,6 @@ class _NavigationButtonState extends State<NavigationButton> {
   void _handleTap() {
     if (_isNavigating) return;
 
-    // Set flag immediately, BEFORE calling onPressed
     _isNavigating = true;
 
     widget.onPressed();
@@ -67,6 +66,7 @@ class _NavigationButtonState extends State<NavigationButton> {
           _isPressed ? 2 : 0.0,
           0,
         ),
+        margin: const .all(6),
         child: Opacity(
           opacity: _isNavigating ? 0.5 : 1.0,
           child: Container(
@@ -96,11 +96,21 @@ class _NavigationButtonState extends State<NavigationButton> {
                         ),
                         Expanded(
                           flex: widget.imageAbove! ? 1 : 2,
-                          child: widget.label,
+                          child: Text(
+                            widget.label,
+                            style: Theme.of(context).textTheme.titleLarge,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ],
                     )
-                  : Center(child: widget.label),
+                  : Center(
+                      child: Text(
+                        widget.label,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/main.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
@@ -24,15 +25,15 @@ class FlashProblemScreen extends StatefulWidget {
 }
 
 class _FlashProblemScreenState extends State<FlashProblemScreen> {
-  String _userInputted = '';
+  String _inputTime = '';
   bool _delayOver = false;
   bool _hasSubmitted = false;
-  final Stopwatch _stopwatch = Stopwatch();
   int _currentPageIndex = 0;
   int _currentProblemIndex = 0;
-  late List<List<String>> _allProblems;
-  late List<String> _allAnswers;
-  late String _inputTime;
+  late final List<List<String>> _allProblems;
+  late final List<String> _allAnswers;
+  late final List<TextFieldData> _textFieldDataList;
+  final Stopwatch _stopwatch = Stopwatch();
   late final List<Segment> _schedule;
 
   void showInput() {
@@ -50,10 +51,9 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     });
   }
 
-  void setInputAndShowResult(String userInputted) {
+  void setInputAndShowResult() {
     if (_hasSubmitted) return;
     _hasSubmitted = true;
-    _userInputted = userInputted;
     _stopwatch.stop();
     final elapsedSeconds = _stopwatch.elapsedMilliseconds / 1000;
     _inputTime = (!widget.isSingleProblem && elapsedSeconds > 15)
@@ -83,10 +83,27 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     playProblem();
   }
 
+  void showResultPage() {
+    context.go(
+      '/paper-results',
+      extra: {
+        'selectedLevel': widget.selectedLevel,
+        'isExam': true,
+        'allProblems': _allProblems,
+        'allAnswers': _allAnswers,
+        'textFieldDataList': _textFieldDataList,
+      },
+    );
+  }
+
   void _initProblems() {
     FlashProblemSet fullProblemSet = FlashProblemSet(widget.selectedLevel);
     _allProblems = fullProblemSet.formattedProblems;
     _allAnswers = fullProblemSet.formattedAnswers;
+    _textFieldDataList = List.generate(
+      _allAnswers.length,
+      (_) => TextFieldData(),
+    );
   }
 
   @override
@@ -114,7 +131,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     final media = MediaQuery.of(context);
     final Size screenSize = media.size;
     final bool isPortrait = media.orientation == Orientation.portrait;
-    final bool isCorrect = _userInputted == _allAnswers[_currentProblemIndex];
 
     return FlashAndAloudProblemData<String>(
       screenSize: screenSize,
@@ -122,6 +138,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
       currentProblemIndex: _currentProblemIndex,
       allAnswers: _allAnswers,
       allProblems: _allProblems,
+      textFieldDataList: _textFieldDataList,
       child: Scaffold(
         backgroundColor: Colors.black, // TODO: remove hardcode
         body: PageTransitionSwitcher(
@@ -135,13 +152,13 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
               child: child,
             );
           },
-          child: _buildPage(_currentPageIndex, isCorrect),
+          child: _buildPage(_currentPageIndex),
         ),
       ),
     );
   }
 
-  Widget _buildPage(int index, bool isCorrect) {
+  Widget _buildPage(int index) {
     switch (index) {
       case 0:
         return FlashProblem(
@@ -165,10 +182,9 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           onNextProblem: startNextProblem,
           onRepeatProblem: playProblem,
           onNewProblem: newProblem,
+          onShowResults: showResultPage,
           inputTime: _inputTime,
-          isCorrect: isCorrect,
           isSingleProblem: widget.isSingleProblem,
-          answer: _allAnswers[_currentProblemIndex],
         );
       default:
         return const SizedBox.shrink();
@@ -184,6 +200,7 @@ class FlashAndAloudProblemData<T> extends InheritedWidget {
     required this.currentProblemIndex,
     required this.allAnswers,
     required this.allProblems,
+    required this.textFieldDataList,
     required super.child,
   });
 
@@ -192,6 +209,18 @@ class FlashAndAloudProblemData<T> extends InheritedWidget {
   final int currentProblemIndex;
   final List<String> allAnswers;
   final List<List<T>> allProblems;
+  final List<TextFieldData> textFieldDataList;
+
+  List<bool?> get answerResults => List.generate(
+    allAnswers.length,
+    (i) => i <= currentProblemIndex
+        ? textFieldDataList[i].formatted == allAnswers[i]
+        : null,
+  );
+
+  bool get isCorrect =>
+      textFieldDataList[currentProblemIndex].formatted ==
+      allAnswers[currentProblemIndex];
 
   static FlashAndAloudProblemData<T> of<T>(BuildContext context) {
     return context
@@ -215,12 +244,14 @@ class FlashTextField extends StatelessWidget {
     return SizedBox(
       height: 155,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 7),
-        child: Text(
-          data.formatted.isEmpty ? '答えを記入してください。' : data.formatted,
-          style: Theme.of(
-            context,
-          ).textTheme.displayLarge?.copyWith(fontSize: 95),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Center(
+          child: Text(
+            data.formatted.isEmpty ? '答えを記入してください。' : data.formatted,
+            style: data.formatted.isEmpty
+                ? Theme.of(context).textTheme.displayLarge
+                : TextStyle(fontFamily: 'abacusFont', fontSize: 80),
+          ),
         ),
       ),
     );
@@ -236,7 +267,7 @@ class FlashAndAloudProblemInput<T> extends StatefulWidget {
     required this.duration,
     required this.maxDigits,
   });
-  final void Function(String) showResult;
+  final VoidCallback showResult;
   final bool showTimer;
   final bool delayOver;
   final int duration;
@@ -264,6 +295,8 @@ class _FlashAndAloudProblemInputState<T>
   @override
   int get maxDigits => widget.maxDigits;
 
+  String get _input => textData.formatted;
+
   @override
   void initState() {
     super.initState();
@@ -272,86 +305,75 @@ class _FlashAndAloudProblemInputState<T>
     _sound.init();
   }
 
-  Widget _landscapeAndPortrait() {
-    return Flex(
-      direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Expanded(
-          flex: _data.isPortrait ? 2 : 1,
-          child: Stack(
-            alignment: .center,
-            children: [
-              if (widget.showTimer)
-                Opacity(
-                  opacity: 0.4,
-                  child: SizedBox(
-                    width: 400,
-                    height: 400,
-                    child: PieTimer(
-                      duration: Duration(milliseconds: widget.duration),
-                      delayOver: widget.delayOver,
-                      onComplete: () => widget.showResult(textData.formatted),
-                    ),
-                  ),
-                ),
-              FittedBox(
-                fit: BoxFit.contain,
-                child: FlashTextField(data: textData),
-              ),
-            ],
-          ),
-        ),
-        if (!_data.isPortrait) const SizedBox(width: 50),
-        Expanded(
-          flex: _data.isPortrait ? 3 : 1,
-          child: Keypad(
-            onAppendDigit: appendDigit,
-            onDeleteDigit: deleteDigit,
-            onClearAll: clearAll,
-            onSubmit: () {
-              if (textData.formatted.isNotEmpty) {
-                final isCorrect =
-                    textData.formatted ==
-                    _data.allAnswers[_data.currentProblemIndex];
-
-                widget.showResult(textData.formatted);
-
-                isCorrect
-                    ? SoLoud.instance.play(sound.correct)
-                    : SoLoud.instance.play(sound.incorrect);
-              } else {
-                SoLoud.instance.play(sound.invalid);
-              }
-            },
-            levelType: KeypadType.flash,
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: _data.isPortrait
-                ? _data.screenSize.width
-                : _data.screenSize.width * 0.9,
-            maxHeight: _data.isPortrait
-                ? _data.screenSize.height * 0.65
-                : _data.screenSize.height * 0.85,
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: _landscapeAndPortrait(),
+      body: Padding(
+        padding: .all(18),
+        child: SizedBox.expand(
+          child: Flex(
+            direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (widget.showTimer)
+                      Opacity(
+                        opacity: 0.4,
+                        child: SizedBox(
+                          width: 400,
+                          height: 400,
+                          child: PieTimer(
+                            duration: Duration(milliseconds: widget.duration),
+                            delayOver: widget.delayOver,
+                            onComplete: () {
+                              _data.textFieldDataList[_data
+                                      .currentProblemIndex] =
+                                  textData;
+                              widget.showResult();
+                              SoLoud.instance.play(
+                                _data.isCorrect
+                                    ? sound.correct
+                                    : sound.incorrect,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    FittedBox(
+                      fit: BoxFit.contain,
+                      child: FlashTextField(data: textData),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Keypad(
+                  onAppendDigit: appendDigit,
+                  onDeleteDigit: deleteDigit,
+                  onClearAll: clearAll,
+                  onSubmit: () {
+                    if (_input.isEmpty) {
+                      SoLoud.instance.play(sound.invalid);
+                      return;
+                    }
+
+                    _data.textFieldDataList[_data.currentProblemIndex] =
+                        textData;
+                    widget.showResult();
+
+                    SoLoud.instance.play(
+                      _data.isCorrect ? sound.correct : sound.incorrect,
+                    );
+                  },
+                  levelType: KeypadType.flash,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -364,19 +386,17 @@ class FlashAndAloudResult<T> extends StatefulWidget {
     super.key,
     required this.onNextProblem,
     required this.inputTime,
-    required this.isCorrect,
     required this.isSingleProblem,
     required this.onRepeatProblem,
     required this.onNewProblem,
-    required this.answer, //must be passed or next answer shows before page transition completes
+    required this.onShowResults,
   });
   final VoidCallback onNextProblem;
   final VoidCallback onRepeatProblem;
   final VoidCallback onNewProblem;
+  final VoidCallback onShowResults;
   final String inputTime;
-  final bool isCorrect;
   final bool isSingleProblem;
-  final String answer;
 
   @override
   State<FlashAndAloudResult<T>> createState() => _FlashAndAloudResultState<T>();
@@ -385,38 +405,76 @@ class FlashAndAloudResult<T> extends StatefulWidget {
 class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
   FlashAndAloudProblemData<T> get _data =>
       FlashAndAloudProblemData.of<T>(context);
-  Widget freeOrSetButtons(bool isSingleProblem) {
+  int? _frozenIndex;
+  List<bool?>? _frozenAnswerResults;
+  String? _frozenAnswer;
+  bool? _frozenIsCorrect;
+
+  Widget freeOrLevelButtons(bool isSingleProblem) {
     if (isSingleProblem) {
-      return Row(
-        mainAxisAlignment: .center,
+      return Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 8,
+        runSpacing: 8,
         children: [
-          NavigationButton(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            onPressed: () => context.go('/flash-menu'),
-            label: Text('設定画面に戻る'),
+          SizedBox(
+            width: 160,
+            child: NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              onPressed: () async {
+                final shouldPop = await showExitDialog(context);
+                if (!mounted) return;
+                if (shouldPop) context.go('/flash-free-menu');
+              },
+              label: '設定画面',
+            ),
           ),
-          NavigationButton(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            onPressed: widget.onRepeatProblem,
-            label: Text('もう一回'),
+          SizedBox(
+            width: 160,
+            child: NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              onPressed: widget.onRepeatProblem,
+              label: 'もう一回',
+            ),
           ),
-          NavigationButton(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            onPressed: widget.onNewProblem,
-            label: Text('次へ'),
+          SizedBox(
+            width: 160,
+            child: NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              onPressed: widget.onNewProblem,
+              label: '次の問題',
+            ),
           ),
         ],
       );
     } else {
-      return ElevatedButton(
-        onPressed: _data.currentProblemIndex == _data.allAnswers.length - 1
-            ? () {}
-            : widget.onNextProblem,
-        child: Text(
-          _data.currentProblemIndex == _data.allAnswers.length - 1
-              ? '採点'
-              : '次の問題',
-        ),
+      return Row(
+        mainAxisAlignment: .center,
+        children: [
+          SizedBox(
+            child: NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              onPressed: () async {
+                final shouldPop = await showExitDialog(context);
+                if (!mounted) return;
+                if (shouldPop) context.go('/flash-level-menu');
+              },
+              label: '設定画面',
+            ),
+          ),
+          SizedBox(
+            child: NavigationButton(
+              onPressed:
+                  _data.currentProblemIndex == _data.allAnswers.length - 1
+                  ? widget.onShowResults
+                  : widget.onNextProblem,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              label: _data.currentProblemIndex == _data.allAnswers.length - 1
+                  ? '採点'
+                  : '次の問題',
+            ),
+          ),
+        ],
       );
     }
   }
@@ -424,99 +482,204 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    _frozenIndex ??= _data.currentProblemIndex;
+    _frozenAnswerResults ??= _data.answerResults;
+    _frozenAnswer ??= _data.allAnswers[_data.currentProblemIndex];
+    _frozenIsCorrect ??= _data.isCorrect;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: _data.isPortrait
-                ? _data.screenSize.width * 0.9
-                : _data.screenSize.width * 0.7,
-            maxHeight: _data.isPortrait
-                ? _data.screenSize.height * 0.65
-                : _data.screenSize.height * 0.85,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: widget.isCorrect
-                        ? colorScheme.primary
-                        : colorScheme.tertiary,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      widget.isCorrect ? '正解' : '不正解',
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        color: widget.isCorrect
-                            ? colorScheme.onPrimary
-                            : colorScheme.onTertiary,
-                      ),
-                    ),
-                  ),
+      body: Padding(
+        padding: .all(18),
+        child: SizedBox.expand(
+          child: FittedBox(
+            fit: .scaleDown,
+            child: SizedBox(
+              width: _data.isPortrait
+                  ? _data.screenSize.width
+                  : _data.screenSize.width * 0.7,
+              child: Container(
+                padding: EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                Wrap(
-                  alignment: .center,
+                child: Column(
+                  mainAxisSize: .min,
                   children: [
                     Container(
-                      padding: .symmetric(horizontal: 40, vertical: 10),
-                      margin: .all(8),
+                      margin: .only(bottom: 16),
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainer,
-                        borderRadius: .all(.circular(16)),
+                        color: _frozenIsCorrect!
+                            ? colorScheme.primary
+                            : colorScheme.tertiary,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          Text(
-                            '答え',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          Text(
-                            widget.answer,
-                            style: Theme.of(context).textTheme.displayMedium,
-                          ),
-                        ],
+                      child: Center(
+                        child: Text(
+                          _frozenIsCorrect! ? '正解' : '不正解',
+                          style: Theme.of(context).textTheme.displayLarge
+                              ?.copyWith(
+                                color: _frozenIsCorrect!
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onTertiary,
+                              ),
+                        ),
                       ),
                     ),
-                    Container(
-                      padding: .symmetric(horizontal: 40, vertical: 10),
-                      margin: .all(8),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainer,
-                        borderRadius: .all(.circular(16)),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            '回答タイム',
-                            style: Theme.of(context).textTheme.headlineMedium,
+                    Wrap(
+                      alignment: .center,
+                      children: [
+                        Container(
+                          padding: .symmetric(horizontal: 40, vertical: 10),
+                          margin: .all(8),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainer,
+                            borderRadius: .all(.circular(16)),
                           ),
-                          Text(
-                            '${widget.inputTime}秒',
-                            style: Theme.of(context).textTheme.displayMedium,
+                          child: Column(
+                            children: [
+                              Text(
+                                '答え',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineMedium,
+                              ),
+                              Text(
+                                _frozenAnswer!,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.displayMedium,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Container(
+                          padding: .symmetric(horizontal: 40, vertical: 10),
+                          margin: .all(8),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainer,
+                            borderRadius: .all(.circular(16)),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '回答タイム',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineMedium,
+                              ),
+                              Text(
+                                '${widget.inputTime}秒',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.displayMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!widget.isSingleProblem)
+                          Container(
+                            padding: .symmetric(horizontal: 40, vertical: 10),
+                            margin: .all(8),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainer,
+                              borderRadius: .all(.circular(16)),
+                            ),
+                            child: AnswerTracker(
+                              answerResults: _frozenAnswerResults!,
+                              currentIndex: _frozenIndex!,
+                              isPortrait: _data.isPortrait,
+                            ),
+                          ),
+                      ],
                     ),
+                    freeOrLevelButtons(widget.isSingleProblem),
                   ],
                 ),
-                freeOrSetButtons(widget.isSingleProblem),
-              ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AnswerTracker extends StatelessWidget {
+  const AnswerTracker({
+    super.key,
+    required this.answerResults,
+    required this.currentIndex,
+    required this.isPortrait,
+  });
+  final List<bool?> answerResults;
+  final int currentIndex;
+  final bool isPortrait;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    const double itemWidth = 44;
+    const double spacing = 6;
+    final int itemsPerRow = answerResults.length > 10
+        ? (isPortrait ? 5 : 8)
+        : (isPortrait ? 5 : answerResults.length);
+    final double wrapWidth =
+        itemsPerRow * itemWidth + (itemsPerRow - 1) * spacing;
+
+    return SizedBox(
+      width: wrapWidth,
+      child: Wrap(
+        alignment: .center,
+        direction: Axis.horizontal,
+        runAlignment: WrapAlignment.center,
+        spacing: spacing,
+        runSpacing: spacing,
+        children: List.generate(answerResults.length, (i) {
+          final bool? isCorrect = answerResults[i];
+          final bool isCurrent = i == currentIndex;
+          final resultColor = isCorrect == null
+              ? colorScheme.onSurface
+              : isCorrect
+              ? colorScheme.primary
+              : colorScheme.tertiary;
+          return Container(
+            width: itemWidth,
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+              border: isCurrent
+                  ? Border.all(color: resultColor, width: 2)
+                  : null,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${i + 1}', style: Theme.of(context).textTheme.titleLarge),
+                Icon(
+                  isCorrect == null
+                      ? Icons.remove
+                      : isCorrect
+                      ? Icons.circle_outlined
+                      : Icons.close,
+                  size: isCorrect == null
+                      ? 30
+                      : isCorrect
+                      ? 26
+                      : 30,
+                  color: resultColor,
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

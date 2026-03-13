@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/main.dart';
 import 'package:soroban_app/problem_generation/mitori_set.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
 
@@ -55,27 +56,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     setState(() {
       _showLoading = true;
     });
-  }
-
-  Future<bool> _onWillPop() async {
-    final shouldPop = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('終了の確認'),
-        content: const Text('本当にやめますか?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('いいえ'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('はい'),
-          ),
-        ],
-      ),
-    );
-    return shouldPop ?? false;
   }
 
   Widget _buildWindow({required double height}) {
@@ -253,9 +233,9 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
 
-        final shouldPop = await _onWillPop();
+        final shouldPop = await showExitDialog(context);
         if (shouldPop && context.mounted) {
-          Navigator.of(context).pop();
+          GoRouter.of(context).go('/paper-menu');
         }
       },
       child: Scaffold(
@@ -265,7 +245,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           leading: IconButton(
             icon: Icon(Icons.close),
             onPressed: () async {
-              final shouldClose = await _onWillPop();
+              final shouldClose = await showExitDialog(context);
               if (shouldClose && context.mounted) {
                 GoRouter.of(context).go('/paper-menu');
               }

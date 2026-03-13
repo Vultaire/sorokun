@@ -276,10 +276,6 @@ class _AbacusAppState extends State<AbacusApp> {
         ),
         dialogTheme: DialogThemeData(
           titleTextStyle: TextStyle(fontSize: 26, color: colorScheme.onSurface),
-          contentTextStyle: TextStyle(
-            fontSize: 20,
-            color: colorScheme.onSurface,
-          ),
           alignment: .center,
         ),
       ),
@@ -321,4 +317,25 @@ CustomTransitionPage blackFadeTransition({
     transitionDuration: const Duration(milliseconds: 1000),
     reverseTransitionDuration: const Duration(milliseconds: 1000),
   );
+}
+
+Future<bool> showExitDialog(BuildContext context) async {
+  final shouldPop = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('終了の確認'),
+      content: const Text('本当にやめますか?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('いいえ'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('はい'),
+        ),
+      ],
+    ),
+  );
+  return shouldPop ?? false;
 }

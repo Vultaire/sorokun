@@ -13,7 +13,7 @@ class ResultsScreen extends StatelessWidget {
   final List<String> allAnswers;
   final List<dynamic> allProblems;
   final List<TextFieldData> textFieldDataList;
-  final Duration elapsed;
+  final Duration? elapsed;
 
   const ResultsScreen({
     super.key,
@@ -22,7 +22,7 @@ class ResultsScreen extends StatelessWidget {
     required this.allAnswers,
     required this.allProblems,
     required this.textFieldDataList,
-    required this.elapsed,
+    this.elapsed,
   });
 
   @override
@@ -42,12 +42,13 @@ class ResultsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              elapsed.inMinutes > 0
-                  ? '${elapsed.inMinutes.remainder(60)}:${elapsed.inSeconds.remainder(60).toString().padLeft(2, '0')}.${elapsed.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}'
-                  : '${elapsed.inSeconds.remainder(60)}.${elapsed.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}',
-              style: TextStyle(fontSize: 48, fontFamily: 'bizUDPGR'),
-            ),
+            if (elapsed case final elapsed?)
+              Text(
+                elapsed.inMinutes > 0
+                    ? '${elapsed.inMinutes}:${elapsed.inSeconds.remainder(60).toString().padLeft(2, '0')}.${elapsed.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}'
+                    : '${elapsed.inSeconds}.${elapsed.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}',
+                style: TextStyle(fontSize: 48, fontFamily: 'bizUDPGR'),
+              ),
             SizedBox(height: 10),
             CountUpText(
               score: getScore(selectedLevel.levelInfo, problemScorerList),

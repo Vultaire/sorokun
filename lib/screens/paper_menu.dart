@@ -32,19 +32,19 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
     _prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
         allowList: <String>{
-          'kyuui',
-          'isExam',
-          'kyuuiDenomination',
-          'zsIndex',
-          'nsIndex',
+          'paper_kyuui',
+          'paper_isExam',
+          'paper_kyuuiDenomination',
+          'paper_zsIndex',
+          'paper_nsIndex',
         },
       ),
     );
-    final kyuuiIndex = _prefs.getInt('kyuui');
-    final isExam = _prefs.getBool('isExam');
-    final denominationIndex = _prefs.getInt('kyuuiDenomination');
-    final zsIndex = _prefs.getInt('zsIndex');
-    final nsIndex = _prefs.getInt('nsIndex');
+    final kyuuiIndex = _prefs.getInt('paper_kyuui');
+    final isExam = _prefs.getBool('paper_isExam');
+    final denominationIndex = _prefs.getInt('paper_kyuuiDenomination');
+    final zsIndex = _prefs.getInt('paper_zsIndex');
+    final nsIndex = _prefs.getInt('paper_nsIndex');
     if (zsIndex != null) {
       _zsIndex = zsIndex;
     }
@@ -75,11 +75,11 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
 
   @override
   void dispose() {
-    _prefs.setInt('kyuui', _kyuui.index);
-    _prefs.setBool('isExam', _isExam);
-    _prefs.setInt('kyuuiDenomination', _kyuuiDenomination.index);
-    _prefs.setInt('zsIndex', _zsIndex);
-    _prefs.setInt('nsIndex', _nsIndex);
+    _prefs.setInt('paper_kyuui', _kyuui.index);
+    _prefs.setBool('paper_isExam', _isExam);
+    _prefs.setInt('paper_kyuuiDenomination', _kyuuiDenomination.index);
+    _prefs.setInt('paper_zsIndex', _zsIndex);
+    _prefs.setInt('paper_nsIndex', _nsIndex);
 
     super.dispose();
   }
@@ -171,6 +171,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                         secondaryDenomination: KyuuiDenomination.ns,
                         initialPrimaryIndex: _zsIndex,
                         initialSecondaryIndex: _nsIndex,
+                        kyuuiListBuilder: _buildPaperKyuuiList,
                         activeDenomination: _kyuuiDenomination,
                         onChanged: (denomination, index, kyuui) {
                           setState(() {
@@ -207,9 +208,10 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 6),
+                          SizedBox(height: 12),
                           Flex(
                             mainAxisAlignment: .spaceEvenly,
+                            spacing: 6,
                             direction: isPortrait
                                 ? Axis.vertical
                                 : Axis.horizontal,
@@ -238,7 +240,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                     (Set<KyuuiDenomination> newSelection) {
                                       setState(() {
                                         _kyuuiDenomination = newSelection.first;
-                                        final newList = _buildKyuuiList(
+                                        final newList = _buildPaperKyuuiList(
                                           newSelection.first,
                                         );
                                         final newIndex =
@@ -349,36 +351,29 @@ class StartButton extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Container(
-            margin: const EdgeInsets.all(6),
-            child: NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              label: Text(
-                label,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
+          NavigationButton(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            label: label,
+            imageAbove: isPortrait,
+            image: Align(
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.contain,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                colorBlendMode: BlendMode.srcIn,
               ),
-              imageAbove: isPortrait,
-              image: Align(
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.contain,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  colorBlendMode: BlendMode.srcIn,
-                ),
-              ),
-              onPressed: () {
-                context.go(
-                  '/paper-problem',
-                  extra: {
-                    'selectedLevel': selectedLevel,
-                    'isExam': isExam,
-                    'time': selectedLevel!.levelInfo.timeLimit,
-                    'appBarTitle': '${kyuui.kyuuString}の$label',
-                  },
-                );
-              },
             ),
+            onPressed: () {
+              context.go(
+                '/paper-problem',
+                extra: {
+                  'selectedLevel': selectedLevel,
+                  'isExam': isExam,
+                  'time': selectedLevel!.levelInfo.timeLimit,
+                  'appBarTitle': '${kyuui.kyuuString}の$label',
+                },
+              );
+            },
           ),
           Positioned(
             top: 4,
@@ -393,7 +388,7 @@ class StartButton extends StatelessWidget {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: Text('${kyuui.kyuuString}の$label'),
-                    content: InfoAlert(
+                    content: PaperInfoDialog(
                       selectedLevel: selectedLevel!,
                       letterCounts: letterCounts,
                       houshou: houshou,
@@ -417,8 +412,8 @@ class StartButton extends StatelessWidget {
   }
 }
 
-class InfoAlert extends StatelessWidget {
-  const InfoAlert({
+class PaperInfoDialog extends StatelessWidget {
+  const PaperInfoDialog({
     super.key,
     required this.selectedLevel,
     required this.letterCounts,
@@ -468,7 +463,7 @@ class InfoAlert extends StatelessWidget {
   }
 }
 
-List<Kyuui> _buildKyuuiList(KyuuiDenomination denomination) => [
+List<Kyuui> _buildPaperKyuuiList(KyuuiDenomination denomination) => [
   denomination.k10,
   denomination.k9,
   denomination.k8,
@@ -494,6 +489,7 @@ class KyuuiSelectorStack extends StatefulWidget {
     required this.onChanged,
     this.initialPrimaryIndex = 0,
     this.initialSecondaryIndex = 0,
+    required this.kyuuiListBuilder,
   });
 
   final KyuuiDenomination primaryDenomination;
@@ -503,6 +499,7 @@ class KyuuiSelectorStack extends StatefulWidget {
   onChanged;
   final int initialPrimaryIndex;
   final int initialSecondaryIndex;
+  final List<Kyuui> Function(KyuuiDenomination) kyuuiListBuilder;
 
   @override
   State<KyuuiSelectorStack> createState() => _KyuuiSelectorStackState();
@@ -525,7 +522,7 @@ class _KyuuiSelectorStackState extends State<KyuuiSelectorStack> {
       index: widget.activeDenomination == widget.primaryDenomination ? 0 : 1,
       children: [
         KyuuiSelector(
-          kyuuiList: _buildKyuuiList(widget.primaryDenomination),
+          kyuuiList: widget.kyuuiListBuilder(widget.primaryDenomination),
           currentIndex: _primaryIndex,
           onChanged: (index, kyuui) {
             setState(() => _primaryIndex = index);
@@ -533,7 +530,7 @@ class _KyuuiSelectorStackState extends State<KyuuiSelectorStack> {
           },
         ),
         KyuuiSelector(
-          kyuuiList: _buildKyuuiList(widget.secondaryDenomination),
+          kyuuiList: widget.kyuuiListBuilder(widget.secondaryDenomination),
           currentIndex: _secondaryIndex,
           onChanged: (index, kyuui) {
             setState(() => _secondaryIndex = index);

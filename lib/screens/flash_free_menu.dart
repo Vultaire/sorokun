@@ -239,15 +239,12 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
                   secondsPerProblem: _secondsPerProblem,
                   builder: mitoriStyle,
                 );
-                context.go(
+                context.push(
                   '/flash-problem',
                   extra: {'isSingleProblem': true, 'selectedLevel': spec},
                 );
               },
-              label: Text(
-                'スタート',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              label: 'スタート',
             ),
           ],
         ),

@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -160,10 +159,7 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
                             },
                           );
                         },
-                        label: Text(
-                          'スタート',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                        label: 'スタート',
                       );
 
                       return Column(

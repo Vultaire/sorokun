@@ -545,4 +545,5 @@ enum FlashLevel implements FlashSpec, Level {
   final int multiplier;
   @override
   final LevelInfo levelInfo;
+  bool get kuriagariNashi => builder != mitoriStyle;
 }

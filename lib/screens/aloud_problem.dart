@@ -6,9 +6,11 @@ import 'dart:typed_data';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
+import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 import 'package:soroban_app/src/voicevox_sing.dart';
@@ -35,6 +37,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   final Stopwatch _stopwatch = Stopwatch();
   late final List<List<int>> _allProblems;
   late final List<String> _allAnswers;
+  final List<TextFieldData> _textFieldDataList = [];
   late final List<List<String>> _scores;
   late final String dictDir;
   late final String vvmPath;
@@ -138,6 +141,19 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     playProblem();
   }
 
+  void showResults() {
+    context.go(
+      '/paper-results',
+      extra: {
+        'selectedLevel': widget.selectedLevel,
+        'isExam': true,
+        'allProblems': _allProblems,
+        'allAnswers': _allAnswers,
+        'textFieldDataList': _textFieldDataList,
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -180,10 +196,9 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           onNextProblem: startNextProblem,
           onRepeatProblem: playProblem,
           onNewProblem: newProblem,
+          onShowResults: showResults,
           inputTime: _inputTime,
-          isCorrect: isCorrect,
           isSingleProblem: widget.isSingleProblem,
-          answer: _allAnswers[_currentProblemIndex],
         );
       default:
         return const SizedBox.shrink();
@@ -203,6 +218,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       currentProblemIndex: _currentProblemIndex,
       allAnswers: _allAnswers,
       allProblems: _allProblems,
+      textFieldDataList: _textFieldDataList,
       child: Scaffold(
         appBar: AppBar(title: Text('Aloud Problem')),
         body: PageTransitionSwitcher(

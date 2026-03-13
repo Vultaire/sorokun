@@ -4,7 +4,7 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 
 class PaperReviewScreen extends StatefulWidget {
-  final PaperProblemLevel selectedLevel;
+  final Level selectedLevel;
   final List<ProblemScorer> problemScorerList;
 
   const PaperReviewScreen({
@@ -198,6 +198,10 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
         );
 
       case (DivMultLevel _):
+        return const Placeholder();
+      case (FlashLevel _):
+        return const Placeholder();
+      case (AloudLevel _):
         return const Placeholder();
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 
 class FlashFreeMenuPage extends StatefulWidget {
@@ -12,7 +13,7 @@ class FlashFreeMenuPage extends StatefulWidget {
 }
 
 class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
-  Kyuui _kyuui = .zsk9;
+  Kyuui _kyuui = .zsk20;
   KyuuiDenomination _kyuuiDenomination = .zsAloudAndFlash;
   int _zsIndex = 0;
   int _kkIndex = 0;
@@ -29,13 +30,18 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
   Future<void> _loadPrefs() async {
     _prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
-        allowList: <String>{'kyuui', 'kyuuiDenomination', 'zsIndex', 'kkIndex'},
+        allowList: <String>{
+          'flash_kyuui',
+          'flash_kyuuiDenomination',
+          'flash_zsIndex',
+          'flash_kkIndex',
+        },
       ),
     );
-    final kyuuiIndex = _prefs.getInt('kyuui');
-    final denominationIndex = _prefs.getInt('kyuuiDenomination');
-    final zsIndex = _prefs.getInt('zsIndex');
-    final kkIndex = _prefs.getInt('kkIndex');
+    final kyuuiIndex = _prefs.getInt('flash_kyuui');
+    final denominationIndex = _prefs.getInt('flash_kyuuiDenomination');
+    final zsIndex = _prefs.getInt('flash_zsIndex');
+    final kkIndex = _prefs.getInt('flash_kkIndex');
     if (zsIndex != null) {
       _zsIndex = zsIndex;
     }
@@ -50,7 +56,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
     }
   }
 
-  List<Kyuui> _buildKyuuiList(KyuuiDenomination denomination) => [
+  List<Kyuui> _buildFlashKyuuiList(KyuuiDenomination denomination) => [
     denomination.k20,
     denomination.k19,
     denomination.k18,
@@ -85,10 +91,10 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
 
   @override
   void dispose() {
-    _prefs.setInt('kyuui', _kyuui.index);
-    _prefs.setInt('kyuuiDenomination', _kyuuiDenomination.index);
-    _prefs.setInt('zsIndex', _zsIndex);
-    _prefs.setInt('kkIndex', _kkIndex);
+    _prefs.setInt('flash_kyuui', _kyuui.index);
+    _prefs.setInt('flash_kyuuiDenomination', _kyuuiDenomination.index);
+    _prefs.setInt('flash_zsIndex', _zsIndex);
+    _prefs.setInt('flash_kkIndex', _kkIndex);
 
     super.dispose();
   }
@@ -129,6 +135,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                         secondaryDenomination: KyuuiDenomination.kkFlash,
                         initialPrimaryIndex: _zsIndex,
                         initialSecondaryIndex: _kkIndex,
+                        kyuuiListBuilder: _buildFlashKyuuiList,
                         activeDenomination: _kyuuiDenomination,
                         onChanged: (denomination, index, kyuui) {
                           setState(() {
@@ -162,7 +169,40 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                                     : Expanded(flex: 1, child: selectorStack),
                                 Expanded(
                                   flex: isPortrait ? 1 : 5,
-                                  child: Placeholder(),
+                                  child: Flex(
+                                    direction: isPortrait
+                                        ? .vertical
+                                        : .horizontal,
+                                    children: [
+                                      Expanded(
+                                        child: FlashInfoDialog(
+                                          selectedLevel: _kyuui.flash!,
+                                          isPortrait: isPortrait,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: .symmetric(
+                                          horizontal: 24,
+                                          vertical: 6,
+                                        ),
+                                        child: NavigationButton(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.surfaceContainerHighest,
+                                          label: 'スタート',
+                                          onPressed: () {
+                                            context.go(
+                                              '/flash-problem',
+                                              extra: {
+                                                'selectedLevel': _kyuui.flash,
+                                                'isSingleProblem': false,
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -192,11 +232,12 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                                   ),
                                 ],
                                 selected: {_kyuuiDenomination},
+                                showSelectedIcon: false,
                                 onSelectionChanged:
                                     (Set<KyuuiDenomination> newSelection) {
                                       setState(() {
                                         _kyuuiDenomination = newSelection.first;
-                                        final newList = _buildKyuuiList(
+                                        final newList = _buildFlashKyuuiList(
                                           newSelection.first,
                                         );
                                         final newIndex =
@@ -223,5 +264,104 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
         ),
       ),
     );
+  }
+}
+
+class FlashInfoDialog extends StatelessWidget {
+  const FlashInfoDialog({
+    super.key,
+    required this.selectedLevel,
+    required this.isPortrait,
+  });
+  final FlashLevel selectedLevel;
+  final bool isPortrait;
+
+  @override
+  Widget build(BuildContext context) {
+    final int probCount = selectedLevel.probCount;
+    final double secondsPerProblem = selectedLevel.secondsPerProblem;
+    final int digits = selectedLevel.digits;
+    final int kuchi = selectedLevel.kuchi;
+    final bool kuriagariNashi = selectedLevel.kuriagariNashi;
+    final String denominationString =
+        selectedLevel.levelInfo.denomination.denominationString;
+
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          FittedBox(
+            child: Text(denominationString, style: textTheme.displaySmall),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Flex(
+              direction: isPortrait ? Axis.vertical : Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _statCell(context, '$digits', '桁'),
+                _divider(context),
+                _statCell(context, '$kuchi', '口'),
+                _divider(context),
+                _statCell(context, '$secondsPerProblem', '秒'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: .center,
+            spacing: 6,
+            children: [
+              Text('$probCount問', style: textTheme.titleLarge),
+              if (kuriagariNashi) ...[
+                const SizedBox(height: 6),
+                Text('くり上がりなし', style: textTheme.titleMedium),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCell(BuildContext context, String value, String unit) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text(value, style: textTheme.displayLarge),
+        Text(unit, style: textTheme.displaySmall),
+      ],
+    );
+  }
+
+  Widget _divider(BuildContext context) {
+    return isPortrait
+        ? Divider(color: Theme.of(context).colorScheme.outline, thickness: 1)
+        : SizedBox(
+            height: 48,
+            child: VerticalDivider(
+              color: Theme.of(context).colorScheme.outline,
+              thickness: 1,
+            ),
+          );
   }
 }
