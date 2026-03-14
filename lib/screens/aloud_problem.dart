@@ -33,7 +33,6 @@ class AloudProblemScreen extends StatefulWidget {
 class _AloudProblemScreenState extends State<AloudProblemScreen> {
   int _currentPageIndex = 0;
   int _currentProblemIndex = 0;
-  String _userInputted = '';
   final Stopwatch _stopwatch = Stopwatch();
   late final List<List<int>> _allProblems;
   late final List<String> _allAnswers;
@@ -111,8 +110,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     });
   }
 
-  void setInputAndShowResult(String userInputted) {
-    _userInputted = userInputted;
+  void setInputAndShowResult() {
     _stopwatch.stop();
     final elapsedSeconds = _stopwatch.elapsedMilliseconds / 1000;
     _inputTime = (!widget.isSingleProblem && elapsedSeconds > 30)
@@ -175,7 +173,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     super.dispose();
   }
 
-  Widget _buildPage(int index, bool isCorrect) {
+  Widget _buildPage(int index) {
     switch (index) {
       case 0:
         return AloudProblem(
@@ -210,7 +208,6 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     final media = MediaQuery.of(context);
     final Size screenSize = media.size;
     final bool isPortrait = media.orientation == Orientation.portrait;
-    final bool isCorrect = _userInputted == _allAnswers[_currentProblemIndex];
 
     return FlashAndAloudProblemData<int>(
       screenSize: screenSize,
@@ -232,7 +229,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
               child: child,
             );
           },
-          child: _buildPage(_currentPageIndex, isCorrect),
+          child: _buildPage(_currentPageIndex),
         ),
       ),
     );

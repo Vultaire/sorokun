@@ -317,16 +317,25 @@ class _FlashAndAloudProblemInputState<T>
             children: [
               Expanded(
                 flex: 3,
-                child: Stack(
-                  alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: .center,
+                  crossAxisAlignment: .center,
                   children: [
+                    if (widget.showTimer) SizedBox(height: 50),
+                    SizedBox(
+                      height: 150,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: FlashTextField(data: textData),
+                      ),
+                    ),
                     if (widget.showTimer)
                       Opacity(
                         opacity: 0.4,
                         child: SizedBox(
                           width: 400,
-                          height: 400,
-                          child: PieTimer(
+                          height: 50,
+                          child: BarTimer(
                             duration: Duration(milliseconds: widget.duration),
                             delayOver: widget.delayOver,
                             onComplete: () {
@@ -343,10 +352,6 @@ class _FlashAndAloudProblemInputState<T>
                           ),
                         ),
                       ),
-                    FittedBox(
-                      fit: BoxFit.contain,
-                      child: FlashTextField(data: textData),
-                    ),
                   ],
                 ),
               ),
@@ -424,7 +429,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
               onPressed: () async {
                 final shouldPop = await showExitDialog(context);
                 if (!mounted) return;
-                if (shouldPop) context.go('/flash-free-menu');
+                if (shouldPop) context.pop();
               },
               label: '設定画面',
             ),
@@ -457,7 +462,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
               onPressed: () async {
                 final shouldPop = await showExitDialog(context);
                 if (!mounted) return;
-                if (shouldPop) context.go('/flash-level-menu');
+                if (shouldPop) context.pop();
               },
               label: '設定画面',
             ),

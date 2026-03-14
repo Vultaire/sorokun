@@ -191,7 +191,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                                           ).colorScheme.surfaceContainerHighest,
                                           label: 'スタート',
                                           onPressed: () {
-                                            context.go(
+                                            context.push(
                                               '/flash-problem',
                                               extra: {
                                                 'selectedLevel': _kyuui.flash,
