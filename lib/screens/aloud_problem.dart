@@ -62,7 +62,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       scores.add(
         moraListToJsonChunks(
           moraList: problemMora,
-          speed: 3,
+          moraPerSecond: 3,
           msPerInterval: 1500,
         ),
       );

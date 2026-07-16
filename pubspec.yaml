@@ -42,7 +42,6 @@ flutter:
   assets:
     - assets/voicevox/dict/open_jtalk_dic_utf_8-1.11/
     - assets/voicevox/models/vvms/
-    - assets/open_jtalk_dic_utf_8-1.11/
     - assets/correct.png
     - assets/incorrect.png
     - assets/yame.png

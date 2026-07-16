@@ -290,15 +290,15 @@ class FlashInfoDialog extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const .all(16),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: .circular(16),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: .min,
+        mainAxisAlignment: .center,
+        crossAxisAlignment: .center,
         children: [
           FittedBox(
             child: Text(denominationString, style: textTheme.displaySmall),
@@ -306,20 +306,20 @@ class FlashInfoDialog extends StatelessWidget {
           const SizedBox(height: 12),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            padding: const .symmetric(vertical: 16, horizontal: 12),
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: .circular(12),
             ),
             child: Flex(
-              direction: isPortrait ? Axis.vertical : Axis.horizontal,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              direction: isPortrait ? .vertical : .horizontal,
+              mainAxisAlignment: .spaceEvenly,
               children: [
-                _statCell(context, '$digits', '桁'),
-                _divider(context),
-                _statCell(context, '$kuchi', '口'),
-                _divider(context),
-                _statCell(context, '$secondsPerProblem', '秒'),
+                statCell(context, '$digits', '桁'),
+                divider(context, isPortrait),
+                statCell(context, '$kuchi', '口'),
+                divider(context, isPortrait),
+                statCell(context, '$secondsPerProblem', '秒'),
               ],
             ),
           ),
@@ -339,29 +339,29 @@ class FlashInfoDialog extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _statCell(BuildContext context, String value, String unit) {
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Text(value, style: textTheme.displayLarge),
-        Text(unit, style: textTheme.displaySmall),
-      ],
-    );
-  }
+Widget statCell(BuildContext context, String value, String unit) {
+  final textTheme = Theme.of(context).textTheme;
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.baseline,
+    textBaseline: TextBaseline.alphabetic,
+    children: [
+      Text(value, style: textTheme.displayLarge),
+      Text(unit, style: textTheme.displaySmall),
+    ],
+  );
+}
 
-  Widget _divider(BuildContext context) {
-    return isPortrait
-        ? Divider(color: Theme.of(context).colorScheme.outline, thickness: 1)
-        : SizedBox(
-            height: 48,
-            child: VerticalDivider(
-              color: Theme.of(context).colorScheme.outline,
-              thickness: 1,
-            ),
-          );
-  }
+Widget divider(BuildContext context, bool isPortrait) {
+  return isPortrait
+      ? Divider(color: Theme.of(context).colorScheme.outline, thickness: 1)
+      : SizedBox(
+          height: 48,
+          child: VerticalDivider(
+            color: Theme.of(context).colorScheme.outline,
+            thickness: 1,
+          ),
+        );
 }

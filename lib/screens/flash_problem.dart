@@ -30,11 +30,11 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   bool _hasSubmitted = false;
   int _currentPageIndex = 0;
   int _currentProblemIndex = 0;
-  late final List<List<String>> _allProblems;
-  late final List<String> _allAnswers;
-  late final List<TextFieldData> _textFieldDataList;
+  late List<List<String>> _allProblems;
+  late List<String> _allAnswers;
+  late List<TextFieldData> _textFieldDataList;
   final Stopwatch _stopwatch = Stopwatch();
-  late final List<Segment> _schedule;
+  late List<Segment> _schedule;
 
   void showInput() {
     _stopwatch.start();

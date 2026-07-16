@@ -5,6 +5,7 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
+import 'package:soroban_app/screens/flash_level_menu.dart';
 
 class AloudMenuPage extends StatefulWidget {
   const AloudMenuPage({super.key, required this.voicevoxPaths});
@@ -18,7 +19,6 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
   Kyuui _kyuui = .zsk9;
   KyuuiDenomination _kyuuiDenomination = .zsAloudAndFlash;
   int _zsIndex = 0;
-  int _kkIndex = 0;
   late final SharedPreferencesWithCache _prefs;
 
   @override
@@ -32,18 +32,14 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
   Future<void> _loadPrefs() async {
     _prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
-        allowList: <String>{'kyuui', 'kyuuiDenomination', 'zsIndex', 'kkIndex'},
+        allowList: <String>{'kyuui', 'kyuuiDenomination', 'zsIndex'},
       ),
     );
     final kyuuiIndex = _prefs.getInt('kyuui');
     final denominationIndex = _prefs.getInt('kyuuiDenomination');
     final zsIndex = _prefs.getInt('zsIndex');
-    final kkIndex = _prefs.getInt('kkIndex');
     if (zsIndex != null) {
       _zsIndex = zsIndex;
-    }
-    if (kkIndex != null) {
-      _kkIndex = kkIndex;
     }
     if (kyuuiIndex != null) {
       _kyuui = Kyuui.values[kyuuiIndex];
@@ -81,7 +77,6 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
     _prefs.setInt('kyuui', _kyuui.index);
     _prefs.setInt('kyuuiDenomination', _kyuuiDenomination.index);
     _prefs.setInt('zsIndex', _zsIndex);
-    _prefs.setInt('kkIndex', _kkIndex);
 
     super.dispose();
   }
@@ -90,7 +85,7 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('フラッシュ暗算検定'),
+        title: const Text('読み上げ検定'),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -113,38 +108,17 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
                   child: OrientationBuilder(
                     builder: (context, orientation) {
                       final isPortrait = orientation == Orientation.portrait;
-                      final indexedStack = IndexedStack(
-                        index:
-                            _kyuuiDenomination ==
-                                KyuuiDenomination.zsAloudAndFlash
-                            ? 0
-                            : 1,
-                        children: [
-                          KyuuiSelector(
-                            kyuuiList: _buildKyuuiList(
-                              KyuuiDenomination.zsAloudAndFlash,
-                            ),
-                            currentIndex: _zsIndex,
-                            onChanged: (index, kyuui) {
-                              setState(() {
-                                _zsIndex = index;
-                                _kyuui = kyuui;
-                              });
-                            },
-                          ),
-                          KyuuiSelector(
-                            kyuuiList: _buildKyuuiList(
-                              KyuuiDenomination.kkFlash,
-                            ),
-                            currentIndex: _kkIndex,
-                            onChanged: (index, kyuui) {
-                              setState(() {
-                                _kkIndex = index;
-                                _kyuui = kyuui;
-                              });
-                            },
-                          ),
-                        ],
+                      final selector = KyuuiSelector(
+                        kyuuiList: _buildKyuuiList(
+                          KyuuiDenomination.zsAloudAndFlash,
+                        ),
+                        currentIndex: _zsIndex,
+                        onChanged: (index, kyuui) {
+                          setState(() {
+                            _zsIndex = index;
+                            _kyuui = kyuui;
+                          });
+                        },
                       );
                       final textStyle = Theme.of(context).textTheme;
                       final Widget startButton = NavigationButton(
@@ -174,60 +148,18 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
                                   : Axis.horizontal,
                               children: [
                                 isPortrait
-                                    ? SizedBox(height: 100, child: indexedStack)
-                                    : Expanded(flex: 1, child: indexedStack),
+                                    ? SizedBox(height: 100, child: selector)
+                                    : Expanded(flex: 1, child: selector),
                                 Expanded(
                                   flex: isPortrait ? 1 : 5,
-                                  child: Placeholder(),
+                                  child: AloudInfoDialog(
+                                    selectedLevel: _kyuui.aloud!,
+                                    isPortrait: isPortrait,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(height: 6),
-                          Flex(
-                            mainAxisAlignment: .spaceEvenly,
-                            direction: isPortrait
-                                ? Axis.vertical
-                                : Axis.horizontal,
-                            children: [
-                              SegmentedButton<KyuuiDenomination>(
-                                segments: <ButtonSegment<KyuuiDenomination>>[
-                                  ButtonSegment(
-                                    value: KyuuiDenomination.zsAloudAndFlash,
-                                    label: Text(
-                                      '全国珠算教育連盟',
-                                      style: textStyle.titleMedium,
-                                    ),
-                                  ),
-                                  ButtonSegment(
-                                    value: KyuuiDenomination.kkFlash,
-                                    label: Text(
-                                      '日本フラッシュ暗算協会',
-                                      style: textStyle.titleMedium,
-                                    ),
-                                  ),
-                                ],
-                                selected: {_kyuuiDenomination},
-                                onSelectionChanged:
-                                    (Set<KyuuiDenomination> newSelection) {
-                                      setState(() {
-                                        _kyuuiDenomination = newSelection.first;
-                                        final newList = _buildKyuuiList(
-                                          newSelection.first,
-                                        );
-                                        final newIndex =
-                                            newSelection.first ==
-                                                KyuuiDenomination
-                                                    .zsAloudAndFlash
-                                            ? _zsIndex
-                                            : _kkIndex;
-                                        _kyuui = newList[newIndex];
-                                      });
-                                    },
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6),
                         ],
                       );
                     },
@@ -237,6 +169,89 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
             }
           },
         ),
+      ),
+    );
+  }
+}
+
+class AloudInfoDialog extends StatelessWidget {
+  const AloudInfoDialog({
+    super.key,
+    required this.selectedLevel,
+    required this.isPortrait,
+  });
+  final AloudLevel selectedLevel;
+  final bool isPortrait;
+
+  @override
+  Widget build(BuildContext context) {
+    final int probCount = selectedLevel.probCount;
+    final int moraPerSecond = selectedLevel.moraPerSecond;
+    final bool hasMinus = selectedLevel.hasMinus;
+    final int minDigits = selectedLevel.minDigits;
+    final int maxDigits = selectedLevel.maxDigits;
+    final int kuchi = selectedLevel.kuchi;
+    final double secondsPerInterval = selectedLevel.secondsPerInterval;
+    final String denominationString =
+        selectedLevel.levelInfo.denomination.denominationString;
+
+    final String digitsString;
+    if (minDigits != maxDigits) {
+      digitsString = '$minDigits〜$maxDigits';
+    } else {
+      digitsString = '$minDigits';
+    }
+    final String minusString = hasMinus ? '加減算' : '加算';
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const .all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: .circular(16),
+      ),
+      child: Column(
+        mainAxisSize: .min,
+        mainAxisAlignment: .center,
+        crossAxisAlignment: .center,
+        children: [
+          FittedBox(
+            child: Text(denominationString, style: textTheme.displaySmall),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const .symmetric(vertical: 16, horizontal: 12),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: .circular(12),
+            ),
+            child: Column(
+              children: [
+                Flex(
+                  direction: isPortrait ? .vertical : .horizontal,
+                  mainAxisAlignment: .spaceEvenly,
+                  children: [
+                    statCell(context, digitsString, '桁'),
+                    divider(context, isPortrait),
+                    statCell(context, '$kuchi', '口'),
+                  ],
+                ),
+                DefaultTextStyle(
+                  style: textTheme.displaySmall!,
+                  child: Wrap(
+                    alignment: .center,
+                    children: [
+                      Text('話速: $moraPerSecond拍/秒'),
+                      SizedBox(width: 24),
+                      Text('間隔: $secondsPerInterval秒'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

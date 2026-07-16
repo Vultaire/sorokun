@@ -4,12 +4,12 @@ import 'package:soroban_app/problem_generation/mitori.dart';
 
 List<String> moraListToJsonChunks({
   required List<Mora> moraList,
-  required int speed,
+  required int moraPerSecond,
   required int msPerInterval,
 }) {
   final int intervalFrames = ((msPerInterval * 93.75) / 1000).round();
   final int halfInterval = (intervalFrames / 2).round();
-  final int framesPerMora = (25 + (speed - 1) * (10 - 25) / (9 - 1)).round();
+  final int framesPerMora = (((1000 / moraPerSecond) * 93.75) / 1000).round();
 
   // Split into chunks of non-empty moras
   final List<List<Mora>> chunks = [];
@@ -377,7 +377,7 @@ void main() {
   print(
     moraListToJsonChunks(
       moraList: scoreMora(allProblems[0].problem),
-      speed: 3,
+      moraPerSecond: 3,
       msPerInterval: 1000,
     ),
   );

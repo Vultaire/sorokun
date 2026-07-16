@@ -4,7 +4,7 @@ abstract interface class AloudSpec {
   int get minDigits;
   int get maxDigits;
   int get kuchi;
-  int get msPerMora;
+  int get moraPerSecond;
   double get secondsPerInterval;
   int get probCount;
   int? get minusCount;
@@ -18,22 +18,22 @@ class AloudSingleProblemSpec implements AloudSpec {
   @override
   int maxDigits;
   @override
-  int msPerMora;
+  int moraPerSecond;
   @override
   double secondsPerInterval;
   @override
   int probCount;
   @override
-  int? minusCount;
+  int minusCount;
 
   AloudSingleProblemSpec({
     required this.minDigits,
     required this.maxDigits,
     required this.kuchi,
-    required this.msPerMora,
+    required this.moraPerSecond,
     required this.secondsPerInterval,
     this.probCount = 1,
-    this.minusCount,
+    required this.minusCount,
   });
 }
 
@@ -42,7 +42,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 5,
     minDigits: 1,
     maxDigits: 1,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1.5,
     minusCount: 0,
     levelInfo: .zsAloud,
@@ -51,7 +51,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 5,
     minDigits: 1,
     maxDigits: 2,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1.5,
     minusCount: 0,
     levelInfo: .zsAloud,
@@ -60,7 +60,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 5,
     minDigits: 2,
     maxDigits: 2,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1.5,
     minusCount: 1,
     levelInfo: .zsAloud,
@@ -69,7 +69,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 5,
     minDigits: 2,
     maxDigits: 3,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1.5,
     minusCount: 1,
     levelInfo: .zsAloud,
@@ -78,7 +78,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 7,
     minDigits: 3,
     maxDigits: 3,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1.5,
     minusCount: 2,
     levelInfo: .zsAloud,
@@ -87,7 +87,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 7,
     minDigits: 3,
     maxDigits: 4,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1.5,
     minusCount: 2,
     levelInfo: .zsAloud,
@@ -96,7 +96,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 7,
     minDigits: 4,
     maxDigits: 4,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1.5,
     minusCount: 2,
     levelInfo: .zsAloud,
@@ -105,7 +105,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 3,
     maxDigits: 5,
-    msPerMora: 200,
+    moraPerSecond: 5,
     secondsPerInterval: 1,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -114,7 +114,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 3,
     maxDigits: 6,
-    msPerMora: 175,
+    moraPerSecond: 6,
     secondsPerInterval: 1,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -123,7 +123,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 4,
     maxDigits: 7,
-    msPerMora: 175,
+    moraPerSecond: 6,
     secondsPerInterval: 1,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -132,7 +132,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 5,
     maxDigits: 7,
-    msPerMora: 175,
+    moraPerSecond: 6,
     secondsPerInterval: 0.5,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -141,7 +141,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 5,
     maxDigits: 8,
-    msPerMora: 175,
+    moraPerSecond: 6,
     secondsPerInterval: 0.5,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -150,7 +150,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 5,
     maxDigits: 9,
-    msPerMora: 175,
+    moraPerSecond: 6,
     secondsPerInterval: 0.5,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -159,7 +159,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 5,
     maxDigits: 10,
-    msPerMora: 175,
+    moraPerSecond: 6,
     secondsPerInterval: 0.5,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -168,7 +168,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 5,
     maxDigits: 11,
-    msPerMora: 175,
+    moraPerSecond: 6,
     secondsPerInterval: 0,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -177,7 +177,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 7,
     maxDigits: 12,
-    msPerMora: 150,
+    moraPerSecond: 7,
     secondsPerInterval: 0,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -186,7 +186,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 10,
     minDigits: 7,
     maxDigits: 13,
-    msPerMora: 125,
+    moraPerSecond: 8,
     secondsPerInterval: 0,
     minusCount: 3,
     levelInfo: .zsAloud,
@@ -195,7 +195,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 15,
     minDigits: 7,
     maxDigits: 14,
-    msPerMora: 125,
+    moraPerSecond: 8,
     secondsPerInterval: 0,
     minusCount: 5,
     levelInfo: .zsAloud,
@@ -204,7 +204,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 15,
     minDigits: 7,
     maxDigits: 15,
-    msPerMora: 100,
+    moraPerSecond: 10,
     secondsPerInterval: 0,
     minusCount: 5,
     levelInfo: .zsAloud,
@@ -213,7 +213,7 @@ enum AloudLevel implements AloudSpec, Level {
     kuchi: 15,
     minDigits: 7,
     maxDigits: 16,
-    msPerMora: 75,
+    moraPerSecond: 12,
     secondsPerInterval: 0,
     minusCount: 5,
     levelInfo: .zsAloud,
@@ -226,21 +226,22 @@ enum AloudLevel implements AloudSpec, Level {
   @override
   final int maxDigits;
   @override
-  final int msPerMora;
+  final int moraPerSecond;
   @override
   final double secondsPerInterval;
   @override
   final int probCount = 5;
   @override
-  final int? minusCount;
+  final int minusCount;
   @override
   final LevelInfo levelInfo;
+  bool get hasMinus => minusCount > 0;
 
   const AloudLevel({
     required this.minDigits,
     required this.maxDigits,
     required this.kuchi,
-    required this.msPerMora,
+    required this.moraPerSecond,
     required this.secondsPerInterval,
     required this.minusCount,
     required this.levelInfo,
