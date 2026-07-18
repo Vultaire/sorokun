@@ -7,15 +7,14 @@ import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
 
-class AloudMenuPage extends StatefulWidget {
-  const AloudMenuPage({super.key, required this.voicevoxPaths});
-  final VoicevoxPaths voicevoxPaths;
+class AloudLevelMenuPage extends StatefulWidget {
+  const AloudLevelMenuPage({super.key});
 
   @override
-  State<AloudMenuPage> createState() => _AloudMenuPageState();
+  State<AloudLevelMenuPage> createState() => _AloudLevelMenuPageState();
 }
 
-class _AloudMenuPageState extends State<AloudMenuPage> {
+class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   Kyuui _kyuui = .zsk9;
   KyuuiDenomination _kyuuiDenomination = .zsAloudAndFlash;
   int _zsIndex = 0;
@@ -127,7 +126,6 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
                           context.push(
                             '/aloud-problem',
                             extra: {
-                              'voicevoxPaths': widget.voicevoxPaths,
                               'isSingleProblem': false,
                               'selectedLevel': _kyuui.aloud,
                             },
@@ -159,6 +157,10 @@ class _AloudMenuPageState extends State<AloudMenuPage> {
                                 ),
                               ],
                             ),
+                          ),
+                          Container(
+                            margin: .symmetric(horizontal: 24, vertical: 6),
+                            child: startButton,
                           ),
                         ],
                       );
@@ -242,7 +244,7 @@ class AloudInfoDialog extends StatelessWidget {
                   child: Wrap(
                     alignment: .center,
                     children: [
-                      Text('話速: $moraPerSecond拍/秒'),
+                      Text('速度: $moraPerSecond拍/秒'),
                       SizedBox(width: 24),
                       Text('間隔: $secondsPerInterval秒'),
                     ],

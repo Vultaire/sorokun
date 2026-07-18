@@ -12,14 +12,14 @@ import 'package:soroban_app/screens/components/spammable_button.dart';
 import 'package:vector_graphics/vector_graphics_compat.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
 
-class FlashMenuPage extends StatefulWidget {
-  const FlashMenuPage({super.key});
+class FlashFreeMenuPage extends StatefulWidget {
+  const FlashFreeMenuPage({super.key});
 
   @override
-  State<FlashMenuPage> createState() => _FlashMenuPageState();
+  State<FlashFreeMenuPage> createState() => _FlashFreeMenuPageState();
 }
 
-class _FlashMenuPageState extends State<FlashMenuPage> {
+class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
   double _secondsPerProblem = 10.0;
   int _kuchi = 15;
   int _digits = 3;
@@ -95,6 +95,9 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
     final int hideDuration = (_secondsPerProblem / (2.5 * _kuchi - 1) * 1000)
         .round();
     final int showDuration = (1.5 * hideDuration).round();
+    final textTheme = Theme.of(
+      context,
+    ).textTheme.titleLarge?.copyWith(fontFamily: 'robotoMono');
 
     return Scaffold(
       appBar: AppBar(
@@ -105,148 +108,169 @@ class _FlashMenuPageState extends State<FlashMenuPage> {
           onPressed: () => context.go('/home'),
         ),
       ),
-      body: Center(
-        child: Wrap(
-          alignment: .center,
-          children: [
-            FittedBox(
-              fit: .contain,
-              child: Row(
-                mainAxisAlignment: .spaceEvenly,
-                children: [
-                  Incrementer(
-                    value: _kuchi,
-                    label: '口数',
-                    onChanged: (newValue) => setState(() => _kuchi = newValue),
-                    min: 2,
-                    max: 30,
-                  ),
-                  SizedBox(width: 16),
-                  Incrementer(
-                    value: _digits,
-                    label: '桁数',
-                    onChanged: (newValue) => setState(() => _digits = newValue),
-                    min: 1,
-                    max: 6,
-                  ),
-                ],
-              ),
-            ),
-            FittedBox(
-              fit: BoxFit.contain,
-              child: SizedBox(
-                width: 400,
-                height: 300,
-                child: Stack(
-                  children: [
-                    CircularSlider(
-                      initialValue: _secondsPerProblem,
-                      width: 400,
-                      height: 300,
-                      onChanged: (value) {
-                        setState(() {
-                          _secondsPerProblem = value;
-                        });
-                      },
-                    ),
-                    Positioned(
-                      left: 100,
-                      bottom: 0,
-                      child: SpammableButton(
-                        onTapDown: () {
-                          _increaseValue();
-                        },
-                        enableRepeat: true,
-                        offsetX: 3.0,
-                        offsetY: 3.0,
-                        child: Container(
-                          height: 60,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: EdgeInsets.all(8),
-                          child: VectorGraphic(
-                            loader: AssetBytesLoader('assets/svg/tortoise.svg'),
-                            colorFilter: ColorFilter.mode(
-                              Theme.of(context).colorScheme.onSurface,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 100,
-                      bottom: 0,
-                      child: SpammableButton(
-                        onTapDown: () {
-                          _decreaseValue();
-                        },
-                        enableRepeat: true,
-                        child: Container(
-                          height: 60,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: EdgeInsets.all(8),
-                          child: VectorGraphic(
-                            loader: AssetBytesLoader('assets/svg/hare.svg'),
-                            colorFilter: ColorFilter.mode(
-                              Theme.of(context).colorScheme.onSurface,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            Column(
-              mainAxisAlignment: .center,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Wrap(
+              alignment: .center,
               children: [
-                Text(
-                  '表示間隔: ~${showDuration}ms',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontFamily: 'robotoMono'),
+                FittedBox(
+                  fit: .contain,
+                  child: Row(
+                    mainAxisAlignment: .spaceEvenly,
+                    children: [
+                      Incrementer(
+                        value: _kuchi,
+                        label: '口数',
+                        onChanged: (newValue) =>
+                            setState(() => _kuchi = newValue.toInt()),
+                        min: 2,
+                        max: 30,
+                      ),
+                      SizedBox(width: 16),
+                      Incrementer(
+                        value: _digits,
+                        label: '桁数',
+                        onChanged: (newValue) =>
+                            setState(() => _digits = newValue.toInt()),
+                        min: 1,
+                        max: 6,
+                      ),
+                    ],
+                  ),
                 ),
-                Text(
-                  '消画間隔: ~${hideDuration}ms',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontFamily: 'robotoMono'),
+                FittedBox(
+                  fit: BoxFit.contain,
+                  child: SizedBox(
+                    width: 400,
+                    height: 300,
+                    child: Stack(
+                      children: [
+                        CircularSlider(
+                          initialValue: _secondsPerProblem,
+                          width: 400,
+                          height: 300,
+                          onChanged: (value) {
+                            setState(() {
+                              _secondsPerProblem = value;
+                            });
+                          },
+                        ),
+                        Positioned(
+                          left: 90,
+                          bottom: 40,
+                          child: SpammableButton(
+                            onTapDown: () {
+                              _increaseValue();
+                            },
+                            enableRepeat: true,
+                            offsetX: 3.0,
+                            offsetY: 3.0,
+                            child: Container(
+                              height: 80,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHigh,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: EdgeInsets.all(8),
+                              child: VectorGraphic(
+                                loader: AssetBytesLoader(
+                                  'assets/svg/tortoise.svg',
+                                ),
+                                colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.onSurface,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 90,
+                          bottom: 40,
+                          child: SpammableButton(
+                            onTapDown: () {
+                              _decreaseValue();
+                            },
+                            enableRepeat: true,
+                            child: Container(
+                              height: 80,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHigh,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: EdgeInsets.all(8),
+                              child: VectorGraphic(
+                                loader: AssetBytesLoader('assets/svg/hare.svg'),
+                                colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.onSurface,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.all(8),
+                  child: Flex(
+                    direction:
+                        MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? Axis.horizontal
+                        : Axis.vertical,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        children: [
+                          Text('表示間隔', style: textTheme),
+                          Text('~${showDuration}ms', style: textTheme),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text('消画間隔', style: textTheme),
+                          Text('~${hideDuration}ms', style: textTheme),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                NavigationButton(
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  onPressed: () {
+                    FlashSingleProblemSpec spec = FlashSingleProblemSpec(
+                      digits: _digits,
+                      kuchi: _kuchi,
+                      secondsPerProblem: _secondsPerProblem,
+                      builder: mitoriStyle,
+                    );
+                    context.push(
+                      '/flash-problem',
+                      extra: {'isSingleProblem': true, 'selectedLevel': spec},
+                    );
+                  },
+                  label: 'スタート',
                 ),
               ],
             ),
-
-            NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              onPressed: () {
-                FlashSingleProblemSpec spec = FlashSingleProblemSpec(
-                  digits: _digits,
-                  kuchi: _kuchi,
-                  secondsPerProblem: _secondsPerProblem,
-                  builder: mitoriStyle,
-                );
-                context.push(
-                  '/flash-problem',
-                  extra: {'isSingleProblem': true, 'selectedLevel': spec},
-                );
-              },
-              label: 'スタート',
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -342,7 +366,7 @@ class _CircularSliderState extends State<CircularSlider> {
   }
 
   double _calculateAngle(Offset localPosition, Size size) {
-    final center = Offset(size.width / 2, 3 * size.height / 5);
+    final center = Offset(size.width / 2, 7 * size.height / 10);
     final touchPoint = localPosition - center;
     double angle = atan2(touchPoint.dy, touchPoint.dx);
     if (angle < 0) angle += 2 * pi;
@@ -405,7 +429,7 @@ class _CircularSliderState extends State<CircularSlider> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final activeColor = widget.activeColor ?? colorScheme.primary;
+    final primaryColor = widget.activeColor ?? colorScheme.primary;
 
     return SizedBox(
       width: widget.width,
@@ -431,46 +455,40 @@ class _CircularSliderState extends State<CircularSlider> {
           children: [
             CustomPaint(
               size: Size(widget.width, widget.height),
-              painter: CircularSliderPainter(
-                progress: _progress,
-                ringColor: activeColor,
-                backgroundColor: Theme.of(context).colorScheme.onSurface,
-              ),
+              painter: CircularSliderPainter(backgroundColor: primaryColor),
             ),
-            SizedBox(
-              width: widget.width * 0.7,
-              height: widget.height * 0.5,
-              child: Row(
-                mainAxisAlignment: .center,
-                children: [
-                  Text(
-                    _value >= 10
-                        ? _value.toStringAsFixed(0)
-                        : _value.toStringAsFixed(1),
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: activeColor,
-                      fontFamily: 'abacusFont',
+            Positioned(
+              top: 50,
+              child: SizedBox(
+                width: widget.width * 0.7,
+                height: widget.height * 0.5,
+                child: Row(
+                  mainAxisAlignment: .center,
+                  children: [
+                    Text(
+                      _value >= 10
+                          ? _value.toStringAsFixed(0)
+                          : _value.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontFamily: 'robotoMono',
+                      ),
                     ),
-                  ),
-                  Text(
-                    '秒',
-                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: activeColor,
-                      fontFamily: 'robotoMono',
+                    Text(
+                      '秒',
+                      style: Theme.of(context).textTheme.displayMedium
+                          ?.copyWith(fontFamily: 'robotoMono'),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Transform.translate(
-              offset: Offset(0, widget.height / 10),
+              offset: Offset(0, widget.height / 5),
               child: Transform.rotate(
                 angle: _handleAngle + pi / 2,
                 child: Transform.translate(
-                  offset: Offset(0, -widget.height * 0.5),
-                  child: Icon(Icons.arrow_drop_down_rounded, size: 60),
+                  offset: Offset(0, -widget.height * 0.53),
+                  child: Icon(Icons.circle, size: 30),
                 ),
               ),
             ),
@@ -482,34 +500,25 @@ class _CircularSliderState extends State<CircularSlider> {
 }
 
 class CircularSliderPainter extends CustomPainter {
-  final double progress;
-  final Color ringColor;
   final Color backgroundColor;
 
-  CircularSliderPainter({
-    required this.progress,
-    required this.ringColor,
-    required this.backgroundColor,
-  });
+  CircularSliderPainter({required this.backgroundColor});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, 3 * size.height / 5);
+    final center = Offset(size.width / 2, 7 * size.height / 10);
     final radius = (size.width * 0.4);
 
     // Gap size in radians (e.g., 45 degrees = pi/4)
     const gapSize = 5 * pi / 6;
     const gapStart = pi / 2 - gapSize / 2; // Center the gap at bottom
-    const totalArc = 2 * pi - gapSize;
 
-    // Draw background arc (with gap at bottom)
     final backgroundPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
+      ..strokeWidth = 6
       ..strokeCap = StrokeCap.round;
 
-    // Draw from end of gap, all the way around to start of gap
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       gapStart + gapSize,
@@ -517,30 +526,10 @@ class CircularSliderPainter extends CustomPainter {
       false,
       backgroundPaint,
     );
-
-    // Draw progress arc (starting from bottom left of gap, going counter-clockwise)
-    final progressPaint = Paint()
-      ..color = ringColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 12
-      ..strokeCap = StrokeCap.round;
-
-    const startAngle = gapStart + gapSize;
-    final sweepAngle = (2 * pi - gapSize) * progress;
-
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      sweepAngle,
-      false,
-      progressPaint,
-    );
   }
 
   @override
   bool shouldRepaint(CircularSliderPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
-        oldDelegate.ringColor != ringColor ||
-        oldDelegate.backgroundColor != backgroundColor;
+    return oldDelegate.backgroundColor != backgroundColor;
   }
 }

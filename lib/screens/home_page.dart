@@ -64,12 +64,12 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
                 ElevatedButton(
-                  onPressed: () => context.push('/flash-free-menu'),
+                  onPressed: () => context.push('/flash-level-menu'),
                   child: const Text('Flash Anzan Levels'),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => context.push('/flash-level-menu'),
+                  onPressed: () => context.push('/flash-free-menu'),
                   child: const Text('Flash Anzan'),
                 ),
                 const SizedBox(height: 16),
@@ -79,7 +79,12 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => context.push('/aloud-menu'),
+                  onPressed: () => context.push('/aloud-level-menu'),
+                  child: const Text('Aloud Levels'),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => context.push('/aloud-free-menu'),
                   child: const Text('Aloud Problem'),
                 ),
               ],

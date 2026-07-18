@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/screens/aloud_free_menu.dart';
 import 'package:soroban_app/screens/aloud_level_menu.dart';
 import 'package:soroban_app/screens/aloud_problem.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
@@ -18,19 +19,22 @@ import 'screens/paper_problem.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final paths = await extractVoicevoxAssets();
+  VoicevoxService.paths = await extractVoicevoxAssets();
   await SoLoud.instance.init(
-    sampleRate: 44100, // Audio quality
-    bufferSize: 256, // Buffer size affects latency
+    sampleRate: 44100,
+    bufferSize: 256,
     channels: Channels.stereo,
   );
+  runApp(const AbacusApp());
+}
 
-  runApp(AbacusApp(voicevoxPaths: paths));
+class VoicevoxService {
+  VoicevoxService._();
+  static late VoicevoxPaths paths;
 }
 
 class AbacusApp extends StatefulWidget {
-  const AbacusApp({super.key, required this.voicevoxPaths});
-  final VoicevoxPaths voicevoxPaths;
+  const AbacusApp({super.key});
 
   @override
   State<AbacusApp> createState() => _AbacusAppState();
@@ -158,7 +162,7 @@ class _AbacusAppState extends State<AbacusApp> {
       GoRoute(path: '/home', builder: (context, state) => HomePage()),
       GoRoute(
         path: '/flash-level-menu',
-        builder: (context, state) => FlashMenuPage(),
+        builder: (context, state) => FlashLevelMenuPage(),
       ),
       GoRoute(
         path: '/flash-free-menu',
@@ -194,9 +198,12 @@ class _AbacusAppState extends State<AbacusApp> {
         },
       ),
       GoRoute(
-        path: '/aloud-menu',
-        builder: (context, state) =>
-            AloudMenuPage(voicevoxPaths: widget.voicevoxPaths),
+        path: '/aloud-level-menu',
+        builder: (context, state) => AloudLevelMenuPage(),
+      ),
+      GoRoute(
+        path: '/aloud-free-menu',
+        builder: (context, state) => AloudFreeMenuPage(),
       ),
       GoRoute(
         path: '/aloud-problem',
@@ -204,7 +211,6 @@ class _AbacusAppState extends State<AbacusApp> {
           final args = state.extra as Map<String, dynamic>?;
 
           return AloudProblemScreen(
-            paths: args?['voicevoxPaths'],
             isSingleProblem: args?['isSingleProblem'],
             selectedLevel: args?['selectedLevel'],
           );
@@ -219,12 +225,12 @@ class _AbacusAppState extends State<AbacusApp> {
           return blackFadeTransition(
             key: state.pageKey,
             child: ResultsScreen(
-              selectedLevel: args?['selectedLevel'] ?? DivMultLevel.zsdk8,
-              isExam: args?['isExam'] ?? true,
-              allAnswers: args?['allAnswers'],
-              allProblems: args?['allProblems'],
-              textFieldDataList: args?['textFieldDataList'],
-              elapsed: args?['elapsed'],
+              selectedLevel: args['selectedLevel'] ?? DivMultLevel.zsdk8,
+              isExam: args['isExam'] ?? true,
+              allAnswers: args['allAnswers'],
+              allProblems: args['allProblems'],
+              textFieldDataList: args['textFieldDataList'],
+              elapsed: args['elapsed'],
             ),
           );
         },

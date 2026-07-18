@@ -7,24 +7,22 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/main.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
-import 'package:soroban_app/src/voicevox_paths.dart';
 import 'package:soroban_app/src/voicevox_sing.dart';
 
 class AloudProblemScreen extends StatefulWidget {
   const AloudProblemScreen({
     super.key,
-    required this.paths,
     required this.isSingleProblem,
     required this.selectedLevel,
   });
-  final VoicevoxPaths paths;
   final bool isSingleProblem;
-  final AloudLevel selectedLevel;
+  final AloudSpec selectedLevel;
 
   @override
   State<AloudProblemScreen> createState() => _AloudProblemScreenState();
@@ -36,7 +34,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   final Stopwatch _stopwatch = Stopwatch();
   late final List<List<int>> _allProblems;
   late final List<String> _allAnswers;
-  final List<TextFieldData> _textFieldDataList = [];
+  late List<TextFieldData> _textFieldDataList;
   late final List<List<String>> _scores;
   late final String dictDir;
   late final String vvmPath;
@@ -52,6 +50,10 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     );
     _allProblems = fullProblemSet.unformattedProblems;
     _allAnswers = fullProblemSet.formattedAnswers;
+    _textFieldDataList = List.generate(
+      _allAnswers.length,
+      (_) => TextFieldData(),
+    );
     _scores = _initScore();
   }
 
@@ -104,7 +106,13 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     });
     _chunkSubscription?.cancel();
     _wavChunks.clear();
-    _chunkStream = _synthesizeChunks(_scores[_currentProblemIndex + 1]);
+
+    if (!widget.isSingleProblem) {
+      _chunkStream = _synthesizeChunks(_scores[_currentProblemIndex + 1]);
+    } else {
+      _chunkStream = _synthesizeChunks(_scores[_currentProblemIndex + 1]);
+    }
+
     _chunkSubscription = _chunkStream!.listen((chunk) {
       setState(() => _wavChunks.add(chunk));
     });
@@ -155,8 +163,8 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   @override
   void initState() {
     super.initState();
-    dictDir = widget.paths.dictDir;
-    vvmPath = '${widget.paths.vvmDir}/s0.vvm';
+    dictDir = VoicevoxService.paths.dictDir;
+    vvmPath = '${VoicevoxService.paths.vvmDir}/s0.vvm';
     _initProblems();
 
     final List<String> firstScore = _scores[0];

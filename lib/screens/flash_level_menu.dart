@@ -5,14 +5,14 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 
-class FlashFreeMenuPage extends StatefulWidget {
-  const FlashFreeMenuPage({super.key});
+class FlashLevelMenuPage extends StatefulWidget {
+  const FlashLevelMenuPage({super.key});
 
   @override
-  State<FlashFreeMenuPage> createState() => _FlashFreeMenuPageState();
+  State<FlashLevelMenuPage> createState() => _FlashLevelMenuPageState();
 }
 
-class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
+class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
   Kyuui _kyuui = .zsk20;
   KyuuiDenomination _kyuuiDenomination = .zsAloudAndFlash;
   int _zsIndex = 0;

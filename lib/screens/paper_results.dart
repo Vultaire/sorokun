@@ -75,15 +75,34 @@ class ResultsScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                context.go(
-                  '/paper-problem',
-                  extra: {
-                    'selectedLevel': selectedLevel,
-                    'isExam': isExam,
-                    'time': selectedLevel.levelInfo.timeLimit,
-                    'appBarTitle': 'placeholder',
-                  },
-                );
+                switch (selectedLevel) {
+                  case FlashLevel _:
+                    context.push(
+                      '/flash-problem',
+                      extra: {
+                        'selectedLevel': selectedLevel,
+                        'isSingleProblem': false,
+                      },
+                    );
+                  case AloudLevel _:
+                    context.push(
+                      '/aloud-problem',
+                      extra: {
+                        'isSingleProblem': false,
+                        'selectedLevel': selectedLevel,
+                      },
+                    );
+                  case PaperProblemLevel _:
+                    context.go(
+                      '/paper-problem',
+                      extra: {
+                        'selectedLevel': selectedLevel,
+                        'isExam': isExam,
+                        'time': selectedLevel.levelInfo.timeLimit,
+                        'appBarTitle': 'placeholder',
+                      },
+                    );
+                }
               },
               child: Text('もう一度挑戦する'),
             ),
@@ -158,10 +177,12 @@ class CountUpText extends StatefulWidget {
 }
 
 class _CountUpTextState extends State<CountUpText>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<int> _countAnimation;
   late Animation<double> _progressAnimation;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
   AudioSource? tickSound;
   AudioSource? passThresholdSound;
   AudioSource? passFailAppearSound;
@@ -171,7 +192,7 @@ class _CountUpTextState extends State<CountUpText>
   late final String passFailText;
 
   bool get userPassed =>
-      widget.score.$1 / widget.score.$2 > widget.passThreshold;
+      widget.score.$1 / widget.score.$2 >= widget.passThreshold;
 
   @override
   void initState() {
@@ -189,6 +210,15 @@ class _CountUpTextState extends State<CountUpText>
     Duration duration =
         Duration(milliseconds: 800) + widget.durationBase * widget.score.$1;
     _controller = AnimationController(duration: duration, vsync: this);
+
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _pulseAnimation = CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.elasticOut,
+    );
 
     _countAnimation = IntTween(
       begin: 0,
@@ -247,21 +277,22 @@ class _CountUpTextState extends State<CountUpText>
   }
 
   void _onProgressChange() {
-    if (passThresholdSound == null) return;
-
-    final progress = _progressAnimation.value;
-
-    if (!_thresholdSoundPlayed && progress >= widget.passThreshold) {
+    if (!_thresholdSoundPlayed &&
+        _progressAnimation.value >= widget.passThreshold) {
       _thresholdSoundPlayed = true;
-
-      SoLoud.instance.play(passThresholdSound!);
+      if (passThresholdSound != null) {
+        SoLoud.instance.play(passThresholdSound!);
+      }
+      _pulseController.forward(from: 0);
     }
   }
 
   @override
   void dispose() {
     _countAnimation.removeListener(_onCountChange);
+    _progressAnimation.removeListener(_onProgressChange);
     _controller.dispose();
+    _pulseController.dispose();
     if (tickSound != null) {
       SoLoud.instance.disposeSource(tickSound!);
     }
@@ -274,23 +305,8 @@ class _CountUpTextState extends State<CountUpText>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        double tickScale = 1.0;
-        const pulseWindow = 0.20;
         const pulseAmplitude = 0.35;
-
-        if (_progressAnimation.value > widget.passThreshold) {
-          final t =
-              (_progressAnimation.value - widget.passThreshold) / pulseWindow;
-
-          if (t < 1.0) {
-            // Animate during pulse window
-            final eased = Curves.elasticOut.transform(t);
-            tickScale = 1.0 + eased * pulseAmplitude;
-          } else {
-            // Lock final scale AFTER pulse
-            tickScale = 1.0 + pulseAmplitude;
-          }
-        }
+        final double tickScale = 1.0 + _pulseAnimation.value * pulseAmplitude;
 
         return Padding(
           padding: const EdgeInsets.all(70.0),
