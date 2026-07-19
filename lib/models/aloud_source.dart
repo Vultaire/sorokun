@@ -5,7 +5,7 @@ abstract interface class AloudSpec {
   int get maxDigits;
   int get kuchi;
   int get moraPerSecond;
-  double get secondsPerInterval;
+  int get msPerInterval;
   int get probCount;
   int? get minusCount;
 }
@@ -20,7 +20,7 @@ class AloudSingleProblemSpec implements AloudSpec {
   @override
   int moraPerSecond;
   @override
-  double secondsPerInterval;
+  int msPerInterval;
   @override
   int probCount;
   @override
@@ -31,7 +31,7 @@ class AloudSingleProblemSpec implements AloudSpec {
     required this.maxDigits,
     required this.kuchi,
     required this.moraPerSecond,
-    required this.secondsPerInterval,
+    required this.msPerInterval,
     this.probCount = 1,
     required this.minusCount,
   });
@@ -43,7 +43,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 1,
     maxDigits: 1,
     moraPerSecond: 5,
-    secondsPerInterval: 1.5,
+    msPerInterval: 1500,
     minusCount: 0,
     levelInfo: .zsAloud,
   ),
@@ -52,7 +52,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 1,
     maxDigits: 2,
     moraPerSecond: 5,
-    secondsPerInterval: 1.5,
+    msPerInterval: 1500,
     minusCount: 0,
     levelInfo: .zsAloud,
   ),
@@ -61,7 +61,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 2,
     maxDigits: 2,
     moraPerSecond: 5,
-    secondsPerInterval: 1.5,
+    msPerInterval: 1500,
     minusCount: 1,
     levelInfo: .zsAloud,
   ),
@@ -70,7 +70,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 2,
     maxDigits: 3,
     moraPerSecond: 5,
-    secondsPerInterval: 1.5,
+    msPerInterval: 1500,
     minusCount: 1,
     levelInfo: .zsAloud,
   ),
@@ -79,7 +79,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 3,
     maxDigits: 3,
     moraPerSecond: 5,
-    secondsPerInterval: 1.5,
+    msPerInterval: 1500,
     minusCount: 2,
     levelInfo: .zsAloud,
   ),
@@ -88,7 +88,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 3,
     maxDigits: 4,
     moraPerSecond: 5,
-    secondsPerInterval: 1.5,
+    msPerInterval: 1500,
     minusCount: 2,
     levelInfo: .zsAloud,
   ),
@@ -97,7 +97,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 4,
     maxDigits: 4,
     moraPerSecond: 5,
-    secondsPerInterval: 1.5,
+    msPerInterval: 1500,
     minusCount: 2,
     levelInfo: .zsAloud,
   ),
@@ -106,7 +106,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 3,
     maxDigits: 5,
     moraPerSecond: 5,
-    secondsPerInterval: 1,
+    msPerInterval: 1000,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -115,7 +115,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 3,
     maxDigits: 6,
     moraPerSecond: 6,
-    secondsPerInterval: 1,
+    msPerInterval: 1000,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -124,7 +124,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 4,
     maxDigits: 7,
     moraPerSecond: 6,
-    secondsPerInterval: 1,
+    msPerInterval: 1000,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -133,7 +133,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 5,
     maxDigits: 7,
     moraPerSecond: 6,
-    secondsPerInterval: 0.5,
+    msPerInterval: 500,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -142,7 +142,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 5,
     maxDigits: 8,
     moraPerSecond: 6,
-    secondsPerInterval: 0.5,
+    msPerInterval: 500,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -151,7 +151,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 5,
     maxDigits: 9,
     moraPerSecond: 6,
-    secondsPerInterval: 0.5,
+    msPerInterval: 500,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -160,7 +160,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 5,
     maxDigits: 10,
     moraPerSecond: 6,
-    secondsPerInterval: 0.5,
+    msPerInterval: 500,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -169,7 +169,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 5,
     maxDigits: 11,
     moraPerSecond: 6,
-    secondsPerInterval: 0,
+    msPerInterval: 0,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -178,7 +178,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 7,
     maxDigits: 12,
     moraPerSecond: 7,
-    secondsPerInterval: 0,
+    msPerInterval: 0,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -187,7 +187,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 7,
     maxDigits: 13,
     moraPerSecond: 8,
-    secondsPerInterval: 0,
+    msPerInterval: 0,
     minusCount: 3,
     levelInfo: .zsAloud,
   ),
@@ -196,7 +196,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 7,
     maxDigits: 14,
     moraPerSecond: 8,
-    secondsPerInterval: 0,
+    msPerInterval: 0,
     minusCount: 5,
     levelInfo: .zsAloud,
   ),
@@ -205,7 +205,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 7,
     maxDigits: 15,
     moraPerSecond: 10,
-    secondsPerInterval: 0,
+    msPerInterval: 0,
     minusCount: 5,
     levelInfo: .zsAloud,
   ),
@@ -214,7 +214,7 @@ enum AloudLevel implements AloudSpec, Level {
     minDigits: 7,
     maxDigits: 16,
     moraPerSecond: 12,
-    secondsPerInterval: 0,
+    msPerInterval: 0,
     minusCount: 5,
     levelInfo: .zsAloud,
   );
@@ -228,7 +228,7 @@ enum AloudLevel implements AloudSpec, Level {
   @override
   final int moraPerSecond;
   @override
-  final double secondsPerInterval;
+  final int msPerInterval;
   @override
   final int probCount = 5;
   @override
@@ -242,7 +242,7 @@ enum AloudLevel implements AloudSpec, Level {
     required this.maxDigits,
     required this.kuchi,
     required this.moraPerSecond,
-    required this.secondsPerInterval,
+    required this.msPerInterval,
     required this.minusCount,
     required this.levelInfo,
   });

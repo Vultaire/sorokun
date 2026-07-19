@@ -22,9 +22,11 @@ List<int> generateMitoriProblemFromDigitList(List<int> digitList, Random rand) {
   final bool hasRowsOverSix = digitList.any((d) => d > 6);
   int sum = digitList.fold(0, (a, b) => a + b);
   List<int> pool = _generatePool(sum, digitList, (!hasRowsOverSix), rand);
-  for (int attempt = 0; attempt < 100; attempt++) {
+  List<List<int>>? lastArray;
+  for (int attempt = 0; attempt < 5; attempt++) {
     pool.shuffle(rand);
     List<List<int>> array = _buildInitialArray(digitList, pool);
+    lastArray = array;
     if (_fixViolations(
       array,
       rand,
@@ -37,7 +39,28 @@ List<int> generateMitoriProblemFromDigitList(List<int> digitList, Random rand) {
       }).toList();
     }
   }
-  throw Exception('Cannot satisfy constraints after 100 attempts');
+
+  // Swapping alone couldn't resolve it after 5 attempts — fall back to
+  // repairing the last attempted array by overwriting violating cells
+  // with fresh random digits instead of swapping positions.
+  if (lastArray != null &&
+      _fixViolationsByReplacement(
+        lastArray,
+        rand,
+        maxIterations: 1000,
+        hasLargeRows: hasRowsOverTen,
+      )) {
+    return lastArray.map((row) {
+      final unreversed = row.reversed;
+      return int.parse(unreversed.join());
+    }).toList();
+  }
+
+  print('generateMitoriProblemFromDigitList failed after 5 attempts');
+  print('digitList=$digitList sum=$sum pool=$pool');
+  print('last attempted array (post-_fixViolations, still violating):');
+  lastArray?.forEach((row) => print('  $row'));
+  throw Exception('Cannot satisfy constraints after 5 attempts');
 }
 
 List<List<int>> _buildInitialArray(List<int> input, List<int> pool) {
@@ -56,6 +79,31 @@ List<List<int>> _buildInitialArray(List<int> input, List<int> pool) {
   }
 
   return array;
+}
+
+/// Like _fixViolations, but instead of swapping a violating cell with
+/// another position, it overwrites the violating cell with a new random
+/// digit (0-9). Useful as a fallback when swap-based repair can't
+/// converge (e.g. the pool's multiset of digits can't be rearranged to
+/// satisfy constraints, but a fresh digit at that cell can).
+bool _fixViolationsByReplacement(
+  List<List<int>> array,
+  Random random, {
+  required int maxIterations,
+  required bool hasLargeRows,
+}) {
+  int iterations = 0;
+  while (iterations < maxIterations) {
+    List<Violation> violations = _findViolations(
+      array,
+      hasLargeRows: hasLargeRows,
+    );
+    if (violations.isEmpty) return true;
+    iterations++;
+    Violation violation = violations[random.nextInt(violations.length)];
+    array[violation.row][violation.col] = random.nextInt(10);
+  }
+  return false;
 }
 
 bool _fixViolations(

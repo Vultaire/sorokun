@@ -193,7 +193,7 @@ class AloudInfoDialog extends StatelessWidget {
     final int minDigits = selectedLevel.minDigits;
     final int maxDigits = selectedLevel.maxDigits;
     final int kuchi = selectedLevel.kuchi;
-    final double secondsPerInterval = selectedLevel.secondsPerInterval;
+    final int msPerInterval = selectedLevel.msPerInterval;
     final String denominationString =
         selectedLevel.levelInfo.denomination.denominationString;
 
@@ -246,7 +246,7 @@ class AloudInfoDialog extends StatelessWidget {
                     children: [
                       Text('速度: $moraPerSecond拍/秒'),
                       SizedBox(width: 24),
-                      Text('間隔: $secondsPerInterval秒'),
+                      Text('間隔: $msPerInterval秒'),
                     ],
                   ),
                 ),

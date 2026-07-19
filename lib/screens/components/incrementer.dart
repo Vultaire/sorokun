@@ -13,14 +13,16 @@ class Incrementer extends StatefulWidget {
     this.max,
     required this.label,
     this.step,
+    this.displayValue,
   });
 
-  final num value;
-  final ValueChanged<num> onChanged;
+  final int value;
+  final ValueChanged<int> onChanged;
   final String label;
   final int? min;
   final int? max;
-  final double? step;
+  final int? step;
+  final String? displayValue;
 
   @override
   State<Incrementer> createState() => _IncrementerState();
@@ -28,15 +30,15 @@ class Incrementer extends StatefulWidget {
 
 class _IncrementerState extends State<Incrementer> {
   void _increment() {
-    num newValue = widget.value + (widget.step ?? 1);
+    int newValue = widget.value + (widget.step ?? 1);
     if (widget.max != null && newValue > widget.max!) return;
-    widget.onChanged((newValue * 10).round() / 10);
+    widget.onChanged(newValue);
   }
 
   void _decrement() {
-    num newValue = widget.value - (widget.step ?? 1);
+    int newValue = widget.value - (widget.step ?? 1);
     if (widget.min != null && newValue < widget.min!) return;
-    widget.onChanged((newValue * 10).round() / 10);
+    widget.onChanged(newValue);
   }
 
   @override
@@ -72,7 +74,7 @@ class _IncrementerState extends State<Incrementer> {
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 Text(
-                  '${widget.value}',
+                  widget.displayValue ?? '${widget.value}',
                   style: Theme.of(
                     context,
                   ).textTheme.displayLarge!.copyWith(fontFamily: 'robotoMono'),

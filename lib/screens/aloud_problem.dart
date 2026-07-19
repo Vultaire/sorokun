@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:async/async.dart';
 import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
@@ -32,10 +33,10 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   int _currentPageIndex = 0;
   int _currentProblemIndex = 0;
   final Stopwatch _stopwatch = Stopwatch();
-  late final List<List<int>> _allProblems;
-  late final List<String> _allAnswers;
+  late List<List<int>> _allProblems;
+  late List<String> _allAnswers;
   late List<TextFieldData> _textFieldDataList;
-  late final List<List<String>> _scores;
+  late List<List<String>> _scores;
   late final String dictDir;
   late final String vvmPath;
   late String _inputTime;
@@ -43,6 +44,12 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   Stream<Uint8List>? _chunkStream;
   StreamSubscription? _chunkSubscription;
   final List<Uint8List> _wavChunks = [];
+  final Stopwatch _genStopwatch = Stopwatch();
+  bool _readyToPlay = false;
+  int? _totalChunksExpected;
+  Timer? _readyTimer;
+  List<Uint8List> _previousWavChunks = [];
+  bool _isRepeat = false;
 
   void _initProblems() {
     AloudProblemSet fullProblemSet = AloudProblemSet(
@@ -57,6 +64,26 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     _scores = _initScore();
   }
 
+  void _initSingleProblem() {
+    final AloudProblemSet problemSet = AloudProblemSet(
+      spec: widget.selectedLevel,
+    );
+    final List<int> problem = problemSet.unformattedProblems.first;
+    final String answer = problemSet.formattedAnswers.first;
+    final List<Mora> problemMora = scoreMora(problem);
+    final List<String> score = moraListToJsonChunks(
+      moraList: problemMora,
+      moraPerSecond: widget.selectedLevel.moraPerSecond,
+      msPerInterval: widget.selectedLevel.msPerInterval,
+    );
+
+    _allProblems = [problem];
+    _allAnswers = [answer];
+    _scores = [score];
+    _textFieldDataList = [TextFieldData()];
+    _currentProblemIndex = 0;
+  }
+
   List<List<String>> _initScore() {
     List<List<String>> scores = [];
     for (List<int> unformattedProblem in _allProblems) {
@@ -64,32 +91,43 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       scores.add(
         moraListToJsonChunks(
           moraList: problemMora,
-          moraPerSecond: 3,
-          msPerInterval: 1500,
+          moraPerSecond: widget.selectedLevel.moraPerSecond,
+          msPerInterval: widget.selectedLevel.msPerInterval,
         ),
       );
     }
     return scores;
   }
 
+  Isolate? _synthIsolate;
+
   Stream<Uint8List> _synthesizeChunks(List<String> scores) async* {
-    final dictDir = this.dictDir;
-    final vvmPath = this.vvmPath;
+    final mainReceivePort = ReceivePort();
+    _synthIsolate = await Isolate.spawn(
+      _synthWorkerEntry,
+      mainReceivePort.sendPort,
+    );
+
+    final events = StreamQueue<dynamic>(mainReceivePort);
+
+    // First message from the worker is its SendPort.
+    final workerSendPort = await events.next as SendPort;
+
+    // Send init args (dictDir/vvmPath) — triggers the one-time dictionary load.
+    workerSendPort.send([dictDir, vvmPath]);
+
+    // Now request each chunk in order and await its result before requesting
+    // the next — this keeps memory bounded and preserves chunk ordering.
     for (final score in scores) {
-      yield await Isolate.run(() {
-        final singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
-        singer.initialize();
-        return speedUpWav(
-          singer.synthesizeWithF0(
-            scoreJson: score,
-            singingTeacherStyleId: 6000,
-            singerStyleId: 3029,
-            keyRangeAdjustment: 2,
-          ),
-          1.3,
-        );
-      });
+      workerSendPort.send(_SynthRequest(score, 1.3));
+      final result = await events.next as Uint8List;
+      yield result;
     }
+
+    workerSendPort.send(const _SynthDone());
+    await events.cancel();
+    mainReceivePort.close();
+    _synthIsolate = null;
   }
 
   void showInput() {
@@ -104,18 +142,17 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
         });
       }
     });
-    _chunkSubscription?.cancel();
-    _wavChunks.clear();
 
-    if (!widget.isSingleProblem) {
-      _chunkStream = _synthesizeChunks(_scores[_currentProblemIndex + 1]);
-    } else {
-      _chunkStream = _synthesizeChunks(_scores[_currentProblemIndex + 1]);
+    if (_isRepeat) {
+      return;
     }
 
-    _chunkSubscription = _chunkStream!.listen((chunk) {
-      setState(() => _wavChunks.add(chunk));
-    });
+    _previousWavChunks = List<Uint8List>.of(_wavChunks);
+
+    if (widget.isSingleProblem) {
+      _appendNewProblem();
+    }
+    _resetChunkGeneration(_scores[_currentProblemIndex + 1]);
   }
 
   void setInputAndShowResult() {
@@ -130,8 +167,14 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     _stopwatch.reset();
   }
 
+  void repeatProblem() {
+    _isRepeat = true;
+    playProblem();
+  }
+
   void startNextProblem() {
     _currentProblemIndex++;
+    _isRepeat = false;
     playProblem();
   }
 
@@ -143,8 +186,39 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   }
 
   void newProblem() {
-    _initProblems();
+    _isRepeat = false;
     playProblem();
+  }
+
+  void _appendNewProblem() {
+    final AloudProblemSet newProblemSet = AloudProblemSet(
+      spec: widget.selectedLevel,
+    );
+    final List<int> newProblem = newProblemSet.unformattedProblems.first;
+    final String newAnswer = newProblemSet.formattedAnswers.first;
+    final List<Mora> problemMora = scoreMora(newProblem);
+    final List<String> newScore = moraListToJsonChunks(
+      moraList: problemMora,
+      moraPerSecond: widget.selectedLevel.moraPerSecond,
+      msPerInterval: widget.selectedLevel.msPerInterval,
+    );
+
+    _allProblems.add(newProblem);
+    _allAnswers.add(newAnswer);
+    _scores.add(newScore);
+    _textFieldDataList.add(TextFieldData());
+
+    // Keep only [current, next]. currentProblemIndex is always 0 in
+    // single-problem mode — it never needs adjusting, since trimming
+    // from the front just promotes "next" into the "current" slot.
+    const maxKept = 2;
+    while (_allProblems.length > maxKept) {
+      _allProblems.removeAt(0);
+      _allAnswers.removeAt(0);
+      _scores.removeAt(0);
+      _textFieldDataList.removeAt(0);
+    }
+    _currentProblemIndex = 0;
   }
 
   void showResults() {
@@ -160,24 +234,113 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     );
   }
 
+  Duration _wavDuration(Uint8List wavBytes) {
+    final data = ByteData.sublistView(wavBytes);
+    final numChannels = data.getUint16(22, Endian.little);
+    final sampleRate = data.getUint32(24, Endian.little);
+    final bitsPerSample = data.getUint16(34, Endian.little);
+    final dataSize = data.getUint32(40, Endian.little);
+    final byteRate = sampleRate * numChannels * (bitsPerSample ~/ 8);
+    if (byteRate == 0) return Duration.zero;
+    final seconds = dataSize / byteRate;
+    return Duration(milliseconds: (seconds * 1000).round());
+  }
+
+  void _resetChunkGeneration(List<String> scores) {
+    _chunkSubscription?.cancel();
+    _readyTimer?.cancel();
+    _synthIsolate?.kill(priority: Isolate.immediate);
+    _synthIsolate = null;
+    _wavChunks.clear();
+    _readyToPlay = false;
+    _genStopwatch
+      ..reset()
+      ..start();
+    _chunkStream = _synthesizeChunks(scores);
+    _chunkSubscription = _chunkStream!.listen(
+      _onChunkReceived,
+      onDone: () {
+        if (mounted && !_readyToPlay) {
+          setState(() => _readyToPlay = true);
+        }
+      },
+    );
+  }
+
+  void _onChunkReceived(Uint8List chunk) {
+    final isFirstChunk = _wavChunks.isEmpty;
+    setState(() => _wavChunks.add(chunk));
+    if (!isFirstChunk) return;
+
+    final g = _genStopwatch.elapsedMilliseconds; // time to generate chunk 1
+    final playDuration = _wavDuration(chunk);
+    final d = playDuration.inMilliseconds;
+    final n = _totalChunksExpected ?? 1;
+
+    print('[chunkReady] genTime=${g}ms playDuration=${d}ms totalChunks=$n');
+
+    if (d <= 0) {
+      print(
+        '[chunkReady] could not parse WAV duration, falling back to onDone',
+      );
+      return; // couldn't parse duration; fall back to onDone
+    }
+
+    if (g <= d) {
+      // Generation is at least real-time — safe right now.
+      print('[chunkReady] g <= d, unlocking immediately (no wait)');
+      setState(() => _readyToPlay = true);
+      return;
+    }
+
+    // Worst-case lead time needed, per the derivation above, is driven
+    // by the last chunk: s_min = N*G - (N-1)*D.
+    final requiredLeadMs = (n * g - (n - 1) * d).round();
+    final remainingWaitMs = requiredLeadMs - g; // g ms have already elapsed
+
+    print(
+      '[chunkReady] g > d, requiredLeadMs=$requiredLeadMs '
+      '(elapsed so far=${g}ms) -> remainingWaitMs=$remainingWaitMs',
+    );
+
+    if (remainingWaitMs <= 0) {
+      print('[chunkReady] remainingWaitMs <= 0, unlocking immediately');
+      setState(() => _readyToPlay = true);
+    } else {
+      print('[chunkReady] scheduling unlock timer for ${remainingWaitMs}ms');
+      _readyTimer = Timer(Duration(milliseconds: remainingWaitMs), () {
+        if (mounted && !_readyToPlay) {
+          print(
+            '[chunkReady] timer fired after ${remainingWaitMs}ms, unlocking',
+          );
+          setState(() => _readyToPlay = true);
+        } else {
+          print(
+            '[chunkReady] timer fired but already ready or unmounted, skipping',
+          );
+        }
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     dictDir = VoicevoxService.paths.dictDir;
     vvmPath = '${VoicevoxService.paths.vvmDir}/s0.vvm';
-    _initProblems();
-
-    final List<String> firstScore = _scores[0];
-
-    _chunkStream = _synthesizeChunks(firstScore);
-    _chunkSubscription = _chunkStream?.listen((chunk) {
-      setState(() => _wavChunks.add(chunk));
-    });
+    if (widget.isSingleProblem) {
+      _initSingleProblem();
+    } else {
+      _initProblems();
+    }
+    _resetChunkGeneration(_scores[0]);
   }
 
   @override
   void dispose() {
     _chunkSubscription?.cancel();
+    _readyTimer?.cancel();
+    _synthIsolate?.kill(priority: Isolate.immediate);
     super.dispose();
   }
 
@@ -185,9 +348,10 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     switch (index) {
       case 0:
         return AloudProblem(
-          chunks: _wavChunks,
-          chunkStream: _chunkStream,
+          chunks: _isRepeat ? _previousWavChunks : _wavChunks,
+          chunkStream: _isRepeat ? null : _chunkStream,
           onComplete: showInput,
+          readyToPlay: _isRepeat ? true : _readyToPlay,
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
@@ -200,7 +364,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       case 2:
         return FlashAndAloudResult<int>(
           onNextProblem: startNextProblem,
-          onRepeatProblem: playProblem,
+          onRepeatProblem: repeatProblem,
           onNewProblem: newProblem,
           onShowResults: showResults,
           inputTime: _inputTime,
@@ -233,7 +397,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
             return FadeThroughTransition(
               animation: primaryAnimation,
               secondaryAnimation: secondaryAnimation,
-              fillColor: Colors.black, // Add this
+              fillColor: Colors.black,
               child: child,
             );
           },
@@ -244,16 +408,63 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   }
 }
 
+// Messages sent TO the worker isolate
+class _SynthRequest {
+  final String scoreJson;
+  final double speed;
+  const _SynthRequest(this.scoreJson, this.speed);
+}
+
+// Sentinel to tell the worker there's no more work
+class _SynthDone {
+  const _SynthDone();
+}
+
+void _synthWorkerEntry(SendPort mainSendPort) async {
+  final workerReceivePort = ReceivePort();
+  mainSendPort.send(workerReceivePort.sendPort);
+
+  VoicevoxSing? singer; // null until init message arrives
+
+  workerReceivePort.listen((message) async {
+    if (singer == null) {
+      // First message we receive must be the init args.
+      final initArgs = message as List<String>;
+      final dictDir = initArgs[0];
+      final vvmPath = initArgs[1];
+      singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
+      singer!.initialize();
+      return;
+    }
+
+    if (message is _SynthRequest) {
+      final wav = singer!.synthesizeWithF0(
+        scoreJson: message.scoreJson,
+        singingTeacherStyleId: 6000,
+        singerStyleId: 3029,
+        keyRangeAdjustment: 2,
+      );
+      final sped = speedUpWav(wav, message.speed);
+      mainSendPort.send(sped);
+    } else if (message is _SynthDone) {
+      workerReceivePort.close();
+      Isolate.exit();
+    }
+  });
+}
+
 class AloudProblem extends StatefulWidget {
   const AloudProblem({
     super.key,
     required this.chunks,
     required this.chunkStream,
     required this.onComplete,
+    required this.readyToPlay,
   });
   final List<Uint8List> chunks;
   final Stream<Uint8List>? chunkStream;
   final VoidCallback onComplete;
+  final bool readyToPlay;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -339,14 +550,13 @@ class _AloudProblemState extends State<AloudProblem> {
 
   @override
   Widget build(BuildContext context) {
-    final hasFirstChunk = widget.chunks.isNotEmpty;
     return Center(
       child: Column(
         children: [
           IconButton(
             iconSize: 64,
             icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-            onPressed: hasFirstChunk ? _play : null,
+            onPressed: widget.readyToPlay ? _play : null,
           ),
           const SizedBox(height: 16),
         ],

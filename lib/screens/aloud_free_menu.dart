@@ -14,7 +14,7 @@ class AloudFreeMenuPage extends StatefulWidget {
 
 class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   int _moraPerSecond = 5;
-  double _secondsPerInterval = 1.5;
+  int _msPerInterval = 1500;
   int _kuchi = 5;
   int _minDigits = 2;
   int _maxDigits = 5;
@@ -32,7 +32,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
       cacheOptions: const SharedPreferencesWithCacheOptions(
         allowList: <String>{
           'moraPerSecond',
-          'secondsPerInterval',
+          'msPerInterval',
           'kuchi',
           'minDigits',
           'maxDigits',
@@ -43,7 +43,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
 
     setState(() {
       _moraPerSecond = _prefs.getInt('moraPerSecond') ?? 5;
-      _secondsPerInterval = _prefs.getDouble('secondsPerInterval') ?? 1.5;
+      _msPerInterval = _prefs.getInt('msPerInterval') ?? 1500;
       _kuchi = _prefs.getInt('kuchi') ?? 5;
       _minDigits = _prefs.getInt('minDigits') ?? 2;
       _maxDigits = _prefs.getInt('maxDigits') ?? 5;
@@ -54,7 +54,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   @override
   void dispose() {
     _prefs.setInt('moraPerSecond', _moraPerSecond);
-    _prefs.setDouble('secondsPerInterval', _secondsPerInterval);
+    _prefs.setInt('msPerInterval', _msPerInterval);
     _prefs.setBool('hasMinus', _hasMinus);
     _prefs.setInt('kuchi', _kuchi);
     _prefs.setInt('minDigits', _minDigits);
@@ -130,14 +130,14 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                           ),
                           SizedBox(width: 16),
                           Incrementer(
-                            value: _secondsPerInterval,
+                            value: _msPerInterval,
                             label: '読上間隔',
-                            onChanged: (newValue) => setState(
-                              () => _secondsPerInterval = newValue.toDouble(),
-                            ),
+                            onChanged: (newValue) =>
+                                setState(() => _msPerInterval = newValue),
                             min: 0,
-                            max: 5,
-                            step: 0.1,
+                            max: 5000,
+                            step: 100,
+                            displayValue: '${_msPerInterval / 1000}',
                           ),
                         ],
                       ),
@@ -165,7 +165,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                     AloudSingleProblemSpec spec = AloudSingleProblemSpec(
                       kuchi: _kuchi,
                       moraPerSecond: _moraPerSecond,
-                      secondsPerInterval: _secondsPerInterval,
+                      msPerInterval: _msPerInterval,
                       minDigits: _minDigits,
                       maxDigits: _maxDigits,
                       minusCount: (_kuchi * 0.3).round(),

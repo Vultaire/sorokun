@@ -67,9 +67,11 @@ List<int> generateDigitList({
     filling.addAll(List<int>.from(fullRange)..shuffle(rand));
   }
 
-  return [minDigits, maxDigits, ...filling.take(kuchi - 2)];
+  return [minDigits, maxDigits, ...filling.take(kuchi - 2)]..shuffle(rand);
 }
 
 void main() {
-  print(AloudProblemSet(spec: AloudLevel.zsd8).unformattedProblems);
+  print(
+    generateDigitList(minDigits: 2, maxDigits: 5, kuchi: 4, rand: Random()),
+  );
 }
