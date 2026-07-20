@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
@@ -19,6 +21,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   int _minDigits = 2;
   int _maxDigits = 5;
   bool _hasMinus = true;
+  Character _character = .shikokuMetan;
   late final SharedPreferencesWithCache _prefs;
 
   @override
@@ -51,6 +54,36 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
     });
   }
 
+  TextStyle _segmentStyle(BuildContext context, bool isSelected) {
+    return Theme.of(context).textTheme.headlineMedium!.copyWith(
+      color: isSelected
+          ? Theme.of(context).colorScheme.onSurface
+          : Theme.of(context).colorScheme.onSurface.withAlpha(80),
+    );
+  }
+
+  void _showVoicePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return ListView(
+          shrinkWrap: true,
+          children: Character.values.map((c) {
+            return ListTile(
+              title: Text(c.displayString),
+              trailing: c == _character ? const Icon(Icons.check) : null,
+              onTap: () {
+                setState(() => _character = c);
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _prefs.setInt('moraPerSecond', _moraPerSecond);
@@ -79,11 +112,11 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              mainAxisAlignment: .spaceEvenly,
+              mainAxisAlignment: .center,
               children: [
                 Wrap(
                   alignment: .center,
-                  runSpacing: 20,
+                  runSpacing: 16,
                   spacing: 16,
                   children: [
                     FittedBox(
@@ -111,7 +144,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                               });
                             },
                             min: 1,
-                            max: 15,
+                            max: 16,
                           ),
                         ],
                       ),
@@ -126,7 +159,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                               () => _moraPerSecond = newValue.toInt(),
                             ),
                             min: 1,
-                            max: 10,
+                            max: 12,
                           ),
                           SizedBox(width: 16),
                           Incrementer(
@@ -134,7 +167,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                             label: '読上間隔',
                             onChanged: (newValue) =>
                                 setState(() => _msPerInterval = newValue),
-                            min: 0,
+                            min: 100,
                             max: 5000,
                             step: 100,
                             displayValue: '${_msPerInterval / 1000}',
@@ -144,18 +177,77 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: .center,
-                  crossAxisAlignment: .center,
+                SizedBox(height: 16),
+                Wrap(
+                  alignment: .center,
+                  runSpacing: 16,
+                  spacing: 16,
                   children: [
-                    Text('マイナス', style: Theme.of(context).textTheme.titleLarge),
-                    Switch(
-                      value: _hasMinus,
-                      onChanged: (value) {
-                        setState(() {
-                          _hasMinus = value;
-                        });
-                      },
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: .all(12),
+
+                      child: Row(
+                        mainAxisSize: .min,
+                        mainAxisAlignment: .center,
+                        crossAxisAlignment: .center,
+                        children: [
+                          Text(
+                            '引き算',
+                            style: Theme.of(context).textTheme.displaySmall,
+                          ),
+                          SizedBox(width: 16),
+                          CupertinoSlidingSegmentedControl<bool>(
+                            groupValue: _hasMinus,
+                            children: {
+                              false: Text(
+                                'なし',
+                                style: _segmentStyle(context, !_hasMinus),
+                              ),
+                              true: Text(
+                                'あり',
+                                style: _segmentStyle(context, _hasMinus),
+                              ),
+                            },
+                            onValueChanged: (bool? value) {
+                              if (value != null) {
+                                setState(() {
+                                  _hasMinus = value;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _showVoicePicker(context),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '声: ${_character.displayString}',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.chevron_right,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -168,11 +260,15 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                       msPerInterval: _msPerInterval,
                       minDigits: _minDigits,
                       maxDigits: _maxDigits,
-                      minusCount: (_kuchi * 0.3).round(),
+                      minusCount: _hasMinus ? (_kuchi * 0.3).round() : 0,
                     );
                     context.push(
                       '/aloud-problem',
-                      extra: {'isSingleProblem': true, 'selectedLevel': spec},
+                      extra: {
+                        'isSingleProblem': true,
+                        'selectedLevel': spec,
+                        'character': _character,
+                      },
                     );
                   },
                   label: 'スタート',

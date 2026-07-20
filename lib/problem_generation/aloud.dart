@@ -6,10 +6,15 @@ List<String> moraListToJsonChunks({
   required List<Mora> moraList,
   required int moraPerSecond,
   required int msPerInterval,
+  required int baseNote,
 }) {
-  final int intervalFrames = ((msPerInterval * 93.75) / 1000).round();
+  const double frameStretchFactor = 1.6;
+  final int intervalFrames =
+      (((msPerInterval * 93.75) / 1000) * frameStretchFactor).round();
   final int halfInterval = (intervalFrames / 2).round();
-  final int framesPerMora = (((1000 / moraPerSecond) * 93.75) / 1000).round();
+  final int framesPerMora =
+      ((((1000 / moraPerSecond) * 93.75) / 1000) * frameStretchFactor).round();
+  final int highNote = baseNote + 2;
 
   // Split into chunks of non-empty moras
   final List<List<Mora>> chunks = [];
@@ -35,7 +40,7 @@ List<String> moraListToJsonChunks({
     );
 
     for (final mora in chunk) {
-      final key = mora.isHighPitch ? 64 : 62;
+      final key = mora.isHighPitch ? highNote : baseNote;
       notes.add(
         '    { "key": $key, "frame_length": $framesPerMora, "lyric": "${mora.lyric}" }',
       );
@@ -373,12 +378,4 @@ void main() {
   AloudProblemSet fullProblemSet = AloudProblemSet(spec: AloudLevel.zsd8);
   List<MitoriProblem> allProblems = fullProblemSet.mitoriProblemList;
   List<String> allAnswers = fullProblemSet.formattedAnswers;
-
-  print(
-    moraListToJsonChunks(
-      moraList: scoreMora(allProblems[0].problem),
-      moraPerSecond: 3,
-      msPerInterval: 1000,
-    ),
-  );
 }

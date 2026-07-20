@@ -36,6 +36,7 @@ class ResultsScreen extends StatelessWidget {
           userAnswer: textFieldDataList[i].formatted,
         ),
     ];
+    final score = getScore(selectedLevel.levelInfo, problemScorerList);
     return Scaffold(
       appBar: AppBar(title: const Text('成績発表'), centerTitle: true),
       body: Center(
@@ -51,7 +52,7 @@ class ResultsScreen extends StatelessWidget {
               ),
             SizedBox(height: 10),
             CountUpText(
-              score: getScore(selectedLevel.levelInfo, problemScorerList),
+              score: score,
               durationBase: Duration(milliseconds: 10),
               passThreshold: selectedLevel.levelInfo.passThreshold,
               rangedThreshold: selectedLevel.levelInfo.rangedThreshold,
@@ -61,18 +62,19 @@ class ResultsScreen extends StatelessWidget {
                 fontFamily: 'bizUDPGR',
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                context.push(
-                  '/paper-review',
-                  extra: {
-                    'selectedLevel': selectedLevel,
-                    'problemScorerList': problemScorerList,
-                  },
-                );
-              },
-              child: Text('間違えた問題を見る'),
-            ),
+            if (score.$1 != score.$2)
+              ElevatedButton(
+                onPressed: () {
+                  context.push(
+                    '/paper-review',
+                    extra: {
+                      'selectedLevel': selectedLevel,
+                      'problemScorerList': problemScorerList,
+                    },
+                  );
+                },
+                child: Text('間違えた問題を見る'),
+              ),
             ElevatedButton(
               onPressed: () {
                 switch (selectedLevel) {

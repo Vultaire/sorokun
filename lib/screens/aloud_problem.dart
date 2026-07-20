@@ -10,6 +10,7 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/main.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
@@ -21,9 +22,11 @@ class AloudProblemScreen extends StatefulWidget {
     super.key,
     required this.isSingleProblem,
     required this.selectedLevel,
+    required this.character,
   });
   final bool isSingleProblem;
   final AloudSpec selectedLevel;
+  final Character character;
 
   @override
   State<AloudProblemScreen> createState() => _AloudProblemScreenState();
@@ -75,6 +78,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       moraList: problemMora,
       moraPerSecond: widget.selectedLevel.moraPerSecond,
       msPerInterval: widget.selectedLevel.msPerInterval,
+      baseNote: widget.character.baseNote,
     );
 
     _allProblems = [problem];
@@ -93,6 +97,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           moraList: problemMora,
           moraPerSecond: widget.selectedLevel.moraPerSecond,
           msPerInterval: widget.selectedLevel.msPerInterval,
+          baseNote: widget.character.baseNote,
         ),
       );
     }
@@ -119,7 +124,13 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     // Now request each chunk in order and await its result before requesting
     // the next — this keeps memory bounded and preserves chunk ordering.
     for (final score in scores) {
-      workerSendPort.send(_SynthRequest(score, 1.3));
+      workerSendPort.send(
+        _SynthRequest(
+          scoreJson: score,
+          speed: 1.6,
+          character: widget.character,
+        ),
+      );
       final result = await events.next as Uint8List;
       yield result;
     }
@@ -201,6 +212,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       moraList: problemMora,
       moraPerSecond: widget.selectedLevel.moraPerSecond,
       msPerInterval: widget.selectedLevel.msPerInterval,
+      baseNote: widget.character.baseNote,
     );
 
     _allProblems.add(newProblem);
@@ -412,7 +424,12 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 class _SynthRequest {
   final String scoreJson;
   final double speed;
-  const _SynthRequest(this.scoreJson, this.speed);
+  final Character character;
+  const _SynthRequest({
+    required this.scoreJson,
+    required this.speed,
+    required this.character,
+  });
 }
 
 // Sentinel to tell the worker there's no more work
@@ -440,9 +457,7 @@ void _synthWorkerEntry(SendPort mainSendPort) async {
     if (message is _SynthRequest) {
       final wav = singer!.synthesizeWithF0(
         scoreJson: message.scoreJson,
-        singingTeacherStyleId: 6000,
-        singerStyleId: 3029,
-        keyRangeAdjustment: 2,
+        character: message.character,
       );
       final sped = speedUpWav(wav, message.speed);
       mainSendPort.send(sped);

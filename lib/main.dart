@@ -213,6 +213,7 @@ class _AbacusAppState extends State<AbacusApp> {
           return AloudProblemScreen(
             isSingleProblem: args?['isSingleProblem'],
             selectedLevel: args?['selectedLevel'],
+            character: args?['character'],
           );
         },
       ),

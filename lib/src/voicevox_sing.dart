@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
+import 'package:soroban_app/models/singer_config.dart';
 import 'voicevox_core_bindings.dart';
 
 class VoicevoxSing {
@@ -28,14 +29,12 @@ class VoicevoxSing {
 
   Uint8List synthesizeWithF0({
     required String scoreJson,
-    required int singingTeacherStyleId,
-    required int singerStyleId,
-    int keyRangeAdjustment = 0,
+    required Character character,
   }) {
     // Adjust note keys in score
-    final adjustedScoreJson = keyRangeAdjustment == 0
+    final adjustedScoreJson = character.keyRangeAdjustment == 0
         ? scoreJson
-        : _adjustScoreKeys(scoreJson, keyRangeAdjustment);
+        : _adjustScoreKeys(scoreJson, character.keyRangeAdjustment);
 
     // Get audio query
     final scorePtr = adjustedScoreJson.toNativeUtf8();
@@ -44,7 +43,7 @@ class VoicevoxSing {
       _bindings.voicevox_synthesizer_create_sing_frame_audio_query(
         _synthesizer,
         scorePtr.cast(),
-        singingTeacherStyleId,
+        6000,
         queryPtr,
       ),
     );
@@ -59,7 +58,7 @@ class VoicevoxSing {
         .map((e) => (e as num).toDouble())
         .toList();
     final smoothed = smoothF0(rawF0);
-    final f0Multiplier = pow(2.0, keyRangeAdjustment / 12.0);
+    final f0Multiplier = pow(2.0, character.keyRangeAdjustment / 12.0);
     query['f0'] = smoothed.map((f0) => f0 * f0Multiplier).toList();
     final modifiedQueryJson = jsonEncode(query);
 
@@ -71,7 +70,7 @@ class VoicevoxSing {
       _bindings.voicevox_synthesizer_frame_synthesis(
         _synthesizer,
         modifiedQueryPtr.cast(),
-        singerStyleId,
+        character.singerId,
         wavLengthPtr,
         wavPtr,
       ),
