@@ -1397,7 +1397,7 @@ enum LevelInfo {
     rangedThreshold: nsdanRangedThreshold,
   ),
   zs(
-    passThreshold: 0.67,
+    passThreshold: 0.66,
     pointsPerProblem: 10,
     denomination: .zenshuren,
     timeLimit: Duration(minutes: 7),
@@ -1417,7 +1417,7 @@ enum LevelInfo {
     rangedThreshold: zsadanRangedThreshold,
   ),
   zsflash(
-    passThreshold: 0.67,
+    passThreshold: 0.66,
     pointsPerProblem: 10,
     denomination: .zenshuren,
     timeLimit: Duration(minutes: 7),

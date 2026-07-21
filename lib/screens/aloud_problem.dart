@@ -288,6 +288,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     final playDuration = _wavDuration(chunk);
     final d = playDuration.inMilliseconds;
     final n = _totalChunksExpected ?? 1;
+    const negaimasitehaTime = 2.3;
 
     print('[chunkReady] genTime=${g}ms playDuration=${d}ms totalChunks=$n');
 
@@ -307,7 +308,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 
     // Worst-case lead time needed, per the derivation above, is driven
     // by the last chunk: s_min = N*G - (N-1)*D.
-    final requiredLeadMs = (n * g - (n - 1) * d).round();
+    final requiredLeadMs = ((n * g - (n - 1) * d) - negaimasitehaTime).round();
     final remainingWaitMs = requiredLeadMs - g; // g ms have already elapsed
 
     print(
@@ -364,6 +365,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           chunkStream: _isRepeat ? null : _chunkStream,
           onComplete: showInput,
           readyToPlay: _isRepeat ? true : _readyToPlay,
+          negaimasitehaPath: widget.character.negaimasiteha,
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
@@ -475,11 +477,14 @@ class AloudProblem extends StatefulWidget {
     required this.chunkStream,
     required this.onComplete,
     required this.readyToPlay,
+    required this.negaimasitehaPath, // new
   });
+
   final List<Uint8List> chunks;
   final Stream<Uint8List>? chunkStream;
   final VoidCallback onComplete;
   final bool readyToPlay;
+  final String negaimasitehaPath; // new
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -488,10 +493,8 @@ class AloudProblem extends StatefulWidget {
 class _AloudProblemState extends State<AloudProblem> {
   bool _isPlaying = false;
   int _currentChunk = 0;
-
   SoundHandle? _currentHandle;
   AudioSource? _currentSource;
-
   bool _disposed = false;
 
   @override
@@ -504,6 +507,21 @@ class _AloudProblemState extends State<AloudProblem> {
       SoLoud.instance.disposeSource(_currentSource!);
     }
     super.dispose();
+  }
+
+  Future<void> _playPreamble() async {
+    final source = await SoLoud.instance.loadAsset(widget.negaimasitehaPath);
+    if (_disposed) {
+      SoLoud.instance.disposeSource(source);
+      return;
+    }
+    _currentSource = source;
+    final handle = await SoLoud.instance.play(source);
+    _currentHandle = handle;
+    final duration = SoLoud.instance.getLength(source);
+
+    await Future.delayed(duration);
+    await SoLoud.instance.disposeSource(source);
   }
 
   Future<void> _playNextChunk() async {
@@ -521,24 +539,19 @@ class _AloudProblemState extends State<AloudProblem> {
       }
       return;
     }
-
     final source = await SoLoud.instance.loadMem(
       'chunk_$_currentChunk.wav',
       widget.chunks[_currentChunk],
     );
-
     if (_disposed) {
       SoLoud.instance.disposeSource(source);
       return;
     }
-
     _currentSource = source;
     final handle = await SoLoud.instance.play(source);
     _currentHandle = handle;
-
     final duration = SoLoud.instance.getLength(source);
     _currentChunk++;
-
     Future.delayed(duration, () async {
       await SoLoud.instance.disposeSource(source);
       if (!_disposed && _isPlaying) _playNextChunk();
@@ -560,6 +573,9 @@ class _AloudProblemState extends State<AloudProblem> {
       _isPlaying = true;
       _currentChunk = 0;
     });
+
+    await _playPreamble();
+    if (_disposed || !_isPlaying) return; // guard: stopped during preamble
     _playNextChunk();
   }
 

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
+import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
 class AloudFreeMenuPage extends StatefulWidget {
@@ -52,14 +53,6 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
       _maxDigits = _prefs.getInt('maxDigits') ?? 5;
       _hasMinus = _prefs.getBool('hasMinus') ?? true;
     });
-  }
-
-  TextStyle _segmentStyle(BuildContext context, bool isSelected) {
-    return Theme.of(context).textTheme.headlineMedium!.copyWith(
-      color: isSelected
-          ? Theme.of(context).colorScheme.onSurface
-          : Theme.of(context).colorScheme.onSurface.withAlpha(80),
-    );
   }
 
   void _showVoicePicker(BuildContext context) {
@@ -200,31 +193,31 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                             style: Theme.of(context).textTheme.displaySmall,
                           ),
                           SizedBox(width: 16),
-                          CupertinoSlidingSegmentedControl<bool>(
+                          LabeledSlidingSegmentedControl<bool>(
                             groupValue: _hasMinus,
-                            children: {
-                              false: Text(
-                                'なし',
-                                style: _segmentStyle(context, !_hasMinus),
-                              ),
-                              true: Text(
-                                'あり',
-                                style: _segmentStyle(context, _hasMinus),
-                              ),
-                            },
-                            onValueChanged: (bool? value) {
-                              if (value != null) {
-                                setState(() {
-                                  _hasMinus = value;
-                                });
-                              }
+                            options: const [(false, 'なし'), (true, 'あり')],
+                            onValueChanged: (value) {
+                              setState(() {
+                                _hasMinus = value;
+                              });
                             },
                           ),
                         ],
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => _showVoicePicker(context),
+                      onTap: () async {
+                        final selected = await Navigator.push<Character>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                VoiceSelectionPage(current: _character),
+                          ),
+                        );
+                        if (selected != null) {
+                          setState(() => _character = selected);
+                        }
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surfaceContainer,
@@ -272,6 +265,115 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                     );
                   },
                   label: 'スタート',
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class VoiceSelectionPage extends StatelessWidget {
+  const VoiceSelectionPage({super.key, required this.current});
+  final Character current;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('声を選択')),
+      body: SafeArea(
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            final crossAxisCount = orientation == Orientation.landscape ? 6 : 3;
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 0.9,
+              ),
+              itemCount: Character.values.length,
+              itemBuilder: (context, index) {
+                final character = Character.values[index];
+                final isSelected = character == current;
+                return _VoiceGridItem(
+                  character: character,
+                  isSelected: isSelected,
+                  onTap: () => Navigator.pop(context, character),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _VoiceGridItem extends StatelessWidget {
+  const _VoiceGridItem({
+    required this.character,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final Character character;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainer,
+          borderRadius: .circular(12),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme.surfaceContainerHigh,
+                    border: Border.all(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : Colors.grey.withAlpha(80),
+                      width: 5,
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 48,
+                    backgroundImage: AssetImage(character.icon),
+                    backgroundColor: colorScheme.surfaceContainerHigh,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    character.displayString,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: isSelected ? colorScheme.primary : null,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ],
             ),

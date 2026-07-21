@@ -69,6 +69,8 @@ flutter:
     - assets/starting-sine.wav
     - assets/sine-beep.wav
     - assets/finished.wav
+    - assets/character_icon/
+    - assets/negaimasiteha/
     - path: assets/svg/
       transformers:
         - package: vector_graphics_compiler

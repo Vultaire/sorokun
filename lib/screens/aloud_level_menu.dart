@@ -83,12 +83,19 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('読み上げ検定'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ? 40
+              : kToolbarHeight,
+        ),
+        child: AppBar(
+          title: const Text('読み上げ算検定'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
         ),
       ),
       body: SafeArea(
@@ -102,7 +109,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 6,
+                    vertical: 12,
                   ),
                   child: OrientationBuilder(
                     builder: (context, orientation) {
@@ -118,20 +125,6 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                             _kyuui = kyuui;
                           });
                         },
-                      );
-                      final textStyle = Theme.of(context).textTheme;
-                      final Widget startButton = NavigationButton(
-                        color: Theme.of(context).colorScheme.surfaceContainer,
-                        onPressed: () {
-                          context.push(
-                            '/aloud-problem',
-                            extra: {
-                              'isSingleProblem': false,
-                              'selectedLevel': _kyuui.aloud,
-                            },
-                          );
-                        },
-                        label: 'スタート',
                       );
 
                       return Column(
@@ -157,10 +150,6 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                                 ),
                               ],
                             ),
-                          ),
-                          Container(
-                            margin: .symmetric(horizontal: 24, vertical: 6),
-                            child: startButton,
                           ),
                         ],
                       );
@@ -196,6 +185,8 @@ class AloudInfoDialog extends StatelessWidget {
     final int msPerInterval = selectedLevel.msPerInterval;
     final String denominationString =
         selectedLevel.levelInfo.denomination.denominationString;
+    final int passThreshold =
+        (selectedLevel.levelInfo.passThreshold * probCount).round() * 10;
 
     final String digitsString;
     if (minDigits != maxDigits) {
@@ -206,15 +197,17 @@ class AloudInfoDialog extends StatelessWidget {
     final String minusString = hasMinus ? '加減算' : '加算';
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final infoTextStyle = textTheme.titleLarge;
+
     return Container(
-      padding: const .all(16),
+      padding: const .all(12),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
-        borderRadius: .circular(16),
+        borderRadius: .circular(12),
       ),
       child: Column(
         mainAxisSize: .min,
-        mainAxisAlignment: .center,
+        mainAxisAlignment: .spaceEvenly,
         crossAxisAlignment: .center,
         children: [
           FittedBox(
@@ -222,8 +215,8 @@ class AloudInfoDialog extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Container(
-            width: double.infinity,
             padding: const .symmetric(vertical: 16, horizontal: 12),
+            width: isPortrait ? 300 : 800,
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHighest,
               borderRadius: .circular(12),
@@ -241,16 +234,58 @@ class AloudInfoDialog extends StatelessWidget {
                 ),
                 DefaultTextStyle(
                   style: textTheme.displaySmall!,
-                  child: Wrap(
-                    alignment: .center,
-                    children: [
-                      Text('速度: $moraPerSecond拍/秒'),
-                      SizedBox(width: 24),
-                      Text('間隔: $msPerInterval秒'),
-                    ],
-                  ),
+                  child: isPortrait
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('速度: $moraPerSecond拍/秒'),
+                            Text('間隔: $msPerInterval秒'),
+                            Text(minusString),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: .spaceEvenly,
+                          children: [
+                            Text('速度: $moraPerSecond拍/秒'),
+                            Text('間隔: $msPerInterval秒'),
+                            Text(minusString),
+                          ],
+                        ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          isPortrait
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('全$probCount問 各10点', style: infoTextStyle),
+                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('全$probCount問 各10点', style: infoTextStyle),
+                    Text('　・　', style: infoTextStyle),
+                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
+                  ],
+                ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+            child: NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              label: 'スタート',
+              onPressed: () {
+                context.push(
+                  '/aloud-problem',
+                  extra: {
+                    'isSingleProblem': false,
+                    'selectedLevel': selectedLevel,
+                  },
+                );
+              },
             ),
           ),
         ],

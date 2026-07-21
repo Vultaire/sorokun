@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import '../models/level_definitions.dart';
 
@@ -87,12 +88,19 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('基本種目'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ? 40
+              : kToolbarHeight,
+        ),
+        child: AppBar(
+          title: const Text('基本種目'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
         ),
       ),
       body: SafeArea(
@@ -106,7 +114,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 6,
+                    vertical: 12,
                   ),
                   child: OrientationBuilder(
                     builder: (context, orientation) {
@@ -184,94 +192,93 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           });
                         },
                       );
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: 6,
-                            child: Flex(
-                              direction: isPortrait
-                                  ? Axis.vertical
-                                  : Axis.horizontal,
+                      final denominationSelector =
+                          LabeledSlidingSegmentedControl<KyuuiDenomination>(
+                            groupValue: _kyuuiDenomination,
+                            options: const [
+                              (KyuuiDenomination.zs, '全珠連'),
+                              (KyuuiDenomination.ns, '日珠連'),
+                            ],
+                            onValueChanged: (value) {
+                              setState(() {
+                                _kyuuiDenomination = value;
+                                final newList = _buildPaperKyuuiList(value);
+                                final newIndex = value == KyuuiDenomination.zs
+                                    ? _zsIndex
+                                    : _nsIndex;
+                                _kyuui = newList[newIndex];
+                              });
+                            },
+                          );
+
+                      return isPortrait
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                isPortrait
-                                    ? SizedBox(
-                                        height: 100,
-                                        child: selectorStack,
-                                      )
-                                    : Expanded(flex: 1, child: selectorStack),
+                                denominationSelector,
+                                const SizedBox(height: 6),
+                                SizedBox(height: 100, child: selectorStack),
+                                const SizedBox(height: 6),
+                                Expanded(child: buttonGrid),
+                                const SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text('検定モード', style: textStyle.titleLarge),
+                                    Switch(
+                                      value: _isExam,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isExam = value;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                              ],
+                            )
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(flex: 1, child: selectorStack),
                                 Expanded(
-                                  flex: isPortrait ? 1 : 5,
-                                  child: buttonGrid,
+                                  flex: 5,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      denominationSelector,
+                                      const SizedBox(height: 6),
+                                      Expanded(child: buttonGrid),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '検定モード',
+                                            style: textStyle.titleLarge,
+                                          ),
+                                          Switch(
+                                            value: _isExam,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _isExam = value;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                    ],
+                                  ),
                                 ),
                               ],
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Flex(
-                            mainAxisAlignment: .spaceEvenly,
-                            spacing: 6,
-                            direction: isPortrait
-                                ? Axis.vertical
-                                : Axis.horizontal,
-                            children: [
-                              SegmentedButton<KyuuiDenomination>(
-                                showSelectedIcon: false,
-                                emptySelectionAllowed: false,
-                                segments: <ButtonSegment<KyuuiDenomination>>[
-                                  ButtonSegment(
-                                    value: KyuuiDenomination.zs,
-                                    label: Text(
-                                      '全国珠算教育連盟',
-                                      style: textStyle.titleMedium,
-                                    ),
-                                  ),
-                                  ButtonSegment(
-                                    value: KyuuiDenomination.ns,
-                                    label: Text(
-                                      '日本珠算連盟',
-                                      style: textStyle.titleMedium,
-                                    ),
-                                  ),
-                                ],
-                                selected: {_kyuuiDenomination},
-                                onSelectionChanged:
-                                    (Set<KyuuiDenomination> newSelection) {
-                                      setState(() {
-                                        _kyuuiDenomination = newSelection.first;
-                                        final newList = _buildPaperKyuuiList(
-                                          newSelection.first,
-                                        );
-                                        final newIndex =
-                                            newSelection.first ==
-                                                KyuuiDenomination.zs
-                                            ? _zsIndex
-                                            : _nsIndex;
-                                        _kyuui = newList[newIndex];
-                                      });
-                                    },
-                              ),
-                              Row(
-                                mainAxisAlignment: .center,
-                                crossAxisAlignment: .center,
-                                children: [
-                                  Text('検定モード', style: textStyle.titleLarge),
-                                  Switch(
-                                    value: _isExam,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isExam = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6),
-                        ],
-                      );
+                            );
                     },
                   ),
                 ),
@@ -443,7 +450,7 @@ class PaperInfoDialog extends StatelessWidget {
     final int pointsPerProblem = selectedLevel.levelInfo.pointsPerProblem;
     final int problemCount = selectedLevel.problemCount;
     final int passThreshold =
-        (selectedLevel.levelInfo.passThreshold * problemCount).ceil() *
+        (selectedLevel.levelInfo.passThreshold * problemCount).round() *
         pointsPerProblem;
 
     return Column(
@@ -452,7 +459,7 @@ class PaperInfoDialog extends StatelessWidget {
         Text(denominationString),
         Text('制限時間：$timeLimitString'),
         Text('問題数：$problemCount題'),
-        Text('一題$pointsPerProblem点 (${pointsPerProblem * problemCount}点満点)'),
+        Text('各$pointsPerProblem点 (${pointsPerProblem * problemCount}点満点)'),
         Text('合格点：$passThreshold点以上'),
         if (letterCounts != null)
           Text('一題あたり${_rangeOrSingle(letterCounts!, '', '字')}'),
@@ -556,17 +563,17 @@ class KyuuiSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final orientation = MediaQuery.orientationOf(context);
+    final isPortrait = MediaQuery.orientationOf(context) == .portrait;
     return LayoutBuilder(
       builder: (context, constraints) => CarouselSlider.builder(
         itemCount: kyuuiList.length,
         options: CarouselOptions(
-          height: orientation == .portrait ? 100 : constraints.biggest.height,
-          viewportFraction: 0.4,
+          height: isPortrait ? 100 : constraints.biggest.height,
+          viewportFraction: isPortrait ? 0.4 : 0.3,
           enlargeCenterPage: true,
           enlargeFactor: 0.3,
           initialPage: currentIndex,
-          scrollDirection: orientation == .portrait ? .horizontal : .vertical,
+          scrollDirection: isPortrait ? .horizontal : .vertical,
           onPageChanged: (index, reason) {
             onChanged(index, kyuuiList[index]);
           },

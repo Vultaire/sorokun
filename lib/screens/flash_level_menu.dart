@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 
@@ -102,12 +103,19 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('フラッシュ暗算検定'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ? 40
+              : kToolbarHeight,
+        ),
+        child: AppBar(
+          title: const Text('フラッシュ暗算検定'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
         ),
       ),
       body: SafeArea(
@@ -121,13 +129,12 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 6,
+                    vertical: 12,
                   ),
                   child: OrientationBuilder(
                     builder: (context, orientation) {
                       final bool isPortrait =
                           orientation == Orientation.portrait;
-
                       final TextTheme textStyle = Theme.of(context).textTheme;
 
                       final selectorStack = KyuuiSelectorStack(
@@ -150,111 +157,65 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                         },
                       );
 
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: 6,
-                            child: Flex(
-                              direction: isPortrait
-                                  ? Axis.vertical
-                                  : Axis.horizontal,
+                      final denominationSelector =
+                          LabeledSlidingSegmentedControl<KyuuiDenomination>(
+                            groupValue: _kyuuiDenomination,
+                            options: const [
+                              (KyuuiDenomination.zsAloudAndFlash, '全珠連'),
+                              (KyuuiDenomination.kkFlash, '協会'),
+                            ],
+                            onValueChanged: (value) {
+                              setState(() {
+                                _kyuuiDenomination = value;
+                                final newList = _buildFlashKyuuiList(value);
+                                final newIndex =
+                                    value == KyuuiDenomination.zsAloudAndFlash
+                                    ? _zsIndex
+                                    : _kkIndex;
+                                _kyuui = newList[newIndex];
+                              });
+                            },
+                          );
+
+                      return isPortrait
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                isPortrait
-                                    ? SizedBox(
-                                        height: 100,
-                                        child: selectorStack,
-                                      )
-                                    : Expanded(flex: 1, child: selectorStack),
+                                denominationSelector,
+                                const SizedBox(height: 6),
+                                SizedBox(height: 100, child: selectorStack),
+                                const SizedBox(height: 6),
                                 Expanded(
-                                  flex: isPortrait ? 1 : 5,
-                                  child: Flex(
-                                    direction: isPortrait
-                                        ? .vertical
-                                        : .horizontal,
+                                  child: FlashInfoDialog(
+                                    selectedLevel: _kyuui.flash!,
+                                    isPortrait: isPortrait,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(flex: 1, child: selectorStack),
+                                Expanded(
+                                  flex: 5,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: [
+                                      denominationSelector,
+                                      const SizedBox(height: 6),
                                       Expanded(
                                         child: FlashInfoDialog(
                                           selectedLevel: _kyuui.flash!,
                                           isPortrait: isPortrait,
                                         ),
                                       ),
-                                      Container(
-                                        margin: .symmetric(
-                                          horizontal: 24,
-                                          vertical: 6,
-                                        ),
-                                        child: NavigationButton(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.surfaceContainerHighest,
-                                          label: 'スタート',
-                                          onPressed: () {
-                                            context.push(
-                                              '/flash-problem',
-                                              extra: {
-                                                'selectedLevel': _kyuui.flash,
-                                                'isSingleProblem': false,
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-                          SizedBox(height: 6),
-                          Flex(
-                            mainAxisAlignment: .spaceEvenly,
-                            direction: isPortrait
-                                ? Axis.vertical
-                                : Axis.horizontal,
-                            children: [
-                              SegmentedButton<KyuuiDenomination>(
-                                segments: <ButtonSegment<KyuuiDenomination>>[
-                                  ButtonSegment(
-                                    value: KyuuiDenomination.zsAloudAndFlash,
-                                    label: Text(
-                                      '全国珠算教育連盟',
-                                      style: textStyle.titleMedium,
-                                    ),
-                                  ),
-                                  ButtonSegment(
-                                    value: KyuuiDenomination.kkFlash,
-                                    label: Text(
-                                      '日本フラッシュ暗算協会',
-                                      style: textStyle.titleMedium,
-                                    ),
-                                  ),
-                                ],
-                                selected: {_kyuuiDenomination},
-                                showSelectedIcon: false,
-                                onSelectionChanged:
-                                    (Set<KyuuiDenomination> newSelection) {
-                                      setState(() {
-                                        _kyuuiDenomination = newSelection.first;
-                                        final newList = _buildFlashKyuuiList(
-                                          newSelection.first,
-                                        );
-                                        final newIndex =
-                                            newSelection.first ==
-                                                KyuuiDenomination
-                                                    .zsAloudAndFlash
-                                            ? _zsIndex
-                                            : _kkIndex;
-                                        _kyuui = newList[newIndex];
-                                      });
-                                    },
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6),
-                        ],
-                      );
+                            );
                     },
                   ),
                 ),
@@ -285,19 +246,23 @@ class FlashInfoDialog extends StatelessWidget {
     final bool kuriagariNashi = selectedLevel.kuriagariNashi;
     final String denominationString =
         selectedLevel.levelInfo.denomination.denominationString;
+    final int passThreshold =
+        (selectedLevel.levelInfo.passThreshold * probCount).round() * 10;
 
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
+    final infoTextStyle = textTheme.titleLarge;
+
     return Container(
-      padding: const .all(16),
+      padding: const .all(12),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
-        borderRadius: .circular(16),
+        borderRadius: .circular(12),
       ),
       child: Column(
         mainAxisSize: .min,
-        mainAxisAlignment: .center,
+        mainAxisAlignment: .spaceEvenly,
         crossAxisAlignment: .center,
         children: [
           FittedBox(
@@ -305,15 +270,16 @@ class FlashInfoDialog extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Container(
-            width: double.infinity,
-            padding: const .symmetric(vertical: 16, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            width: isPortrait ? 200 : 500,
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHighest,
-              borderRadius: .circular(12),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Flex(
-              direction: isPortrait ? .vertical : .horizontal,
-              mainAxisAlignment: .spaceEvenly,
+              direction: isPortrait ? Axis.vertical : Axis.horizontal,
+              mainAxisSize: MainAxisSize.min, // <-- add this too
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 statCell(context, '$digits', '桁'),
                 divider(context, isPortrait),
@@ -324,16 +290,42 @@ class FlashInfoDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: .center,
-            spacing: 6,
-            children: [
-              Text('$probCount問', style: textTheme.titleLarge),
-              if (kuriagariNashi) ...[
-                const SizedBox(height: 6),
-                Text('くり上がりなし', style: textTheme.titleMedium),
-              ],
-            ],
+          isPortrait
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('全$probCount問 各10点', style: infoTextStyle),
+                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
+                    if (kuriagariNashi) Text('くりあがりなし', style: infoTextStyle),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('全$probCount問 各10点', style: infoTextStyle),
+                    Text('　・　', style: infoTextStyle),
+                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
+                    if (kuriagariNashi) ...[
+                      Text('　・　', style: infoTextStyle),
+                      Text('くりあがりなし', style: infoTextStyle),
+                    ],
+                  ],
+                ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+            child: NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              label: 'スタート',
+              onPressed: () {
+                context.push(
+                  '/flash-problem',
+                  extra: {
+                    'selectedLevel': selectedLevel,
+                    'isSingleProblem': false,
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -356,7 +348,13 @@ Widget statCell(BuildContext context, String value, String unit) {
 
 Widget divider(BuildContext context, bool isPortrait) {
   return isPortrait
-      ? Divider(color: Theme.of(context).colorScheme.outline, thickness: 1)
+      ? SizedBox(
+          width: 120, // pick a width that suits your stat cell size
+          child: Divider(
+            color: Theme.of(context).colorScheme.outline,
+            thickness: 1,
+          ),
+        )
       : SizedBox(
           height: 48,
           child: VerticalDivider(
