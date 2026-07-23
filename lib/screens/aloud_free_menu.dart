@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
@@ -41,6 +43,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
           'minDigits',
           'maxDigits',
           'hasMinus',
+          'character',
         },
       ),
     );
@@ -52,29 +55,12 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
       _minDigits = _prefs.getInt('minDigits') ?? 2;
       _maxDigits = _prefs.getInt('maxDigits') ?? 5;
       _hasMinus = _prefs.getBool('hasMinus') ?? true;
-    });
-  }
+      final int? characterIndex = _prefs.getInt('character');
 
-  void _showVoicePicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return ListView(
-          shrinkWrap: true,
-          children: Character.values.map((c) {
-            return ListTile(
-              title: Text(c.displayString),
-              trailing: c == _character ? const Icon(Icons.check) : null,
-              onTap: () {
-                setState(() => _character = c);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        );
-      },
-    );
+      _character = characterIndex != null
+          ? Character.values[characterIndex]
+          : Character.shikokuMetan;
+    });
   }
 
   @override
@@ -92,12 +78,19 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('読み上げ算フリー'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ? 40
+              : kToolbarHeight,
+        ),
+        child: AppBar(
+          title: const Text('読み上げ算フリー'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
         ),
       ),
       body: SafeArea(
@@ -106,11 +99,13 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: .center,
+              spacing: 16,
               children: [
                 Wrap(
                   alignment: .center,
                   runSpacing: 16,
                   spacing: 16,
+                  crossAxisAlignment: .center,
                   children: [
                     FittedBox(
                       fit: .contain,
@@ -168,81 +163,51 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                         ],
                       ),
                     ),
+                    Column(
+                      spacing: 16,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: .all(12),
+
+                          child: Row(
+                            mainAxisSize: .min,
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .center,
+                            children: [
+                              Text(
+                                '引き算',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineMedium,
+                              ),
+                              SizedBox(width: 16),
+                              LabeledSlidingSegmentedControl<bool>(
+                                groupValue: _hasMinus,
+                                options: const [(false, 'なし'), (true, 'あり')],
+                                onValueChanged: (value) {
+                                  setState(() {
+                                    _hasMinus = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-                SizedBox(height: 16),
-                Wrap(
-                  alignment: .center,
-                  runSpacing: 16,
-                  spacing: 16,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainer,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: .all(12),
-
-                      child: Row(
-                        mainAxisSize: .min,
-                        mainAxisAlignment: .center,
-                        crossAxisAlignment: .center,
-                        children: [
-                          Text(
-                            '引き算',
-                            style: Theme.of(context).textTheme.displaySmall,
-                          ),
-                          SizedBox(width: 16),
-                          LabeledSlidingSegmentedControl<bool>(
-                            groupValue: _hasMinus,
-                            options: const [(false, 'なし'), (true, 'あり')],
-                            onValueChanged: (value) {
-                              setState(() {
-                                _hasMinus = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        final selected = await Navigator.push<Character>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                VoiceSelectionPage(current: _character),
-                          ),
-                        );
-                        if (selected != null) {
-                          setState(() => _character = selected);
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '声: ${_character.displayString}',
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.chevron_right,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                VoiceSelectionButton(
+                  character: _character,
+                  onChanged: (selected) {
+                    setState(() => _character = selected);
+                  },
                 ),
                 NavigationButton(
                   color: Theme.of(context).colorScheme.surfaceContainer,
@@ -275,6 +240,55 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   }
 }
 
+class VoiceSelectionButton extends StatelessWidget {
+  const VoiceSelectionButton({
+    super.key,
+    required this.character,
+    required this.onChanged,
+  });
+
+  final Character character;
+  final ValueChanged<Character> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final selected = await Navigator.push<Character>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VoiceSelectionPage(current: character),
+          ),
+        );
+        if (selected != null) {
+          onChanged(selected);
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '声: ${character.displayString}',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class VoiceSelectionPage extends StatelessWidget {
   const VoiceSelectionPage({super.key, required this.current});
   final Character current;
@@ -294,7 +308,7 @@ class VoiceSelectionPage extends StatelessWidget {
                 crossAxisCount: crossAxisCount,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
-                childAspectRatio: 0.9,
+                childAspectRatio: 0.6,
               ),
               itemCount: Character.values.length,
               itemBuilder: (context, index) {
@@ -325,6 +339,15 @@ class _VoiceGridItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
+  Future<void> _playSample(String assetPath) async {
+    final source = await SoLoud.instance.loadAsset(assetPath);
+    await SoLoud.instance.play(source);
+    final duration = SoLoud.instance.getLength(source);
+    Future.delayed(duration, () {
+      SoLoud.instance.disposeSource(source);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -334,8 +357,10 @@ class _VoiceGridItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Container(
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: .circular(12),
+          color: isSelected
+              ? colorScheme.surfaceContainerHighest
+              : colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(12),
         ),
         child: FittedBox(
           fit: BoxFit.scaleDown,
@@ -352,7 +377,7 @@ class _VoiceGridItem extends StatelessWidget {
                       color: isSelected
                           ? colorScheme.primary
                           : Colors.grey.withAlpha(80),
-                      width: 5,
+                      width: isSelected ? 4 : 3,
                     ),
                   ),
                   child: CircleAvatar(
@@ -363,10 +388,10 @@ class _VoiceGridItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(2.0),
                   child: Text(
                     character.displayString,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: isSelected ? colorScheme.primary : null,
                       fontWeight: isSelected
                           ? FontWeight.w600
@@ -374,6 +399,16 @@ class _VoiceGridItem extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                ),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Symbols.play_circle,
+                    weight: 200,
+                    size: 60,
+                    fill: 0,
+                  ),
+                  onPressed: () => _playSample(character.negaimasiteha),
                 ),
               ],
             ),

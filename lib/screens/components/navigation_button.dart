@@ -8,6 +8,8 @@ class NavigationButton extends StatefulWidget {
   final Widget? image;
   final Color color;
   final bool? imageAbove;
+  final bool isCircular; // new
+  final double? size; // new, useful to give circle a fixed diameter
 
   const NavigationButton({
     super.key,
@@ -18,6 +20,8 @@ class NavigationButton extends StatefulWidget {
     this.image,
     required this.color,
     this.imageAbove,
+    this.isCircular = false,
+    this.size,
   });
 
   @override
@@ -30,11 +34,8 @@ class _NavigationButtonState extends State<NavigationButton> {
 
   void _handleTap() {
     if (_isNavigating) return;
-
     _isNavigating = true;
-
     widget.onPressed();
-
     Future.delayed(widget.debounceTime, () {
       if (mounted) {
         setState(() => _isNavigating = false);
@@ -44,6 +45,9 @@ class _NavigationButtonState extends State<NavigationButton> {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = widget.isCircular ? null : BorderRadius.circular(12);
+    final shape = widget.isCircular ? BoxShape.circle : BoxShape.rectangle;
+
     return GestureDetector(
       onTapDown: _isNavigating
           ? null
@@ -66,21 +70,24 @@ class _NavigationButtonState extends State<NavigationButton> {
           _isPressed ? 2 : 0.0,
           0,
         ),
-        margin: const .all(6),
+        margin: const EdgeInsets.all(6),
         child: Opacity(
           opacity: _isNavigating ? 0.5 : 1.0,
           child: Container(
-            padding: EdgeInsets.all(6),
+            width: widget.isCircular ? widget.size : null,
+            height: widget.isCircular ? widget.size : null,
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: widget.color,
-              borderRadius: BorderRadius.circular(12),
+              shape: shape,
+              borderRadius: borderRadius,
             ),
-
             child: Container(
-              padding: EdgeInsets.all(6),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: widget.color,
-                borderRadius: BorderRadius.circular(12),
+                shape: shape,
+                borderRadius: borderRadius,
               ),
               child: widget.image != null
                   ? Flex(

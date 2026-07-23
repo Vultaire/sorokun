@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/models/singer_config.dart';
+import 'package:soroban_app/screens/aloud_free_menu.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
@@ -18,6 +20,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   Kyuui _kyuui = .zsk9;
   KyuuiDenomination _kyuuiDenomination = .zsAloudAndFlash;
   int _zsIndex = 0;
+  Character _character = .shikokuMetan;
   late final SharedPreferencesWithCache _prefs;
 
   @override
@@ -31,10 +34,16 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   Future<void> _loadPrefs() async {
     _prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
-        allowList: <String>{'kyuui', 'kyuuiDenomination', 'zsIndex'},
+        allowList: <String>{
+          'kyuui',
+          'kyuuiDenomination',
+          'zsIndex',
+          'character',
+        },
       ),
     );
     final kyuuiIndex = _prefs.getInt('kyuui');
+    final characterIndex = _prefs.getInt('character');
     final denominationIndex = _prefs.getInt('kyuuiDenomination');
     final zsIndex = _prefs.getInt('zsIndex');
     if (zsIndex != null) {
@@ -45,6 +54,9 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
     }
     if (denominationIndex != null) {
       _kyuuiDenomination = KyuuiDenomination.values[denominationIndex];
+    }
+    if (characterIndex != null) {
+      _character = Character.values[characterIndex];
     }
   }
 
@@ -76,6 +88,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
     _prefs.setInt('kyuui', _kyuui.index);
     _prefs.setInt('kyuuiDenomination', _kyuuiDenomination.index);
     _prefs.setInt('zsIndex', _zsIndex);
+    _prefs.setInt('character', _character.index);
 
     super.dispose();
   }
@@ -107,10 +120,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
             } else {
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.all(8.0),
                   child: OrientationBuilder(
                     builder: (context, orientation) {
                       final isPortrait = orientation == Orientation.portrait;
@@ -146,6 +156,10 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                                   child: AloudInfoDialog(
                                     selectedLevel: _kyuui.aloud!,
                                     isPortrait: isPortrait,
+                                    character: _character,
+                                    onCharacterChanged: (selected) {
+                                      setState(() => _character = selected);
+                                    },
                                   ),
                                 ),
                               ],
@@ -170,9 +184,14 @@ class AloudInfoDialog extends StatelessWidget {
     super.key,
     required this.selectedLevel,
     required this.isPortrait,
+    required this.character,
+    required this.onCharacterChanged,
   });
+
   final AloudLevel selectedLevel;
   final bool isPortrait;
+  final Character character;
+  final ValueChanged<Character> onCharacterChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +235,7 @@ class AloudInfoDialog extends StatelessWidget {
           const SizedBox(height: 12),
           Container(
             padding: const .symmetric(vertical: 16, horizontal: 12),
-            width: isPortrait ? 300 : 800,
+            width: isPortrait ? 300 : 900,
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHighest,
               borderRadius: .circular(12),
@@ -227,30 +246,16 @@ class AloudInfoDialog extends StatelessWidget {
                   direction: isPortrait ? .vertical : .horizontal,
                   mainAxisAlignment: .spaceEvenly,
                   children: [
+                    Text(minusString, style: textTheme.displayLarge),
+                    divider(context, isPortrait),
                     statCell(context, digitsString, '桁'),
                     divider(context, isPortrait),
                     statCell(context, '$kuchi', '口'),
+                    divider(context, isPortrait),
+                    statCell(context, '$moraPerSecond', '拍/秒'),
+                    divider(context, isPortrait),
+                    statCell(context, '${msPerInterval / 1000}', '秒間隔'),
                   ],
-                ),
-                DefaultTextStyle(
-                  style: textTheme.displaySmall!,
-                  child: isPortrait
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('速度: $moraPerSecond拍/秒'),
-                            Text('間隔: $msPerInterval秒'),
-                            Text(minusString),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: .spaceEvenly,
-                          children: [
-                            Text('速度: $moraPerSecond拍/秒'),
-                            Text('間隔: $msPerInterval秒'),
-                            Text(minusString),
-                          ],
-                        ),
                 ),
               ],
             ),
@@ -272,6 +277,10 @@ class AloudInfoDialog extends StatelessWidget {
                     Text('合格点：$passThreshold点以上', style: infoTextStyle),
                   ],
                 ),
+          VoiceSelectionButton(
+            character: character,
+            onChanged: onCharacterChanged,
+          ),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
             child: NavigationButton(
@@ -283,6 +292,7 @@ class AloudInfoDialog extends StatelessWidget {
                   extra: {
                     'isSingleProblem': false,
                     'selectedLevel': selectedLevel,
+                    'character': character,
                   },
                 );
               },

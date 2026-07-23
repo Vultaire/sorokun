@@ -155,7 +155,7 @@ enum Character {
     singerId: 3047,
     baseNote: 61,
     keyRangeAdjustment: 1,
-    displayString: 'ナースロボ＿Ｔ',
+    displayString: 'ナースロボ＿ＴＴ',
     icon: 'assets/character_icon/47.png',
     negaimasiteha: 'assets/negaimasiteha/47.wav',
   ),
@@ -208,12 +208,12 @@ enum Character {
     negaimasiteha: 'assets/negaimasiteha/58.wav',
   ),
   chuugokuUsagi(
-    singerId: 3069,
+    singerId: 3061,
     baseNote: 59,
     keyRangeAdjustment: 0,
     displayString: '中国うさぎ',
     icon: 'assets/character_icon/61.png',
-    negaimasiteha: 'assets/negaimasiteha/69.wav',
+    negaimasiteha: 'assets/negaimasiteha/61.wav',
   ),
   aierutan(
     singerId: 3068,
@@ -229,7 +229,7 @@ enum Character {
     keyRangeAdjustment: 2,
     displayString: '満別花丸',
     icon: 'assets/character_icon/69.png',
-    negaimasiteha: 'assets/negaimasiteha/60.wav',
+    negaimasiteha: 'assets/negaimasiteha/69.wav',
   ),
   kotoyomiNia(
     singerId: 3074,
@@ -237,7 +237,7 @@ enum Character {
     keyRangeAdjustment: 2,
     displayString: '琴詠ニア',
     icon: 'assets/character_icon/74.png',
-    negaimasiteha: 'assets/negaimasiteha/62.wav',
+    negaimasiteha: 'assets/negaimasiteha/74.wav',
   );
 
   final int singerId;

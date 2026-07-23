@@ -242,6 +242,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
         'allProblems': _allProblems,
         'allAnswers': _allAnswers,
         'textFieldDataList': _textFieldDataList,
+        'character': widget.character,
       },
     );
   }
@@ -373,7 +374,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
           duration: 29500,
-          maxDigits: 16,
+          maxDigits: 17,
         );
       case 2:
         return FlashAndAloudResult<int>(

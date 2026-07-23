@@ -135,7 +135,6 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                     builder: (context, orientation) {
                       final bool isPortrait =
                           orientation == Orientation.portrait;
-                      final TextTheme textStyle = Theme.of(context).textTheme;
 
                       final selectorStack = KyuuiSelectorStack(
                         primaryDenomination: KyuuiDenomination.zsAloudAndFlash,
@@ -278,7 +277,7 @@ class FlashInfoDialog extends StatelessWidget {
             ),
             child: Flex(
               direction: isPortrait ? Axis.vertical : Axis.horizontal,
-              mainAxisSize: MainAxisSize.min, // <-- add this too
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 statCell(context, '$digits', '桁'),

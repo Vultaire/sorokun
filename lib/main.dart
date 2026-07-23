@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/aloud_free_menu.dart';
 import 'package:soroban_app/screens/aloud_level_menu.dart';
 import 'package:soroban_app/screens/aloud_problem.dart';
@@ -48,16 +49,31 @@ class DebugMockData {
       '177 / 3',
       '216 / 9',
       '288 / 4',
-      '582 / 6',
-      '114 / 2',
-      '801 / 9',
-      '162 / 6',
-      '177 / 3',
-      '392 / 4',
-      '354 / 6',
-      '744 / 8',
-      '747 / 9',
-      '576 / 6',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
+      '288 / 4',
     ];
 
     final allAnswers = [
@@ -65,16 +81,31 @@ class DebugMockData {
       '77',
       '59',
       '24',
-      '72',
-      '97',
-      '57',
-      '89',
-      '27',
-      '59',
-      '98',
-      '59',
-      '93',
-      '83',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
+      '96',
       '96',
     ];
 
@@ -83,6 +114,19 @@ class DebugMockData {
       false,
       false,
       false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
       true,
       true,
       true,
@@ -118,12 +162,12 @@ class DebugMockData {
     });
 
     return {
-      'selectedLevel': DivMultLevel.zsdk8,
+      'selectedLevel': ComplexMitoriLevel.zsdan,
       'allProblems': allProblems,
       'allAnswers': allAnswers,
       'answerBools': answerBools,
       'textFieldDataList': textFieldDataList,
-      'elapsed': Duration(minutes: 3, seconds: 45),
+      'character': Character.shikokuMetan,
     };
   }
 
@@ -157,7 +201,7 @@ class _AbacusAppState extends State<AbacusApp> {
   ThemeMode themeMode = ThemeMode.light;
 
   late final _router = GoRouter(
-    initialLocation: kDebugMode ? '/home' : '/home',
+    initialLocation: kDebugMode ? '/paper-results' : '/home',
     routes: [
       GoRoute(path: '/home', builder: (context, state) => HomePage()),
       GoRoute(
@@ -232,6 +276,7 @@ class _AbacusAppState extends State<AbacusApp> {
               allProblems: args['allProblems'],
               textFieldDataList: args['textFieldDataList'],
               elapsed: args['elapsed'],
+              character: args['character'],
             ),
           );
         },

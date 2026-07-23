@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/models/singer_config.dart';
 
 import '../models/level_definitions.dart';
 import 'components/keypad.dart';
@@ -14,6 +15,7 @@ class ResultsScreen extends StatelessWidget {
   final List<dynamic> allProblems;
   final List<TextFieldData> textFieldDataList;
   final Duration? elapsed;
+  final Character? character;
 
   const ResultsScreen({
     super.key,
@@ -23,6 +25,7 @@ class ResultsScreen extends StatelessWidget {
     required this.allProblems,
     required this.textFieldDataList,
     this.elapsed,
+    this.character,
   });
 
   @override
@@ -51,7 +54,7 @@ class ResultsScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 48, fontFamily: 'bizUDPGR'),
               ),
             SizedBox(height: 10),
-            CountUpText(
+            CountUpCircle(
               score: score,
               durationBase: Duration(milliseconds: 10),
               passThreshold: selectedLevel.levelInfo.passThreshold,
@@ -92,6 +95,7 @@ class ResultsScreen extends StatelessWidget {
                       extra: {
                         'isSingleProblem': false,
                         'selectedLevel': selectedLevel,
+                        'character': character,
                       },
                     );
                   case PaperProblemLevel _:
@@ -101,7 +105,6 @@ class ResultsScreen extends StatelessWidget {
                         'selectedLevel': selectedLevel,
                         'isExam': isExam,
                         'time': selectedLevel.levelInfo.timeLimit,
-                        'appBarTitle': 'placeholder',
                       },
                     );
                 }
@@ -156,7 +159,7 @@ class ProblemScorer {
   return (score, outOf);
 }
 
-class CountUpText extends StatefulWidget {
+class CountUpCircle extends StatefulWidget {
   final (int, int) score;
   final Duration durationBase;
   final TextStyle style;
@@ -164,7 +167,7 @@ class CountUpText extends StatefulWidget {
   final double passThreshold;
   final List<(String, int)>? rangedThreshold;
 
-  const CountUpText({
+  const CountUpCircle({
     super.key,
     required this.score,
     required this.durationBase,
@@ -175,10 +178,10 @@ class CountUpText extends StatefulWidget {
   });
 
   @override
-  State<CountUpText> createState() => _CountUpTextState();
+  State<CountUpCircle> createState() => _CountUpCircleState();
 }
 
-class _CountUpTextState extends State<CountUpText>
+class _CountUpCircleState extends State<CountUpCircle>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<int> _countAnimation;
@@ -200,12 +203,13 @@ class _CountUpTextState extends State<CountUpText>
   void initState() {
     super.initState();
     if (widget.rangedThreshold != null) {
-      passFailText = '不合格';
+      String computedText = '不合格';
       for (final threshold in widget.rangedThreshold!) {
         if (widget.score.$1 >= threshold.$2) {
-          passFailText = threshold.$1;
+          computedText = threshold.$1;
         }
       }
+      passFailText = computedText;
     } else {
       passFailText = userPassed ? '合格' : '不合格';
     }
@@ -214,7 +218,7 @@ class _CountUpTextState extends State<CountUpText>
     _controller = AnimationController(duration: duration, vsync: this);
 
     _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
     _pulseAnimation = CurvedAnimation(
@@ -279,8 +283,9 @@ class _CountUpTextState extends State<CountUpText>
   }
 
   void _onProgressChange() {
+    const epsilon = 0.0001;
     if (!_thresholdSoundPlayed &&
-        _progressAnimation.value >= widget.passThreshold) {
+        _progressAnimation.value >= widget.passThreshold - epsilon) {
       _thresholdSoundPlayed = true;
       if (passThresholdSound != null) {
         SoLoud.instance.play(passThresholdSound!);
@@ -305,18 +310,16 @@ class _CountUpTextState extends State<CountUpText>
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return AnimatedBuilder(
-      animation: _controller,
+      animation: Listenable.merge([_controller, _pulseController]),
       builder: (context, child) {
         const pulseAmplitude = 0.35;
         final double tickScale = 1.0 + _pulseAnimation.value * pulseAmplitude;
-
         return Padding(
           padding: const EdgeInsets.all(70.0),
           child: CustomPaint(
             painter: CircularProgressPainter(
               progress: _progressAnimation.value,
               ringColor: colorScheme.primary,
-              alternateRingColor: colorScheme.primary.withAlpha(170),
               backgroundColor: colorScheme.surfaceContainerHighest,
               tickPosition: widget.passThreshold,
               tickScale: tickScale,
@@ -328,7 +331,7 @@ class _CountUpTextState extends State<CountUpText>
                   Text(
                     '${widget.score.$2}点満点',
                     style: widget.style.copyWith(
-                      fontSize: widget.style.fontSize! * 0.4,
+                      fontSize: widget.style.fontSize! * 0.5,
                     ),
                   ),
                   SizedBox(
@@ -392,7 +395,6 @@ class CircularProgressPainter extends CustomPainter {
   final double progress;
   final Color ringColor;
   final Color backgroundColor;
-  final Color alternateRingColor;
   final double tickPosition;
   final double tickLength;
   final double tickScale;
@@ -401,7 +403,6 @@ class CircularProgressPainter extends CustomPainter {
     required this.progress,
     required this.ringColor,
     required this.backgroundColor,
-    required this.alternateRingColor,
     required this.tickPosition,
     required this.tickScale,
     this.tickLength = 20.0,
@@ -423,7 +424,7 @@ class CircularProgressPainter extends CustomPainter {
 
     // Draw progress arc
     final progressPaint = Paint()
-      ..color = progress > tickPosition ? ringColor : alternateRingColor
+      ..color = ringColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 12
       ..strokeCap = StrokeCap.round;
@@ -455,7 +456,7 @@ class CircularProgressPainter extends CustomPainter {
     );
 
     final tickPaint = Paint()
-      ..color = progress > tickPosition ? ringColor : backgroundColor
+      ..color = progress >= tickPosition ? ringColor : backgroundColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10.0 * tickScale
       ..strokeCap = StrokeCap.round;
@@ -469,7 +470,8 @@ class CircularProgressPainter extends CustomPainter {
         oldDelegate.ringColor != ringColor ||
         oldDelegate.backgroundColor != backgroundColor ||
         oldDelegate.tickPosition != tickPosition ||
-        oldDelegate.tickLength != tickLength;
+        oldDelegate.tickLength != tickLength ||
+        oldDelegate.tickScale != tickScale;
   }
 }
 

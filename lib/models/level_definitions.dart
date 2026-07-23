@@ -1238,7 +1238,7 @@ const List<(String, int)> nsdanRangedThreshold = [
   ('七段', 220),
   ('八段', 240),
   ('九段', 260),
-  ('十段', 290),
+  ('十段', 280),
 ];
 const List<(String, int)> zsdanRangedThreshold = [
   ('準初段', 80),
