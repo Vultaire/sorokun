@@ -52,7 +52,7 @@ class _IncrementerState extends State<Incrementer> {
             height: 60,
             width: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               borderRadius: BorderRadius.circular(12),
             ),
             child: up_arrow,
@@ -62,7 +62,7 @@ class _IncrementerState extends State<Incrementer> {
         Container(
           padding: .all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(12),
           ),
           child: ConstrainedBox(
@@ -91,7 +91,7 @@ class _IncrementerState extends State<Incrementer> {
             height: 60,
             width: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               borderRadius: BorderRadius.circular(12),
             ),
             child: down_arrow,
@@ -178,7 +178,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: up_arrow,
@@ -192,7 +192,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: up_arrow,
@@ -204,7 +204,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
         Container(
           padding: .all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(12),
           ),
           child: ConstrainedBox(
@@ -266,7 +266,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: down_arrow,
@@ -280,7 +280,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: down_arrow,

@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/settings.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -160,7 +161,7 @@ class HomePage extends StatelessWidget {
                                               child: Text(
                                                 '基本種目を練習',
                                                 style: TextStyle(
-                                                  fontSize: 24,
+                                                  fontSize: 30,
                                                   fontWeight: FontWeight.bold,
                                                   color: Theme.of(
                                                     context,
@@ -229,7 +230,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   'フラッシュ暗算',
                                                   style: TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 24,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -239,7 +240,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   '検定',
                                                   style: TextStyle(
-                                                    fontSize: 24,
+                                                    fontSize: 30,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -268,7 +269,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   'フラッシュ暗算',
                                                   style: TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 24,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -278,7 +279,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   'フリー',
                                                   style: TextStyle(
-                                                    fontSize: 24,
+                                                    fontSize: 30,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -348,7 +349,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   '読み上げ算',
                                                   style: TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 24,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -358,7 +359,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   '検定',
                                                   style: TextStyle(
-                                                    fontSize: 24,
+                                                    fontSize: 30,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -387,7 +388,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   '読み上げ算',
                                                   style: TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 24,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -397,7 +398,7 @@ class HomePage extends StatelessWidget {
                                                 Text(
                                                   'フリー',
                                                   style: TextStyle(
-                                                    fontSize: 24,
+                                                    fontSize: 30,
                                                     fontWeight: FontWeight.bold,
                                                     color: Theme.of(
                                                       context,
@@ -423,6 +424,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
+          Positioned(top: 4, left: 4, child: SettingsGearButton()),
         ],
       ),
     );

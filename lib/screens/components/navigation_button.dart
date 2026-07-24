@@ -39,7 +39,7 @@ class _NavigationButtonState extends State<NavigationButton> {
         ),
         margin: const EdgeInsets.all(6),
         child: Container(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             color: widget.color,
             borderRadius: BorderRadius.circular(12),

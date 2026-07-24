@@ -14,6 +14,7 @@ import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
+import 'package:soroban_app/screens/settings.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
@@ -21,12 +22,14 @@ import 'screens/paper_problem.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   VoicevoxService.paths = await extractVoicevoxAssets();
+  final themeController = ThemeController();
   await SoLoud.instance.init(
     sampleRate: 44100,
     bufferSize: 256,
     channels: Channels.stereo,
   );
-  runApp(const AbacusApp());
+  await themeController.ready;
+  runApp(AbacusApp(themeController: themeController));
 }
 
 class VoicevoxService {
@@ -35,7 +38,8 @@ class VoicevoxService {
 }
 
 class AbacusApp extends StatefulWidget {
-  const AbacusApp({super.key});
+  const AbacusApp({super.key, required this.themeController});
+  final ThemeController themeController;
 
   @override
   State<AbacusApp> createState() => _AbacusAppState();
@@ -198,8 +202,7 @@ class DebugMockData {
 }
 
 class _AbacusAppState extends State<AbacusApp> {
-  ThemeMode themeMode = ThemeMode.light;
-
+  late final ThemeController _themeController = widget.themeController;
   late final _router = GoRouter(
     initialLocation: kDebugMode ? '/paper-results' : '/home',
     routes: [
@@ -301,34 +304,77 @@ class _AbacusAppState extends State<AbacusApp> {
   );
 
   @override
-  Widget build(BuildContext context) {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: Colors.blue,
-      brightness: Brightness.dark,
-      dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
-    );
+  void initState() {
+    super.initState();
+    _themeController.addListener(_onThemeChanged);
+  }
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: _router,
-      theme: ThemeData(
-        fontFamily: 'bizUDGPR',
-        colorScheme: colorScheme,
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            textStyle: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+  void _onThemeChanged() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _themeController.removeListener(_onThemeChanged);
+    _themeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InheritedThemeController(
+      controller: _themeController,
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerConfig: _router,
+        themeMode: _themeController.themeMode,
+        theme: ThemeData(
+          fontFamily: 'bizUDGPR',
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: _themeController.seedColor,
+            brightness: Brightness.light,
+            dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
+          dialogTheme: DialogThemeData(
+            titleTextStyle: const TextStyle(fontSize: 26),
+            alignment: .center,
+          ),
         ),
-        dialogTheme: DialogThemeData(
-          titleTextStyle: TextStyle(fontSize: 26, color: colorScheme.onSurface),
-          alignment: .center,
+        darkTheme: ThemeData(
+          fontFamily: 'bizUDGPR',
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: _themeController.seedColor,
+            brightness: Brightness.dark,
+            dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          dialogTheme: DialogThemeData(
+            titleTextStyle: const TextStyle(fontSize: 26),
+            alignment: .center,
+          ),
         ),
       ),
     );

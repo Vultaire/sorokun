@@ -252,75 +252,82 @@ class FlashInfoDialog extends StatelessWidget {
 
     final infoTextStyle = textTheme.titleLarge;
 
-    return Container(
-      padding: const .all(12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: .circular(12),
-      ),
-      child: Column(
-        mainAxisSize: .min,
-        mainAxisAlignment: .spaceEvenly,
-        crossAxisAlignment: .center,
-        children: [
-          FittedBox(
-            child: Text(denominationString, style: textTheme.displaySmall),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-            width: isPortrait ? 200 : 500,
-            decoration: BoxDecoration(
+    return Material(
+      color: colorScheme.surfaceContainer,
+      borderRadius: .circular(12),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisSize: .min,
+          mainAxisAlignment: .spaceEvenly,
+          crossAxisAlignment: .center,
+          children: [
+            FittedBox(
+              child: Text(denominationString, style: textTheme.displaySmall),
+            ),
+            Material(
               color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
-            ),
-            child: Flex(
-              direction: isPortrait ? Axis.vertical : Axis.horizontal,
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                statCell(context, '$digits', '桁'),
-                divider(context, isPortrait),
-                statCell(context, '$kuchi', '口'),
-                divider(context, isPortrait),
-                statCell(context, '$secondsPerProblem', '秒'),
-              ],
-            ),
-          ),
-          isPortrait
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('全$probCount問 各10点', style: infoTextStyle),
-                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
-                    if (kuriagariNashi) Text('くりあがりなし', style: infoTextStyle),
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('全$probCount問 各10点', style: infoTextStyle),
-                    Text('　・　', style: infoTextStyle),
-                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
-                    if (kuriagariNashi) ...[
-                      Text('　・　', style: infoTextStyle),
-                      Text('くりあがりなし', style: infoTextStyle),
-                    ],
-                  ],
+              elevation: 8,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 12,
                 ),
-          NavigationButton(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            onPressed: () {
-              context.push(
-                '/flash-problem',
-                extra: {
-                  'selectedLevel': selectedLevel,
-                  'isSingleProblem': false,
-                },
-              );
-            },
-            child: const Text('スタート'),
-          ),
-        ],
+                child: SizedBox(
+                  width: isPortrait ? 200 : 500,
+                  child: Flex(
+                    direction: isPortrait ? Axis.vertical : Axis.horizontal,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      statCell(context, '$digits', '桁'),
+                      divider(context, isPortrait),
+                      statCell(context, '$kuchi', '口'),
+                      divider(context, isPortrait),
+                      statCell(context, '$secondsPerProblem', '秒'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            isPortrait
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('全$probCount問 各10点', style: infoTextStyle),
+                      Text('合格点：$passThreshold点以上', style: infoTextStyle),
+                      if (kuriagariNashi) Text('くりあがりなし', style: infoTextStyle),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('全$probCount問 各10点', style: infoTextStyle),
+                      Text('　・　', style: infoTextStyle),
+                      Text('合格点：$passThreshold点以上', style: infoTextStyle),
+                      if (kuriagariNashi) ...[
+                        Text('　・　', style: infoTextStyle),
+                        Text('くりあがりなし', style: infoTextStyle),
+                      ],
+                    ],
+                  ),
+            NavigationButton(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              onPressed: () {
+                context.push(
+                  '/flash-problem',
+                  extra: {
+                    'selectedLevel': selectedLevel,
+                    'isSingleProblem': false,
+                  },
+                );
+              },
+              child: const Text('スタート'),
+            ),
+          ],
+        ),
       ),
     );
   }

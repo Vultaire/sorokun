@@ -156,7 +156,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: pair
                                             .map(
-                                              (type) => StartButton(
+                                              (type) => PaperStartButton(
                                                 startButtonType: type,
                                                 size: startButtonSizeConstraint,
                                                 isPortrait: isPortrait,
@@ -291,8 +291,8 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   }
 }
 
-class StartButton extends StatelessWidget {
-  const StartButton({
+class PaperStartButton extends StatelessWidget {
+  const PaperStartButton({
     super.key,
     required this.startButtonType,
     required this.size,

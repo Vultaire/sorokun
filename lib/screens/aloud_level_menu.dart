@@ -5,6 +5,7 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/aloud_free_menu.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/components/start_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/src/voicevox_paths.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
@@ -231,31 +232,34 @@ class AloudInfoDialog extends StatelessWidget {
           FittedBox(
             child: Text(denominationString, style: textTheme.displaySmall),
           ),
-          Container(
-            padding: const .symmetric(vertical: 16, horizontal: 12),
-            width: isPortrait ? 300 : 900,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: .circular(12),
-            ),
-            child: Column(
-              children: [
-                Flex(
-                  direction: isPortrait ? .vertical : .horizontal,
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    Text(minusString, style: textTheme.displayLarge),
-                    divider(context, isPortrait),
-                    statCell(context, digitsString, '桁'),
-                    divider(context, isPortrait),
-                    statCell(context, '$kuchi', '口'),
-                    divider(context, isPortrait),
-                    statCell(context, '$moraPerSecond', '拍/秒'),
-                    divider(context, isPortrait),
-                    statCell(context, '${msPerInterval / 1000}', '秒間隔'),
-                  ],
-                ),
-              ],
+          FittedBox(
+            fit: .scaleDown,
+            child: Container(
+              padding: const .symmetric(vertical: 16, horizontal: 12),
+              width: isPortrait ? 300 : 900,
+              decoration: BoxDecoration(
+                color: colorScheme.secondaryContainer,
+                borderRadius: .circular(12),
+              ),
+              child: Column(
+                children: [
+                  Flex(
+                    direction: isPortrait ? .vertical : .horizontal,
+                    mainAxisAlignment: .spaceEvenly,
+                    children: [
+                      Text(minusString, style: textTheme.displayLarge),
+                      divider(context, isPortrait),
+                      statCell(context, digitsString, '桁'),
+                      divider(context, isPortrait),
+                      statCell(context, '$kuchi', '口'),
+                      divider(context, isPortrait),
+                      statCell(context, '$moraPerSecond', '拍/秒'),
+                      divider(context, isPortrait),
+                      statCell(context, '${msPerInterval / 1000}', '秒間隔'),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           isPortrait
@@ -278,23 +282,7 @@ class AloudInfoDialog extends StatelessWidget {
             character: character,
             onChanged: onCharacterChanged,
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-            child: NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              onPressed: () {
-                context.push(
-                  '/aloud-problem',
-                  extra: {
-                    'isSingleProblem': false,
-                    'selectedLevel': selectedLevel,
-                    'character': character,
-                  },
-                );
-              },
-              child: const Text('スタート'),
-            ),
-          ),
+          StartButton(selectedLevel: selectedLevel, character: character),
         ],
       ),
     );
