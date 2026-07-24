@@ -266,7 +266,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                       extra: {'isSingleProblem': true, 'selectedLevel': spec},
                     );
                   },
-                  label: 'スタート',
+                  child: const Text('スタート'),
                 ),
               ],
             ),

@@ -71,6 +71,7 @@ flutter:
     - assets/finished.wav
     - assets/character_icon/
     - assets/negaimasiteha/
+    - assets/
     - path: assets/svg/
       transformers:
         - package: vector_graphics_compiler

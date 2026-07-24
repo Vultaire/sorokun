@@ -2,90 +2,423 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    bool isLandscape = size.width > size.height;
+    final media = MediaQuery.of(context);
+    final Size size = media.size;
+    final bool isPortrait = media.orientation == Orientation.portrait;
     return Scaffold(
       body: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Background
           Positioned(
             top: size.height * 0.1,
             left: 0,
             right: 0,
             child: Transform.rotate(
               angle: -0.18,
-              child: ScrollingBackground(assetPath: 'assets/soroban-grey.png'),
+              child: ExcludeSemantics(
+                child: RepaintBoundary(
+                  child: ScrollingBackground(
+                    assetPath: 'assets/soroban-grey.png',
+                  ),
+                ),
+              ),
             ),
           ),
 
-          // Foreground content
           Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: Flex(
+              direction: isPortrait ? Axis.vertical : Axis.horizontal,
+              crossAxisAlignment: .center,
+              mainAxisAlignment: .center,
+              spacing: 25,
               children: [
-                Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: isLandscape
-                          ? size.width * 0.5
-                          : size.width * 0.9,
-                    ),
-                    child: FittedBox(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 9,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
-                          children: [
-                            Text('そろくん', style: TextStyle(fontWeight: .w900)),
-                            Text(
-                              '珠算特訓アプリ',
-                              style: TextStyle(fontSize: 6, fontWeight: .w800),
-                            ),
-                          ],
+                Expanded(
+                  flex: isPortrait ? 0 : 3,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: isPortrait
+                            ? size.width * 0.9
+                            : size.width * 0.4,
+                      ),
+                      child: FittedBox(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                'そろくん',
+                                style: TextStyle(
+                                  fontWeight: .w900,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                              Text(
+                                '珠算特訓アプリ',
+                                style: TextStyle(
+                                  fontSize: 6,
+                                  fontWeight: .w800,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 48),
-                ElevatedButton(
-                  onPressed: () => context.push('/flash-level-menu'),
-                  child: const Text('Flash Anzan Levels'),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => context.push('/flash-free-menu'),
-                  child: const Text('Flash Anzan'),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => context.push('/paper-menu'),
-                  child: const Text('Train In The App'),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => context.push('/aloud-level-menu'),
-                  child: const Text('Aloud Levels'),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => context.push('/aloud-free-menu'),
-                  child: const Text('Aloud Problem'),
+                Flexible(
+                  flex: isPortrait ? 0 : 3,
+                  fit: isPortrait ? FlexFit.loose : FlexFit.tight,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      const desiredHeight =
+                          100.0; // the taller height you want normally
+                      const minHeight =
+                          64.0; // floor — never shrink smaller than this
+                      const spacing = 16.0;
+                      const rows = 3; // train button + flash row + aloud row
+
+                      double rowHeight = desiredHeight;
+                      if (constraints.maxHeight.isFinite) {
+                        final maxAllowed =
+                            (constraints.maxHeight - spacing * (rows - 1)) /
+                            rows;
+                        rowHeight = maxAllowed.clamp(minHeight, desiredHeight);
+                      }
+
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(
+                            height: rowHeight,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      AspectRatio(
+                                        aspectRatio: 1,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimaryContainer,
+                                              BlendMode.srcIn,
+                                            ),
+                                            child: Image.asset(
+                                              'assets/shumoku_icon.png',
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: NavigationButton(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                          onPressed: () =>
+                                              context.push('/paper-menu'),
+                                          child: Center(
+                                            child: FittedBox(
+                                              fit: .scaleDown,
+                                              child: Text(
+                                                '基本種目を練習',
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.onSecondary,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: spacing),
+                          SizedBox(
+                            height: rowHeight,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      AspectRatio(
+                                        aspectRatio: 1,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimaryContainer,
+                                              BlendMode.srcIn,
+                                            ),
+                                            child: Image.asset(
+                                              'assets/flash_icon.png',
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: NavigationButton(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                          onPressed: () =>
+                                              context.push('/flash-level-menu'),
+                                          child: FittedBox(
+                                            fit: .scaleDown,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'フラッシュ暗算',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '検定',
+                                                  style: TextStyle(
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: NavigationButton(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                          onPressed: () =>
+                                              context.push('/flash-free-menu'),
+                                          child: FittedBox(
+                                            fit: .scaleDown,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'フラッシュ暗算',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'フリー',
+                                                  style: TextStyle(
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: spacing),
+                          SizedBox(
+                            height: rowHeight,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      AspectRatio(
+                                        aspectRatio: 1,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimaryContainer,
+                                              BlendMode.srcIn,
+                                            ),
+                                            child: Image.asset(
+                                              'assets/aloud_icon.png',
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: NavigationButton(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                          onPressed: () =>
+                                              context.push('/aloud-level-menu'),
+                                          child: FittedBox(
+                                            fit: .scaleDown,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  '読み上げ算',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '検定',
+                                                  style: TextStyle(
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: NavigationButton(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                          onPressed: () =>
+                                              context.push('/aloud-free-menu'),
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  '読み上げ算',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'フリー',
+                                                  style: TextStyle(
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.onSecondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

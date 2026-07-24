@@ -148,7 +148,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
             return FadeThroughTransition(
               animation: primaryAnimation,
               secondaryAnimation: secondaryAnimation,
-              fillColor: Colors.black, // Add this
+              fillColor: Colors.black,
               child: child,
             );
           },
@@ -427,11 +427,15 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
             child: NavigationButton(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               onPressed: () async {
+                if (widget.isSingleProblem) {
+                  context.pop();
+                  return;
+                }
                 final shouldPop = await showExitDialog(context);
                 if (!mounted) return;
                 if (shouldPop) context.pop();
               },
-              label: '設定画面',
+              child: const Text('設定画面'),
             ),
           ),
           SizedBox(
@@ -439,7 +443,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
             child: NavigationButton(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               onPressed: widget.onRepeatProblem,
-              label: 'もう一回',
+              child: const Text('もう一回'),
             ),
           ),
           SizedBox(
@@ -447,7 +451,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
             child: NavigationButton(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               onPressed: widget.onNewProblem,
-              label: '次の問題',
+              child: const Text('次の問題'),
             ),
           ),
         ],
@@ -464,7 +468,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                 if (!mounted) return;
                 if (shouldPop) context.pop();
               },
-              label: '設定画面',
+              child: const Text('設定画面'),
             ),
           ),
           SizedBox(
@@ -474,9 +478,11 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                   ? widget.onShowResults
                   : widget.onNextProblem,
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              label: _data.currentProblemIndex == _data.allAnswers.length - 1
-                  ? '採点'
-                  : '次の問題',
+              child: Text(
+                _data.currentProblemIndex == _data.allAnswers.length - 1
+                    ? '採点'
+                    : '次の問題',
+              ),
             ),
           ),
         ],

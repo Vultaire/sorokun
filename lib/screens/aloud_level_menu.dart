@@ -123,7 +123,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: OrientationBuilder(
                     builder: (context, orientation) {
-                      final isPortrait = orientation == Orientation.portrait;
+                      final isPortrait = orientation == .portrait;
                       final selector = KyuuiSelector(
                         kyuuiList: _buildKyuuiList(
                           KyuuiDenomination.zsAloudAndFlash,
@@ -138,15 +138,14 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                       );
 
                       return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: .center,
+                        crossAxisAlignment: .stretch,
                         children: [
                           Expanded(
                             flex: 6,
                             child: Flex(
-                              direction: isPortrait
-                                  ? Axis.vertical
-                                  : Axis.horizontal,
+                              direction: isPortrait ? .vertical : .horizontal,
+                              crossAxisAlignment: .stretch,
                               children: [
                                 isPortrait
                                     ? SizedBox(height: 100, child: selector)
@@ -232,7 +231,6 @@ class AloudInfoDialog extends StatelessWidget {
           FittedBox(
             child: Text(denominationString, style: textTheme.displaySmall),
           ),
-          const SizedBox(height: 12),
           Container(
             padding: const .symmetric(vertical: 16, horizontal: 12),
             width: isPortrait ? 300 : 900,
@@ -260,7 +258,6 @@ class AloudInfoDialog extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
           isPortrait
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -285,7 +282,6 @@ class AloudInfoDialog extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
             child: NavigationButton(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              label: 'スタート',
               onPressed: () {
                 context.push(
                   '/aloud-problem',
@@ -296,6 +292,7 @@ class AloudInfoDialog extends StatelessWidget {
                   },
                 );
               },
+              child: const Text('スタート'),
             ),
           ),
         ],

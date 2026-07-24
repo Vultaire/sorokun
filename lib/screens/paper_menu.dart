@@ -300,7 +300,6 @@ class StartButton extends StatelessWidget {
     required this.kyuui,
     required this.isExam,
   });
-
   final StartButtonType startButtonType;
   final double size;
   final bool isPortrait;
@@ -315,7 +314,6 @@ class StartButton extends StatelessWidget {
     Set<int>? letterCounts;
     Set<int>? houshou;
     Set<int>? jippou;
-
     switch (startButtonType) {
       case .mitori:
         label = 'みとり算';
@@ -348,7 +346,6 @@ class StartButton extends StatelessWidget {
         imagePath = 'assets/kakean.png';
         jippou = selectedLevel?.houshouJippou;
     }
-
     if (selectedLevel == null) return const SizedBox.shrink();
 
     return ConstrainedBox(
@@ -360,16 +357,6 @@ class StartButton extends StatelessWidget {
         children: [
           NavigationButton(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            label: label,
-            imageAbove: isPortrait,
-            image: Align(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.contain,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                colorBlendMode: BlendMode.srcIn,
-              ),
-            ),
             onPressed: () {
               context.go(
                 '/paper-problem',
@@ -381,6 +368,32 @@ class StartButton extends StatelessWidget {
                 },
               );
             },
+            child: Flex(
+              direction: isPortrait ? Axis.vertical : Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: isPortrait ? 3 : 1,
+                  child: Align(
+                    child: Image.asset(
+                      imagePath,
+                      fit: BoxFit.contain,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      colorBlendMode: BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: isPortrait ? 1 : 2,
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
           Positioned(
             top: 4,

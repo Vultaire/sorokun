@@ -367,6 +367,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           onComplete: showInput,
           readyToPlay: _isRepeat ? true : _readyToPlay,
           negaimasitehaPath: widget.character.negaimasiteha,
+          isSingleProblem: widget.isSingleProblem,
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
@@ -478,14 +479,16 @@ class AloudProblem extends StatefulWidget {
     required this.chunkStream,
     required this.onComplete,
     required this.readyToPlay,
-    required this.negaimasitehaPath, // new
+    required this.negaimasitehaPath,
+    required this.isSingleProblem,
   });
 
   final List<Uint8List> chunks;
   final Stream<Uint8List>? chunkStream;
   final VoidCallback onComplete;
   final bool readyToPlay;
-  final String negaimasitehaPath; // new
+  final String negaimasitehaPath;
+  final bool isSingleProblem;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -493,14 +496,18 @@ class AloudProblem extends StatefulWidget {
 
 class _AloudProblemState extends State<AloudProblem> {
   bool _isPlaying = false;
+  bool _isPressed = false;
   int _currentChunk = 0;
   SoundHandle? _currentHandle;
   AudioSource? _currentSource;
   bool _disposed = false;
+  int _playSession = 0;
+  bool _isCompleted = false;
 
   @override
   void dispose() {
     _disposed = true;
+    _playSession++;
     if (_currentHandle != null) {
       SoLoud.instance.stop(_currentHandle!);
     }
@@ -510,29 +517,43 @@ class _AloudProblemState extends State<AloudProblem> {
     super.dispose();
   }
 
-  Future<void> _playPreamble() async {
+  Future<void> _playPreamble(int session) async {
     final source = await SoLoud.instance.loadAsset(widget.negaimasitehaPath);
-    if (_disposed) {
+    if (_disposed || session != _playSession) {
       SoLoud.instance.disposeSource(source);
       return;
     }
     _currentSource = source;
     final handle = await SoLoud.instance.play(source);
+    if (session != _playSession) {
+      // Stopped/restarted while awaiting play(); clean up immediately.
+      await SoLoud.instance.stop(handle);
+      await SoLoud.instance.disposeSource(source);
+      return;
+    }
     _currentHandle = handle;
     final duration = SoLoud.instance.getLength(source);
-
     await Future.delayed(duration);
-    await SoLoud.instance.disposeSource(source);
+    if (session == _playSession) {
+      await SoLoud.instance.disposeSource(source);
+    }
   }
 
-  Future<void> _playNextChunk() async {
-    if (_disposed || !_isPlaying || _currentChunk >= widget.chunks.length) {
+  Future<void> _playNextChunk(int session) async {
+    if (_disposed ||
+        session != _playSession ||
+        !_isPlaying ||
+        _currentChunk >= widget.chunks.length) {
       final completed =
-          !_disposed && _isPlaying && _currentChunk >= widget.chunks.length;
-      if (!_disposed) {
+          !_disposed &&
+          session == _playSession &&
+          _isPlaying &&
+          _currentChunk >= widget.chunks.length;
+      if (!_disposed && session == _playSession) {
         setState(() {
           _isPlaying = false;
           _currentChunk = 0;
+          if (completed) _isCompleted = true;
         });
         if (completed) {
           widget.onComplete.call();
@@ -544,23 +565,31 @@ class _AloudProblemState extends State<AloudProblem> {
       'chunk_$_currentChunk.wav',
       widget.chunks[_currentChunk],
     );
-    if (_disposed) {
+    if (_disposed || session != _playSession) {
       SoLoud.instance.disposeSource(source);
       return;
     }
     _currentSource = source;
     final handle = await SoLoud.instance.play(source);
+    if (session != _playSession) {
+      await SoLoud.instance.stop(handle);
+      await SoLoud.instance.disposeSource(source);
+      return;
+    }
     _currentHandle = handle;
     final duration = SoLoud.instance.getLength(source);
     _currentChunk++;
     Future.delayed(duration, () async {
       await SoLoud.instance.disposeSource(source);
-      if (!_disposed && _isPlaying) _playNextChunk();
+      if (!_disposed && session == _playSession && _isPlaying) {
+        _playNextChunk(session);
+      }
     });
   }
 
   Future<void> _play() async {
     if (_isPlaying) {
+      _playSession++; // invalidate any in-flight callbacks from this session
       if (_currentHandle != null) {
         await SoLoud.instance.stop(_currentHandle!);
       }
@@ -570,25 +599,73 @@ class _AloudProblemState extends State<AloudProblem> {
       });
       return;
     }
+
+    _playSession++; // start a brand-new session
+    final session = _playSession;
+
     setState(() {
       _isPlaying = true;
       _currentChunk = 0;
     });
 
-    await _playPreamble();
-    if (_disposed || !_isPlaying) return; // guard: stopped during preamble
-    _playNextChunk();
+    await _playPreamble(session);
+    if (_disposed || session != _playSession || !_isPlaying) return;
+    _playNextChunk(session);
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    Widget icon;
+    VoidCallback? onPressed;
+
+    if (!_isCompleted && !widget.readyToPlay) {
+      icon = const SizedBox(
+        width: 40,
+        height: 40,
+        child: CircularProgressIndicator(strokeWidth: 4),
+      );
+      onPressed = null;
+    } else if (_isCompleted || _isPlaying) {
+      icon = widget.isSingleProblem
+          ? const Icon(Icons.replay, size: 64)
+          : const Icon(Icons.volume_up, size: 64);
+      onPressed = (_isCompleted || !widget.isSingleProblem) ? null : _play;
+    } else {
+      icon = const Icon(Icons.play_arrow, size: 64);
+      onPressed = _play;
+    }
+
     return Center(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            iconSize: 64,
-            icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-            onPressed: widget.readyToPlay ? _play : null,
+          GestureDetector(
+            onTapDown: onPressed == null
+                ? null
+                : (_) => setState(() => _isPressed = true),
+            onTapUp: onPressed == null
+                ? null
+                : (_) {
+                    setState(() => _isPressed = false);
+                    onPressed!();
+                  },
+            onTapCancel: () => setState(() => _isPressed = false),
+            child: AnimatedScale(
+              scale: _isPressed ? 0.9 : 1.0,
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeOut,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colorScheme.surfaceContainerHighest,
+                ),
+                child: Center(child: icon),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
         ],

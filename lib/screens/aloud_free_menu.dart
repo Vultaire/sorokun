@@ -146,7 +146,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                             onChanged: (newValue) => setState(
                               () => _moraPerSecond = newValue.toInt(),
                             ),
-                            min: 1,
+                            min: 3,
                             max: 12,
                           ),
                           SizedBox(width: 16),
@@ -199,16 +199,17 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                             ],
                           ),
                         ),
+                        VoiceSelectionButton(
+                          character: _character,
+                          onChanged: (selected) {
+                            setState(() => _character = selected);
+                          },
+                        ),
                       ],
                     ),
                   ],
                 ),
-                VoiceSelectionButton(
-                  character: _character,
-                  onChanged: (selected) {
-                    setState(() => _character = selected);
-                  },
-                ),
+
                 NavigationButton(
                   color: Theme.of(context).colorScheme.surfaceContainer,
                   onPressed: () {
@@ -229,7 +230,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                       },
                     );
                   },
-                  label: 'スタート',
+                  child: const Text('スタート'),
                 ),
               ],
             ),
@@ -266,7 +267,7 @@ class VoiceSelectionButton extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(12),

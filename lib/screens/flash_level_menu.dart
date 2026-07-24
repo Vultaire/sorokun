@@ -178,7 +178,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
 
                       return isPortrait
                           ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: .stretch,
                               children: [
                                 denominationSelector,
                                 const SizedBox(height: 6),
@@ -193,14 +193,13 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                               ],
                             )
                           : Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: .stretch,
                               children: [
                                 Expanded(flex: 1, child: selectorStack),
                                 Expanded(
                                   flex: 5,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
+                                    crossAxisAlignment: .stretch,
                                     children: [
                                       denominationSelector,
                                       const SizedBox(height: 6),
@@ -267,7 +266,6 @@ class FlashInfoDialog extends StatelessWidget {
           FittedBox(
             child: Text(denominationString, style: textTheme.displaySmall),
           ),
-          const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             width: isPortrait ? 200 : 500,
@@ -288,7 +286,6 @@ class FlashInfoDialog extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
           isPortrait
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -310,21 +307,18 @@ class FlashInfoDialog extends StatelessWidget {
                     ],
                   ],
                 ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-            child: NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              label: 'スタート',
-              onPressed: () {
-                context.push(
-                  '/flash-problem',
-                  extra: {
-                    'selectedLevel': selectedLevel,
-                    'isSingleProblem': false,
-                  },
-                );
-              },
-            ),
+          NavigationButton(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            onPressed: () {
+              context.push(
+                '/flash-problem',
+                extra: {
+                  'selectedLevel': selectedLevel,
+                  'isSingleProblem': false,
+                },
+              );
+            },
+            child: const Text('スタート'),
           ),
         ],
       ),
