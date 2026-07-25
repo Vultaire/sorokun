@@ -5,6 +5,7 @@ class NavigationButton extends StatefulWidget {
   final Duration duration;
   final Color color;
   final Widget child;
+  final EdgeInsets? margin;
 
   const NavigationButton({
     super.key,
@@ -12,6 +13,7 @@ class NavigationButton extends StatefulWidget {
     required this.color,
     required this.child,
     this.duration = const Duration(milliseconds: 100),
+    this.margin,
   });
 
   @override
@@ -24,6 +26,7 @@ class _NavigationButtonState extends State<NavigationButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
         setState(() => _isPressed = false);
@@ -37,16 +40,34 @@ class _NavigationButtonState extends State<NavigationButton> {
           _isPressed ? 2 : 0.0,
           0,
         ),
-        margin: const EdgeInsets.all(6),
-        child: Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: BorderRadius.circular(12),
+        margin: widget.margin ?? const EdgeInsets.all(0),
+        child: AnimatedPhysicalModel(
+          duration: widget.duration,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(12),
+          color: widget.color,
+          shadowColor: Colors.black,
+          elevation: _isPressed ? 2 : 8,
+          child: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: widget.child,
           ),
-          child: widget.child,
         ),
       ),
     );
   }
+}
+
+Widget iconHelper(BuildContext context, IconData icon, String label) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Theme.of(context).colorScheme.onPrimaryContainer),
+        const SizedBox(width: 8),
+        Text(label, style: Theme.of(context).textTheme.headlineSmall),
+      ],
+    ),
+  );
 }

@@ -751,7 +751,7 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
       options: CarouselOptions(
         height: widget.height,
         scrollDirection: .vertical,
-        viewportFraction: isPortrait ? 0.45 : 0.7,
+        viewportFraction: isPortrait ? 0.45 : 0.5,
         enlargeCenterPage: true,
         enlargeStrategy: .zoom,
         enlargeFactor: 0.25,
@@ -830,7 +830,7 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
                             child: Text(
                               currentProblem,
                               style: const TextStyle(
-                                fontSize: 26,
+                                fontSize: 30,
                                 fontFamily: 'abacusFont',
                               ),
                             ),
@@ -871,7 +871,7 @@ class CustomTextField extends StatelessWidget {
       text: TextSpan(
         text: data.beforeCaret,
         style: const TextStyle(
-          fontSize: 26.4,
+          fontSize: 30.4,
           fontFamily: 'abacusFontSpaced',
         ), // I don't know why the caret position drifts unless I add the extra .4 here.
       ),
@@ -889,7 +889,7 @@ class CustomTextField extends StatelessWidget {
             child: Text(
               data.formatted,
               style: const TextStyle(
-                fontSize: 26,
+                fontSize: 30,
                 fontFamily: 'abacusFontSpaced',
               ),
             ),

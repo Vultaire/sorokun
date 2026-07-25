@@ -33,7 +33,11 @@ List<int> zsk7Builder(FlashLevel level, Random rand) {
   List<int> randomDigits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   randomDigits.shuffle(rand);
   final List<int> picked = randomDigits.take(4).toList();
-  List<int> numbers = [picked[0] * 10, picked[1] * 10];
+  List<int> numbers = [
+    picked[0] * 10,
+    picked[1] * 10,
+    (picked[2] * 10 + picked[3]),
+  ];
   numbers.shuffle(rand);
   return numbers;
 }

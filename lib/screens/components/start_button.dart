@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
 class StartButton extends StatelessWidget {
   const StartButton({
     super.key,
-    required this.selectedLevel,
-    required this.character,
+    required this.onPressed,
     this.widthFactor = 0.8,
   });
 
-  final dynamic selectedLevel;
-  final dynamic character;
+  final VoidCallback onPressed;
   final double widthFactor;
 
   @override
@@ -21,16 +18,7 @@ class StartButton extends StatelessWidget {
         widthFactor: widthFactor,
         child: NavigationButton(
           color: Theme.of(context).colorScheme.primaryContainer,
-          onPressed: () {
-            context.push(
-              '/aloud-problem',
-              extra: {
-                'isSingleProblem': false,
-                'selectedLevel': selectedLevel,
-                'character': character,
-              },
-            );
-          },
+          onPressed: onPressed,
           child: Center(
             child: Text(
               'スタート',

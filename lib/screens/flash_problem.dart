@@ -236,7 +236,7 @@ class FlashAndAloudProblemData<T> extends InheritedWidget {
 }
 
 class FlashTextField extends StatelessWidget {
-  const FlashTextField({super.key, required this.data});
+  FlashTextField({super.key, required this.data});
   final TextFieldData data;
 
   @override
@@ -249,8 +249,14 @@ class FlashTextField extends StatelessWidget {
           child: Text(
             data.formatted.isEmpty ? '答えを記入してください。' : data.formatted,
             style: data.formatted.isEmpty
-                ? Theme.of(context).textTheme.displayLarge
-                : TextStyle(fontFamily: 'abacusFont', fontSize: 80),
+                ? Theme.of(context).textTheme.displayLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.primaryFixed,
+                  )
+                : TextStyle(
+                    fontFamily: 'abacusFont',
+                    fontSize: 80,
+                    color: Theme.of(context).colorScheme.primaryFixed,
+                  ),
           ),
         ),
       ),
@@ -418,70 +424,80 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
   Widget freeOrLevelButtons(bool isSingleProblem) {
     if (isSingleProblem) {
       return Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 8,
-        runSpacing: 8,
+        alignment: .center,
+        spacing: 20,
+        runSpacing: 12,
         children: [
           SizedBox(
             width: 160,
             child: NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              onPressed: () async {
-                if (widget.isSingleProblem) {
-                  context.pop();
-                  return;
-                }
-                final shouldPop = await showExitDialog(context);
-                if (!mounted) return;
-                if (shouldPop) context.pop();
+              color: Theme.of(context).colorScheme.primaryContainer,
+              onPressed: () {
+                context.pop();
               },
-              child: const Text('設定画面'),
+              child: Center(
+                child: iconHelper(context, Icons.meeting_room, '設定画面'),
+              ),
             ),
           ),
           SizedBox(
             width: 160,
             child: NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: widget.onRepeatProblem,
-              child: const Text('もう一回'),
+              child: Center(child: iconHelper(context, Icons.replay, 'もう一回')),
             ),
           ),
           SizedBox(
             width: 160,
             child: NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: widget.onNewProblem,
-              child: const Text('次の問題'),
+              child: Center(
+                child: iconHelper(context, Icons.arrow_forward, '次の問題'),
+              ),
             ),
           ),
         ],
       );
     } else {
-      return Row(
-        mainAxisAlignment: .center,
+      return Wrap(
+        alignment: .center,
+        spacing: 20,
+        runSpacing: 12,
         children: [
           SizedBox(
+            width: 180,
             child: NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: () async {
                 final shouldPop = await showExitDialog(context);
                 if (!mounted) return;
                 if (shouldPop) context.pop();
               },
-              child: const Text('設定画面'),
+              child: Center(
+                child: iconHelper(context, Icons.meeting_room, '設定画面'),
+              ),
             ),
           ),
           SizedBox(
+            width: 180,
             child: NavigationButton(
               onPressed:
                   _data.currentProblemIndex == _data.allAnswers.length - 1
                   ? widget.onShowResults
                   : widget.onNextProblem,
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              child: Text(
-                _data.currentProblemIndex == _data.allAnswers.length - 1
-                    ? '採点'
-                    : '次の問題',
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Center(
+                child: iconHelper(
+                  context,
+                  _data.currentProblemIndex == _data.allAnswers.length - 1
+                      ? Icons.grade
+                      : Icons.arrow_forward,
+                  _data.currentProblemIndex == _data.allAnswers.length - 1
+                      ? '採点'
+                      : '次の問題',
+                ),
               ),
             ),
           ),
@@ -513,10 +529,11 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                 padding: EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(22),
                 ),
                 child: Column(
                   mainAxisSize: .min,
+                  spacing: 20,
                   children: [
                     Container(
                       margin: .only(bottom: 16),
@@ -545,67 +562,84 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                     ),
                     Wrap(
                       alignment: .center,
+                      spacing: 20,
+                      runSpacing: 20,
                       children: [
-                        Container(
-                          padding: .symmetric(horizontal: 40, vertical: 10),
-                          margin: .all(8),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainer,
-                            borderRadius: .all(.circular(16)),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                '答え',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.headlineMedium,
-                              ),
-                              Text(
-                                _frozenAnswer!,
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.displayMedium,
-                              ),
-                            ],
+                        Material(
+                          elevation: 4,
+                          color: colorScheme.surfaceContainer,
+                          borderRadius: .all(.circular(16)),
+                          child: Padding(
+                            padding: const .symmetric(
+                              horizontal: 40,
+                              vertical: 10,
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '答え',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineMedium,
+                                ),
+                                FittedBox(
+                                  fit: .scaleDown,
+                                  child: Text(
+                                    _frozenAnswer!,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.displayMedium,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Container(
-                          padding: .symmetric(horizontal: 40, vertical: 10),
-                          margin: .all(8),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainer,
-                            borderRadius: .all(.circular(16)),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                '回答タイム',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.headlineMedium,
-                              ),
-                              Text(
-                                '${widget.inputTime}秒',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.displayMedium,
-                              ),
-                            ],
+                        Material(
+                          elevation: 4,
+                          color: colorScheme.surfaceContainer,
+                          borderRadius: .all(.circular(16)),
+                          child: Padding(
+                            padding: const .symmetric(
+                              horizontal: 40,
+                              vertical: 10,
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '回答タイム',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineMedium,
+                                ),
+                                FittedBox(
+                                  fit: .scaleDown,
+                                  child: Text(
+                                    '${widget.inputTime}秒',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.displayMedium,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         if (!widget.isSingleProblem)
-                          Container(
-                            padding: .symmetric(horizontal: 40, vertical: 10),
-                            margin: .all(8),
-                            decoration: BoxDecoration(
-                              color: colorScheme.surfaceContainer,
-                              borderRadius: .all(.circular(16)),
-                            ),
-                            child: AnswerTracker(
-                              answerResults: _frozenAnswerResults!,
-                              currentIndex: _frozenIndex!,
-                              isPortrait: _data.isPortrait,
+                          Material(
+                            elevation: 4,
+                            color: colorScheme.surfaceContainer,
+                            borderRadius: .all(.circular(16)),
+                            child: Padding(
+                              padding: const .symmetric(
+                                horizontal: 40,
+                                vertical: 10,
+                              ),
+                              child: AnswerTracker(
+                                answerResults: _frozenAnswerResults!,
+                                currentIndex: _frozenIndex!,
+                                isPortrait: _data.isPortrait,
+                              ),
                             ),
                           ),
                       ],

@@ -35,7 +35,6 @@ class _SpammableButtonState extends State<SpammableButton> {
 
   void _startRepeating(VoidCallback action) {
     if (!widget.enableRepeat) return;
-
     _delayTimer = Timer(Duration(milliseconds: 500), () {
       _repeatTimer = Timer.periodic(Duration(milliseconds: 50), (timer) {
         action();
@@ -78,7 +77,15 @@ class _SpammableButtonState extends State<SpammableButton> {
           _isPressed ? widget.offsetY : 0.0,
           0,
         ),
-        child: widget.child,
+        child: AnimatedPhysicalModel(
+          duration: const Duration(milliseconds: 50),
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.transparent,
+          shadowColor: Colors.black,
+          elevation: _isPressed ? 2 : 8,
+          child: widget.child,
+        ),
       ),
     );
   }

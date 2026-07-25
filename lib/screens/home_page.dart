@@ -120,15 +120,16 @@ class HomePage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.secondaryContainer,
+                                ).colorScheme.primaryFixedDim,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(4.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: IntrinsicHeight(
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.stretch,
+                                    spacing: 8,
                                     children: [
                                       AspectRatio(
                                         aspectRatio: 1,
@@ -136,9 +137,9 @@ class HomePage extends StatelessWidget {
                                           padding: const EdgeInsets.all(8.0),
                                           child: ColorFiltered(
                                             colorFilter: ColorFilter.mode(
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onPrimaryContainer,
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant,
                                               BlendMode.srcIn,
                                             ),
                                             child: Image.asset(
@@ -152,7 +153,7 @@ class HomePage extends StatelessWidget {
                                         child: NavigationButton(
                                           color: Theme.of(
                                             context,
-                                          ).colorScheme.secondary,
+                                          ).colorScheme.primaryContainer,
                                           onPressed: () =>
                                               context.push('/paper-menu'),
                                           child: Center(
@@ -163,9 +164,9 @@ class HomePage extends StatelessWidget {
                                                 style: TextStyle(
                                                   fontSize: 30,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).colorScheme.onSecondary,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimaryContainer,
                                                 ),
                                               ),
                                             ),
@@ -185,15 +186,16 @@ class HomePage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.secondaryContainer,
+                                ).colorScheme.primaryFixedDim,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(4.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: IntrinsicHeight(
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.stretch,
+                                    spacing: 8,
                                     children: [
                                       AspectRatio(
                                         aspectRatio: 1,
@@ -201,9 +203,9 @@ class HomePage extends StatelessWidget {
                                           padding: const EdgeInsets.all(8.0),
                                           child: ColorFiltered(
                                             colorFilter: ColorFilter.mode(
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onPrimaryContainer,
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant,
                                               BlendMode.srcIn,
                                             ),
                                             child: Image.asset(
@@ -217,7 +219,7 @@ class HomePage extends StatelessWidget {
                                         child: NavigationButton(
                                           color: Theme.of(
                                             context,
-                                          ).colorScheme.secondary,
+                                          ).colorScheme.primaryContainer,
                                           onPressed: () =>
                                               context.push('/flash-level-menu'),
                                           child: FittedBox(
@@ -232,9 +234,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 24,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                                 Text(
@@ -242,9 +244,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 30,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                               ],
@@ -256,7 +258,7 @@ class HomePage extends StatelessWidget {
                                         child: NavigationButton(
                                           color: Theme.of(
                                             context,
-                                          ).colorScheme.secondary,
+                                          ).colorScheme.primaryContainer,
                                           onPressed: () =>
                                               context.push('/flash-free-menu'),
                                           child: FittedBox(
@@ -271,9 +273,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 24,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                                 Text(
@@ -281,9 +283,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 30,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                               ],
@@ -304,15 +306,16 @@ class HomePage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.secondaryContainer,
+                                ).colorScheme.primaryFixedDim,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(4.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: IntrinsicHeight(
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.stretch,
+                                    spacing: 8,
                                     children: [
                                       AspectRatio(
                                         aspectRatio: 1,
@@ -320,9 +323,9 @@ class HomePage extends StatelessWidget {
                                           padding: const EdgeInsets.all(8.0),
                                           child: ColorFiltered(
                                             colorFilter: ColorFilter.mode(
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onPrimaryContainer,
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant,
                                               BlendMode.srcIn,
                                             ),
                                             child: Image.asset(
@@ -336,7 +339,7 @@ class HomePage extends StatelessWidget {
                                         child: NavigationButton(
                                           color: Theme.of(
                                             context,
-                                          ).colorScheme.secondary,
+                                          ).colorScheme.primaryContainer,
                                           onPressed: () =>
                                               context.push('/aloud-level-menu'),
                                           child: FittedBox(
@@ -351,9 +354,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 24,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                                 Text(
@@ -361,9 +364,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 30,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                               ],
@@ -375,7 +378,7 @@ class HomePage extends StatelessWidget {
                                         child: NavigationButton(
                                           color: Theme.of(
                                             context,
-                                          ).colorScheme.secondary,
+                                          ).colorScheme.primaryContainer,
                                           onPressed: () =>
                                               context.push('/aloud-free-menu'),
                                           child: FittedBox(
@@ -390,9 +393,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 24,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                                 Text(
@@ -400,9 +403,9 @@ class HomePage extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize: 30,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).colorScheme.onSecondary,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
                                                   ),
                                                 ),
                                               ],

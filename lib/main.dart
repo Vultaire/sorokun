@@ -172,6 +172,7 @@ class DebugMockData {
       'answerBools': answerBools,
       'textFieldDataList': textFieldDataList,
       'character': Character.shikokuMetan,
+      'elapsed': Duration(minutes: 1, seconds: 30),
     };
   }
 
@@ -333,7 +334,7 @@ class _AbacusAppState extends State<AbacusApp> {
           colorScheme: ColorScheme.fromSeed(
             seedColor: _themeController.seedColor,
             brightness: Brightness.light,
-            dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
+            dynamicSchemeVariant: DynamicSchemeVariant.neutral,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
@@ -357,7 +358,7 @@ class _AbacusAppState extends State<AbacusApp> {
           colorScheme: ColorScheme.fromSeed(
             seedColor: _themeController.seedColor,
             brightness: Brightness.dark,
-            dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
+            dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(

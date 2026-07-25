@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/components/start_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 
 class FlashLevelMenuPage extends StatefulWidget {
@@ -257,7 +258,7 @@ class FlashInfoDialog extends StatelessWidget {
       borderRadius: .circular(12),
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const .all(12.0),
         child: Column(
           mainAxisSize: .min,
           mainAxisAlignment: .spaceEvenly,
@@ -268,7 +269,7 @@ class FlashInfoDialog extends StatelessWidget {
             ),
             Material(
               color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: .circular(12),
               elevation: 8,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -278,7 +279,7 @@ class FlashInfoDialog extends StatelessWidget {
                 child: SizedBox(
                   width: isPortrait ? 200 : 500,
                   child: Flex(
-                    direction: isPortrait ? Axis.vertical : Axis.horizontal,
+                    direction: isPortrait ? .vertical : .horizontal,
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -313,8 +314,7 @@ class FlashInfoDialog extends StatelessWidget {
                       ],
                     ],
                   ),
-            NavigationButton(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            StartButton(
               onPressed: () {
                 context.push(
                   '/flash-problem',
@@ -324,7 +324,6 @@ class FlashInfoDialog extends StatelessWidget {
                   },
                 );
               },
-              child: const Text('スタート'),
             ),
           ],
         ),

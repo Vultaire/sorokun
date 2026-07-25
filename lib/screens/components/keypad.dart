@@ -240,7 +240,7 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
         carouselController.animateToPage(
           i,
           curve: Curves.easeOutExpo,
-          duration: Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 200),
         );
         return;
       }

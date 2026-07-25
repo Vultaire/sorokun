@@ -22,21 +22,30 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoSlidingSegmentedControl<T>(
-      groupValue: groupValue,
-      padding: EdgeInsets.all(8),
-      children: {
-        for (final (value, label) in options)
-          value: Text(
-            label,
-            style: _segmentStyle(context, value == groupValue),
-          ),
-      },
-      onValueChanged: (T? value) {
-        if (value != null) {
-          onValueChanged(value);
-        }
-      },
+    final colorScheme = Theme.of(context).colorScheme;
+    return Material(
+      color: Colors.transparent,
+      elevation: 4,
+      borderRadius: BorderRadius.circular(8),
+      shadowColor: Colors.black,
+      child: CupertinoSlidingSegmentedControl<T>(
+        groupValue: groupValue,
+        padding: EdgeInsets.all(8),
+        backgroundColor: colorScheme.surfaceContainer,
+        thumbColor: colorScheme.surfaceContainerHighest,
+        children: {
+          for (final (value, label) in options)
+            value: Text(
+              label,
+              style: _segmentStyle(context, value == groupValue),
+            ),
+        },
+        onValueChanged: (T? value) {
+          if (value != null) {
+            onValueChanged(value);
+          }
+        },
+      ),
     );
   }
 }

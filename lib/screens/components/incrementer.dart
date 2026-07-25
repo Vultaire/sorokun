@@ -52,34 +52,35 @@ class _IncrementerState extends State<Incrementer> {
             height: 60,
             width: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer,
+              color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(12),
             ),
             child: up_arrow,
           ),
         ),
         SizedBox(height: 8),
-        Container(
-          padding: .all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minWidth: 150),
-            child: Column(
-              children: [
-                Text(
-                  widget.label,
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                Text(
-                  widget.displayValue ?? '${widget.value}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.displayLarge!.copyWith(fontFamily: 'robotoMono'),
-                ),
-              ],
+        Material(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(12),
+          elevation: 14,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 150),
+              child: Column(
+                children: [
+                  Text(
+                    widget.label,
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  Text(
+                    widget.displayValue ?? '${widget.value}',
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                      fontFamily: 'robotoMono',
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -91,7 +92,7 @@ class _IncrementerState extends State<Incrementer> {
             height: 60,
             width: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer,
+              color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(12),
             ),
             child: down_arrow,
@@ -178,7 +179,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: up_arrow,
@@ -192,7 +193,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: up_arrow,
@@ -201,58 +202,59 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
           ],
         ),
         SizedBox(height: 8),
-        Container(
-          padding: .all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minWidth: 150),
-            child: Column(
-              children: [
-                Text(
-                  widget.label,
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 82,
-                      height: 62,
-                      child: Center(
-                        child: Text(
-                          '${widget.minValue}',
-                          style: Theme.of(context).textTheme.displayLarge!
-                              .copyWith(fontFamily: 'robotoMono'),
+        Material(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(12),
+          elevation: 8,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 150),
+              child: Column(
+                children: [
+                  Text(
+                    widget.label,
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 82,
+                        height: 62,
+                        child: Center(
+                          child: Text(
+                            '${widget.minValue}',
+                            style: Theme.of(context).textTheme.displayLarge!
+                                .copyWith(fontFamily: 'robotoMono'),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 32,
-                      height: 62,
-                      child: Center(
-                        child: Text(
-                          '~',
-                          style: Theme.of(context).textTheme.displayLarge!
-                              .copyWith(fontFamily: 'robotoMono'),
+                      SizedBox(
+                        width: 32,
+                        height: 62,
+                        child: Center(
+                          child: Text(
+                            '~',
+                            style: Theme.of(context).textTheme.displayLarge!
+                                .copyWith(fontFamily: 'robotoMono'),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 82,
-                      height: 62,
-                      child: Center(
-                        child: Text(
-                          '${widget.maxValue}',
-                          style: Theme.of(context).textTheme.displayLarge!
-                              .copyWith(fontFamily: 'robotoMono'),
+                      SizedBox(
+                        width: 82,
+                        height: 62,
+                        child: Center(
+                          child: Text(
+                            '${widget.maxValue}',
+                            style: Theme.of(context).textTheme.displayLarge!
+                                .copyWith(fontFamily: 'robotoMono'),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -266,7 +268,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: down_arrow,
@@ -280,7 +282,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                 height: 60,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: down_arrow,

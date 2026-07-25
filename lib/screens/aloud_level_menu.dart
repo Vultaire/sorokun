@@ -234,16 +234,15 @@ class AloudInfoDialog extends StatelessWidget {
           ),
           FittedBox(
             fit: .scaleDown,
-            child: Container(
-              padding: const .symmetric(vertical: 16, horizontal: 12),
-              width: isPortrait ? 300 : 900,
-              decoration: BoxDecoration(
-                color: colorScheme.secondaryContainer,
-                borderRadius: .circular(12),
-              ),
-              child: Column(
-                children: [
-                  Flex(
+            child: Material(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: .circular(12),
+              elevation: 8,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: isPortrait ? 300 : 900,
+                  child: Flex(
                     direction: isPortrait ? .vertical : .horizontal,
                     mainAxisAlignment: .spaceEvenly,
                     children: [
@@ -258,7 +257,7 @@ class AloudInfoDialog extends StatelessWidget {
                       statCell(context, '${msPerInterval / 1000}', '秒間隔'),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -282,7 +281,18 @@ class AloudInfoDialog extends StatelessWidget {
             character: character,
             onChanged: onCharacterChanged,
           ),
-          StartButton(selectedLevel: selectedLevel, character: character),
+          StartButton(
+            onPressed: () {
+              context.push(
+                '/aloud-problem',
+                extra: {
+                  'isSingleProblem': false,
+                  'selectedLevel': selectedLevel,
+                  'character': character,
+                },
+              );
+            },
+          ),
         ],
       ),
     );

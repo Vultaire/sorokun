@@ -9,8 +9,8 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/components/spammable_button.dart';
-import 'package:vector_graphics/vector_graphics_compat.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
+import 'package:soroban_app/screens/components/start_button.dart';
 
 class FlashFreeMenuPage extends StatefulWidget {
   const FlashFreeMenuPage({super.key});
@@ -177,14 +177,10 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               padding: EdgeInsets.all(8),
-                              child: VectorGraphic(
-                                loader: AssetBytesLoader(
-                                  'assets/svg/tortoise.svg',
-                                ),
-                                colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.onSurface,
-                                  BlendMode.srcIn,
-                                ),
+                              child: Image.asset(
+                                'assets/tortoise.png',
+                                color: Theme.of(context).colorScheme.onSurface,
+                                colorBlendMode: BlendMode.srcIn,
                               ),
                             ),
                           ),
@@ -207,12 +203,10 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               padding: EdgeInsets.all(8),
-                              child: VectorGraphic(
-                                loader: AssetBytesLoader('assets/svg/hare.svg'),
-                                colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.onSurface,
-                                  BlendMode.srcIn,
-                                ),
+                              child: Image.asset(
+                                'assets/hare.png',
+                                color: Theme.of(context).colorScheme.onSurface,
+                                colorBlendMode: BlendMode.srcIn,
                               ),
                             ),
                           ),
@@ -251,9 +245,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                     ],
                   ),
                 ),
-
-                NavigationButton(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                StartButton(
                   onPressed: () {
                     FlashSingleProblemSpec spec = FlashSingleProblemSpec(
                       digits: _digits,
@@ -266,7 +258,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                       extra: {'isSingleProblem': true, 'selectedLevel': spec},
                     );
                   },
-                  child: const Text('スタート'),
                 ),
               ],
             ),

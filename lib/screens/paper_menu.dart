@@ -353,80 +353,84 @@ class PaperStartButton extends StatelessWidget {
         maxWidth: isPortrait ? size : size * 2,
         maxHeight: isPortrait ? size : size,
       ),
-      child: Stack(
-        children: [
-          NavigationButton(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            onPressed: () {
-              context.go(
-                '/paper-problem',
-                extra: {
-                  'selectedLevel': selectedLevel,
-                  'isExam': isExam,
-                  'time': selectedLevel!.levelInfo.timeLimit,
-                  'appBarTitle': '${kyuui.kyuuString}の$label',
-                },
-              );
+      child: NavigationButton(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        margin: EdgeInsets.all(10),
+        onPressed: () {
+          context.go(
+            '/paper-problem',
+            extra: {
+              'selectedLevel': selectedLevel,
+              'isExam': isExam,
+              'time': selectedLevel!.levelInfo.timeLimit,
+              'appBarTitle': '${kyuui.kyuuString}の$label',
             },
-            child: Flex(
-              direction: isPortrait ? Axis.vertical : Axis.horizontal,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: isPortrait ? 3 : 1,
-                  child: Align(
-                    child: Image.asset(
-                      imagePath,
-                      fit: BoxFit.contain,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      colorBlendMode: BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: isPortrait ? 1 : 2,
-                  child: Text(
-                    label,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 4,
-            right: 4,
-            child: IconButton(
-              icon: const Icon(Icons.info_outline, size: 28),
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('${kyuui.kyuuString}の$label'),
-                    content: PaperInfoDialog(
-                      selectedLevel: selectedLevel!,
-                      letterCounts: letterCounts,
-                      houshou: houshou,
-                      jippou: jippou,
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('OK'),
+          );
+        },
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Flex(
+                direction: isPortrait ? Axis.vertical : Axis.horizontal,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: isPortrait ? 3 : 3,
+                    child: Align(
+                      child: Image.asset(
+                        imagePath,
+                        fit: BoxFit.contain,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
-                    ],
-                    actionsAlignment: .center,
+                    ),
                   ),
-                );
-              },
+                  Expanded(
+                    flex: isPortrait ? 1 : 4,
+                    child: Text(
+                      label,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                icon: const Icon(Icons.info_outline, size: 28),
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('${kyuui.kyuuString}の$label'),
+                      content: PaperInfoDialog(
+                        selectedLevel: selectedLevel!,
+                        letterCounts: letterCounts,
+                        houshou: houshou,
+                        jippou: jippou,
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                      actionsAlignment: .center,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -562,78 +566,89 @@ class _KyuuiSelectorStackState extends State<KyuuiSelectorStack> {
   }
 }
 
-class KyuuiSelector extends StatelessWidget {
+class KyuuiSelector extends StatefulWidget {
   const KyuuiSelector({
     super.key,
     required this.kyuuiList,
     required this.currentIndex,
     required this.onChanged,
   });
-
   final List<Kyuui> kyuuiList;
   final int currentIndex;
   final void Function(int index, Kyuui kyuui) onChanged;
 
   @override
+  State<KyuuiSelector> createState() => _KyuuiSelectorState();
+}
+
+class _KyuuiSelectorState extends State<KyuuiSelector> {
+  final CarouselSliderController _controller = CarouselSliderController();
+
+  @override
   Widget build(BuildContext context) {
     final isPortrait = MediaQuery.orientationOf(context) == .portrait;
     return LayoutBuilder(
-      builder: (context, constraints) => CarouselSlider.builder(
-        itemCount: kyuuiList.length,
-        options: CarouselOptions(
-          height: isPortrait ? 100 : constraints.biggest.height,
-          viewportFraction: isPortrait ? 0.4 : 0.3,
-          enlargeCenterPage: true,
-          enlargeFactor: 0.3,
-          initialPage: currentIndex,
-          scrollDirection: isPortrait ? .horizontal : .vertical,
-          onPageChanged: (index, reason) {
-            onChanged(index, kyuuiList[index]);
-          },
-        ),
-        itemBuilder: (BuildContext context, int index, int realIndex) {
-          final isFocused = index == currentIndex;
-          return Opacity(
-            opacity: isFocused ? 1.0 : 0.5,
-            child: Center(
-              child: Text(
-                kyuuiList[index].kyuuString,
-                style: Theme.of(context).textTheme.displaySmall,
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            CarouselSlider.builder(
+              carouselController: _controller,
+              itemCount: widget.kyuuiList.length,
+              options: CarouselOptions(
+                height: isPortrait ? 100 : constraints.biggest.height,
+                viewportFraction: 0.3,
+                enlargeCenterPage: true,
+                enlargeFactor: 0.3,
+                initialPage: widget.currentIndex,
+                scrollDirection: isPortrait ? .horizontal : .vertical,
+                onPageChanged: (index, reason) {
+                  widget.onChanged(index, widget.kyuuiList[index]);
+                },
+              ),
+              itemBuilder: (BuildContext context, int index, int realIndex) {
+                final isFocused = index == widget.currentIndex;
+                return Opacity(
+                  opacity: isFocused ? 1.0 : 0.5,
+                  child: Center(
+                    child: Text(
+                      widget.kyuuiList[index].kyuuString,
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                  ),
+                );
+              },
+            ),
+            Positioned.fill(
+              child: Flex(
+                direction: isPortrait ? Axis.horizontal : Axis.vertical,
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () => _controller.previousPage(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutExpo,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () => _controller.nextPage(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutExpo,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ],
+        );
+      },
     );
   }
 }
 
 enum StartButtonType { mitori, mitorian, wari, warian, kake, kakean }
-
-class OpenLevelSelectButton extends StatelessWidget {
-  const OpenLevelSelectButton({
-    super.key,
-    required this.label,
-    required this.page,
-  });
-
-  final String label;
-  final Widget page;
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (context) => SizedBox(
-            height: MediaQuery.of(context).size.height * 0.9,
-            child: page,
-          ),
-        );
-      },
-      child: Text(label),
-    );
-  }
-}

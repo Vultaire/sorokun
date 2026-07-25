@@ -177,7 +177,7 @@ class ThemeController extends ChangeNotifier {
     brightness: _themeMode == ThemeMode.dark
         ? Brightness.dark
         : Brightness.light,
-    dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
+    dynamicSchemeVariant: DynamicSchemeVariant.expressive,
   );
 }
 

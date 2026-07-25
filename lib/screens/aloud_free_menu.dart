@@ -9,6 +9,7 @@ import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/components/start_button.dart';
 
 class AloudFreeMenuPage extends StatefulWidget {
   const AloudFreeMenuPage({super.key});
@@ -71,6 +72,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
     _prefs.setInt('kuchi', _kuchi);
     _prefs.setInt('minDigits', _minDigits);
     _prefs.setInt('maxDigits', _maxDigits);
+    _prefs.setInt('character', _character.index);
 
     super.dispose();
   }
@@ -210,8 +212,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                   ],
                 ),
 
-                NavigationButton(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                StartButton(
                   onPressed: () {
                     AloudSingleProblemSpec spec = AloudSingleProblemSpec(
                       kuchi: _kuchi,
@@ -230,7 +231,6 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                       },
                     );
                   },
-                  child: const Text('スタート'),
                 ),
               ],
             ),
@@ -265,25 +265,26 @@ class VoiceSelectionButton extends StatelessWidget {
           onChanged(selected);
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '声: ${character.displayString}',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ],
+      child: Material(
+        color: Theme.of(context).colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(12),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '声: ${character.displayString}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
         ),
       ),
     );
