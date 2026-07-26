@@ -46,6 +46,8 @@ class AloudProblemSet {
   }
   List<List<int>> get unformattedProblems =>
       mitoriProblemList.map((i) => i.problem).toList();
+  List<List<String>> get formattedProblems =>
+      mitoriProblemList.map((i) => i.formattedProblem).toList();
   List<String> get formattedAnswers =>
       mitoriProblemList.map((i) => i.formattedAnswer).toList();
 }

@@ -362,8 +362,7 @@ class PaperStartButton extends StatelessWidget {
             extra: {
               'selectedLevel': selectedLevel,
               'isExam': isExam,
-              'time': selectedLevel!.levelInfo.timeLimit,
-              'appBarTitle': '${kyuui.kyuuString}の$label',
+              'examDisplayString': '${kyuui.kyuuString}の$label',
             },
           );
         },

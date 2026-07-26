@@ -471,9 +471,11 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
             child: NavigationButton(
               color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: () async {
-                final shouldPop = await showExitDialog(context);
-                if (!mounted) return;
-                if (shouldPop) context.pop();
+                await showExitDialog(
+                  context,
+                  homeRoute: '/flash-level-menu',
+                  onSubmit: widget.onShowResults,
+                );
               },
               child: Center(
                 child: iconHelper(context, Icons.meeting_room, '設定画面'),
@@ -536,7 +538,6 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                   spacing: 20,
                   children: [
                     Container(
-                      margin: .only(bottom: 16),
                       width: double.infinity,
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -560,89 +561,92 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                         ),
                       ),
                     ),
-                    Wrap(
-                      alignment: .center,
-                      spacing: 20,
-                      runSpacing: 20,
-                      children: [
-                        Material(
-                          elevation: 4,
-                          color: colorScheme.surfaceContainer,
-                          borderRadius: .all(.circular(16)),
-                          child: Padding(
-                            padding: const .symmetric(
-                              horizontal: 40,
-                              vertical: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '答え',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.headlineMedium,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Wrap(
+                        alignment: .center,
+                        spacing: 20,
+                        runSpacing: 20,
+                        children: [
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(minWidth: 220),
+                            child: Material(
+                              elevation: 4,
+                              color: colorScheme.surfaceContainer,
+                              borderRadius: .all(.circular(16)),
+                              child: Padding(
+                                padding: const .all(10),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '答え',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.headlineMedium,
+                                    ),
+                                    FittedBox(
+                                      fit: .scaleDown,
+                                      child: Text(
+                                        _frozenAnswer!,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.displayMedium,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                FittedBox(
-                                  fit: .scaleDown,
-                                  child: Text(
-                                    _frozenAnswer!,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.displayMedium,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Material(
-                          elevation: 4,
-                          color: colorScheme.surfaceContainer,
-                          borderRadius: .all(.circular(16)),
-                          child: Padding(
-                            padding: const .symmetric(
-                              horizontal: 40,
-                              vertical: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '回答タイム',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.headlineMedium,
-                                ),
-                                FittedBox(
-                                  fit: .scaleDown,
-                                  child: Text(
-                                    '${widget.inputTime}秒',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.displayMedium,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (!widget.isSingleProblem)
-                          Material(
-                            elevation: 4,
-                            color: colorScheme.surfaceContainer,
-                            borderRadius: .all(.circular(16)),
-                            child: Padding(
-                              padding: const .symmetric(
-                                horizontal: 40,
-                                vertical: 10,
-                              ),
-                              child: AnswerTracker(
-                                answerResults: _frozenAnswerResults!,
-                                currentIndex: _frozenIndex!,
-                                isPortrait: _data.isPortrait,
                               ),
                             ),
                           ),
-                      ],
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(minWidth: 220),
+                            child: Material(
+                              elevation: 4,
+                              color: colorScheme.surfaceContainer,
+                              borderRadius: .all(.circular(16)),
+                              child: Padding(
+                                padding: const .all(10),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '回答タイム',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.headlineMedium,
+                                    ),
+                                    FittedBox(
+                                      fit: .scaleDown,
+                                      child: Text(
+                                        '${widget.inputTime}秒',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.displayMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (!widget.isSingleProblem)
+                            Material(
+                              elevation: 4,
+                              color: colorScheme.surfaceContainer,
+                              borderRadius: .all(.circular(16)),
+                              child: Padding(
+                                padding: const .symmetric(
+                                  horizontal: 40,
+                                  vertical: 10,
+                                ),
+                                child: AnswerTracker(
+                                  answerResults: _frozenAnswerResults!,
+                                  currentIndex: _frozenIndex!,
+                                  isPortrait: _data.isPortrait,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                     freeOrLevelButtons(widget.isSingleProblem),
                   ],
@@ -764,7 +768,6 @@ class FlashProblemState extends State<FlashProblem>
   void initState() {
     super.initState();
 
-    // Animation controller
     _controller =
         AnimationController(
             vsync: this,

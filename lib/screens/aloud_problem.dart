@@ -38,6 +38,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   final Stopwatch _stopwatch = Stopwatch();
   late List<List<int>> _allProblems;
   late List<String> _allAnswers;
+  late List<List<String>> _allFormattedProblems;
   late List<TextFieldData> _textFieldDataList;
   late List<List<String>> _scores;
   late final String dictDir;
@@ -60,6 +61,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     );
     _allProblems = fullProblemSet.unformattedProblems;
     _allAnswers = fullProblemSet.formattedAnswers;
+    _allFormattedProblems = fullProblemSet.formattedProblems;
     _textFieldDataList = List.generate(
       _allAnswers.length,
       (_) => TextFieldData(),
@@ -239,7 +241,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       extra: {
         'selectedLevel': widget.selectedLevel,
         'isExam': true,
-        'allProblems': _allProblems,
+        'allProblems': _allFormattedProblems,
         'allAnswers': _allAnswers,
         'textFieldDataList': _textFieldDataList,
         'character': widget.character,
@@ -526,7 +528,6 @@ class _AloudProblemState extends State<AloudProblem> {
     _currentSource = source;
     final handle = await SoLoud.instance.play(source);
     if (session != _playSession) {
-      // Stopped/restarted while awaiting play(); clean up immediately.
       await SoLoud.instance.stop(handle);
       await SoLoud.instance.disposeSource(source);
       return;
@@ -589,7 +590,7 @@ class _AloudProblemState extends State<AloudProblem> {
 
   Future<void> _play() async {
     if (_isPlaying) {
-      _playSession++; // invalidate any in-flight callbacks from this session
+      _playSession++;
       if (_currentHandle != null) {
         await SoLoud.instance.stop(_currentHandle!);
       }
@@ -600,7 +601,7 @@ class _AloudProblemState extends State<AloudProblem> {
       return;
     }
 
-    _playSession++; // start a brand-new session
+    _playSession++;
     final session = _playSession;
 
     setState(() {

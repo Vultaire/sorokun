@@ -166,10 +166,9 @@ class DebugMockData {
     });
 
     return {
-      'selectedLevel': ComplexMitoriLevel.zsdan,
+      'selectedLevel': DivMultLevel.nsdk3,
       'allProblems': allProblems,
       'allAnswers': allAnswers,
-      'answerBools': answerBools,
       'textFieldDataList': textFieldDataList,
       'character': Character.shikokuMetan,
       'elapsed': Duration(minutes: 1, seconds: 30),
@@ -180,7 +179,6 @@ class DebugMockData {
   static Map<String, dynamic> get paperResultsAllCorrect {
     final allProblems = ['728 / 8', '385 / 5', '177 / 3'];
     final allAnswers = ['91', '77', '59'];
-    final answerBools = List.filled(allProblems.length, true);
 
     final textFieldDataList = List.generate(
       allProblems.length,
@@ -195,7 +193,6 @@ class DebugMockData {
       'selectedLevel': DivMultLevel.zsdk8,
       'allProblems': allProblems,
       'allAnswers': allAnswers,
-      'answerBools': answerBools,
       'textFieldDataList': textFieldDataList,
       'elapsed': Duration(minutes: 1, seconds: 30),
     };
@@ -276,6 +273,7 @@ class _AbacusAppState extends State<AbacusApp> {
             child: ResultsScreen(
               selectedLevel: args['selectedLevel'] ?? DivMultLevel.zsdk8,
               isExam: args['isExam'] ?? true,
+              examDisplayString: args['examDisplayString'],
               allAnswers: args['allAnswers'],
               allProblems: args['allProblems'],
               textFieldDataList: args['textFieldDataList'],
@@ -295,8 +293,7 @@ class _AbacusAppState extends State<AbacusApp> {
             child: PaperProblemScreen(
               selectedLevel: args?['selectedLevel'],
               isExam: args?['isExam'] ?? false,
-              time: args?['time'],
-              appBarTitle: args?['appBarTitle'],
+              examDisplayString: args?['examDisplayString'],
             ),
           );
         },
@@ -418,23 +415,38 @@ CustomTransitionPage blackFadeTransition({
   );
 }
 
-Future<bool> showExitDialog(BuildContext context) async {
-  final shouldPop = await showDialog<bool>(
+Future<void> showExitDialog(
+  BuildContext context, {
+  required String homeRoute,
+  VoidCallback? onSubmit,
+}) async {
+  return showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('終了の確認'),
-      content: const Text('本当にやめますか?'),
+      title: const Text('終了しますか？'),
+      content: const Text('提出するか、途中でやめるか選んでください。'),
+      actionsAlignment: .center,
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('いいえ'),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('キャンセル'),
         ),
+        if (onSubmit != null)
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onSubmit();
+            },
+            child: const Text('提出'),
+          ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('はい'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            GoRouter.of(context).go(homeRoute);
+          },
+          child: const Text('やめる'),
         ),
       ],
     ),
   );
-  return shouldPop ?? false;
 }

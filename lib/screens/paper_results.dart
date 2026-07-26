@@ -11,13 +11,14 @@ import 'components/keypad.dart';
 
 class ResultsScreen extends StatelessWidget {
   final Level selectedLevel;
+  final String? examDisplayString;
   final bool isExam;
   final List<String> allAnswers;
   final List<dynamic> allProblems;
   final List<TextFieldData> textFieldDataList;
   final Duration? elapsed;
   final Character? character;
-  final _countUpCircleKey = GlobalKey();
+  static final _countUpCircleKey = GlobalKey();
 
   ResultsScreen({
     super.key,
@@ -26,6 +27,7 @@ class ResultsScreen extends StatelessWidget {
     required this.allAnswers,
     required this.allProblems,
     required this.textFieldDataList,
+    this.examDisplayString,
     this.elapsed,
     this.character,
   });
@@ -48,6 +50,22 @@ class ResultsScreen extends StatelessWidget {
         builder: (context, orientation) {
           final isPortrait = orientation == .portrait;
 
+          Widget? examDescription;
+          if (examDisplayString case final displayString?) {
+            examDescription = Column(
+              children: [
+                Text(
+                  selectedLevel.levelInfo.denomination.denominationString,
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                Text(
+                  displayString,
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+              ],
+            );
+          }
+
           Widget? elapsedCard;
           if (elapsed case final elapsedValue?) {
             elapsedCard = Material(
@@ -61,7 +79,7 @@ class ResultsScreen extends StatelessWidget {
                   children: [
                     Text(
                       'タイム',
-                      style: Theme.of(context).textTheme.displaySmall,
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     Text(
                       elapsedValue.inMinutes > 0
@@ -87,131 +105,156 @@ class ResultsScreen extends StatelessWidget {
             ),
           );
 
-          final buttonWrap = ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 600),
-            child: Wrap(
-              alignment: .center,
-              spacing: 20,
-              runSpacing: 12,
-              children: [
-                if (score.$1 != score.$2)
-                  SizedBox(
-                    width: 300,
-                    child: NavigationButton(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      onPressed: () {
-                        context.push(
-                          '/paper-review',
-                          extra: {
-                            'selectedLevel': selectedLevel,
-                            'problemScorerList': problemScorerList,
-                          },
-                        );
-                      },
-                      child: Center(
-                        child: iconHelper(
-                          context,
-                          Icons.error_outline,
-                          '間違えた問題を見る',
-                        ),
-                      ),
-                    ),
-                  ),
-                SizedBox(
-                  width: 250,
-                  child: NavigationButton(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () {
-                      switch (selectedLevel) {
-                        case FlashLevel _:
-                          context.push(
-                            '/flash-problem',
-                            extra: {
-                              'selectedLevel': selectedLevel,
-                              'isSingleProblem': false,
-                            },
-                          );
-                        case AloudLevel _:
-                          context.push(
-                            '/aloud-problem',
-                            extra: {
-                              'isSingleProblem': false,
-                              'selectedLevel': selectedLevel,
-                              'character': character,
-                            },
-                          );
-                        case PaperProblemLevel _:
-                          context.go(
-                            '/paper-problem',
-                            extra: {
-                              'selectedLevel': selectedLevel,
-                              'isExam': isExam,
-                              'time': selectedLevel.levelInfo.timeLimit,
-                            },
-                          );
-                      }
-                    },
-                    child: Center(
-                      child: iconHelper(context, Icons.replay, 'もう一回挑戦する'),
-                    ),
-                  ),
-                ),
+          final buttonWrap = Wrap(
+            alignment: .center,
+            spacing: 20,
+            runSpacing: 12,
+            children: [
+              if (score.$1 != score.$2)
                 SizedBox(
                   width: 300,
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () => context.go('/home'),
+                    onPressed: () {
+                      context.push(
+                        '/paper-review',
+                        extra: {
+                          'selectedLevel': selectedLevel,
+                          'problemScorerList': problemScorerList,
+                        },
+                      );
+                    },
                     child: Center(
-                      child: iconHelper(context, Icons.home, 'メインメニューに戻る'),
+                      child: iconHelper(
+                        context,
+                        Icons.error_outline,
+                        '間違えた問題を見る',
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 250,
-                  child: NavigationButton(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () => context.go('/paper-menu'),
-                    child: Center(
-                      child: iconHelper(context, Icons.settings, '設定画面に戻る'),
-                    ),
+              SizedBox(
+                width: 250,
+                child: NavigationButton(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  onPressed: () {
+                    switch (selectedLevel) {
+                      case FlashLevel _:
+                        context.go(
+                          '/flash-problem',
+                          extra: {
+                            'selectedLevel': selectedLevel,
+                            'isSingleProblem': false,
+                          },
+                        );
+                      case AloudLevel _:
+                        context.go(
+                          '/aloud-problem',
+                          extra: {
+                            'isSingleProblem': false,
+                            'selectedLevel': selectedLevel,
+                            'character': character,
+                          },
+                        );
+                      case PaperProblemLevel _:
+                        context.go(
+                          '/paper-problem',
+                          extra: {
+                            'selectedLevel': selectedLevel,
+                            'isExam': isExam,
+                            'time': selectedLevel.levelInfo.timeLimit,
+                          },
+                        );
+                    }
+                  },
+                  child: Center(
+                    child: iconHelper(context, Icons.replay, 'もう一回挑戦する'),
                   ),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(
+                width: 300,
+                child: NavigationButton(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  onPressed: () => context.go('/home'),
+                  child: Center(
+                    child: iconHelper(context, Icons.home, 'メインメニューに戻る'),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 250,
+                child: NavigationButton(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  onPressed: () => context.go('/paper-menu'),
+                  child: Center(
+                    child: iconHelper(context, Icons.settings, '設定画面に戻る'),
+                  ),
+                ),
+              ),
+            ],
           );
 
           if (isPortrait) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (elapsedCard != null) elapsedCard,
-                  const SizedBox(height: 10),
-                  countUpCircle,
-                  Flexible(child: buttonWrap),
-                ],
-              ),
-            );
-          } else {
-            return Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  countUpCircle,
-                  const SizedBox(width: 24),
-                  Flexible(
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return Center(
+                  child: FittedBox(
+                    fit: .scaleDown,
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 10,
                       children: [
+                        if (examDescription != null) examDescription,
+                        countUpCircle,
                         if (elapsedCard != null) elapsedCard,
-                        const SizedBox(height: 10),
-                        Flexible(child: buttonWrap),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 500),
+                          child: buttonWrap,
+                        ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                );
+              },
+            );
+          } else {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return Center(
+                  child: FittedBox(
+                    fit: .scaleDown,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        countUpCircle,
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 600),
+                              child: Row(
+                                mainAxisAlignment: .center,
+                                spacing: 20,
+                                children: [
+                                  if (examDescription != null) examDescription,
+                                  if (elapsedCard != null) elapsedCard,
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 600),
+                              child: buttonWrap,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             );
           }
         },
@@ -253,7 +296,6 @@ class CountUpCircle extends StatefulWidget {
   final (int, int) score;
   final Duration durationBase;
   final TextStyle style;
-  final String suffix;
   final double passThreshold;
   final List<(String, int)>? rangedThreshold;
 
@@ -262,7 +304,6 @@ class CountUpCircle extends StatefulWidget {
     required this.score,
     required this.durationBase,
     required this.style,
-    this.suffix = '点',
     required this.passThreshold,
     required this.rangedThreshold,
   });
@@ -418,10 +459,13 @@ class _CountUpCircleState extends State<CountUpCircle>
               fit: .contain,
               child: Column(
                 children: [
-                  Text(
-                    '${widget.score.$2}点満点',
-                    style: widget.style.copyWith(
-                      fontSize: widget.style.fontSize! * 0.5,
+                  Transform.translate(
+                    offset: Offset(0, 10),
+                    child: Text(
+                      '${widget.score.$2}点満点',
+                      style: widget.style.copyWith(
+                        fontSize: widget.style.fontSize! * 0.5,
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -435,7 +479,7 @@ class _CountUpCircleState extends State<CountUpCircle>
                             children: [
                               Text('${widget.score.$1}', style: widget.style),
                               Text(
-                                widget.suffix,
+                                '点',
                                 style: widget.style.copyWith(
                                   fontSize: widget.style.fontSize! * 0.75,
                                 ),
@@ -455,7 +499,7 @@ class _CountUpCircleState extends State<CountUpCircle>
                               ),
                             ),
                             Text(
-                              widget.suffix,
+                              '点',
                               style: widget.style.copyWith(
                                 fontSize: widget.style.fontSize! * 0.75,
                               ),
@@ -500,7 +544,7 @@ class CircularProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2 - 10);
+    final center = Offset(size.width / 2, size.height / 2);
     final radius = (size.width * 0.7);
 
     // Draw background circle
