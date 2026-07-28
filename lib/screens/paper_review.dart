@@ -78,21 +78,25 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
     final Widget body = switch (widget.selectedLevel) {
       FlashLevel _ || AloudLevel _ || MitoriLevel _ => Stack(
         children: [
-          Center(
+          Align(
+            alignment: isPortrait ? .center : .topCenter,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final carouselHeight = isPortrait
-                    ? 500.0
+                    ? 530.0
                     : constraints.maxHeight * 0.9;
+                final maxDigits = widget.selectedLevel.maxDigits;
                 return CarouselSlider.builder(
                   carouselController: _carouselController,
                   options: CarouselOptions(
                     height: carouselHeight,
                     reverse: true,
-                    viewportFraction: isPortrait ? 0.95 : 0.3,
+                    viewportFraction: isPortrait ? 1 : 0.45,
                     enlargeCenterPage: true,
-                    enlargeStrategy: .scale,
                     enableInfiniteScroll: false,
+                    enlargeStrategy: .zoom,
+                    disableCenter: true,
+                    enlargeFactor: 0.25,
                     onPageChanged: (index, reason) {
                       setState(() {
                         currentIndex = index;
@@ -100,125 +104,166 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                     },
                   ),
                   itemCount: incorrectProblemScorers.length,
-                  itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
-                    final currentProblem =
-                        incorrectProblemScorers[problemIndex].problem;
-                    return Stack(
-                      children: [
-                        Positioned(
-                          left: 0,
-                          top: 10,
+                  itemBuilder:
+                      (BuildContext context, int problemIndex, int realIndex) {
+                        final currentProblem =
+                            incorrectProblemScorers[problemIndex].problem;
+                        final isFocused = problemIndex == currentIndex;
+                        return AnimatedOpacity(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOutCubic,
+                          opacity: isFocused ? 1.0 : 0.6,
                           child: FittedBox(
-                            fit: .scaleDown,
-                            child: Container(
-                              width: 40.0,
-                              height: 40.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  width: 2,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '${incorrectProblemScorers[problemIndex].index + 1}',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: 'bizUDPGR',
-                                    fontWeight: .bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            Expanded(
-                              child: FittedBox(
-                                fit: .fitHeight,
-                                clipBehavior: Clip.hardEdge,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                            fit: .fitHeight,
+                            clipBehavior: .none,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: .start,
                                   children: [
+                                    Container(
+                                      width: 40.0,
+                                      height: 40.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          width: 2,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          '${problemIndex + 1}',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: 'bizUDPGR',
+                                            fontWeight: .bold,
+                                          ),
+                                          textScaler: .noScaling,
+                                        ),
+                                      ),
+                                    ),
                                     Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.end,
                                       children: [
-                                        ...currentProblem.map(
-                                          (n) => Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 3.0,
-                                              horizontal: 10.0,
-                                            ),
-                                            child: Text(
-                                              n.toString(),
-                                              style: const TextStyle(
-                                                fontSize: 26,
-                                                fontFamily: 'abacusFontSpaced',
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 3.0,
+                                                    horizontal: 10.0,
+                                                  ),
+                                              child: Text(
+                                                currentProblem[0],
+                                                style: switch (widget
+                                                    .selectedLevel) {
+                                                  SimpleMitoriLevel() =>
+                                                    TextStyle(
+                                                      fontSize: 120,
+                                                      fontFamily: 'ogutama',
+                                                    ),
+                                                  _ => TextStyle(
+                                                    fontSize: 30,
+                                                    fontFamily:
+                                                        'abacusFontSpaced',
+                                                  ),
+                                                },
+                                                textScaler: .noScaling,
                                               ),
                                             ),
-                                          ),
+                                          ],
                                         ),
+                                        ...currentProblem
+                                            .sublist(1)
+                                            .map(
+                                              (n) => Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 3.0,
+                                                      horizontal: 10.0,
+                                                    ),
+                                                child: Text(
+                                                  n,
+                                                  style: const TextStyle(
+                                                    fontSize: 30,
+                                                    fontFamily:
+                                                        'abacusFontSpaced',
+                                                  ),
+                                                  textScaler: .noScaling,
+                                                ),
+                                              ),
+                                            ),
                                       ],
                                     ),
-                                    Container(
-                                      width: 700,
-                                      height: 2,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                      margin: const EdgeInsets.only(top: 5),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 7,
-                                        vertical: 10,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          if (incorrectProblemScorers[problemIndex]
-                                              .userAnswer
-                                              .isNotEmpty)
-                                            Text(
-                                              incorrectProblemScorers[problemIndex]
-                                                  .userAnswer,
-                                              style: TextStyle(
-                                                fontSize: 26,
-                                                fontFamily: 'abacusFontSpaced',
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                decorationColor: Theme.of(
-                                                  context,
-                                                ).colorScheme.error,
-                                              ),
-                                            ),
-                                          Text(
-                                            incorrectProblemScorers[problemIndex]
-                                                .answer,
-                                            style: TextStyle(
-                                              fontSize: 26,
-                                              fontFamily: 'abacusFontSpaced',
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.error,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    SizedBox(width: 40),
                                   ],
                                 ),
-                              ),
+                                Container(
+                                  width:
+                                      maxDigits * 28 +
+                                      (((maxDigits - 1) ~/ 3) * 10) +
+                                      67,
+                                  height: 2,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                  margin: const EdgeInsets.only(top: 5),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 7,
+                                    vertical: 10,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      if (incorrectProblemScorers[problemIndex]
+                                          .userAnswer
+                                          .isNotEmpty)
+                                        Text(
+                                          incorrectProblemScorers[problemIndex]
+                                              .userAnswer,
+                                          style: TextStyle(
+                                            fontSize: 30,
+                                            fontFamily: 'abacusFontSpaced',
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            decorationColor: Theme.of(
+                                              context,
+                                            ).colorScheme.error,
+                                          ),
+                                          textScaler: .noScaling,
+                                        ),
+                                      Text(
+                                        incorrectProblemScorers[problemIndex]
+                                            .answer,
+                                        style: TextStyle(
+                                          fontSize: 30,
+                                          fontFamily: 'abacusFontSpaced',
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.error,
+                                        ),
+                                        textScaler: .noScaling,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
+                          ),
+                        );
+                      },
                 );
               },
             ),
@@ -231,141 +276,156 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
             ),
         ],
       ),
+
       DivMultLevel _ => Stack(
         children: [
-          CarouselSlider.builder(
-            carouselController: _carouselController,
-            options: CarouselOptions(
-              height: 1000,
-              scrollDirection: .vertical,
-              viewportFraction: isPortrait ? 0.45 : 0.8,
-              enlargeCenterPage: true,
-              enlargeStrategy: .zoom,
-              enlargeFactor: 0.25,
-              onPageChanged: (index, reason) {
-                setState(() {
-                  currentIndex = index;
-                });
+          OverflowBox(
+            maxHeight: MediaQuery.sizeOf(context).height + 30,
+            alignment: .bottomCenter,
+            child: CarouselSlider.builder(
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                height: MediaQuery.sizeOf(context).height + 30,
+                scrollDirection: .vertical,
+                viewportFraction: isPortrait ? 0.45 : 0.7,
+                enlargeCenterPage: true,
+                enlargeStrategy: .zoom,
+                enlargeFactor: 0.2,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+              ),
+              itemCount: incorrectProblemScorers.length,
+              itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
+                final currentProblem =
+                    widget.problemScorerList[problemIndex].problem;
+                final isFocused = problemIndex == currentIndex;
+                return AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOutCubic,
+                  opacity: isFocused ? 1.0 : 0.6,
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: .center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                width: 40.0,
+                                height: 40.0,
+                                margin: const EdgeInsets.all(1.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    width: 2,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${problemIndex + 1}',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: 'bizUDPGR',
+                                      fontWeight: .bold,
+                                    ),
+                                    textScaler: .noScaling,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            FittedBox(
+                              fit: .contain,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                    ),
+                                    child: Text(
+                                      currentProblem,
+                                      style: const TextStyle(
+                                        fontSize: 30,
+                                        fontFamily: 'abacusFont',
+                                      ),
+                                      textScaler: .noScaling,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  const Text(
+                                    '||',
+                                    style: TextStyle(fontSize: 26),
+                                    textScaler: .noScaling,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 10,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        if (incorrectProblemScorers[problemIndex]
+                                            .userAnswer
+                                            .isNotEmpty)
+                                          Text(
+                                            incorrectProblemScorers[problemIndex]
+                                                .userAnswer,
+                                            style: TextStyle(
+                                              fontSize: 30,
+                                              fontFamily: 'abacusFont',
+                                              decoration:
+                                                  TextDecoration.lineThrough,
+                                              decorationColor: Theme.of(
+                                                context,
+                                              ).colorScheme.error,
+                                            ),
+                                            textScaler: .noScaling,
+                                          ),
+                                        Text(
+                                          incorrectProblemScorers[problemIndex]
+                                              .answer,
+                                          style: TextStyle(
+                                            fontSize: 30,
+                                            fontFamily: 'abacusFont',
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.error,
+                                          ),
+                                          textScaler: .noScaling,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
-            itemCount: incorrectProblemScorers.length,
-            itemBuilder:
-                (BuildContext context, int problemIndex, int realIndex) {
-                  final currentProblem =
-                      incorrectProblemScorers[problemIndex].problem;
-                  final isFocused = problemIndex == currentIndex;
-                  return Opacity(
-                    opacity: isFocused ? 1.0 : 0.6,
-                    child: Stack(
-                      children: [
-                        Align(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: 40.0,
-                                  height: 40.0,
-                                  margin: const EdgeInsets.all(1.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      width: 2,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '${problemIndex + 1}',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontFamily: 'bizUDPGR',
-                                        fontWeight: .bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              FittedBox(
-                                fit: .contain,
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0,
-                                      ),
-                                      child: Text(
-                                        currentProblem,
-                                        style: const TextStyle(
-                                          fontSize: 30,
-                                          fontFamily: 'abacusFont',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              const Text('||', style: TextStyle(fontSize: 26)),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 7,
-                                  vertical: 10,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      incorrectProblemScorers[problemIndex]
-                                          .userAnswer,
-                                      style: TextStyle(
-                                        fontSize: 26,
-                                        fontFamily: 'abacusFontSpaced',
-                                        decoration: TextDecoration.lineThrough,
-                                        decorationColor: Theme.of(
-                                          context,
-                                        ).colorScheme.error,
-                                      ),
-                                    ),
-                                    Text(
-                                      incorrectProblemScorers[problemIndex]
-                                          .answer,
-                                      style: TextStyle(
-                                        fontSize: 26,
-                                        fontFamily: 'abacusFontSpaced',
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.error,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
           ),
           if (incorrectProblemScorers.length > 1)
             buildDots(
               alignment: isPortrait
                   ? const Alignment(0, 0.3)
-                  : const Alignment(0, 0.8),
+                  : const Alignment(0, 0.85),
             ),
         ],
       ),
     };
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(
-          MediaQuery.of(context).orientation == Orientation.landscape
-              ? 40
-              : kToolbarHeight,
-        ),
+        preferredSize: Size.fromHeight(isPortrait ? kToolbarHeight : 40),
         child: AppBar(title: const Text('不正解の問題'), centerTitle: true),
       ),
       body: SafeArea(child: body),

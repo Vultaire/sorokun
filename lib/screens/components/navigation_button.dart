@@ -25,6 +25,13 @@ class _NavigationButtonState extends State<NavigationButton> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final pressedColor = Color.lerp(
+      widget.color,
+      colorScheme.primary,
+      0.15, // adjust intensity of the overlay effect
+    )!;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => setState(() => _isPressed = true),
@@ -35,17 +42,13 @@ class _NavigationButtonState extends State<NavigationButton> {
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: widget.duration,
-        transform: Matrix4.translationValues(
-          _isPressed ? 2 : 0.0,
-          _isPressed ? 2 : 0.0,
-          0,
-        ),
+        transform: Matrix4.translationValues(0, _isPressed ? 4 : 0.0, 0),
         margin: widget.margin ?? const EdgeInsets.all(0),
         child: AnimatedPhysicalModel(
           duration: widget.duration,
           shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(12),
-          color: widget.color,
+          borderRadius: BorderRadius.circular(24),
+          color: _isPressed ? pressedColor : widget.color,
           shadowColor: Colors.black,
           elevation: _isPressed ? 2 : 8,
           child: Padding(

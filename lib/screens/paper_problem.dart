@@ -31,6 +31,8 @@ class PaperProblemScreen extends StatefulWidget {
 class _PaperProblemScreenState extends State<PaperProblemScreen> {
   final GlobalKey<_MitorizanWindowState> _mitorizanKey = GlobalKey();
   final GlobalKey<_DivMultWindowState> _divMultKey = GlobalKey();
+  final GlobalKey<ResultPopupState> _resultPopupKey =
+      GlobalKey<ResultPopupState>();
   bool _delayOver = false;
   bool _showLoading = false;
   late final PaperProblemSounds _sound;
@@ -63,6 +65,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         isExam: widget.isExam,
         onComplete: () => _onComplete(outOfTime: false),
         height: height,
+        resultPopupKey: _resultPopupKey,
         key: _mitorizanKey,
       );
     } else if (widget.selectedLevel is DivMultLevel) {
@@ -71,6 +74,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         isExam: widget.isExam,
         onComplete: () => _onComplete(outOfTime: false),
         height: height,
+        resultPopupKey: _resultPopupKey,
         key: _divMultKey,
       );
     } else {
@@ -253,7 +257,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isPortrait = MediaQuery.orientationOf(context) == .portrait;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -269,89 +272,134 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
       },
       child: Scaffold(
         body: SafeArea(
-          child: Stack(
-            children: [
-              Center(
-                child: Flex(
-                  direction: isPortrait ? .vertical : .horizontal,
-                  children: [
-                    Expanded(
-                      flex: 8,
-                      child: Stack(
-                        children: [
-                          LayoutBuilder(
-                            builder: (context, constraints) =>
-                                _buildWindow(height: constraints.maxHeight),
-                          ),
-                          if (!_delayOver)
-                            DelayWindow(
-                              showLoading: _showLoading,
-                              sounds: _sound,
-                              onFinished: () {
-                                setState(() {
-                                  _delayOver = true;
-                                });
-                                _stopwatch.start();
-                              },
-                            ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: IgnorePointer(
-                        ignoring: !_delayOver,
-                        child: _buildKeypad(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (widget.isExam)
-                Positioned(
-                  top: 6,
-                  left: 4,
-                  child: GestureDetector(
-                    onTap: () async {
-                      await showExitDialog(
-                        context,
-                        homeRoute: '/paper-menu',
-                        onSubmit: () {
-                          final data = _collectResultData();
-                          if (data != null) _navigateToResults(data);
-                        },
-                      );
-                    },
-                    child: SizedBox(
-                      width: 46,
-                      height: 46,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: PieTimer(
-                          duration: widget.selectedLevel.levelInfo.timeLimit,
-                          delayOver: _delayOver,
-                          onComplete: () => _onComplete(outOfTime: true),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return OrientationBuilder(
+                builder: (context, orientation) {
+                  final isPortrait = orientation == Orientation.portrait;
+                  final isMitoriLandscape =
+                      !isPortrait && widget.selectedLevel is MitoriLevel;
+
+                  final problemWindow = Stack(
+                    children: [
+                      Align(
+                        alignment: .centerLeft,
+                        child: LayoutBuilder(
+                          builder: (context, innerConstraints) =>
+                              _buildWindow(height: innerConstraints.maxHeight),
                         ),
                       ),
+                      if (!_delayOver)
+                        DelayWindow(
+                          showLoading: _showLoading,
+                          sounds: _sound,
+                          onFinished: () {
+                            setState(() {
+                              _delayOver = true;
+                            });
+                            _stopwatch.start();
+                          },
+                        ),
+                    ],
+                  );
+
+                  final keypad = IgnorePointer(
+                    ignoring: !_delayOver,
+                    child: Stack(
+                      children: [
+                        Align(alignment: .center, child: _buildKeypad()),
+                        Align(
+                          alignment: .center,
+                          child: ResultPopup(key: _resultPopupKey),
+                        ),
+                      ],
                     ),
-                  ),
-                )
-              else
-                Positioned(
-                  top: 4,
-                  left: 4,
-                  child: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () async {
-                      await showExitDialog(
-                        context,
-                        homeRoute: '/paper-menu',
-                        onSubmit: () => _onComplete(outOfTime: true),
-                      );
-                    },
-                  ),
-                ),
-            ],
+                  );
+
+                  final Widget mainContent;
+                  if (isMitoriLandscape) {
+                    mainContent = Stack(
+                      children: [
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: constraints.maxWidth * 0.8,
+                          child: problemWindow,
+                        ),
+                        Align(
+                          alignment: .centerRight,
+                          child: FractionallySizedBox(
+                            widthFactor: 0.4,
+                            child: keypad,
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    mainContent = Flex(
+                      direction: isPortrait ? Axis.vertical : Axis.horizontal,
+                      children: [
+                        Expanded(flex: 8, child: problemWindow),
+                        Expanded(flex: 5, child: keypad),
+                      ],
+                    );
+                  }
+
+                  return Stack(
+                    children: [
+                      Positioned.fill(child: mainContent),
+                      if (widget.isExam)
+                        Positioned(
+                          top: 6,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () async {
+                              await showExitDialog(
+                                context,
+                                homeRoute: '/paper-menu',
+                                onSubmit: () {
+                                  final data = _collectResultData();
+                                  if (data != null) _navigateToResults(data);
+                                },
+                              );
+                            },
+                            child: SizedBox(
+                              width: 52,
+                              height: 52,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: PieTimer(
+                                  duration:
+                                      widget.selectedLevel.levelInfo.timeLimit,
+                                  delayOver: _delayOver,
+                                  onComplete: () =>
+                                      _onComplete(outOfTime: true),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        Positioned(
+                          top: 4,
+                          left: 4,
+                          child: IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () async {
+                              await showExitDialog(
+                                context,
+                                homeRoute: '/paper-menu',
+                                onSubmit: () => _onComplete(outOfTime: true),
+                              );
+                            },
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ),
       ),
@@ -560,11 +608,13 @@ class MitorizanWindow extends StatefulWidget {
     required this.onComplete,
     required this.height,
     super.key,
+    required this.resultPopupKey,
   });
   final MitoriLevel selectedLevel;
   final bool isExam;
   final VoidCallback onComplete;
   final double height;
+  final GlobalKey<ResultPopupState> resultPopupKey;
 
   @override
   State<MitorizanWindow> createState() => _MitorizanWindowState();
@@ -595,6 +645,8 @@ class _MitorizanWindowState extends State<MitorizanWindow>
   @override
   final CarouselSliderController carouselController =
       CarouselSliderController();
+  @override
+  GlobalKey<ResultPopupState> get resultPopupKey => widget.resultPopupKey;
 
   @override
   void initState() {
@@ -626,12 +678,12 @@ class _MitorizanWindowState extends State<MitorizanWindow>
     return CarouselSlider.builder(
       carouselController: carouselController,
       options: CarouselOptions(
-        height: widget.height,
+        height: widget.height.clamp(0, 600),
         reverse: true,
-        viewportFraction: isPortrait ? 0.95 : 0.55,
-        padEnds: isPortrait ? true : false,
+        viewportFraction: isPortrait ? 1 : 0.45,
         enlargeCenterPage: true,
-        enlargeStrategy: .scale,
+        enlargeStrategy: .zoom,
+        disableCenter: true,
         enlargeFactor: 0.2,
         onPageChanged: (index, reason) {
           setState(() {
@@ -643,99 +695,119 @@ class _MitorizanWindowState extends State<MitorizanWindow>
       itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
         final List<String> currentProblem = _allProblems[problemIndex];
         final isFocused = problemIndex == currentIndex;
-        return FittedBox(
-          fit: .contain,
-          clipBehavior: .hardEdge,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                crossAxisAlignment: .start,
-                children: [
-                  Container(
-                    width: 40.0,
-                    height: 40.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        width: 2,
-                        color: Theme.of(context).colorScheme.onSurface,
+        final isPreviousProblem =
+            problemIndex + 1 == currentIndex ||
+            (currentIndex == 0 && problemIndex == _allProblems.length - 1);
+        return AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOutCubic,
+          opacity: isPreviousProblem ? 0.0 : (isFocused ? 1.0 : 0.6),
+          child: FittedBox(
+            fit: .contain,
+            clipBehavior: .none, //crucial
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: .end,
+              children: [
+                Row(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Container(
+                      width: 40.0,
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          width: 2,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${problemIndex + 1}',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'bizUDPGR',
-                          fontWeight: .bold,
+                      child: Center(
+                        child: Text(
+                          '${problemIndex + 1}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'bizUDPGR',
+                            fontWeight: .bold,
+                          ),
+                          textScaler: .noScaling,
                         ),
                       ),
                     ),
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 3.0,
-                              horizontal: 10.0,
-                            ),
-                            child: Text(
-                              currentProblem[0],
-                              style: switch (widget.selectedLevel) {
-                                SimpleMitoriLevel() => TextStyle(
-                                  fontSize: 120,
-                                  fontFamily: 'ogutama',
-                                ),
-                                _ => TextStyle(
-                                  fontSize: 26,
-                                  fontFamily: 'abacusFontSpaced',
-                                ),
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      ...currentProblem
-                          .sublist(1)
-                          .map(
-                            (n) => Padding(
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
                               padding: const EdgeInsets.symmetric(
                                 vertical: 3.0,
                                 horizontal: 10.0,
                               ),
                               child: Text(
-                                n,
-                                style: const TextStyle(
-                                  fontSize: 26,
-                                  fontFamily: 'abacusFontSpaced',
+                                currentProblem[0],
+                                style: switch (widget.selectedLevel) {
+                                  SimpleMitoriLevel() => TextStyle(
+                                    fontSize: 125,
+                                    fontFamily: 'ogutama',
+                                  ),
+                                  _ => TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'abacusFontSpaced',
+                                  ),
+                                },
+                                textScaler: .noScaling,
+                              ),
+                            ),
+                          ],
+                        ),
+                        ...currentProblem
+                            .sublist(1)
+                            .map(
+                              (n) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 3.0,
+                                  horizontal: 10.0,
+                                ),
+                                child: Text(
+                                  n,
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'abacusFontSpaced',
+                                  ),
+                                  textScaler: .noScaling,
                                 ),
                               ),
                             ),
-                          ),
-                    ],
-                  ),
-                  SizedBox(width: 40),
-                ],
-              ),
-              Container(
-                width: _maxDigits * 28 + 50,
-                height: 2,
-                color: Theme.of(context).colorScheme.onSurface,
-                margin: const EdgeInsets.only(top: 5),
-              ),
-              CustomTextField(
-                data: textFieldDataList[problemIndex],
-                isFocused: isFocused,
-              ),
-            ],
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  width:
+                      widget.selectedLevel.maxDigits * 29 +
+                      (((widget.selectedLevel.maxDigits - 1) ~/ 3) * 10) +
+                      60,
+                  height: 2,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  margin: const EdgeInsets.only(top: 5),
+                ),
+                Row(
+                  crossAxisAlignment: .center,
+                  children: [
+                    CustomTextField(
+                      data: textFieldDataList[problemIndex],
+                      isFocused: isFocused,
+                    ),
+                    SizedBox(width: 6),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -750,11 +822,13 @@ class DivMultWindow extends StatefulWidget {
     required this.onComplete,
     required this.height,
     super.key,
+    required this.resultPopupKey,
   });
   final DivMultLevel selectedLevel;
   final bool isExam;
   final VoidCallback onComplete;
   final double height;
+  final GlobalKey<ResultPopupState> resultPopupKey;
 
   @override
   State<DivMultWindow> createState() => _DivMultWindowState();
@@ -785,6 +859,17 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
   @override
   final CarouselSliderController carouselController =
       CarouselSliderController();
+  @override
+  GlobalKey<ResultPopupState> get resultPopupKey => widget.resultPopupKey;
+
+  double _computeViewportFraction(double height) {
+    const referenceHeight = 330.0; // height at which fraction == 0.55
+    const maxFraction = 0.56; // fraction for small screens
+    const minFraction = 0.38; // floor for very large screens
+
+    final fraction = maxFraction * (referenceHeight / height);
+    return fraction.clamp(minFraction, maxFraction);
+  }
 
   @override
   void initState() {
@@ -812,112 +897,134 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
 
   @override
   Widget build(BuildContext context) {
-    final bool isPortrait = MediaQuery.orientationOf(context) == .portrait;
-    return CarouselSlider.builder(
-      carouselController: carouselController,
-      options: CarouselOptions(
-        height: widget.height,
-        scrollDirection: .vertical,
-        viewportFraction: isPortrait ? 0.45 : 0.5,
-        enlargeCenterPage: true,
-        enlargeStrategy: .zoom,
-        enlargeFactor: 0.25,
-        onPageChanged: (index, reason) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-      ),
-      itemCount: _allProblems.length,
-      itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
-        final currentProblem = _allProblems[problemIndex];
-        final isFocused = problemIndex == currentIndex;
-        return Opacity(
-          opacity: isFocused ? 1.0 : 0.6,
-          child: Stack(
-            children: [
-              if (problemIndex == 0 && _intRoundIndex != -1)
-                Align(
-                  alignment: .topCenter,
-                  child: Transform.translate(
-                    offset: const Offset(0, -30.0),
-                    child: Text(
-                      '（注意） 小数第3位未満四捨五入。',
-                      style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
-                    ),
-                  ),
-                ),
-              if (problemIndex == _intRoundIndex)
-                Align(
-                  alignment: .topCenter,
-                  child: Transform.translate(
-                    offset: const Offset(0, -30.0),
-                    child: Text(
-                      '（注意） 整数位未満四捨五入。',
-                      style: TextStyle(fontSize: 18, fontFamily: 'bizUDPGR'),
-                    ),
-                  ),
-                ),
-              Align(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: 40.0,
-                        height: 40.0,
-                        margin: const EdgeInsets.all(1.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 2,
-                            color: Theme.of(context).colorScheme.onSurface,
+    return ClipRect(
+      child: OverflowBox(
+        maxHeight: widget.height + 50,
+        alignment: .bottomCenter,
+        child: CarouselSlider.builder(
+          carouselController: carouselController,
+          options: CarouselOptions(
+            height: widget.height + 50,
+            scrollDirection: .vertical,
+            viewportFraction: _computeViewportFraction(widget.height),
+            enlargeCenterPage: true,
+            enlargeStrategy: .zoom,
+            enlargeFactor: 0.2,
+            onPageChanged: (index, reason) {
+              setState(() {
+                currentIndex = index;
+              });
+            },
+          ),
+          itemCount: _allProblems.length,
+          itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
+            final currentProblem = _allProblems[problemIndex];
+            final isFocused = problemIndex == currentIndex;
+            return AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOutCubic,
+              opacity: isFocused ? 1.0 : 0.6,
+              child: Stack(
+                children: [
+                  if (problemIndex == 0 && _intRoundIndex != -1)
+                    Align(
+                      alignment: .topCenter,
+                      child: Transform.translate(
+                        offset: const Offset(0, -10),
+                        child: Text(
+                          '（注意） 小数第3位未満四捨五入。',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'bizUDPGR',
                           ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${problemIndex + 1}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'bizUDPGR',
-                              fontWeight: .bold,
-                            ),
-                          ),
+                          textScaler: .noScaling,
                         ),
                       ),
                     ),
-                    FittedBox(
-                      fit: .contain,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
+                  if (problemIndex == _intRoundIndex)
+                    Align(
+                      alignment: .topCenter,
+                      child: Transform.translate(
+                        offset: const Offset(0, -10),
+                        child: Text(
+                          '（注意） 整数位未満四捨五入。',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'bizUDPGR',
+                          ),
+                          textScaler: .noScaling,
+                        ),
+                      ),
+                    ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            width: 40.0,
+                            height: 40.0,
+                            margin: const EdgeInsets.all(1.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
-                            child: Text(
-                              currentProblem,
-                              style: const TextStyle(
-                                fontSize: 30,
-                                fontFamily: 'abacusFont',
+                            child: Center(
+                              child: Text(
+                                '${problemIndex + 1}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'bizUDPGR',
+                                  fontWeight: .bold,
+                                ),
+                                textScaler: .noScaling,
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        FittedBox(
+                          fit: .contain,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
+                                ),
+                                child: Text(
+                                  currentProblem,
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'abacusFont',
+                                  ),
+                                  textScaler: .noScaling,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              const Text(
+                                '||',
+                                style: TextStyle(fontSize: 26),
+                                textScaler: .noScaling,
+                              ),
+                              CustomTextField(
+                                data: textFieldDataList[problemIndex],
+                                isFocused: isFocused,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 5),
-                    const Text('||', style: TextStyle(fontSize: 26)),
-                    CustomTextField(
-                      data: textFieldDataList[problemIndex],
-                      isFocused: isFocused,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      },
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -948,23 +1055,24 @@ class CustomTextField extends StatelessWidget {
     final caretPos = textPainter.width;
 
     return SizedBox(
-      height: 55,
+      height: 58,
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
             child: Text(
               data.formatted,
               style: const TextStyle(
                 fontSize: 30,
                 fontFamily: 'abacusFontSpaced',
               ),
+              textScaler: .noScaling,
             ),
           ),
           // Custom static cursor
           if (isFocused)
             Positioned(
-              left: caretPos + 6,
+              left: caretPos + 2,
               top: 10,
               child: Container(
                 width: 2,

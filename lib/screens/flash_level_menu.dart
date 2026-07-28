@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
-import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 
@@ -183,12 +182,14 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                               children: [
                                 denominationSelector,
                                 const SizedBox(height: 6),
-                                SizedBox(height: 100, child: selectorStack),
+                                SizedBox(height: 80, child: selectorStack),
                                 const SizedBox(height: 6),
                                 Expanded(
                                   child: FlashInfoDialog(
                                     selectedLevel: _kyuui.flash!,
                                     isPortrait: isPortrait,
+                                    examDisplayString:
+                                        '${_kyuui.kyuuString}のフラッシュ暗算',
                                   ),
                                 ),
                               ],
@@ -198,7 +199,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                               children: [
                                 Expanded(flex: 1, child: selectorStack),
                                 Expanded(
-                                  flex: 5,
+                                  flex: 6,
                                   child: Column(
                                     crossAxisAlignment: .stretch,
                                     children: [
@@ -208,6 +209,8 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                         child: FlashInfoDialog(
                                           selectedLevel: _kyuui.flash!,
                                           isPortrait: isPortrait,
+                                          examDisplayString:
+                                              '${_kyuui.kyuuString}のフラッシュ暗算',
                                         ),
                                       ),
                                     ],
@@ -232,9 +235,11 @@ class FlashInfoDialog extends StatelessWidget {
     super.key,
     required this.selectedLevel,
     required this.isPortrait,
+    required this.examDisplayString,
   });
   final FlashLevel selectedLevel;
   final bool isPortrait;
+  final String examDisplayString;
 
   @override
   Widget build(BuildContext context) {
@@ -258,22 +263,23 @@ class FlashInfoDialog extends StatelessWidget {
       borderRadius: .circular(12),
       elevation: 4,
       child: Padding(
-        padding: const .all(12.0),
+        padding: const .all(8.0),
         child: Column(
           mainAxisSize: .min,
           mainAxisAlignment: .spaceEvenly,
+          spacing: 4,
           crossAxisAlignment: .center,
           children: [
             FittedBox(
-              child: Text(denominationString, style: textTheme.displaySmall),
+              child: Text(denominationString, style: textTheme.headlineLarge),
             ),
             Material(
               color: colorScheme.surfaceContainerHighest,
-              borderRadius: .circular(12),
+              borderRadius: .circular(24),
               elevation: 8,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  vertical: 16,
+                  vertical: 8,
                   horizontal: 12,
                 ),
                 child: SizedBox(
@@ -321,6 +327,7 @@ class FlashInfoDialog extends StatelessWidget {
                   extra: {
                     'selectedLevel': selectedLevel,
                     'isSingleProblem': false,
+                    'examDisplayString': examDisplayString,
                   },
                 );
               },
@@ -339,7 +346,12 @@ Widget statCell(BuildContext context, String value, String unit) {
     crossAxisAlignment: CrossAxisAlignment.baseline,
     textBaseline: TextBaseline.alphabetic,
     children: [
-      Text(value, style: textTheme.displayLarge),
+      Text(
+        value,
+        style: textTheme.displayLarge!.copyWith(
+          fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+        ),
+      ),
       Text(unit, style: textTheme.displaySmall),
     ],
   );
@@ -348,8 +360,9 @@ Widget statCell(BuildContext context, String value, String unit) {
 Widget divider(BuildContext context, bool isPortrait) {
   return isPortrait
       ? SizedBox(
-          width: 120, // pick a width that suits your stat cell size
+          width: 140,
           child: Divider(
+            height: 5,
             color: Theme.of(context).colorScheme.outline,
             thickness: 1,
           ),
@@ -357,6 +370,7 @@ Widget divider(BuildContext context, bool isPortrait) {
       : SizedBox(
           height: 48,
           child: VerticalDivider(
+            width: 4,
             color: Theme.of(context).colorScheme.outline,
             thickness: 1,
           ),

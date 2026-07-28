@@ -31,7 +31,7 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
       child: CupertinoSlidingSegmentedControl<T>(
         groupValue: groupValue,
         padding: EdgeInsets.all(8),
-        backgroundColor: colorScheme.surfaceContainer,
+        backgroundColor: colorScheme.surfaceContainerHigh,
         thumbColor: colorScheme.surfaceContainerHighest,
         children: {
           for (final (value, label) in options)

@@ -17,9 +17,11 @@ class FlashProblemScreen extends StatefulWidget {
     super.key,
     required this.isSingleProblem,
     required this.selectedLevel,
+    this.examDisplayString,
   });
   final bool isSingleProblem;
   final FlashSpec selectedLevel;
+  final String? examDisplayString;
   @override
   State<FlashProblemScreen> createState() => _FlashProblemScreenState();
 }
@@ -92,6 +94,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
         'allProblems': _allProblems,
         'allAnswers': _allAnswers,
         'textFieldDataList': _textFieldDataList,
+        'examDisplayString': widget.examDisplayString,
       },
     );
   }

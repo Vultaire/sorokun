@@ -4,10 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/aloud_free_menu.dart';
-import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
-import 'package:soroban_app/src/voicevox_paths.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
 
 class AloudLevelMenuPage extends StatefulWidget {
@@ -36,17 +34,17 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
     _prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
         allowList: <String>{
-          'kyuui',
-          'kyuuiDenomination',
-          'zsIndex',
-          'character',
+          'aloud_kyuui',
+          'aloud_kyuuiDenomination',
+          'aloud_zsIndex',
+          'aloud_character',
         },
       ),
     );
-    final kyuuiIndex = _prefs.getInt('kyuui');
-    final characterIndex = _prefs.getInt('character');
-    final denominationIndex = _prefs.getInt('kyuuiDenomination');
-    final zsIndex = _prefs.getInt('zsIndex');
+    final kyuuiIndex = _prefs.getInt('aloud_kyuui');
+    final characterIndex = _prefs.getInt('aloud_character');
+    final denominationIndex = _prefs.getInt('aloud_kyuuiDenomination');
+    final zsIndex = _prefs.getInt('aloud_zsIndex');
     if (zsIndex != null) {
       _zsIndex = zsIndex;
     }
@@ -86,10 +84,10 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
 
   @override
   void dispose() {
-    _prefs.setInt('kyuui', _kyuui.index);
-    _prefs.setInt('kyuuiDenomination', _kyuuiDenomination.index);
-    _prefs.setInt('zsIndex', _zsIndex);
-    _prefs.setInt('character', _character.index);
+    _prefs.setInt('aloud_kyuui', _kyuui.index);
+    _prefs.setInt('aloud_kyuuiDenomination', _kyuuiDenomination.index);
+    _prefs.setInt('aloud_zsIndex', _zsIndex);
+    _prefs.setInt('aloud_character', _character.index);
 
     super.dispose();
   }
@@ -149,10 +147,10 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                               crossAxisAlignment: .stretch,
                               children: [
                                 isPortrait
-                                    ? SizedBox(height: 100, child: selector)
+                                    ? SizedBox(height: 80, child: selector)
                                     : Expanded(flex: 1, child: selector),
                                 Expanded(
-                                  flex: isPortrait ? 1 : 5,
+                                  flex: isPortrait ? 1 : 6,
                                   child: AloudInfoDialog(
                                     selectedLevel: _kyuui.aloud!,
                                     isPortrait: isPortrait,
@@ -160,6 +158,8 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                                     onCharacterChanged: (selected) {
                                       setState(() => _character = selected);
                                     },
+                                    examDisplayString:
+                                        '${_kyuui.kyuuString}の読み上げ算',
                                   ),
                                 ),
                               ],
@@ -186,12 +186,14 @@ class AloudInfoDialog extends StatelessWidget {
     required this.isPortrait,
     required this.character,
     required this.onCharacterChanged,
+    required this.examDisplayString,
   });
 
   final AloudLevel selectedLevel;
   final bool isPortrait;
   final Character character;
   final ValueChanged<Character> onCharacterChanged;
+  final String examDisplayString;
 
   @override
   Widget build(BuildContext context) {
@@ -216,13 +218,15 @@ class AloudInfoDialog extends StatelessWidget {
     final String minusString = hasMinus ? '加減算' : '加算';
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final infoTextStyle = textTheme.titleLarge;
+    final infoTextStyle = textTheme.titleLarge!.copyWith(
+      fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+    );
 
     return Container(
       padding: const .all(12),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
-        borderRadius: .circular(12),
+        borderRadius: .circular(24),
       ),
       child: Column(
         mainAxisSize: .min,
@@ -230,23 +234,23 @@ class AloudInfoDialog extends StatelessWidget {
         crossAxisAlignment: .center,
         children: [
           FittedBox(
-            child: Text(denominationString, style: textTheme.displaySmall),
+            child: Text(denominationString, style: textTheme.headlineLarge),
           ),
           FittedBox(
             fit: .scaleDown,
             child: Material(
               color: colorScheme.surfaceContainerHighest,
-              borderRadius: .circular(12),
+              borderRadius: .circular(24),
               elevation: 8,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
-                  width: isPortrait ? 300 : 900,
+                  width: isPortrait ? 250 : 900,
                   child: Flex(
                     direction: isPortrait ? .vertical : .horizontal,
                     mainAxisAlignment: .spaceEvenly,
                     children: [
-                      Text(minusString, style: textTheme.displayLarge),
+                      Text(minusString, style: textTheme.displayMedium),
                       divider(context, isPortrait),
                       statCell(context, digitsString, '桁'),
                       divider(context, isPortrait),
@@ -261,22 +265,14 @@ class AloudInfoDialog extends StatelessWidget {
               ),
             ),
           ),
-          isPortrait
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('全$probCount問 各10点', style: infoTextStyle),
-                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('全$probCount問 各10点', style: infoTextStyle),
-                    Text('　・　', style: infoTextStyle),
-                    Text('合格点：$passThreshold点以上', style: infoTextStyle),
-                  ],
-                ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('全$probCount問 各10点', style: infoTextStyle),
+              Text('・', style: infoTextStyle),
+              Text('合格点：$passThreshold点以上', style: infoTextStyle),
+            ],
+          ),
           VoiceSelectionButton(
             character: character,
             onChanged: onCharacterChanged,
@@ -289,6 +285,7 @@ class AloudInfoDialog extends StatelessWidget {
                   'isSingleProblem': false,
                   'selectedLevel': selectedLevel,
                   'character': character,
+                  'examDisplayString': examDisplayString,
                 },
               );
             },

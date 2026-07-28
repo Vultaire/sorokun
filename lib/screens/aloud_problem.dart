@@ -23,10 +23,12 @@ class AloudProblemScreen extends StatefulWidget {
     required this.isSingleProblem,
     required this.selectedLevel,
     required this.character,
+    this.examDisplayString,
   });
   final bool isSingleProblem;
   final AloudSpec selectedLevel;
   final Character character;
+  final String? examDisplayString;
 
   @override
   State<AloudProblemScreen> createState() => _AloudProblemScreenState();
@@ -245,6 +247,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
         'allAnswers': _allAnswers,
         'textFieldDataList': _textFieldDataList,
         'character': widget.character,
+        'examDisplayString': widget.examDisplayString,
       },
     );
   }

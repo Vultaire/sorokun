@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:soroban_app/screens/components/spammable_button.dart';
 
-const up_arrow = Icon(Icons.keyboard_arrow_up_rounded, size: 40);
-const down_arrow = Icon(Icons.keyboard_arrow_down_rounded, size: 40);
+const upArrow = Icon(Icons.keyboard_arrow_up_rounded, size: 40);
+const downArrow = Icon(Icons.keyboard_arrow_down_rounded, size: 40);
 
 class Incrementer extends StatefulWidget {
   const Incrementer({
@@ -55,14 +55,14 @@ class _IncrementerState extends State<Incrementer> {
               color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: up_arrow,
+            child: upArrow,
           ),
         ),
         SizedBox(height: 8),
         Material(
-          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
-          elevation: 14,
+          elevation: 4,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ConstrainedBox(
@@ -76,7 +76,7 @@ class _IncrementerState extends State<Incrementer> {
                   Text(
                     widget.displayValue ?? '${widget.value}',
                     style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                      fontFamily: 'robotoMono',
+                      fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
                     ),
                   ),
                 ],
@@ -95,7 +95,7 @@ class _IncrementerState extends State<Incrementer> {
               color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: down_arrow,
+            child: downArrow,
           ),
         ),
       ],
@@ -182,7 +182,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                   color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: up_arrow,
+                child: upArrow,
               ),
             ),
             SizedBox(width: 30.0),
@@ -196,16 +196,16 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                   color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: up_arrow,
+                child: upArrow,
               ),
             ),
           ],
         ),
         SizedBox(height: 8),
         Material(
-          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
-          elevation: 8,
+          elevation: 4,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: ConstrainedBox(
@@ -225,7 +225,11 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                           child: Text(
                             '${widget.minValue}',
                             style: Theme.of(context).textTheme.displayLarge!
-                                .copyWith(fontFamily: 'robotoMono'),
+                                .copyWith(
+                                  fontFeatures: <FontFeature>[
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
                           ),
                         ),
                       ),
@@ -236,7 +240,11 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                           child: Text(
                             '~',
                             style: Theme.of(context).textTheme.displayLarge!
-                                .copyWith(fontFamily: 'robotoMono'),
+                                .copyWith(
+                                  fontFeatures: <FontFeature>[
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
                           ),
                         ),
                       ),
@@ -247,7 +255,11 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                           child: Text(
                             '${widget.maxValue}',
                             style: Theme.of(context).textTheme.displayLarge!
-                                .copyWith(fontFamily: 'robotoMono'),
+                                .copyWith(
+                                  fontFeatures: <FontFeature>[
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
                           ),
                         ),
                       ),
@@ -271,7 +283,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                   color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: down_arrow,
+                child: downArrow,
               ),
             ),
             SizedBox(width: 30.0),
@@ -285,7 +297,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                   color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: down_arrow,
+                child: downArrow,
               ),
             ),
           ],

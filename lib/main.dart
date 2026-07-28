@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -29,7 +30,11 @@ void main() async {
     channels: Channels.stereo,
   );
   await themeController.ready;
-  runApp(AbacusApp(themeController: themeController));
+  runApp(
+    DevicePreview(
+      builder: (context) => AbacusApp(themeController: themeController),
+    ),
+  );
 }
 
 class VoicevoxService {
@@ -223,6 +228,7 @@ class _AbacusAppState extends State<AbacusApp> {
             child: FlashProblemScreen(
               isSingleProblem: args?['isSingleProblem'],
               selectedLevel: args?['selectedLevel'],
+              examDisplayString: args?['examDisplayString'],
             ),
           );
         },
@@ -252,13 +258,17 @@ class _AbacusAppState extends State<AbacusApp> {
       ),
       GoRoute(
         path: '/aloud-problem',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>?;
 
-          return AloudProblemScreen(
-            isSingleProblem: args?['isSingleProblem'],
-            selectedLevel: args?['selectedLevel'],
-            character: args?['character'],
+          return blackFadeTransition(
+            key: state.pageKey,
+            child: AloudProblemScreen(
+              isSingleProblem: args?['isSingleProblem'],
+              selectedLevel: args?['selectedLevel'],
+              examDisplayString: args?['examDisplayString'],
+              character: args?['character'],
+            ),
           );
         },
       ),
@@ -325,6 +335,8 @@ class _AbacusAppState extends State<AbacusApp> {
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerConfig: _router,
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
         themeMode: _themeController.themeMode,
         theme: ThemeData(
           fontFamily: 'bizUDGPR',

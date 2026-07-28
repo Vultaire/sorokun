@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
 
 import '../../problem_generation/helpers.dart';
 
@@ -108,6 +110,7 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
   List<TextFieldData> get textFieldDataList;
   int get currentIndex;
   int get maxDigits;
+  GlobalKey<ResultPopupState> get resultPopupKey;
   CarouselSliderController get carouselController;
   List<String> get allAnswers;
   bool get isExam;
@@ -202,11 +205,9 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
       SoLoud.instance.play(sound.invalid);
       return;
     }
-
     final isCorrect = _isAnswerCorrect();
-
     if (!isExam && !isCorrect) {
-      showResultPopup(context, false);
+      resultPopupKey.currentState?.show(false);
       setState(() {
         final data = textFieldDataList[currentIndex];
         data.internalString = '';
@@ -215,14 +216,12 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
       SoLoud.instance.play(sound.incorrect);
       return;
     }
-
     if (!isExam) {
-      showResultPopup(context, true);
+      resultPopupKey.currentState?.show(true);
       SoLoud.instance.play(sound.correct);
     } else {
       SoLoud.instance.play(sound.progress);
     }
-
     _moveToNextEmptyQuestion();
   }
 
@@ -239,68 +238,13 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
       if (textFieldDataList[i].internalString.isEmpty) {
         carouselController.animateToPage(
           i,
-          curve: Curves.easeOutExpo,
-          duration: Duration(milliseconds: 200),
+          curve: Curves.easeInOutCubic,
+          duration: Duration(milliseconds: 300),
         );
         return;
       }
     }
     onComplete();
-  }
-
-  void showResultPopup(BuildContext context, bool isCorrect) {
-    late OverlayEntry overlayEntry;
-    bool isRemoving = false;
-
-    overlayEntry = OverlayEntry(
-      builder: (context) => IgnorePointer(
-        ignoring: true,
-        child: TweenAnimationBuilder<double>(
-          key: ValueKey(isRemoving),
-          tween: Tween(
-            begin: isRemoving ? 1.0 : 0.0,
-            end: isRemoving ? 0.0 : 1.0,
-          ),
-          duration: Duration(milliseconds: isRemoving ? 120 : 50),
-          onEnd: () {
-            if (isRemoving) {
-              overlayEntry.remove();
-            }
-          },
-          builder: (context, value, child) {
-            return Align(
-              alignment: MediaQuery.orientationOf(context) == .portrait
-                  ? Alignment.bottomCenter
-                  : Alignment.centerRight,
-              child: Padding(
-                padding: MediaQuery.orientationOf(context) == .portrait
-                    ? EdgeInsets.only(
-                        bottom: MediaQuery.sizeOf(context).height * 0.03,
-                      )
-                    : EdgeInsets.only(
-                        right: MediaQuery.sizeOf(context).width * 0.03,
-                      ),
-                child: Opacity(
-                  opacity: value,
-                  child: Image.asset(
-                    isCorrect ? 'assets/correct.png' : 'assets/incorrect.png',
-                    width: 300,
-                    height: 300,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-
-    Overlay.of(context).insert(overlayEntry);
-
-    Future.delayed(Duration(milliseconds: 300), () {
-      isRemoving = true;
-      overlayEntry.markNeedsBuild();
-    });
   }
 }
 
@@ -313,7 +257,6 @@ class Keypad extends StatelessWidget {
     required this.onSubmit,
     required this.levelType,
   });
-
   final void Function(String) onAppendDigit;
   final VoidCallback onDeleteDigit;
   final VoidCallback onClearAll;
@@ -322,8 +265,9 @@ class Keypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      constraints: const BoxConstraints(maxWidth: 400, maxHeight: 500),
+      constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
       // Main keypad
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -333,63 +277,45 @@ class Keypad extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(child: _buildKeyRow(['7', '8', '9'])),
+                Expanded(child: _buildKeyRow(context, ['7', '8', '9'])),
                 const SizedBox(height: 6),
-                Expanded(child: _buildKeyRow(['4', '5', '6'])),
+                Expanded(child: _buildKeyRow(context, ['4', '5', '6'])),
                 const SizedBox(height: 6),
-                Expanded(child: _buildKeyRow(['1', '2', '3'])),
+                Expanded(child: _buildKeyRow(context, ['1', '2', '3'])),
                 const SizedBox(height: 6),
-                Expanded(child: _buildBottomRow(levelType)),
+                Expanded(child: _buildBottomRow(context, levelType)),
               ],
             ),
           ),
-
           const SizedBox(width: 6),
-
-          // Delete button
           Expanded(
             flex: 1,
             child: Column(
+              crossAxisAlignment: .stretch,
               children: [
                 Expanded(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 80),
-                    child: ElevatedButton(
-                      onPressed: onDeleteDigit,
-                      onLongPress: onClearAll,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(
-                          double.infinity,
-                          double.infinity,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: EdgeInsets.all(10),
-                      ),
-                      child: const Icon(Icons.backspace, size: 40),
+                  child: KeypadButton(
+                    color: colorScheme.primaryContainer,
+                    margin: EdgeInsets.zero,
+                    onTapDown: onDeleteDigit,
+                    onLongPress: onClearAll,
+                    child: Icon(
+                      Icons.backspace,
+                      size: 40,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
                 ),
                 const SizedBox(height: 6),
-
-                // Check Button
                 Expanded(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 80),
-                    child: ElevatedButton(
-                      onPressed: onSubmit,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(
-                          double.infinity,
-                          double.infinity,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: EdgeInsets.all(10),
-                      ),
-                      child: const Icon(Icons.check, size: 45),
+                  child: NavigationButton(
+                    color: colorScheme.primaryContainer,
+                    margin: EdgeInsets.zero,
+                    onPressed: onSubmit,
+                    child: Icon(
+                      Icons.check,
+                      size: 45,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
                 ),
@@ -401,45 +327,41 @@ class Keypad extends StatelessWidget {
     );
   }
 
-  Widget _buildKeyRow(List<String> keys) {
+  Widget _buildKeyRow(BuildContext context, List<String> keys) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(child: _buildKey(keys[0])),
+        Expanded(child: _buildKey(context, keys[0])),
         const SizedBox(width: 6),
-        Expanded(child: _buildKey(keys[1])),
+        Expanded(child: _buildKey(context, keys[1])),
         const SizedBox(width: 6),
-        Expanded(child: _buildKey(keys[2])),
+        Expanded(child: _buildKey(context, keys[2])),
       ],
     );
   }
 
-  Widget _buildBottomRow(KeypadType type) {
+  Widget _buildBottomRow(BuildContext context, KeypadType type) {
+    final colorScheme = Theme.of(context).colorScheme;
     switch (type) {
       case .mitori:
         return Row(
+          crossAxisAlignment: .stretch,
           children: [
-            Expanded(child: _buildKey('-')),
+            Expanded(child: _buildKey(context, '-')),
             const SizedBox(width: 6),
-            Expanded(child: _buildKey('0')),
+            Expanded(child: _buildKey(context, '0')),
             const SizedBox(width: 6),
             Expanded(
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 60),
-
-                child: ElevatedButton(
-                  onPressed: () => onAppendDigit('a'),
-
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, double.infinity),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-
-                  child: Transform.rotate(
-                    angle: pi,
-                    child: const Icon(Icons.start, size: 40),
+              child: KeypadButton(
+                color: colorScheme.surfaceContainer,
+                margin: EdgeInsets.zero,
+                onTapDown: () => onAppendDigit('a'),
+                child: Transform.rotate(
+                  angle: pi,
+                  child: Icon(
+                    Icons.start,
+                    size: 40,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -449,38 +371,113 @@ class Keypad extends StatelessWidget {
       case .divMult:
         return Row(
           children: [
-            Expanded(flex: 2, child: _buildKey('0')),
+            Expanded(flex: 2, child: _buildKey(context, '0')),
             const SizedBox(width: 6),
-            Expanded(flex: 1, child: _buildKey('.')),
+            Expanded(flex: 1, child: _buildKey(context, '.')),
           ],
         );
       case .flash:
         return Row(
           children: [
-            Expanded(flex: 2, child: _buildKey('0')),
+            Expanded(flex: 2, child: _buildKey(context, '0')),
             const SizedBox(width: 6),
-            Expanded(flex: 1, child: _buildKey('-')),
+            Expanded(flex: 1, child: _buildKey(context, '-')),
           ],
         );
     }
   }
 
-  Widget _buildKey(String value) {
-    return Listener(
-      onPointerDown: (event) => onAppendDigit(
-        value,
-      ), // registers on tap down instead of tap down and release
-      child: ElevatedButton(
-        onPressed: () => (),
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size(double.infinity, double.infinity),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
+  Widget _buildKey(BuildContext context, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return KeypadButton(
+      color: colorScheme.surfaceContainer,
+      margin: EdgeInsets.zero,
+      onTapDown: () => onAppendDigit(value),
+      child: Center(
         child: Text(
           value,
-          style: const TextStyle(fontSize: 32, fontFamily: 'bizUDPGR'),
+          style: Theme.of(context).textTheme.displayLarge!.copyWith(
+            fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class KeypadButton extends StatefulWidget {
+  final VoidCallback onTapDown;
+  final VoidCallback? onLongPress;
+  final Duration duration;
+  final Color color;
+  final Widget child;
+  final EdgeInsets? margin;
+  const KeypadButton({
+    super.key,
+    required this.onTapDown,
+    required this.color,
+    required this.child,
+    this.onLongPress,
+    this.duration = const Duration(milliseconds: 100),
+    this.margin,
+  });
+  @override
+  State<KeypadButton> createState() => _KeypadButtonState();
+}
+
+class _KeypadButtonState extends State<KeypadButton> {
+  bool _isPressed = false;
+  Timer? _longPressTimer;
+
+  void _handleTapDown() {
+    setState(() => _isPressed = true);
+    widget.onTapDown();
+    if (widget.onLongPress != null) {
+      _longPressTimer = Timer(const Duration(milliseconds: 500), () {
+        widget.onLongPress!();
+      });
+    }
+  }
+
+  void _handleTapUp() {
+    setState(() => _isPressed = false);
+    _longPressTimer?.cancel();
+  }
+
+  @override
+  void dispose() {
+    _longPressTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final pressedColor = Color.lerp(widget.color, colorScheme.primary, 0.15)!;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => _handleTapDown(),
+      onTapUp: (_) => _handleTapUp(),
+      onTapCancel: () => _handleTapUp(),
+      child: AnimatedContainer(
+        duration: widget.duration,
+        transform: Matrix4.translationValues(
+          _isPressed ? 4 : 0.0,
+          _isPressed ? 4 : 0.0,
+          0,
+        ),
+        margin: widget.margin ?? const EdgeInsets.all(0),
+        child: AnimatedPhysicalModel(
+          duration: widget.duration,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(12),
+          color: _isPressed ? pressedColor : widget.color,
+          shadowColor: Colors.black,
+          elevation: _isPressed ? 2 : 8,
+          child: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: widget.child,
+          ),
         ),
       ),
     );
@@ -488,3 +485,61 @@ class Keypad extends StatelessWidget {
 }
 
 enum KeypadType { divMult, mitori, flash }
+
+class ResultPopup extends StatefulWidget {
+  const ResultPopup({super.key});
+
+  @override
+  State<ResultPopup> createState() => ResultPopupState();
+}
+
+class ResultPopupState extends State<ResultPopup> {
+  bool? _isCorrect; // null = hidden
+  bool _isRemoving = false;
+
+  void show(bool isCorrect) {
+    setState(() {
+      _isCorrect = isCorrect;
+      _isRemoving = false;
+    });
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
+      setState(() {
+        _isRemoving = true;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isCorrect == null) return const SizedBox.shrink();
+
+    return IgnorePointer(
+      child: TweenAnimationBuilder<double>(
+        key: ValueKey(_isRemoving),
+        tween: Tween(
+          begin: _isRemoving ? 1.0 : 0.0,
+          end: _isRemoving ? 0.0 : 1.0,
+        ),
+        duration: Duration(milliseconds: _isRemoving ? 120 : 50),
+        onEnd: () {
+          if (_isRemoving) {
+            setState(() {
+              _isCorrect = null;
+            });
+          }
+        },
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Image.asset(
+              _isCorrect! ? 'assets/correct.png' : 'assets/incorrect.png',
+              width: 300,
+              height: 300,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

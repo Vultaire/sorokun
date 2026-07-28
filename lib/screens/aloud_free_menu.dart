@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +7,6 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
-import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
 
 class AloudFreeMenuPage extends StatefulWidget {
@@ -99,15 +97,12 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: .center,
-              spacing: 16,
-              children: [
-                Wrap(
-                  alignment: .center,
-                  runSpacing: 16,
-                  spacing: 16,
-                  crossAxisAlignment: .center,
+            child: OrientationBuilder(
+              builder: (context, orientation) {
+                final isPortrait = orientation == Orientation.portrait;
+                final incrementers = Flex(
+                  direction: isPortrait ? .vertical : .horizontal,
+                  spacing: 8,
                   children: [
                     FittedBox(
                       fit: .contain,
@@ -165,54 +160,44 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                         ],
                       ),
                     ),
-                    Column(
-                      spacing: 16,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: .all(12),
+                  ],
+                );
 
-                          child: Row(
-                            mainAxisSize: .min,
-                            mainAxisAlignment: .center,
-                            crossAxisAlignment: .center,
-                            children: [
-                              Text(
-                                '引き算',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.headlineMedium,
-                              ),
-                              SizedBox(width: 16),
-                              LabeledSlidingSegmentedControl<bool>(
-                                groupValue: _hasMinus,
-                                options: const [(false, 'なし'), (true, 'あり')],
-                                onValueChanged: (value) {
-                                  setState(() {
-                                    _hasMinus = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
+                final minusAndVoiceSelection = Flex(
+                  direction: isPortrait ? .vertical : .horizontal,
+                  spacing: 8,
+                  children: [
+                    Row(
+                      mainAxisSize: .min,
+                      mainAxisAlignment: .center,
+                      crossAxisAlignment: .center,
+                      children: [
+                        Text(
+                          '引き算',
+                          style: Theme.of(context).textTheme.headlineMedium,
                         ),
-                        VoiceSelectionButton(
-                          character: _character,
-                          onChanged: (selected) {
-                            setState(() => _character = selected);
+                        SizedBox(width: 16),
+                        LabeledSlidingSegmentedControl<bool>(
+                          groupValue: _hasMinus,
+                          options: const [(false, 'なし'), (true, 'あり')],
+                          onValueChanged: (value) {
+                            setState(() {
+                              _hasMinus = value;
+                            });
                           },
                         ),
                       ],
                     ),
+                    VoiceSelectionButton(
+                      character: _character,
+                      onChanged: (selected) {
+                        setState(() => _character = selected);
+                      },
+                    ),
                   ],
-                ),
+                );
 
-                StartButton(
+                final startButton = StartButton(
                   onPressed: () {
                     AloudSingleProblemSpec spec = AloudSingleProblemSpec(
                       kuchi: _kuchi,
@@ -231,8 +216,38 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                       },
                     );
                   },
-                ),
-              ],
+                );
+
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Column(
+                      mainAxisAlignment: .center,
+                      spacing: 16,
+                      children: [
+                        Expanded(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: constraints.maxWidth,
+                            ),
+                            child: FittedBox(
+                              fit: .contain,
+                              child: Column(
+                                mainAxisAlignment: .spaceEvenly,
+                                spacing: 8,
+                                children: [
+                                  incrementers,
+                                  minusAndVoiceSelection,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        startButton,
+                      ],
+                    );
+                  },
+                );
+              },
             ),
           ),
         ),
@@ -267,10 +282,10 @@ class VoiceSelectionButton extends StatelessWidget {
       },
       child: Material(
         color: Theme.of(context).colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(24),
         elevation: 4,
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.fromLTRB(24.0, 12, 12, 12),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -282,6 +297,7 @@ class VoiceSelectionButton extends StatelessWidget {
               Icon(
                 Icons.chevron_right,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
+                size: 32,
               ),
             ],
           ),

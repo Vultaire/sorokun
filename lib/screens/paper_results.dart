@@ -46,218 +46,221 @@ class ResultsScreen extends StatelessWidget {
     final score = getScore(selectedLevel.levelInfo, problemScorerList);
 
     return Scaffold(
-      body: OrientationBuilder(
-        builder: (context, orientation) {
-          final isPortrait = orientation == .portrait;
+      body: SafeArea(
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            final isPortrait = orientation == .portrait;
 
-          Widget? examDescription;
-          if (examDisplayString case final displayString?) {
-            examDescription = Column(
-              children: [
-                Text(
-                  selectedLevel.levelInfo.denomination.denominationString,
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                Text(
-                  displayString,
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-              ],
-            );
-          }
+            Widget? examDescription;
+            if (examDisplayString case final displayString?) {
+              examDescription = Column(
+                children: [
+                  Text(
+                    selectedLevel.levelInfo.denomination.denominationString,
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  Text(
+                    displayString,
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                ],
+              );
+            }
 
-          Widget? elapsedCard;
-          if (elapsed case final elapsedValue?) {
-            elapsedCard = Material(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'タイム',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    Text(
-                      elapsedValue.inMinutes > 0
-                          ? '${elapsedValue.inMinutes}:${elapsedValue.inSeconds.remainder(60).toString().padLeft(2, '0')}.${elapsedValue.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}'
-                          : '${elapsedValue.inSeconds}.${elapsedValue.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}',
-                      style: TextStyle(fontSize: 48, fontFamily: 'bizUDPGR'),
-                    ),
-                  ],
+            Widget? elapsedCard;
+            if (elapsed case final elapsedValue?) {
+              elapsedCard = Material(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(12),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'タイム',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      Text(
+                        elapsedValue.inMinutes > 0
+                            ? '${elapsedValue.inMinutes}:${elapsedValue.inSeconds.remainder(60).toString().padLeft(2, '0')}.${elapsedValue.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}'
+                            : '${elapsedValue.inSeconds}.${elapsedValue.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}',
+                        style: TextStyle(fontSize: 48, fontFamily: 'bizUDPGR'),
+                      ),
+                    ],
+                  ),
                 ),
+              );
+            }
+            final countUpCircle = CountUpCircle(
+              key: _countUpCircleKey,
+              score: score,
+              durationBase: Duration(milliseconds: 10),
+              passThreshold: selectedLevel.levelInfo.passThreshold,
+              rangedThreshold: selectedLevel.levelInfo.rangedThreshold,
+              style: TextStyle(
+                fontSize: 78,
+                fontWeight: .bold,
+                fontFamily: 'bizUDPGR',
               ),
             );
-          }
-          final countUpCircle = CountUpCircle(
-            key: _countUpCircleKey,
-            score: score,
-            durationBase: Duration(milliseconds: 10),
-            passThreshold: selectedLevel.levelInfo.passThreshold,
-            rangedThreshold: selectedLevel.levelInfo.rangedThreshold,
-            style: TextStyle(
-              fontSize: 78,
-              fontWeight: .bold,
-              fontFamily: 'bizUDPGR',
-            ),
-          );
 
-          final buttonWrap = Wrap(
-            alignment: .center,
-            spacing: 20,
-            runSpacing: 12,
-            children: [
-              if (score.$1 != score.$2)
+            final buttonWrap = Wrap(
+              alignment: .center,
+              spacing: 20,
+              runSpacing: 12,
+              children: [
+                if (score.$1 != score.$2)
+                  SizedBox(
+                    width: 300,
+                    child: NavigationButton(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () {
+                        context.push(
+                          '/paper-review',
+                          extra: {
+                            'selectedLevel': selectedLevel,
+                            'problemScorerList': problemScorerList,
+                          },
+                        );
+                      },
+                      child: Center(
+                        child: iconHelper(
+                          context,
+                          Icons.error_outline,
+                          '間違えた問題を見る',
+                        ),
+                      ),
+                    ),
+                  ),
+                SizedBox(
+                  width: 250,
+                  child: NavigationButton(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    onPressed: () {
+                      switch (selectedLevel) {
+                        case FlashLevel _:
+                          context.go(
+                            '/flash-problem',
+                            extra: {
+                              'selectedLevel': selectedLevel,
+                              'isSingleProblem': false,
+                            },
+                          );
+                        case AloudLevel _:
+                          context.go(
+                            '/aloud-problem',
+                            extra: {
+                              'isSingleProblem': false,
+                              'selectedLevel': selectedLevel,
+                              'character': character,
+                            },
+                          );
+                        case PaperProblemLevel _:
+                          context.go(
+                            '/paper-problem',
+                            extra: {
+                              'selectedLevel': selectedLevel,
+                              'isExam': isExam,
+                              'time': selectedLevel.levelInfo.timeLimit,
+                            },
+                          );
+                      }
+                    },
+                    child: Center(
+                      child: iconHelper(context, Icons.replay, 'もう一回挑戦する'),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   width: 300,
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () {
-                      context.push(
-                        '/paper-review',
-                        extra: {
-                          'selectedLevel': selectedLevel,
-                          'problemScorerList': problemScorerList,
-                        },
-                      );
-                    },
+                    onPressed: () => context.go('/home'),
                     child: Center(
-                      child: iconHelper(
-                        context,
-                        Icons.error_outline,
-                        '間違えた問題を見る',
+                      child: iconHelper(context, Icons.home, 'メインメニューに戻る'),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 250,
+                  child: NavigationButton(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    onPressed: () => context.go('/paper-menu'),
+                    child: Center(
+                      child: iconHelper(context, Icons.settings, '設定画面に戻る'),
+                    ),
+                  ),
+                ),
+              ],
+            );
+
+            if (isPortrait) {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: FittedBox(
+                      fit: .scaleDown,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 10,
+                        children: [
+                          if (examDescription != null) examDescription,
+                          countUpCircle,
+                          if (elapsedCard != null) elapsedCard,
+                          ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: 500),
+                            child: buttonWrap,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ),
-              SizedBox(
-                width: 250,
-                child: NavigationButton(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  onPressed: () {
-                    switch (selectedLevel) {
-                      case FlashLevel _:
-                        context.go(
-                          '/flash-problem',
-                          extra: {
-                            'selectedLevel': selectedLevel,
-                            'isSingleProblem': false,
-                          },
-                        );
-                      case AloudLevel _:
-                        context.go(
-                          '/aloud-problem',
-                          extra: {
-                            'isSingleProblem': false,
-                            'selectedLevel': selectedLevel,
-                            'character': character,
-                          },
-                        );
-                      case PaperProblemLevel _:
-                        context.go(
-                          '/paper-problem',
-                          extra: {
-                            'selectedLevel': selectedLevel,
-                            'isExam': isExam,
-                            'time': selectedLevel.levelInfo.timeLimit,
-                          },
-                        );
-                    }
-                  },
-                  child: Center(
-                    child: iconHelper(context, Icons.replay, 'もう一回挑戦する'),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 300,
-                child: NavigationButton(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  onPressed: () => context.go('/home'),
-                  child: Center(
-                    child: iconHelper(context, Icons.home, 'メインメニューに戻る'),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 250,
-                child: NavigationButton(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  onPressed: () => context.go('/paper-menu'),
-                  child: Center(
-                    child: iconHelper(context, Icons.settings, '設定画面に戻る'),
-                  ),
-                ),
-              ),
-            ],
-          );
-
-          if (isPortrait) {
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                return Center(
-                  child: FittedBox(
-                    fit: .scaleDown,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 10,
-                      children: [
-                        if (examDescription != null) examDescription,
-                        countUpCircle,
-                        if (elapsedCard != null) elapsedCard,
-                        ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 500),
-                          child: buttonWrap,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
-          } else {
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                return Center(
-                  child: FittedBox(
-                    fit: .scaleDown,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        countUpCircle,
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: 600),
-                              child: Row(
-                                mainAxisAlignment: .center,
-                                spacing: 20,
-                                children: [
-                                  if (examDescription != null) examDescription,
-                                  if (elapsedCard != null) elapsedCard,
-                                ],
+                  );
+                },
+              );
+            } else {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: FittedBox(
+                      fit: .scaleDown,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          countUpCircle,
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 600),
+                                child: Row(
+                                  mainAxisAlignment: .center,
+                                  spacing: 20,
+                                  children: [
+                                    if (examDescription != null)
+                                      examDescription,
+                                    if (elapsedCard != null) elapsedCard,
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: 600),
-                              child: buttonWrap,
-                            ),
-                          ],
-                        ),
-                      ],
+                              const SizedBox(height: 10),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 600),
+                                child: buttonWrap,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            );
-          }
-        },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -265,7 +268,8 @@ class ResultsScreen extends StatelessWidget {
 
 class ProblemScorer {
   final int index;
-  final dynamic problem;
+  final dynamic
+  problem; // can be either List<List<String>> for Mitori/Flash/Aloud or List<String> for DivMult
   final String answer;
   final String userAnswer;
 

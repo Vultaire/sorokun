@@ -19,8 +19,6 @@ class HomePage extends StatelessWidget {
         children: [
           Positioned(
             top: size.height * 0.1,
-            left: 0,
-            right: 0,
             child: Transform.rotate(
               angle: -0.18,
               child: ExcludeSemantics(
@@ -39,7 +37,7 @@ class HomePage extends StatelessWidget {
               direction: isPortrait ? Axis.vertical : Axis.horizontal,
               crossAxisAlignment: .center,
               mainAxisAlignment: .center,
-              spacing: 25,
+              spacing: isPortrait ? 40 : 0,
               children: [
                 Expanded(
                   flex: isPortrait ? 0 : 3,
@@ -427,7 +425,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(top: 4, left: 4, child: SettingsGearButton()),
+          Positioned(top: 24, left: 24, child: SettingsGearButton()),
         ],
       ),
     );

@@ -95,157 +95,184 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
     final int hideDuration = (_secondsPerProblem / (2.5 * _kuchi - 1) * 1000)
         .round();
     final int showDuration = (1.5 * hideDuration).round();
-    final textTheme = Theme.of(
-      context,
-    ).textTheme.titleLarge?.copyWith(fontFamily: 'robotoMono');
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('フラッシュ暗算フリー'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ? 40
+              : kToolbarHeight,
+        ),
+        child: AppBar(
+          title: const Text('フラッシュ暗算フリー'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Wrap(
-              alignment: .center,
-              children: [
-                FittedBox(
-                  fit: .contain,
-                  child: Row(
-                    mainAxisAlignment: .spaceEvenly,
-                    children: [
-                      Incrementer(
-                        value: _kuchi,
-                        label: '口数',
-                        onChanged: (newValue) =>
-                            setState(() => _kuchi = newValue.toInt()),
-                        min: 2,
-                        max: 30,
-                      ),
-                      SizedBox(width: 16),
-                      Incrementer(
-                        value: _digits,
-                        label: '桁数',
-                        onChanged: (newValue) =>
-                            setState(() => _digits = newValue.toInt()),
-                        min: 1,
-                        max: 6,
-                      ),
-                    ],
-                  ),
-                ),
-                FittedBox(
-                  fit: BoxFit.contain,
-                  child: SizedBox(
-                    width: 400,
-                    height: 300,
-                    child: Stack(
-                      children: [
-                        CircularSlider(
-                          initialValue: _secondsPerProblem,
-                          width: 400,
-                          height: 300,
-                          onChanged: (value) {
-                            setState(() {
-                              _secondsPerProblem = value;
-                            });
-                          },
-                        ),
-                        Positioned(
-                          left: 90,
-                          bottom: 40,
-                          child: SpammableButton(
-                            onTapDown: () {
-                              _increaseValue();
-                            },
-                            enableRepeat: true,
-                            offsetX: 3.0,
-                            offsetY: 3.0,
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: EdgeInsets.all(8),
-                              child: Image.asset(
-                                'assets/tortoise.png',
-                                color: Theme.of(context).colorScheme.onSurface,
-                                colorBlendMode: BlendMode.srcIn,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 90,
-                          bottom: 40,
-                          child: SpammableButton(
-                            onTapDown: () {
-                              _decreaseValue();
-                            },
-                            enableRepeat: true,
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: EdgeInsets.all(8),
-                              child: Image.asset(
-                                'assets/hare.png',
-                                color: Theme.of(context).colorScheme.onSurface,
-                                colorBlendMode: BlendMode.srcIn,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+            child: OrientationBuilder(
+              builder: (context, orientation) {
+                final isPortrait = orientation == Orientation.portrait;
+
+                final incrementers = Row(
+                  mainAxisAlignment: .spaceEvenly,
+                  children: [
+                    Incrementer(
+                      value: _kuchi,
+                      label: '口数',
+                      onChanged: (newValue) =>
+                          setState(() => _kuchi = newValue.toInt()),
+                      min: 2,
+                      max: 30,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: EdgeInsets.all(8),
-                  child: Flex(
-                    direction:
-                        MediaQuery.of(context).orientation ==
-                            Orientation.portrait
-                        ? Axis.horizontal
-                        : Axis.vertical,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    SizedBox(width: 16),
+                    Incrementer(
+                      value: _digits,
+                      label: '桁数',
+                      onChanged: (newValue) =>
+                          setState(() => _digits = newValue.toInt()),
+                      min: 1,
+                      max: 6,
+                    ),
+                  ],
+                );
+
+                final slider = SizedBox(
+                  width: 400,
+                  height: 300,
+                  child: Stack(
                     children: [
-                      Column(
-                        children: [
-                          Text('表示間隔', style: textTheme),
-                          Text('~${showDuration}ms', style: textTheme),
-                        ],
+                      CircularSlider(
+                        initialValue: _secondsPerProblem,
+                        width: 400,
+                        height: 300,
+                        onChanged: (value) {
+                          setState(() {
+                            _secondsPerProblem = value;
+                          });
+                        },
                       ),
-                      Column(
-                        children: [
-                          Text('消画間隔', style: textTheme),
-                          Text('~${hideDuration}ms', style: textTheme),
-                        ],
+                      Positioned(
+                        left: 90,
+                        bottom: 40,
+                        child: SpammableButton(
+                          onTapDown: () {
+                            _increaseValue();
+                          },
+                          enableRepeat: true,
+                          offsetX: 3.0,
+                          offsetY: 3.0,
+                          child: Container(
+                            height: 80,
+                            width: 80,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainerHigh,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: EdgeInsets.all(8),
+                            child: Image.asset(
+                              'assets/tortoise.png',
+                              color: colorScheme.onSurface,
+                              colorBlendMode: BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 90,
+                        bottom: 40,
+                        child: SpammableButton(
+                          onTapDown: () {
+                            _decreaseValue();
+                          },
+                          enableRepeat: true,
+                          child: Container(
+                            height: 80,
+                            width: 80,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainerHigh,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: EdgeInsets.all(8),
+                            child: Image.asset(
+                              'assets/hare.png',
+                              color: colorScheme.onSurface,
+                              colorBlendMode: BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                StartButton(
+                );
+
+                final durationCards = Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Flex(
+                    direction: isPortrait ? Axis.horizontal : Axis.vertical,
+                    spacing: isPortrait ? 10 : 40,
+                    children: [
+                      Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(8),
+                        color: colorScheme.surfaceContainer,
+                        child: SizedBox(
+                          width: 200,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Text('表示間隔', style: textTheme.headlineSmall),
+                                Text(
+                                  '~${showDuration}ms',
+                                  style: textTheme.headlineLarge!.copyWith(
+                                    fontFeatures: <FontFeature>[
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(8),
+                        color: colorScheme.surfaceContainer,
+                        child: SizedBox(
+                          width: 200,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Text('消画間隔', style: textTheme.headlineSmall),
+                                Text(
+                                  '~${hideDuration}ms',
+                                  style: textTheme.headlineLarge!.copyWith(
+                                    fontFeatures: <FontFeature>[
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+
+                final startButton = StartButton(
                   onPressed: () {
                     FlashSingleProblemSpec spec = FlashSingleProblemSpec(
                       digits: _digits,
@@ -258,8 +285,73 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                       extra: {'isSingleProblem': true, 'selectedLevel': spec},
                     );
                   },
-                ),
-              ],
+                );
+
+                if (isPortrait) {
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Column(
+                        mainAxisAlignment: .center,
+                        spacing: 16,
+                        children: [
+                          Expanded(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: constraints.maxWidth,
+                              ),
+                              child: FittedBox(
+                                fit: .contain,
+                                child: Column(
+                                  mainAxisAlignment: .spaceEvenly,
+                                  spacing: 8,
+                                  children: [
+                                    incrementers,
+                                    slider,
+                                    durationCards,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          startButton,
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Column(
+                        mainAxisAlignment: .spaceEvenly,
+                        children: [
+                          Flexible(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: constraints.maxWidth,
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    incrementers,
+                                    slider,
+                                    durationCards,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          startButton,
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
             ),
           ),
         ),
@@ -449,28 +541,21 @@ class _CircularSliderState extends State<CircularSlider> {
               painter: CircularSliderPainter(backgroundColor: primaryColor),
             ),
             Positioned(
-              top: 50,
-              child: SizedBox(
-                width: widget.width * 0.7,
-                height: widget.height * 0.5,
-                child: Row(
-                  mainAxisAlignment: .center,
-                  children: [
-                    Text(
-                      _value >= 10
-                          ? _value.toStringAsFixed(0)
-                          : _value.toStringAsFixed(1),
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        fontFamily: 'robotoMono',
-                      ),
+              top: 100,
+              child: Row(
+                mainAxisAlignment: .center,
+                crossAxisAlignment: .end,
+                children: [
+                  Text(
+                    _value >= 10
+                        ? _value.toStringAsFixed(0)
+                        : _value.toStringAsFixed(1),
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
                     ),
-                    Text(
-                      '秒',
-                      style: Theme.of(context).textTheme.displayMedium
-                          ?.copyWith(fontFamily: 'robotoMono'),
-                    ),
-                  ],
-                ),
+                  ),
+                  Text('秒', style: Theme.of(context).textTheme.displaySmall),
+                ],
               ),
             ),
             Transform.translate(

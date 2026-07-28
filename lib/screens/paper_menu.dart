@@ -124,56 +124,93 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                         [StartButtonType.kake, StartButtonType.kakean],
                         [StartButtonType.wari, StartButtonType.warian],
                       ];
-                      final visibleRows = rows
-                          .where((pair) => pair.any((type) => _hasLevel(type)))
-                          .toList();
-
-                      final buttonGrid = Container(
-                        padding: .all(6),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Flex(
-                          direction: isPortrait
-                              ? Axis.vertical
-                              : Axis.horizontal,
-                          children: visibleRows
-                              .map(
-                                (pair) => Expanded(
-                                  child: LayoutBuilder(
-                                    builder: (context, constraints) {
-                                      final startButtonSizeConstraint =
-                                          isPortrait
-                                          ? constraints.maxWidth / 2
-                                          : constraints.maxHeight / 2;
-                                      return Flex(
-                                        direction: isPortrait
-                                            ? Axis.horizontal
-                                            : Axis.vertical,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: pair
-                                            .map(
-                                              (type) => PaperStartButton(
-                                                startButtonType: type,
-                                                size: startButtonSizeConstraint,
-                                                isPortrait: isPortrait,
-                                                kyuui: _kyuui,
-                                                isExam: _isExam,
-                                              ),
-                                            )
-                                            .toList(),
-                                      );
-                                    },
+                      final buttonGrid = ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 600),
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Flex(
+                            direction: isPortrait
+                                ? Axis.vertical
+                                : Axis.horizontal,
+                            children: rows
+                                .map(
+                                  (pair) => Expanded(
+                                    child: LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        final startButtonSizeConstraint =
+                                            isPortrait
+                                            ? constraints.maxWidth / 2
+                                            : constraints.maxHeight / 2;
+                                        return Flex(
+                                          direction: isPortrait
+                                              ? Axis.horizontal
+                                              : Axis.vertical,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: pair.map((type) {
+                                            final hasLevel = _hasLevel(type);
+                                            return Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                AnimatedOpacity(
+                                                  opacity: hasLevel
+                                                      ? 1.0
+                                                      : 0.35,
+                                                  duration: const Duration(
+                                                    milliseconds: 300,
+                                                  ),
+                                                  curve: Curves.easeInOut,
+                                                  child: IgnorePointer(
+                                                    ignoring: !hasLevel,
+                                                    child: PaperStartButton(
+                                                      startButtonType: type,
+                                                      size:
+                                                          startButtonSizeConstraint,
+                                                      isPortrait: isPortrait,
+                                                      kyuui: _kyuui,
+                                                      isExam: _isExam,
+                                                    ),
+                                                  ),
+                                                ),
+                                                IgnorePointer(
+                                                  child: AnimatedOpacity(
+                                                    opacity: hasLevel
+                                                        ? 0.0
+                                                        : 1.0,
+                                                    duration: const Duration(
+                                                      milliseconds: 300,
+                                                    ),
+                                                    curve: Curves.easeInOut,
+                                                    child: AnimatedScale(
+                                                      scale: hasLevel
+                                                          ? 0.6
+                                                          : 1.0,
+                                                      duration: const Duration(
+                                                        milliseconds: 300,
+                                                      ),
+                                                      curve: Curves.easeOutBack,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }).toList(),
+                                        );
+                                      },
+                                    ),
                                   ),
-                                ),
-                              )
-                              .toList(),
+                                )
+                                .toList(),
+                          ),
                         ),
                       );
-                      final textStyle = Theme.of(context).textTheme;
                       final selectorStack = KyuuiSelectorStack(
                         primaryDenomination: KyuuiDenomination.zs,
                         secondaryDenomination: KyuuiDenomination.ns,
@@ -211,69 +248,53 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                             },
                           );
 
+                      final modeSelector = LabeledSlidingSegmentedControl<bool>(
+                        groupValue: _isExam,
+                        options: const [(false, '練習'), (true, '検定')],
+                        onValueChanged: (value) {
+                          setState(() {
+                            _isExam = value;
+                          });
+                        },
+                      );
+
                       return isPortrait
                           ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: .stretch,
                               children: [
                                 denominationSelector,
-                                const SizedBox(height: 6),
-                                SizedBox(height: 100, child: selectorStack),
-                                const SizedBox(height: 6),
+                                SizedBox(height: 80, child: selectorStack),
+                                modeSelector,
+                                SizedBox(height: 6),
                                 Expanded(child: buttonGrid),
                                 const SizedBox(height: 12),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text('検定モード', style: textStyle.titleLarge),
-                                    Switch(
-                                      value: _isExam,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _isExam = value;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
                               ],
                             )
                           : Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: .center,
                               children: [
                                 Expanded(flex: 1, child: selectorStack),
                                 Expanded(
-                                  flex: 5,
+                                  flex: 6,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
                                     children: [
-                                      denominationSelector,
-                                      const SizedBox(height: 6),
-                                      Expanded(child: buttonGrid),
-                                      const SizedBox(height: 12),
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            '検定モード',
-                                            style: textStyle.titleLarge,
+                                          Expanded(
+                                            flex: 3,
+                                            child: denominationSelector,
                                           ),
-                                          Switch(
-                                            value: _isExam,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _isExam = value;
-                                              });
-                                            },
+                                          SizedBox(width: 24),
+                                          Expanded(
+                                            flex: 2,
+                                            child: modeSelector,
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 6),
+                                      Expanded(
+                                        child: Center(child: buttonGrid),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -346,86 +367,105 @@ class PaperStartButton extends StatelessWidget {
         imagePath = 'assets/kakean.png';
         jippou = selectedLevel?.houshouJippou;
     }
-    if (selectedLevel == null) return const SizedBox.shrink();
+
+    final bool hasLevel = selectedLevel != null;
 
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: isPortrait ? size : size * 2,
-        maxHeight: isPortrait ? size : size,
+        maxHeight: size,
       ),
       child: NavigationButton(
         color: Theme.of(context).colorScheme.primaryContainer,
-        margin: EdgeInsets.all(10),
-        onPressed: () {
-          context.go(
-            '/paper-problem',
-            extra: {
-              'selectedLevel': selectedLevel,
-              'isExam': isExam,
-              'examDisplayString': '${kyuui.kyuuString}の$label',
-            },
-          );
-        },
+        margin: EdgeInsets.all(4),
+        onPressed: hasLevel
+            ? () {
+                context.go(
+                  '/paper-problem',
+                  extra: {
+                    'selectedLevel': selectedLevel,
+                    'isExam': isExam,
+                    'examDisplayString': '${kyuui.kyuuString}の$label',
+                  },
+                );
+              }
+            : () {},
         child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Flex(
-                direction: isPortrait ? Axis.vertical : Axis.horizontal,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    flex: isPortrait ? 3 : 3,
-                    child: Align(
-                      child: Image.asset(
-                        imagePath,
-                        fit: BoxFit.contain,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        colorBlendMode: BlendMode.srcIn,
-                      ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: isPortrait ? 3 : 5,
+                  child: Align(
+                    child: Image.asset(
+                      imagePath,
+                      fit: .contain,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      colorBlendMode: BlendMode.srcIn,
                     ),
                   ),
-                  Expanded(
-                    flex: isPortrait ? 1 : 4,
+                ),
+                Expanded(
+                  flex: isPortrait ? 1 : 2,
+                  child: FittedBox(
+                    fit: .scaleDown,
                     child: Text(
                       label,
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: Theme.of(context).textTheme.displayMedium,
                       textAlign: TextAlign.center,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             Positioned(
               top: 0,
               right: 0,
-              child: IconButton(
-                icon: const Icon(Icons.info_outline, size: 28),
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('${kyuui.kyuuString}の$label'),
-                      content: PaperInfoDialog(
-                        selectedLevel: selectedLevel!,
-                        letterCounts: letterCounts,
-                        houshou: houshou,
-                        jippou: jippou,
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('OK'),
-                        ),
-                      ],
-                      actionsAlignment: .center,
+              child: IgnorePointer(
+                ignoring: !hasLevel,
+                child: AnimatedOpacity(
+                  opacity: hasLevel ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: AnimatedScale(
+                    scale: hasLevel ? 1.0 : 0.6,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutBack,
+                    child: IconButton(
+                      icon: const Icon(Icons.info_outline, size: 28),
+                      padding: .zero,
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      onPressed: hasLevel
+                          ? () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('${kyuui.kyuuString}の$label'),
+                                  content: PaperInfoDialog(
+                                    selectedLevel: selectedLevel!,
+                                    letterCounts: letterCounts,
+                                    houshou: houshou,
+                                    jippou: jippou,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                  actionsAlignment: .center,
+                                ),
+                              );
+                            }
+                          : null,
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ],
@@ -594,7 +634,7 @@ class _KyuuiSelectorState extends State<KyuuiSelector> {
               carouselController: _controller,
               itemCount: widget.kyuuiList.length,
               options: CarouselOptions(
-                height: isPortrait ? 100 : constraints.biggest.height,
+                height: isPortrait ? 80 : constraints.biggest.height,
                 viewportFraction: 0.3,
                 enlargeCenterPage: true,
                 enlargeFactor: 0.3,
