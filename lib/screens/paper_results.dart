@@ -411,9 +411,8 @@ class _CountUpCircleState extends State<CountUpCircle>
       _lastSoundTrigger = currentMilestone;
       int playCount = currentMilestone ~/ 10;
       double pitch = 0.8 + (playCount * 0.04);
-      SoLoud.instance.play(tickSound!).then((handle) {
-        SoLoud.instance.setRelativePlaySpeed(handle, pitch);
-      });
+      final handle = SoLoud.instance.play(tickSound!);
+      SoLoud.instance.setRelativePlaySpeed(handle, pitch);
     }
   }
 

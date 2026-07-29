@@ -207,7 +207,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
           borderRadius: BorderRadius.circular(12),
           elevation: 4,
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             child: ConstrainedBox(
               constraints: BoxConstraints(minWidth: 150),
               child: Column(

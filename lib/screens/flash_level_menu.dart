@@ -312,10 +312,10 @@ class FlashInfoDialog extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text('全$probCount問 各10点', style: infoTextStyle),
-                      Text('　・　', style: infoTextStyle),
-                      Text('合格点：$passThreshold点以上', style: infoTextStyle),
+                      Text('  ・  ', style: infoTextStyle),
+                      Text('$passThreshold点で合格', style: infoTextStyle),
                       if (kuriagariNashi) ...[
-                        Text('　・　', style: infoTextStyle),
+                        Text('  ・  ', style: infoTextStyle),
                         Text('くりあがりなし', style: infoTextStyle),
                       ],
                     ],

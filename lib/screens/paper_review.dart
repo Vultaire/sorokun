@@ -25,7 +25,9 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
   @override
   Widget build(BuildContext context) {
     final List<ProblemScorer> incorrectProblemScorers = widget.problemScorerList
-        .where((entry) => !entry.isCorrect)
+        .where((entry) {
+          return !entry.isCorrect;
+        })
         .toList();
     bool isPortrait = MediaQuery.orientationOf(context) == .portrait;
 
@@ -136,7 +138,7 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                                       ),
                                       child: Center(
                                         child: Text(
-                                          '${problemIndex + 1}',
+                                          '${incorrectProblemScorers[problemIndex].index + 1}',
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontFamily: 'bizUDPGR',
@@ -300,7 +302,7 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
               itemCount: incorrectProblemScorers.length,
               itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
                 final currentProblem =
-                    widget.problemScorerList[problemIndex].problem;
+                    incorrectProblemScorers[problemIndex].problem;
                 final isFocused = problemIndex == currentIndex;
                 return AnimatedOpacity(
                   duration: const Duration(milliseconds: 300),

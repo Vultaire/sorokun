@@ -476,7 +476,7 @@ class _KeypadButtonState extends State<KeypadButton> {
           elevation: _isPressed ? 2 : 8,
           child: Padding(
             padding: const EdgeInsets.all(6.0),
-            child: widget.child,
+            child: FittedBox(fit: .scaleDown, child: widget.child),
           ),
         ),
       ),

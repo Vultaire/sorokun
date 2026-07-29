@@ -368,11 +368,11 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       case 0:
         return AloudProblem(
           chunks: _isRepeat ? _previousWavChunks : _wavChunks,
-          chunkStream: _isRepeat ? null : _chunkStream,
           onComplete: showInput,
           readyToPlay: _isRepeat ? true : _readyToPlay,
           negaimasitehaPath: widget.character.negaimasiteha,
           isSingleProblem: widget.isSingleProblem,
+          msPerInterval: widget.selectedLevel.msPerInterval,
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
@@ -390,6 +390,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           onShowResults: showResults,
           inputTime: _inputTime,
           isSingleProblem: widget.isSingleProblem,
+          homeRoute: '/aloud-level-menu',
         );
       default:
         return const SizedBox.shrink();
@@ -410,7 +411,27 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       allProblems: _allProblems,
       textFieldDataList: _textFieldDataList,
       child: Scaffold(
-        appBar: AppBar(title: Text('Aloud Problem')),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(
+            MediaQuery.of(context).orientation == Orientation.landscape
+                ? 40
+                : kToolbarHeight,
+          ),
+          child: AppBar(
+            title: const Text('読み上げ算'),
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () async {
+                await showExitDialog(
+                  context,
+                  homeRoute: '/aloud-level-menu',
+                  onSubmit: showResults,
+                );
+              },
+            ),
+          ),
+        ),
         body: PageTransitionSwitcher(
           duration: const Duration(milliseconds: 300),
           reverse: _currentPageIndex == 0,
@@ -481,19 +502,19 @@ class AloudProblem extends StatefulWidget {
   const AloudProblem({
     super.key,
     required this.chunks,
-    required this.chunkStream,
     required this.onComplete,
     required this.readyToPlay,
     required this.negaimasitehaPath,
     required this.isSingleProblem,
+    required this.msPerInterval,
   });
 
   final List<Uint8List> chunks;
-  final Stream<Uint8List>? chunkStream;
   final VoidCallback onComplete;
   final bool readyToPlay;
   final String negaimasitehaPath;
   final bool isSingleProblem;
+  final int msPerInterval;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -502,119 +523,193 @@ class AloudProblem extends StatefulWidget {
 class _AloudProblemState extends State<AloudProblem> {
   bool _isPlaying = false;
   bool _isPressed = false;
-  int _currentChunk = 0;
-  SoundHandle? _currentHandle;
-  AudioSource? _currentSource;
+  bool _isCompleted = false;
   bool _disposed = false;
   int _playSession = 0;
-  bool _isCompleted = false;
+
+  Timer? _playbackMonitorTimer;
+
+  int _scheduledChunkCount = 0;
+  Duration _timelineCursor = Duration.zero;
+  SoundHandle? _lastScheduledHandle;
+
+  final List<SoundHandle> _scheduledHandles = [];
+  final List<AudioSource> _activeSources = [];
 
   @override
   void dispose() {
     _disposed = true;
-    _playSession++;
-    if (_currentHandle != null) {
-      SoLoud.instance.stop(_currentHandle!);
-    }
-    if (_currentSource != null) {
-      SoLoud.instance.disposeSource(_currentSource!);
-    }
+    _stopPlayback();
     super.dispose();
   }
 
-  Future<void> _playPreamble(int session) async {
-    final source = await SoLoud.instance.loadAsset(widget.negaimasitehaPath);
-    if (_disposed || session != _playSession) {
-      SoLoud.instance.disposeSource(source);
-      return;
-    }
-    _currentSource = source;
-    final handle = await SoLoud.instance.play(source);
-    if (session != _playSession) {
-      await SoLoud.instance.stop(handle);
-      await SoLoud.instance.disposeSource(source);
-      return;
-    }
-    _currentHandle = handle;
-    final duration = SoLoud.instance.getLength(source);
-    await Future.delayed(duration);
-    if (session == _playSession) {
-      await SoLoud.instance.disposeSource(source);
-    }
-  }
+  void _stopPlayback() {
+    _playSession++;
+    _playbackMonitorTimer?.cancel();
+    _playbackMonitorTimer = null;
 
-  Future<void> _playNextChunk(int session) async {
-    if (_disposed ||
-        session != _playSession ||
-        !_isPlaying ||
-        _currentChunk >= widget.chunks.length) {
-      final completed =
-          !_disposed &&
-          session == _playSession &&
-          _isPlaying &&
-          _currentChunk >= widget.chunks.length;
-      if (!_disposed && session == _playSession) {
-        setState(() {
-          _isPlaying = false;
-          _currentChunk = 0;
-          if (completed) _isCompleted = true;
-        });
-        if (completed) {
-          widget.onComplete.call();
-        }
+    _scheduledChunkCount = 0;
+    _lastScheduledHandle = null;
+
+    for (final handle in _scheduledHandles) {
+      if (SoLoud.instance.getIsValidVoiceHandle(handle)) {
+        SoLoud.instance.stop(handle);
       }
-      return;
     }
-    final source = await SoLoud.instance.loadMem(
-      'chunk_$_currentChunk.wav',
-      widget.chunks[_currentChunk],
-    );
-    if (_disposed || session != _playSession) {
+    _scheduledHandles.clear();
+
+    for (final source in _activeSources) {
       SoLoud.instance.disposeSource(source);
-      return;
     }
-    _currentSource = source;
-    final handle = await SoLoud.instance.play(source);
-    if (session != _playSession) {
-      await SoLoud.instance.stop(handle);
-      await SoLoud.instance.disposeSource(source);
-      return;
-    }
-    _currentHandle = handle;
-    final duration = SoLoud.instance.getLength(source);
-    _currentChunk++;
-    Future.delayed(duration, () async {
-      await SoLoud.instance.disposeSource(source);
-      if (!_disposed && session == _playSession && _isPlaying) {
-        _playNextChunk(session);
-      }
-    });
+    _activeSources.clear();
   }
 
   Future<void> _play() async {
     if (_isPlaying) {
-      _playSession++;
-      if (_currentHandle != null) {
-        await SoLoud.instance.stop(_currentHandle!);
-      }
+      _stopPlayback();
       setState(() {
         _isPlaying = false;
-        _currentChunk = 0;
       });
       return;
     }
 
-    _playSession++;
-    final session = _playSession;
+    if (!widget.readyToPlay && widget.chunks.isEmpty) {
+      return;
+    }
+
+    _stopPlayback();
+    final session = ++_playSession;
 
     setState(() {
       _isPlaying = true;
-      _currentChunk = 0;
+      _isCompleted = false;
     });
 
-    await _playPreamble(session);
-    if (_disposed || session != _playSession || !_isPlaying) return;
-    _playNextChunk(session);
+    try {
+      // 1. Load & Schedule Preamble (negaimasiteha)
+      final preambleSource = await SoLoud.instance.loadAsset(
+        widget.negaimasitehaPath,
+      );
+      if (_disposed || session != _playSession) {
+        await SoLoud.instance.disposeSource(preambleSource);
+        return;
+      }
+      _activeSources.add(preambleSource);
+
+      final preambleDuration = SoLoud.instance.getLength(preambleSource);
+      final engineNow = SoLoud.instance.getEngineTime();
+
+      _timelineCursor = engineNow + const Duration(milliseconds: 50);
+
+      final preambleHandle = SoLoud.instance.playScheduled(
+        preambleSource,
+        _timelineCursor,
+      );
+      _scheduledHandles.add(preambleHandle);
+      _lastScheduledHandle = preambleHandle;
+
+      _timelineCursor += preambleDuration;
+
+      // 2. Schedule any chunks already available in widget.chunks
+      await _schedulePendingChunks(session);
+
+      // 3. Start monitoring for newly arrived stream chunks and handle completion
+      _startPlaybackMonitor(session);
+    } catch (e, stack) {
+      print('[_play] Playback error: $e\n$stack');
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+        });
+      }
+      _stopPlayback();
+    }
+  }
+
+  Future<void> _schedulePendingChunks(int session) async {
+    while (_scheduledChunkCount < widget.chunks.length) {
+      if (_disposed || session != _playSession) return;
+
+      final chunkIndex = _scheduledChunkCount;
+      final chunkBytes = widget.chunks[chunkIndex];
+
+      final source = await SoLoud.instance.loadMem(
+        'chunk_${session}_$chunkIndex.wav',
+        chunkBytes,
+      );
+
+      if (_disposed || session != _playSession) {
+        await SoLoud.instance.disposeSource(source);
+        return;
+      }
+
+      _activeSources.add(source);
+      final duration = SoLoud.instance.getLength(source);
+
+      // Apply msPerInterval ONLY for subsequent chunks (chunkIndex > 0)
+      if (chunkIndex > 0) {
+        _timelineCursor += Duration(milliseconds: widget.msPerInterval);
+      }
+
+      final chunkHandle = SoLoud.instance.playScheduled(
+        source,
+        _timelineCursor,
+      );
+
+      _scheduledHandles.add(chunkHandle);
+      _lastScheduledHandle = chunkHandle;
+
+      _timelineCursor += duration;
+      _scheduledChunkCount++;
+    }
+  }
+
+  void _startPlaybackMonitor(int session) {
+    _playbackMonitorTimer = Timer.periodic(const Duration(milliseconds: 100), (
+      timer,
+    ) async {
+      if (_disposed || session != _playSession) {
+        timer.cancel();
+        return;
+      }
+
+      // Automatically schedule any new chunks added to widget.chunks by the parent stream
+      if (_scheduledChunkCount < widget.chunks.length) {
+        await _schedulePendingChunks(session);
+      }
+
+      final finalHandle = _lastScheduledHandle;
+      if (finalHandle == null) return;
+
+      final isValid = SoLoud.instance.getIsValidVoiceHandle(finalHandle);
+
+      // Trigger completion ONLY when:
+      // 1. The last scheduled handle has finished playing (!isValid)
+      // 2. All chunks currently in widget.chunks have been scheduled
+      if (!isValid && _scheduledChunkCount >= widget.chunks.length) {
+        timer.cancel();
+
+        // 300ms buffer for hardware audio output buffer flush
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (_disposed || session != _playSession) return;
+
+          if (mounted) {
+            setState(() {
+              _isPlaying = false;
+              _isCompleted = true;
+            });
+          }
+
+          for (final source in List<AudioSource>.from(_activeSources)) {
+            SoLoud.instance.disposeSource(source);
+          }
+          _activeSources.clear();
+          _scheduledHandles.clear();
+
+          widget.onComplete();
+        });
+      }
+    });
   }
 
   @override

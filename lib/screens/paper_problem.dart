@@ -142,6 +142,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           allAnswers = state._allAnswers;
           allProblems = state._allProblems;
           textFieldDataList = state._textFieldDataList;
+          print(textFieldDataList[0].formatted);
         }
       case DivMultLevel():
         final state = _divMultKey.currentState;
@@ -149,6 +150,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           allAnswers = state._allAnswers;
           allProblems = state._allProblems;
           textFieldDataList = state._textFieldDataList;
+          print(textFieldDataList[0].formatted);
         }
     }
 
@@ -390,7 +392,10 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                               await showExitDialog(
                                 context,
                                 homeRoute: '/paper-menu',
-                                onSubmit: () => _onComplete(outOfTime: true),
+                                onSubmit: () {
+                                  final data = _collectResultData();
+                                  if (data != null) _navigateToResults(data);
+                                },
                               );
                             },
                           ),

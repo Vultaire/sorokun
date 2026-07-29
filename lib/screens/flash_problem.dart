@@ -188,6 +188,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           onShowResults: showResultPage,
           inputTime: _inputTime,
           isSingleProblem: widget.isSingleProblem,
+          homeRoute: '/flash-level-menu',
         );
       default:
         return const SizedBox.shrink();
@@ -318,14 +319,13 @@ class _FlashAndAloudProblemInputState<T>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Padding(
-        padding: .all(18),
+      body: SafeArea(
         child: SizedBox.expand(
           child: Flex(
             direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
             children: [
               Expanded(
-                flex: 3,
+                flex: 8,
                 child: Column(
                   mainAxisAlignment: .center,
                   crossAxisAlignment: .center,
@@ -365,7 +365,7 @@ class _FlashAndAloudProblemInputState<T>
                 ),
               ),
               Expanded(
-                flex: 2,
+                flex: 5,
                 child: Keypad(
                   onAppendDigit: appendDigit,
                   onDeleteDigit: deleteDigit,
@@ -404,6 +404,7 @@ class FlashAndAloudResult<T> extends StatefulWidget {
     required this.onRepeatProblem,
     required this.onNewProblem,
     required this.onShowResults,
+    required this.homeRoute,
   });
   final VoidCallback onNextProblem;
   final VoidCallback onRepeatProblem;
@@ -411,6 +412,7 @@ class FlashAndAloudResult<T> extends StatefulWidget {
   final VoidCallback onShowResults;
   final String inputTime;
   final bool isSingleProblem;
+  final String homeRoute;
 
   @override
   State<FlashAndAloudResult<T>> createState() => _FlashAndAloudResultState<T>();

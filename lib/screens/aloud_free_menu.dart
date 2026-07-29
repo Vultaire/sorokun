@@ -96,13 +96,13 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: OrientationBuilder(
               builder: (context, orientation) {
                 final isPortrait = orientation == Orientation.portrait;
                 final incrementers = Flex(
                   direction: isPortrait ? .vertical : .horizontal,
-                  spacing: 8,
+                  spacing: 16,
                   children: [
                     FittedBox(
                       fit: .contain,
@@ -152,8 +152,8 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                             label: '読上間隔',
                             onChanged: (newValue) =>
                                 setState(() => _msPerInterval = newValue),
-                            min: 100,
-                            max: 5000,
+                            min: 0,
+                            max: 3000,
                             step: 100,
                             displayValue: '${_msPerInterval / 1000}',
                           ),
@@ -165,7 +165,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
 
                 final minusAndVoiceSelection = Flex(
                   direction: isPortrait ? .vertical : .horizontal,
-                  spacing: 8,
+                  spacing: 16,
                   children: [
                     Row(
                       mainAxisSize: .min,
@@ -233,7 +233,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                               fit: .contain,
                               child: Column(
                                 mainAxisAlignment: .spaceEvenly,
-                                spacing: 8,
+                                spacing: 16,
                                 children: [
                                   incrementers,
                                   minusAndVoiceSelection,
@@ -285,7 +285,7 @@ class VoiceSelectionButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         elevation: 4,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24.0, 12, 12, 12),
+          padding: const EdgeInsets.fromLTRB(24, 8, 12, 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -359,7 +359,7 @@ class _VoiceGridItem extends StatelessWidget {
 
   Future<void> _playSample(String assetPath) async {
     final source = await SoLoud.instance.loadAsset(assetPath);
-    await SoLoud.instance.play(source);
+    SoLoud.instance.play(source);
     final duration = SoLoud.instance.getLength(source);
     Future.delayed(duration, () {
       SoLoud.instance.disposeSource(source);

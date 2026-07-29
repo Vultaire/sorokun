@@ -37,12 +37,12 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
           'aloud_kyuui',
           'aloud_kyuuiDenomination',
           'aloud_zsIndex',
-          'aloud_character',
+          'character',
         },
       ),
     );
     final kyuuiIndex = _prefs.getInt('aloud_kyuui');
-    final characterIndex = _prefs.getInt('aloud_character');
+    final characterIndex = _prefs.getInt('character');
     final denominationIndex = _prefs.getInt('aloud_kyuuiDenomination');
     final zsIndex = _prefs.getInt('aloud_zsIndex');
     if (zsIndex != null) {
@@ -87,7 +87,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
     _prefs.setInt('aloud_kyuui', _kyuui.index);
     _prefs.setInt('aloud_kyuuiDenomination', _kyuuiDenomination.index);
     _prefs.setInt('aloud_zsIndex', _zsIndex);
-    _prefs.setInt('aloud_character', _character.index);
+    _prefs.setInt('character', _character.index);
 
     super.dispose();
   }
@@ -269,8 +269,8 @@ class AloudInfoDialog extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('全$probCount問 各10点', style: infoTextStyle),
-              Text('・', style: infoTextStyle),
-              Text('合格点：$passThreshold点以上', style: infoTextStyle),
+              Text('  ・  ', style: infoTextStyle),
+              Text('$passThreshold点で合格', style: infoTextStyle),
             ],
           ),
           VoiceSelectionButton(
