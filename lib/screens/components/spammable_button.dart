@@ -5,16 +5,12 @@ import 'package:flutter/material.dart';
 class SpammableButton extends StatefulWidget {
   final VoidCallback onTapDown;
   final Widget child;
-  final double offsetX;
-  final double offsetY;
   final bool enableRepeat;
 
   const SpammableButton({
     super.key,
     required this.onTapDown,
     required this.child,
-    this.offsetX = 2.0,
-    this.offsetY = 2.0,
     this.enableRepeat = false,
   });
 
@@ -51,7 +47,12 @@ class _SpammableButtonState extends State<SpammableButton> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final restingColor = colorScheme.surfaceContainer;
+    final pressedColor = Color.lerp(restingColor, colorScheme.primary, 0.15)!;
+
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTapDown: (_) {
         setState(() => _isPressed = true);
         widget.onTapDown.call();
@@ -73,15 +74,15 @@ class _SpammableButtonState extends State<SpammableButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 50),
         transform: Matrix4.translationValues(
-          _isPressed ? widget.offsetX : 0.0,
-          _isPressed ? widget.offsetY : 0.0,
+          _isPressed ? 3.0 : 0.0,
+          _isPressed ? 3.0 : 0.0,
           0,
         ),
         child: AnimatedPhysicalModel(
           duration: const Duration(milliseconds: 50),
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(8),
-          color: Colors.transparent,
+          color: _isPressed ? pressedColor : restingColor,
           shadowColor: Colors.black,
           elevation: _isPressed ? 2 : 8,
           child: widget.child,

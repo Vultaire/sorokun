@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
+import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
@@ -78,21 +79,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(
-          MediaQuery.of(context).orientation == Orientation.landscape
-              ? 40
-              : kToolbarHeight,
-        ),
-        child: AppBar(
-          title: const Text('読み上げ算フリー'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'),
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(title: '読み上げ算フリー', context: context),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -100,148 +87,187 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
             child: OrientationBuilder(
               builder: (context, orientation) {
                 final isPortrait = orientation == Orientation.portrait;
-                final incrementers = Flex(
-                  direction: isPortrait ? .vertical : .horizontal,
-                  spacing: 16,
-                  children: [
-                    FittedBox(
-                      fit: .contain,
-                      child: Row(
-                        children: [
-                          Incrementer(
-                            value: _kuchi,
-                            label: '口数',
-                            onChanged: (newValue) =>
-                                setState(() => _kuchi = newValue.toInt()),
-                            min: 2,
-                            max: 30,
-                          ),
-                          SizedBox(width: 16),
-                          RangeIncrementer(
-                            minValue: _minDigits,
-                            maxValue: _maxDigits,
-                            label: '桁数',
-                            onChanged: (newValue) {
-                              final (newMin, newMax) = newValue;
-                              setState(() {
-                                _minDigits = newMin;
-                                _maxDigits = newMax;
-                              });
-                            },
-                            min: 1,
-                            max: 16,
-                          ),
-                        ],
-                      ),
-                    ),
-                    FittedBox(
-                      child: Row(
-                        children: [
-                          Incrementer(
-                            value: _moraPerSecond,
-                            label: '読上速度',
-                            onChanged: (newValue) => setState(
-                              () => _moraPerSecond = newValue.toInt(),
-                            ),
-                            min: 3,
-                            max: 12,
-                          ),
-                          SizedBox(width: 16),
-                          Incrementer(
-                            value: _msPerInterval,
-                            label: '読上間隔',
-                            onChanged: (newValue) =>
-                                setState(() => _msPerInterval = newValue),
-                            min: 0,
-                            max: 3000,
-                            step: 100,
-                            displayValue: '${_msPerInterval / 1000}',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-
-                final minusAndVoiceSelection = Flex(
-                  direction: isPortrait ? .vertical : .horizontal,
-                  spacing: 16,
-                  children: [
-                    Row(
-                      mainAxisSize: .min,
-                      mainAxisAlignment: .center,
-                      crossAxisAlignment: .center,
-                      children: [
-                        Text(
-                          '引き算',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        SizedBox(width: 16),
-                        LabeledSlidingSegmentedControl<bool>(
-                          groupValue: _hasMinus,
-                          options: const [(false, 'なし'), (true, 'あり')],
-                          onValueChanged: (value) {
-                            setState(() {
-                              _hasMinus = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    VoiceSelectionButton(
-                      character: _character,
-                      onChanged: (selected) {
-                        setState(() => _character = selected);
-                      },
-                    ),
-                  ],
-                );
-
-                final startButton = StartButton(
-                  onPressed: () {
-                    AloudSingleProblemSpec spec = AloudSingleProblemSpec(
-                      kuchi: _kuchi,
-                      moraPerSecond: _moraPerSecond,
-                      msPerInterval: _msPerInterval,
-                      minDigits: _minDigits,
-                      maxDigits: _maxDigits,
-                      minusCount: _hasMinus ? (_kuchi * 0.3).round() : 0,
-                    );
-                    context.push(
-                      '/aloud-problem',
-                      extra: {
-                        'isSingleProblem': true,
-                        'selectedLevel': spec,
-                        'character': _character,
-                      },
-                    );
-                  },
-                );
 
                 return LayoutBuilder(
                   builder: (context, constraints) {
-                    return Column(
-                      mainAxisAlignment: .center,
+                    final incrementers = Flex(
+                      direction: isPortrait ? Axis.vertical : Axis.horizontal,
                       spacing: 16,
                       children: [
-                        Expanded(
+                        FittedBox(
+                          fit: BoxFit.contain,
+                          child: Row(
+                            children: [
+                              Incrementer(
+                                value: _kuchi,
+                                label: '口数',
+                                onChanged: (newValue) =>
+                                    setState(() => _kuchi = newValue.toInt()),
+                                min: 1,
+                                max: 30,
+                              ),
+                              const SizedBox(width: 16),
+                              RangeIncrementer(
+                                minValue: _minDigits,
+                                maxValue: _maxDigits,
+                                label: '桁数',
+                                onChanged: (newValue) {
+                                  final (newMin, newMax) = newValue;
+                                  setState(() {
+                                    _minDigits = newMin;
+                                    _maxDigits = newMax;
+                                  });
+                                },
+                                min: 1,
+                                max: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                        FittedBox(
+                          fit: BoxFit.contain,
+                          child: Row(
+                            children: [
+                              Incrementer(
+                                value: _moraPerSecond,
+                                label: '読上速度',
+                                onChanged: (newValue) => setState(
+                                  () => _moraPerSecond = newValue.toInt(),
+                                ),
+                                min: 3,
+                                max: 14,
+                              ),
+                              const SizedBox(width: 16),
+                              Incrementer(
+                                value: _msPerInterval,
+                                label: '読上間隔',
+                                onChanged: (newValue) =>
+                                    setState(() => _msPerInterval = newValue),
+                                min: 100,
+                                max: 3000,
+                                step: 100,
+                                displayValue: '${_msPerInterval / 1000}',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+
+                    final minusAndVoiceSelection = Flex(
+                      direction: isPortrait ? Axis.vertical : Axis.horizontal,
+                      spacing: 16,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              '引き算',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            const SizedBox(width: 16),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(minWidth: 240),
+                              child: LabeledSlidingSegmentedControl<bool>(
+                                groupValue: _hasMinus,
+                                options: const [(false, 'なし'), (true, 'あり')],
+                                onValueChanged: (value) {
+                                  setState(() {
+                                    _hasMinus = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        VoiceSelectionButton(
+                          character: _character,
+                          onChanged: (selected) {
+                            setState(() => _character = selected);
+                          },
+                        ),
+                      ],
+                    );
+
+                    final startButton = StartButton(
+                      onPressed: () {
+                        AloudSingleProblemSpec spec = AloudSingleProblemSpec(
+                          kuchi: _kuchi,
+                          moraPerSecond: _moraPerSecond,
+                          msPerInterval: _msPerInterval,
+                          minDigits: _minDigits,
+                          maxDigits: _maxDigits,
+                          minusCount: _hasMinus ? (_kuchi * 0.3).round() : 0,
+                        );
+                        context.push(
+                          '/aloud-problem',
+                          extra: {
+                            'isSingleProblem': true,
+                            'selectedLevel': spec,
+                            'character': _character,
+                          },
+                        );
+                      },
+                    );
+
+                    // Portrait Layout
+                    if (isPortrait) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 16,
+                        children: [
+                          Expanded(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: constraints.maxWidth,
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  spacing: 16,
+                                  children: [
+                                    incrementers,
+                                    minusAndVoiceSelection,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          startButton,
+                        ],
+                      );
+                    }
+
+                    // Landscape Layout
+                    final content = Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        incrementers,
+                        const SizedBox(height: 24),
+                        minusAndVoiceSelection,
+                      ],
+                    );
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: constraints.maxWidth,
                             ),
                             child: FittedBox(
-                              fit: .contain,
-                              child: Column(
-                                mainAxisAlignment: .spaceEvenly,
-                                spacing: 16,
-                                children: [
-                                  incrementers,
-                                  minusAndVoiceSelection,
-                                ],
-                              ),
+                              fit: BoxFit.contain,
+                              child: content,
                             ),
                           ),
                         ),
+                        const SizedBox(height: 16),
                         startButton,
                       ],
                     );
@@ -314,11 +340,26 @@ class VoiceSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('声を選択')),
+      appBar: CustomAppBar(
+        title: '声を選択',
+        context: context,
+        onBackPressed: () => context.pop(),
+      ),
       body: SafeArea(
         child: OrientationBuilder(
           builder: (context, orientation) {
-            final crossAxisCount = orientation == Orientation.landscape ? 6 : 3;
+            final screenWidth = MediaQuery.of(context).size.width;
+            final isLandscape = orientation == Orientation.landscape;
+            final isLargeScreen = screenWidth >= 600;
+
+            final int crossAxisCount;
+            if (isLandscape) {
+              crossAxisCount = 6;
+            } else if (isLargeScreen) {
+              crossAxisCount = 5;
+            } else {
+              crossAxisCount = 3;
+            }
 
             return GridView.builder(
               padding: const EdgeInsets.all(16),
@@ -373,13 +414,12 @@ class _VoiceGridItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.surfaceContainerHighest
-              : colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
+      child: Material(
+        color: isSelected
+            ? colorScheme.surfaceContainerHighest
+            : colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+        elevation: 4,
         child: FittedBox(
           fit: BoxFit.scaleDown,
           child: Padding(

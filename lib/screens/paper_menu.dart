@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import '../models/level_definitions.dart';
@@ -88,21 +89,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(
-          MediaQuery.of(context).orientation == Orientation.landscape
-              ? 40
-              : kToolbarHeight,
-        ),
-        child: AppBar(
-          title: const Text('基本種目'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'),
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(title: '基本種目', context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,
@@ -127,12 +114,12 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                       final buttonGrid = ConstrainedBox(
                         constraints: BoxConstraints(maxHeight: 600),
                         child: Container(
-                          padding: const EdgeInsets.all(6),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Theme.of(
                               context,
                             ).colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(24),
                           ),
                           child: Flex(
                             direction: isPortrait
@@ -402,7 +389,7 @@ class PaperStartButton extends StatelessWidget {
                     child: Image.asset(
                       imagePath,
                       fit: .contain,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                       colorBlendMode: BlendMode.srcIn,
                     ),
                   ),
@@ -413,7 +400,12 @@ class PaperStartButton extends StatelessWidget {
                     fit: .scaleDown,
                     child: Text(
                       label,
-                      style: Theme.of(context).textTheme.displayMedium,
+                      style: Theme.of(context).textTheme.displayMedium!
+                          .copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -436,6 +428,7 @@ class PaperStartButton extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(Icons.info_outline, size: 28),
                       padding: .zero,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       hoverColor: Colors.transparent,

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -7,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
-import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/spammable_button.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
@@ -25,28 +27,20 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
   int _digits = 3;
   late final SharedPreferencesWithCache _prefs;
 
-  void _decreaseValue() {
-    double newValue;
-
-    if (_secondsPerProblem > CircularSlider.range1End) {
-      // In range 40-10: decrease by 1
-      newValue = _secondsPerProblem - 1.0;
-    } else {
-      // In range 10-0.9: decrease by 0.1
-      newValue = (_secondsPerProblem * 10 - 1) / 10;
-    }
-
-    newValue = newValue.clamp(CircularSlider.minValue, CircularSlider.maxValue);
-
-    setState(() {
-      _secondsPerProblem = newValue;
-    });
-  }
+  static const double _tallScreenThreshold = 700.0;
 
   @override
   void initState() {
     super.initState();
     _loadPrefs();
+    Incrementer.ensureIncrementSoundLoaded();
+  }
+
+  void _playIncrementSound() {
+    final sound = Incrementer.incrementSound;
+    if (sound != null) {
+      SoLoud.instance.play(sound);
+    }
   }
 
   Future<void> _loadPrefs() async {
@@ -63,22 +57,30 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
     });
   }
 
+  void _decreaseValue() {
+    double newValue;
+    if (_secondsPerProblem > CircularSlider.range1End) {
+      newValue = _secondsPerProblem - 1.0;
+    } else {
+      newValue = (_secondsPerProblem * 10 - 1) / 10;
+    }
+    newValue = newValue.clamp(CircularSlider.minValue, CircularSlider.maxValue);
+    if (newValue == _secondsPerProblem) return; // already at min, no change
+    _playIncrementSound();
+    setState(() => _secondsPerProblem = newValue);
+  }
+
   void _increaseValue() {
     double newValue;
-
     if (_secondsPerProblem >= CircularSlider.range1End) {
-      // In range 40-10: increase by 1
       newValue = _secondsPerProblem + 1.0;
     } else {
-      // In range 10-0.9: increase by 0.1
       newValue = (_secondsPerProblem * 10 + 1) / 10;
     }
-
     newValue = newValue.clamp(CircularSlider.minValue, CircularSlider.maxValue);
-
-    setState(() {
-      _secondsPerProblem = newValue;
-    });
+    if (newValue == _secondsPerProblem) return; // already at max, no change
+    _playIncrementSound();
+    setState(() => _secondsPerProblem = newValue);
   }
 
   @override
@@ -86,7 +88,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
     _prefs.setDouble('secondsPerProblem', _secondsPerProblem);
     _prefs.setInt('kuchi', _kuchi);
     _prefs.setInt('digits', _digits);
-
     super.dispose();
   }
 
@@ -95,8 +96,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
     final int hideDuration = (_secondsPerProblem / (2.5 * _kuchi - 1) * 1000)
         .round();
     final int showDuration = (1.5 * hideDuration).round();
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: PreferredSize(
@@ -105,14 +104,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
               ? 40
               : kToolbarHeight,
         ),
-        child: AppBar(
-          title: const Text('フラッシュ暗算フリー'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'),
-          ),
-        ),
+        child: CustomAppBar(title: 'フラッシュ暗算フリー', context: context),
       ),
       body: SafeArea(
         child: Center(
@@ -122,176 +114,57 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
               builder: (context, orientation) {
                 final isPortrait = orientation == Orientation.portrait;
 
-                final incrementers = Row(
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    Incrementer(
-                      value: _kuchi,
-                      label: '口数',
-                      onChanged: (newValue) =>
-                          setState(() => _kuchi = newValue.toInt()),
-                      min: 2,
-                      max: 30,
-                    ),
-                    SizedBox(width: 16),
-                    Incrementer(
-                      value: _digits,
-                      label: '桁数',
-                      onChanged: (newValue) =>
-                          setState(() => _digits = newValue.toInt()),
-                      min: 1,
-                      max: 6,
-                    ),
-                  ],
-                );
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isTallScreen =
+                        constraints.maxHeight.isFinite &&
+                        constraints.maxHeight > _tallScreenThreshold;
 
-                final slider = SizedBox(
-                  width: 400,
-                  height: 300,
-                  child: Stack(
-                    children: [
-                      CircularSlider(
-                        initialValue: _secondsPerProblem,
-                        width: 400,
-                        height: 300,
-                        onChanged: (value) {
-                          setState(() {
-                            _secondsPerProblem = value;
-                          });
-                        },
-                      ),
-                      Positioned(
-                        left: 90,
-                        bottom: 40,
-                        child: SpammableButton(
-                          onTapDown: () {
-                            _increaseValue();
-                          },
-                          enableRepeat: true,
-                          offsetX: 3.0,
-                          offsetY: 3.0,
-                          child: Container(
-                            height: 80,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              color: colorScheme.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: EdgeInsets.all(8),
-                            child: Image.asset(
-                              'assets/tortoise.png',
-                              color: colorScheme.onSurface,
-                              colorBlendMode: BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 90,
-                        bottom: 40,
-                        child: SpammableButton(
-                          onTapDown: () {
-                            _decreaseValue();
-                          },
-                          enableRepeat: true,
-                          child: Container(
-                            height: 80,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              color: colorScheme.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: EdgeInsets.all(8),
-                            child: Image.asset(
-                              'assets/hare.png',
-                              color: colorScheme.onSurface,
-                              colorBlendMode: BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-
-                final durationCards = Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Flex(
-                    direction: isPortrait ? Axis.horizontal : Axis.vertical,
-                    spacing: isPortrait ? 10 : 40,
-                    children: [
-                      Material(
-                        elevation: 4,
-                        borderRadius: BorderRadius.circular(8),
-                        color: colorScheme.surfaceContainer,
-                        child: SizedBox(
-                          width: 200,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Text('表示間隔', style: textTheme.headlineSmall),
-                                Text(
-                                  '~${showDuration}ms',
-                                  style: textTheme.headlineLarge!.copyWith(
-                                    fontFeatures: <FontFeature>[
-                                      FontFeature.tabularFigures(),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Material(
-                        elevation: 4,
-                        borderRadius: BorderRadius.circular(8),
-                        color: colorScheme.surfaceContainer,
-                        child: SizedBox(
-                          width: 200,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Text('消画間隔', style: textTheme.headlineSmall),
-                                Text(
-                                  '~${hideDuration}ms',
-                                  style: textTheme.headlineLarge!.copyWith(
-                                    fontFeatures: <FontFeature>[
-                                      FontFeature.tabularFigures(),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-
-                final startButton = StartButton(
-                  onPressed: () {
-                    FlashSingleProblemSpec spec = FlashSingleProblemSpec(
-                      digits: _digits,
+                    final incrementers = _IncrementerSection(
                       kuchi: _kuchi,
-                      secondsPerProblem: _secondsPerProblem,
-                      builder: mitoriStyle,
+                      digits: _digits,
+                      onKuchiChanged: (val) => setState(() => _kuchi = val),
+                      onDigitsChanged: (val) => setState(() => _digits = val),
                     );
-                    context.push(
-                      '/flash-problem',
-                      extra: {'isSingleProblem': true, 'selectedLevel': spec},
-                    );
-                  },
-                );
 
-                if (isPortrait) {
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
+                    final slider = _TortoiseHareSlider(
+                      secondsPerProblem: _secondsPerProblem,
+                      onSliderChanged: (val) =>
+                          setState(() => _secondsPerProblem = val),
+                      onIncrease: _increaseValue,
+                      onDecrease: _decreaseValue,
+                    );
+
+                    final durationCards = _DurationCardsSection(
+                      showDuration: showDuration,
+                      hideDuration: hideDuration,
+                      direction: isPortrait
+                          ? Axis.horizontal
+                          : (isTallScreen ? Axis.horizontal : Axis.vertical),
+                      spacing: isPortrait ? 10 : (isTallScreen ? 10 : 40),
+                    );
+
+                    final startButton = StartButton(
+                      onPressed: () {
+                        FlashSingleProblemSpec spec = FlashSingleProblemSpec(
+                          digits: _digits,
+                          kuchi: _kuchi,
+                          secondsPerProblem: _secondsPerProblem,
+                          builder: mitoriStyle,
+                        );
+                        context.push(
+                          '/flash-problem',
+                          extra: {
+                            'isSingleProblem': true,
+                            'selectedLevel': spec,
+                          },
+                        );
+                      },
+                    );
+
+                    if (isPortrait) {
                       return Column(
-                        mainAxisAlignment: .center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 16,
                         children: [
                           Expanded(
@@ -300,9 +173,10 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                                 maxWidth: constraints.maxWidth,
                               ),
                               child: FittedBox(
-                                fit: .contain,
+                                fit: BoxFit.contain,
                                 child: Column(
-                                  mainAxisAlignment: .spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   spacing: 8,
                                   children: [
                                     incrementers,
@@ -316,43 +190,240 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                           startButton,
                         ],
                       );
-                    },
-                  );
-                } else {
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Column(
-                        mainAxisAlignment: .spaceEvenly,
-                        children: [
-                          Flexible(
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: constraints.maxWidth,
+                    }
+
+                    // Landscape Layout
+                    final content = isTallScreen
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [incrementers, slider],
                               ),
-                              child: FittedBox(
-                                fit: BoxFit.contain,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    incrementers,
-                                    slider,
-                                    durationCards,
-                                  ],
-                                ),
-                              ),
+                              const SizedBox(height: 24),
+                              durationCards,
+                            ],
+                          )
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [incrementers, slider, durationCards],
+                          );
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: constraints.maxWidth,
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: content,
                             ),
                           ),
-                          startButton,
-                        ],
-                      );
-                    },
-                  );
-                }
+                        ),
+                        startButton,
+                      ],
+                    );
+                  },
+                );
               },
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IncrementerSection extends StatelessWidget {
+  final int kuchi;
+  final int digits;
+  final ValueChanged<int> onKuchiChanged;
+  final ValueChanged<int> onDigitsChanged;
+
+  const _IncrementerSection({
+    required this.kuchi,
+    required this.digits,
+    required this.onKuchiChanged,
+    required this.onDigitsChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Incrementer(
+          value: kuchi,
+          label: '口数',
+          onChanged: (newValue) => onKuchiChanged(newValue.toInt()),
+          min: 1,
+          max: 30,
+        ),
+        const SizedBox(width: 16),
+        Incrementer(
+          value: digits,
+          label: '桁数',
+          onChanged: (newValue) => onDigitsChanged(newValue.toInt()),
+          min: 1,
+          max: 6,
+        ),
+      ],
+    );
+  }
+}
+
+class _TortoiseHareSlider extends StatelessWidget {
+  final double secondsPerProblem;
+  final ValueChanged<double> onSliderChanged;
+  final VoidCallback onIncrease;
+  final VoidCallback onDecrease;
+
+  const _TortoiseHareSlider({
+    required this.secondsPerProblem,
+    required this.onSliderChanged,
+    required this.onIncrease,
+    required this.onDecrease,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      width: 400,
+      height: 300,
+      child: Stack(
+        children: [
+          CircularSlider(
+            initialValue: secondsPerProblem,
+            width: 400,
+            height: 300,
+            onChanged: onSliderChanged,
+          ),
+          Positioned(
+            left: 90,
+            bottom: 40,
+            child: SpammableButton(
+              onTapDown: onIncrease,
+              enableRepeat: true,
+              child: Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: Image.asset(
+                  'assets/tortoise.png',
+                  color: colorScheme.onSurface,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 90,
+            bottom: 40,
+            child: SpammableButton(
+              onTapDown: onDecrease,
+              enableRepeat: true,
+              child: Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: Image.asset(
+                  'assets/hare.png',
+                  color: colorScheme.onSurface,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DurationCardsSection extends StatelessWidget {
+  final int showDuration;
+  final int hideDuration;
+  final Axis direction;
+  final double spacing;
+
+  const _DurationCardsSection({
+    required this.showDuration,
+    required this.hideDuration,
+    required this.direction,
+    required this.spacing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Flex(
+        direction: direction,
+        spacing: spacing,
+        children: [
+          _DurationCard(title: '表示間隔', durationMs: showDuration),
+          _DurationCard(title: '消画間隔', durationMs: hideDuration),
+        ],
+      ),
+    );
+  }
+}
+
+class _DurationCard extends StatelessWidget {
+  final String title;
+  final int durationMs;
+
+  const _DurationCard({required this.title, required this.durationMs});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Formats numbers with thousand separators and up to 1 decimal place
+    // Examples: 12.3 -> "12.3", 1234.5 -> "1,234.5", 1000 -> "1,000"
+    final formatter = NumberFormat('#,##0.#');
+    final formattedDuration = formatter.format(durationMs);
+
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(8),
+      color: colorScheme.surfaceContainer,
+      child: SizedBox(
+        width: 220,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(title, style: textTheme.headlineSmall),
+              FittedBox(
+                fit: .scaleDown,
+                child: Text(
+                  '~$formattedDuration ms',
+                  style: textTheme.headlineLarge!.copyWith(
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

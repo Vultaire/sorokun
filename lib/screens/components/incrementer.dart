@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:soroban_app/screens/components/spammable_button.dart';
 
 const upArrow = Icon(Icons.keyboard_arrow_up_rounded, size: 40);
@@ -24,21 +25,57 @@ class Incrementer extends StatefulWidget {
   final int? step;
   final String? displayValue;
 
+  static AudioSource? get incrementSound =>
+      _IncrementerState._sharedIncrementSound;
+  static Future<AudioSource> ensureIncrementSoundLoaded() {
+    return _IncrementerState._ensureSoundLoadedStatic();
+  }
+
   @override
   State<Incrementer> createState() => _IncrementerState();
 }
 
 class _IncrementerState extends State<Incrementer> {
+  static AudioSource? _sharedIncrementSound;
+  static Future<AudioSource>? _loadingFuture;
+
   void _increment() {
     int newValue = widget.value + (widget.step ?? 1);
     if (widget.max != null && newValue > widget.max!) return;
+    _playIncrementSound();
     widget.onChanged(newValue);
   }
 
   void _decrement() {
     int newValue = widget.value - (widget.step ?? 1);
     if (widget.min != null && newValue < widget.min!) return;
+    _playIncrementSound();
     widget.onChanged(newValue);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Incrementer.ensureIncrementSoundLoaded();
+  }
+
+  static Future<AudioSource> _ensureSoundLoadedStatic() {
+    if (_sharedIncrementSound != null) {
+      return Future.value(_sharedIncrementSound);
+    }
+    _loadingFuture ??= SoLoud.instance.loadAsset('assets/increment.wav').then((
+      source,
+    ) {
+      _sharedIncrementSound = source;
+      return source;
+    });
+    return _loadingFuture!;
+  }
+
+  void _playIncrementSound() {
+    if (_sharedIncrementSound != null) {
+      SoLoud.instance.play(_sharedIncrementSound!);
+    }
   }
 
   @override
@@ -48,15 +85,7 @@ class _IncrementerState extends State<Incrementer> {
         SpammableButton(
           onTapDown: _increment,
           enableRepeat: true,
-          child: Container(
-            height: 60,
-            width: 80,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: upArrow,
-          ),
+          child: SizedBox(height: 60, width: 80, child: Center(child: upArrow)),
         ),
         SizedBox(height: 8),
         Material(
@@ -88,14 +117,10 @@ class _IncrementerState extends State<Incrementer> {
         SpammableButton(
           onTapDown: _decrement,
           enableRepeat: true,
-          child: Container(
+          child: SizedBox(
             height: 60,
             width: 80,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: downArrow,
+            child: Center(child: downArrow),
           ),
         ),
       ],
@@ -129,41 +154,50 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
   void _incrementMin() {
     int newMin = widget.minValue + 1;
     if (widget.max != null && newMin > widget.max!) return;
-
     int newMax = widget.maxValue;
     if (newMin > newMax) {
-      newMax =
-          newMin; // drag max along, still <= widget.max since newMin passed the check
+      newMax = newMin;
     }
+    _playIncrementSound();
     widget.onChanged((newMin, newMax));
   }
 
   void _decrementMin() {
     int newMin = widget.minValue - 1;
     if (widget.min != null && newMin < widget.min!) return;
-
-    // decrementing min can't push it above max, so max is untouched
+    _playIncrementSound();
     widget.onChanged((newMin, widget.maxValue));
   }
 
   void _incrementMax() {
     int newMax = widget.maxValue + 1;
     if (widget.max != null && newMax > widget.max!) return;
-
-    // incrementing max can't push it below min, so min is untouched
+    _playIncrementSound();
     widget.onChanged((widget.minValue, newMax));
   }
 
   void _decrementMax() {
     int newMax = widget.maxValue - 1;
     if (widget.min != null && newMax < widget.min!) return;
-
     int newMin = widget.minValue;
     if (newMax < newMin) {
-      newMin =
-          newMax; // drag min along, still >= widget.min since newMax passed the check
+      newMin = newMax;
     }
+    _playIncrementSound();
     widget.onChanged((newMin, newMax));
+  }
+
+  void _playIncrementSound() {
+    final sound = Incrementer.incrementSound;
+    if (sound != null) {
+      SoLoud.instance.play(sound);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Incrementer.ensureIncrementSoundLoaded();
   }
 
   @override
@@ -175,28 +209,20 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
             SpammableButton(
               onTapDown: _incrementMin,
               enableRepeat: true,
-              child: Container(
+              child: SizedBox(
                 height: 60,
                 width: 80,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: upArrow,
+                child: Center(child: upArrow),
               ),
             ),
             SizedBox(width: 30.0),
             SpammableButton(
               onTapDown: _incrementMax,
               enableRepeat: true,
-              child: Container(
+              child: SizedBox(
                 height: 60,
                 width: 80,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: upArrow,
+                child: Center(child: upArrow),
               ),
             ),
           ],
@@ -276,28 +302,20 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
             SpammableButton(
               onTapDown: _decrementMin,
               enableRepeat: true,
-              child: Container(
+              child: SizedBox(
                 height: 60,
                 width: 80,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: downArrow,
+                child: Center(child: downArrow),
               ),
             ),
             SizedBox(width: 30.0),
             SpammableButton(
               onTapDown: _decrementMax,
               enableRepeat: true,
-              child: Container(
+              child: SizedBox(
                 height: 60,
                 width: 80,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: downArrow,
+                child: Center(child: downArrow),
               ),
             ),
           ],

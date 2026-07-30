@@ -60,6 +60,14 @@ List<int> generateDigitList({
 }) {
   assert(minDigits <= maxDigits);
 
+  if (kuchi == 1) {
+    return [maxDigits];
+  }
+
+  if (kuchi == 2) {
+    return [minDigits, maxDigits]..shuffle(rand);
+  }
+
   final fullRange = [for (int i = minDigits; i <= maxDigits; i++) i];
 
   final filling = [for (int i = minDigits + 1; i < maxDigits; i++) i]

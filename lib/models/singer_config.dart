@@ -18,7 +18,7 @@ enum Character {
   kasukabeTsumugi(
     singerId: 3008,
     baseNote: 62,
-    keyRangeAdjustment: 1,
+    keyRangeAdjustment: 3,
     displayString: '春日部つむぎ',
     icon: 'assets/character_icon/8.png',
     negaimasiteha: 'assets/negaimasiteha/8.wav',

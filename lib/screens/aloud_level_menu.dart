@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/aloud_free_menu.dart';
+import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
@@ -95,21 +96,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(
-          MediaQuery.of(context).orientation == Orientation.landscape
-              ? 40
-              : kToolbarHeight,
-        ),
-        child: AppBar(
-          title: const Text('読み上げ算検定'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'),
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(title: '読み上げ算検定', context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,

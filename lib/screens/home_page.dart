@@ -7,7 +7,6 @@ import 'package:soroban_app/screens/settings.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
@@ -17,20 +16,35 @@ class HomePage extends StatelessWidget {
       body: Stack(
         clipBehavior: Clip.none,
         children: [
-          Positioned(
-            top: size.height * 0.1,
-            child: Transform.rotate(
-              angle: -0.18,
-              child: ExcludeSemantics(
-                child: RepaintBoundary(
-                  child: ScrollingBackground(
-                    assetPath: 'assets/soroban-grey.png',
+          if (isPortrait)
+            Positioned(
+              top: size.height * 0.1,
+              child: Transform.rotate(
+                angle: -0.18,
+                child: ExcludeSemantics(
+                  child: RepaintBoundary(
+                    child: ScrollingBackground(
+                      assetPath: 'assets/soroban-grey.png',
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else
+            Positioned.fill(
+              child: Center(
+                child: Transform.rotate(
+                  angle: -0.18,
+                  child: ExcludeSemantics(
+                    child: RepaintBoundary(
+                      child: ScrollingBackground(
+                        assetPath: 'assets/soroban-grey.png',
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: Flex(
@@ -99,7 +113,6 @@ class HomePage extends StatelessWidget {
                           64.0; // floor — never shrink smaller than this
                       const spacing = 16.0;
                       const rows = 3; // train button + flash row + aloud row
-
                       double rowHeight = desiredHeight;
                       if (constraints.maxHeight.isFinite) {
                         final maxAllowed =
@@ -107,7 +120,6 @@ class HomePage extends StatelessWidget {
                             rows;
                         rowHeight = maxAllowed.clamp(minHeight, desiredHeight);
                       }
-
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -483,7 +495,7 @@ class _ScrollingBackgroundState extends State<ScrollingBackground>
           painter: _TiledScrollPainter(
             image: _image,
             progress: _controller.value,
-            tintColor: Theme.of(context).colorScheme.primary.withAlpha(120),
+            tintColor: Theme.of(context).colorScheme.primary.withAlpha(190),
           ),
         );
       },

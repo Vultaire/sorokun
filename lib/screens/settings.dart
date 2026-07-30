@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 
 class SettingsGearButton extends StatelessWidget {
   const SettingsGearButton({super.key});
@@ -22,102 +25,174 @@ class SettingsGearButton extends StatelessWidget {
 
 class ColorSchemeSettingsPage extends StatelessWidget {
   const ColorSchemeSettingsPage({super.key});
-
   @override
   Widget build(BuildContext context) {
-    final controller = InheritedThemeController.of(context);
+    final controller = InheritedAppController.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('テーマカラー設定')),
+      appBar: AppBar(title: const Text('アプリ設定')),
       body: AnimatedBuilder(
         animation: controller,
         builder: (context, _) {
-          return Column(
+          final isPortrait =
+              MediaQuery.orientationOf(context) == Orientation.portrait;
+
+          final keypadGroup = Column(
             children: [
+              Text('テンキーの配置', style: textTheme.headlineLarge),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: CupertinoSlidingSegmentedControl<ThemeMode>(
-                  groupValue: controller.themeMode,
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainerHighest,
-                  thumbColor: Theme.of(context).colorScheme.primaryContainer,
-                  children: const {
-                    ThemeMode.light: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Icon(Icons.light_mode),
-                    ),
-                    ThemeMode.dark: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Icon(Icons.dark_mode),
-                    ),
-                    ThemeMode.system: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Icon(Icons.brightness_auto),
-                    ),
-                  },
-                  onValueChanged: (value) {
-                    if (value != null) controller.setThemeMode(value);
-                  },
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
+                ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: 360),
+                  child: LabeledSlidingSegmentedControl<Handedness>(
+                    groupValue: controller.handedness,
+                    options: const [
+                      (Handedness.left, '左利き'),
+                      (Handedness.right, '右利き'),
+                    ],
+                    onValueChanged: controller.setHandedness,
+                  ),
                 ),
               ),
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(24),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1,
-                  ),
-                  itemCount: ThemeController.presetSeeds.length,
-                  itemBuilder: (context, index) {
-                    final entry = ThemeController.presetSeeds[index];
-                    final isSelected = controller.seedColor == entry;
-                    return GestureDetector(
-                      onTap: () => controller.setSeedColor(entry),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: entry,
-                              shape: BoxShape.circle,
-                              border: isSelected
-                                  ? Border.all(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                      width: 3,
-                                    )
-                                  : null,
-                            ),
-                            child: isSelected
-                                ? Icon(
-                                    Icons.check,
-                                    color: _contrastColor(entry),
-                                  )
-                                : null,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+              const SizedBox(height: 16),
+              Text('キーレイアウト', style: textTheme.headlineLarge),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
+                ),
+                child: KeypadOrderSelector(
+                  groupValue: controller.numberOrder,
+                  onChanged: controller.setNumberOrder,
                 ),
               ),
             ],
           );
+
+          final appearanceGroup = Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('画面の明るさ', style: textTheme.headlineLarge),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: LabeledSlidingSegmentedControl<ThemeMode>(
+                  groupValue: controller.themeMode,
+                  options: const [
+                    (ThemeMode.light, Icon(Icons.light_mode)),
+                    (ThemeMode.dark, Icon(Icons.dark_mode)),
+                    (ThemeMode.system, '自動'),
+                  ],
+                  onValueChanged: controller.setThemeMode,
+                ),
+              ),
+              SizedBox(height: 24),
+              ColorWheel(
+                colors: AppController.presetSeeds,
+                selected: controller.seedColor,
+                onSelected: controller.setSeedColor,
+              ),
+            ],
+          );
+
+          return Center(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Flex(
+                  direction: isPortrait ? Axis.vertical : Axis.horizontal,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    appearanceGroup,
+                    SizedBox(
+                      width: isPortrait ? 0 : 40,
+                      height: isPortrait ? 24 : 0,
+                    ),
+                    keypadGroup,
+                  ],
+                ),
+              ),
+            ),
+          );
         },
+      ),
+    );
+  }
+}
+
+class ColorWheel extends StatelessWidget {
+  const ColorWheel({
+    super.key,
+    required this.colors,
+    required this.selected,
+    required this.onSelected,
+    this.diameter = 240,
+    this.swatchSize = 48,
+  });
+
+  final List<Color> colors;
+  final Color selected;
+  final ValueChanged<Color> onSelected;
+  final double diameter;
+  final double swatchSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = diameter / 2;
+    return SizedBox(
+      width: diameter + swatchSize,
+      height: diameter + swatchSize,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: .center,
+            child: Column(
+              mainAxisAlignment: .center,
+              children: [
+                Text('テーマ', style: Theme.of(context).textTheme.headlineLarge),
+                Text('カラー', style: Theme.of(context).textTheme.displaySmall),
+              ],
+            ),
+          ),
+          for (var i = 0; i < colors.length; i++)
+            Builder(
+              builder: (context) {
+                final angle = (2 * pi * i / colors.length) - (pi / 2);
+                final dx = radius * cos(angle);
+                final dy = radius * sin(angle);
+                final color = colors[i];
+                final isSelected = selected == color;
+                return Transform.translate(
+                  offset: Offset(dx, dy),
+                  child: GestureDetector(
+                    onTap: () => onSelected(color),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      width: isSelected ? swatchSize + 8 : swatchSize,
+                      height: isSelected ? swatchSize + 8 : swatchSize,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                width: 3,
+                              )
+                            : null,
+                      ),
+                      child: isSelected
+                          ? Icon(Icons.check, color: _contrastColor(color))
+                          : null,
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
     );
   }
@@ -127,49 +202,259 @@ class ColorSchemeSettingsPage extends StatelessWidget {
   }
 }
 
-class ThemeController extends ChangeNotifier {
+class MiniKeypadPainter extends CustomPainter {
+  MiniKeypadPainter({
+    required this.rows,
+    required this.fillColor,
+    required this.textColor,
+  });
+
+  final List<List<String>> rows;
+  final Color fillColor;
+  final Color textColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const spacing = 4.0;
+    final cellWidth = (size.width - spacing * 2) / 3;
+    final cellHeight = (size.height - spacing * 2) / 3;
+
+    for (var r = 0; r < rows.length; r++) {
+      for (var c = 0; c < rows[r].length; c++) {
+        final left = c * (cellWidth + spacing);
+        final top = r * (cellHeight + spacing);
+        final rect = Rect.fromLTWH(left, top, cellWidth, cellHeight);
+        final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(4));
+
+        canvas.drawRRect(rrect, Paint()..color = fillColor);
+
+        final textPainter = TextPainter(
+          text: TextSpan(
+            text: rows[r][c],
+            style: TextStyle(
+              color: textColor,
+              fontSize: cellHeight * 0.5,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+
+        textPainter.paint(
+          canvas,
+          Offset(
+            rect.center.dx - textPainter.width / 2,
+            rect.center.dy - textPainter.height / 2,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(MiniKeypadPainter oldDelegate) {
+    return oldDelegate.rows != rows ||
+        oldDelegate.fillColor != fillColor ||
+        oldDelegate.textColor != textColor;
+  }
+}
+
+class KeypadOrderSelector extends StatelessWidget {
+  const KeypadOrderSelector({
+    super.key,
+    required this.groupValue,
+    required this.onChanged,
+  });
+
+  final KeypadNumberOrder groupValue;
+  final ValueChanged<KeypadNumberOrder> onChanged;
+
+  static const Map<KeypadNumberOrder, List<List<String>>> _rowsByOrder = {
+    KeypadNumberOrder.standard: [
+      ['7', '8', '9'],
+      ['4', '5', '6'],
+      ['1', '2', '3'],
+    ],
+    KeypadNumberOrder.telephone: [
+      ['1', '2', '3'],
+      ['4', '5', '6'],
+      ['7', '8', '9'],
+    ],
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (final entry in _rowsByOrder.entries) ...[
+          _KeypadOption(
+            rows: entry.value,
+            isSelected: groupValue == entry.key,
+            onTap: () => onChanged(entry.key),
+          ),
+          if (entry.key != _rowsByOrder.keys.last) const SizedBox(width: 24),
+        ],
+      ],
+    );
+  }
+}
+
+class _KeypadOption extends StatelessWidget {
+  const _KeypadOption({
+    required this.rows,
+    required this.isSelected,
+    required this.onTap,
+  });
+  final List<List<String>> rows;
+  final bool isSelected;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primaryContainer
+              : colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? colorScheme.primary : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: SizedBox(
+          width: 130,
+          height: 130,
+          child: CustomPaint(
+            painter: MiniKeypadPainter(
+              rows: rows,
+              fillColor: isSelected
+                  ? colorScheme.primary.withValues(alpha: 0.25)
+                  : colorScheme.surfaceContainer,
+              textColor: isSelected
+                  ? colorScheme.onPrimaryContainer
+                  : colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum KeypadNumberOrder { standard, telephone }
+
+enum Handedness { right, left }
+
+class AppController extends ChangeNotifier {
   static const List<Color> presetSeeds = [
-    Colors.blue,
-    Colors.green,
-    Colors.deepPurple,
-    Colors.deepOrange,
-    Colors.pink,
-    Colors.teal,
+    Color(0xFFFBF8CC),
+    Color(0xFFFDE4CF),
+    Color(0xFFFFCFD2),
+    Color(0xFFF1C0E8),
+    Color(0xFFCFBAF0),
+    Color(0xFFA3C4F3),
+    Color(0xFF90DBF4),
+    Color(0xFF8EECF5),
+    Color(0xFF98F5E1),
+    Color(0xFFB9FBC0),
   ];
 
-  Color _seedColor = Colors.blue;
+  static const _seedColorKey = 'theme_seed_color';
+  static const _themeModeKey = 'theme_mode';
+  static const _numberOrderKey = 'keypad_number_order';
+  static const _handednessKey = 'handedness';
+
+  Color _seedColor = Colors.white;
   Color get seedColor => _seedColor;
 
   ThemeMode _themeMode = ThemeMode.dark;
   ThemeMode get themeMode => _themeMode;
 
-  static const _seedColorIndex = 'theme_seed_color';
+  KeypadNumberOrder _numberOrder = KeypadNumberOrder.standard;
+  KeypadNumberOrder get numberOrder => _numberOrder;
+
+  Handedness _handedness = Handedness.right;
+  Handedness get handedness => _handedness;
 
   late final Future<void> ready;
 
-  ThemeController() {
-    ready = _loadSeedColor();
+  AppController() {
+    ready = _load();
   }
 
-  Future<void> _loadSeedColor() async {
+  Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    final storedValue = prefs.getInt(_seedColorIndex);
-    if (storedValue != null) {
-      _seedColor = Color(storedValue);
-      notifyListeners();
+
+    final storedSeed = prefs.getInt(_seedColorKey);
+    if (storedSeed != null) {
+      _seedColor = Color(storedSeed);
     }
+
+    final storedThemeMode = prefs.getString(_themeModeKey);
+    if (storedThemeMode != null) {
+      _themeMode = ThemeMode.values.firstWhere(
+        (e) => e.name == storedThemeMode,
+        orElse: () => ThemeMode.dark,
+      );
+    }
+
+    final storedOrder = prefs.getString(_numberOrderKey);
+    if (storedOrder != null) {
+      _numberOrder = KeypadNumberOrder.values.firstWhere(
+        (e) => e.name == storedOrder,
+        orElse: () => KeypadNumberOrder.standard,
+      );
+    }
+
+    final storedHandedness = prefs.getString(_handednessKey);
+    if (storedHandedness != null) {
+      _handedness = Handedness.values.firstWhere(
+        (e) => e.name == storedHandedness,
+        orElse: () => Handedness.right,
+      );
+    }
+
+    notifyListeners();
   }
 
   void setSeedColor(Color color) {
     if (_seedColor == color) return;
     _seedColor = color;
     notifyListeners();
+    SharedPreferences.getInstance().then(
+      (prefs) => prefs.setInt(_seedColorKey, color.toARGB32()),
+    );
   }
 
   void setThemeMode(ThemeMode mode) {
     if (_themeMode == mode) return;
     _themeMode = mode;
     notifyListeners();
+    SharedPreferences.getInstance().then(
+      (prefs) => prefs.setString(_themeModeKey, mode.name),
+    );
+  }
+
+  Future<void> setNumberOrder(KeypadNumberOrder order) async {
+    if (_numberOrder == order) return;
+    _numberOrder = order;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_numberOrderKey, order.name);
+  }
+
+  Future<void> setHandedness(Handedness handedness) async {
+    if (_handedness == handedness) return;
+    _handedness = handedness;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_handednessKey, handedness.name);
   }
 
   ColorScheme get colorScheme => ColorScheme.fromSeed(
@@ -179,19 +464,37 @@ class ThemeController extends ChangeNotifier {
         : Brightness.light,
     dynamicSchemeVariant: DynamicSchemeVariant.expressive,
   );
+
+  /// Returns the 9 digit rows (3x3) in the currently selected number order.
+  List<List<String>> get numberRows {
+    switch (_numberOrder) {
+      case KeypadNumberOrder.standard:
+        return [
+          ['7', '8', '9'],
+          ['4', '5', '6'],
+          ['1', '2', '3'],
+        ];
+      case KeypadNumberOrder.telephone:
+        return [
+          ['1', '2', '3'],
+          ['4', '5', '6'],
+          ['7', '8', '9'],
+        ];
+    }
+  }
 }
 
-class InheritedThemeController extends InheritedNotifier<ThemeController> {
-  const InheritedThemeController({
+class InheritedAppController extends InheritedNotifier<AppController> {
+  const InheritedAppController({
     super.key,
-    required ThemeController controller,
+    required AppController controller,
     required super.child,
   }) : super(notifier: controller);
 
-  static ThemeController of(BuildContext context) {
+  static AppController of(BuildContext context) {
     final result = context
-        .dependOnInheritedWidgetOfExactType<InheritedThemeController>();
-    assert(result != null, 'No InheritedThemeController found in context');
+        .dependOnInheritedWidgetOfExactType<InheritedAppController>();
+    assert(result != null, 'No InheritedAppController found in context');
     return result!.notifier!;
   }
 }

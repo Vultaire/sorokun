@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/settings.dart';
 
 import '../../problem_generation/helpers.dart';
 
@@ -266,6 +267,7 @@ class Keypad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final numberRows = InheritedAppController.of(context).numberRows;
     return Container(
       constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
       // Main keypad
@@ -277,11 +279,11 @@ class Keypad extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(child: _buildKeyRow(context, ['7', '8', '9'])),
+                Expanded(child: _buildKeyRow(context, numberRows[0])),
                 const SizedBox(height: 6),
-                Expanded(child: _buildKeyRow(context, ['4', '5', '6'])),
+                Expanded(child: _buildKeyRow(context, numberRows[1])),
                 const SizedBox(height: 6),
-                Expanded(child: _buildKeyRow(context, ['1', '2', '3'])),
+                Expanded(child: _buildKeyRow(context, numberRows[2])),
                 const SizedBox(height: 6),
                 Expanded(child: _buildBottomRow(context, levelType)),
               ],
@@ -308,10 +310,10 @@ class Keypad extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Expanded(
-                  child: NavigationButton(
+                  child: KeypadButton(
                     color: colorScheme.primaryContainer,
                     margin: EdgeInsets.zero,
-                    onPressed: onSubmit,
+                    onTapDown: onSubmit,
                     child: Icon(
                       Icons.check,
                       size: 45,
@@ -370,6 +372,7 @@ class Keypad extends StatelessWidget {
         );
       case .divMult:
         return Row(
+          crossAxisAlignment: .stretch,
           children: [
             Expanded(flex: 2, child: _buildKey(context, '0')),
             const SizedBox(width: 6),
@@ -378,10 +381,13 @@ class Keypad extends StatelessWidget {
         );
       case .flash:
         return Row(
+          crossAxisAlignment: .stretch,
           children: [
-            Expanded(flex: 2, child: _buildKey(context, '0')),
+            Expanded(flex: 1, child: SizedBox.shrink()),
             const SizedBox(width: 6),
-            Expanded(flex: 1, child: _buildKey(context, '-')),
+            Expanded(flex: 1, child: _buildKey(context, '0')),
+            const SizedBox(width: 6),
+            Expanded(flex: 1, child: SizedBox.shrink()),
           ],
         );
     }
@@ -461,11 +467,7 @@ class _KeypadButtonState extends State<KeypadButton> {
       onTapCancel: () => _handleTapUp(),
       child: AnimatedContainer(
         duration: widget.duration,
-        transform: Matrix4.translationValues(
-          _isPressed ? 4 : 0.0,
-          _isPressed ? 4 : 0.0,
-          0,
-        ),
+        transform: Matrix4.translationValues(0, _isPressed ? 4 : 0.0, 0),
         margin: widget.margin ?? const EdgeInsets.all(0),
         child: AnimatedPhysicalModel(
           duration: widget.duration,

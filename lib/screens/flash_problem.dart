@@ -248,7 +248,7 @@ class FlashTextField extends StatelessWidget {
     return SizedBox(
       height: 155,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Center(
           child: Text(
             data.formatted.isEmpty ? '答えを記入してください。' : data.formatted,

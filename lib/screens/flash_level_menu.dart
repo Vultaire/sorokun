@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
+import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
@@ -103,21 +104,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(
-          MediaQuery.of(context).orientation == Orientation.landscape
-              ? 40
-              : kToolbarHeight,
-        ),
-        child: AppBar(
-          title: const Text('フラッシュ暗算検定'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'),
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(title: 'フラッシュ暗算検定', context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,
@@ -127,10 +114,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
             } else {
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.all(8),
                   child: OrientationBuilder(
                     builder: (context, orientation) {
                       final bool isPortrait =

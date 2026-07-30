@@ -9,6 +9,9 @@ List<String> moraListToJsonChunks({
   required int baseNote,
 }) {
   const double frameStretchFactor = 1.6;
+  final int intervalFrames =
+      (((msPerInterval * 93.75) / 1000) * frameStretchFactor).round();
+  final int halfInterval = (intervalFrames / 2).round();
   final int framesPerMora =
       ((((1000 / moraPerSecond) * 93.75) / 1000) * frameStretchFactor).round();
   final int highNote = baseNote + 2;
@@ -32,7 +35,9 @@ List<String> moraListToJsonChunks({
   return chunks.map((chunk) {
     final notes = <String>[];
 
-    notes.add('    { "key": null, "frame_length": 5, "lyric": "" }');
+    notes.add(
+      '    { "key": null, "frame_length": $halfInterval, "lyric": "" }',
+    );
 
     for (final mora in chunk) {
       final key = mora.isHighPitch ? highNote : baseNote;
@@ -41,7 +46,9 @@ List<String> moraListToJsonChunks({
       );
     }
 
-    notes.add('    { "key": null, "frame_length": 5, "lyric": "" }');
+    notes.add(
+      '    { "key": null, "frame_length": $halfInterval, "lyric": "" }',
+    );
 
     return '{\n  "notes": [\n${notes.join(',\n')}\n  ]\n}';
   }).toList();

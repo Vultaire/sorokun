@@ -23,16 +23,16 @@ import 'screens/paper_problem.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   VoicevoxService.paths = await extractVoicevoxAssets();
-  final themeController = ThemeController();
+  final appController = AppController();
   await SoLoud.instance.init(
     sampleRate: 44100,
     bufferSize: 256,
     channels: Channels.stereo,
   );
-  await themeController.ready;
+  await appController.ready;
   runApp(
     DevicePreview(
-      builder: (context) => AbacusApp(themeController: themeController),
+      builder: (context) => AbacusApp(appController: appController),
     ),
   );
 }
@@ -43,8 +43,8 @@ class VoicevoxService {
 }
 
 class AbacusApp extends StatefulWidget {
-  const AbacusApp({super.key, required this.themeController});
-  final ThemeController themeController;
+  const AbacusApp({super.key, required this.appController});
+  final AppController appController;
 
   @override
   State<AbacusApp> createState() => _AbacusAppState();
@@ -205,7 +205,7 @@ class DebugMockData {
 }
 
 class _AbacusAppState extends State<AbacusApp> {
-  late final ThemeController _themeController = widget.themeController;
+  late final AppController _appController = widget.appController;
   late final _router = GoRouter(
     initialLocation: kDebugMode ? '/paper-results' : '/home',
     routes: [
@@ -314,7 +314,7 @@ class _AbacusAppState extends State<AbacusApp> {
   @override
   void initState() {
     super.initState();
-    _themeController.addListener(_onThemeChanged);
+    _appController.addListener(_onThemeChanged);
   }
 
   void _onThemeChanged() {
@@ -323,69 +323,58 @@ class _AbacusAppState extends State<AbacusApp> {
 
   @override
   void dispose() {
-    _themeController.removeListener(_onThemeChanged);
-    _themeController.dispose();
+    _appController.removeListener(_onThemeChanged);
+    _appController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return InheritedThemeController(
-      controller: _themeController,
+    ThemeData buildTheme(Brightness brightness) {
+      final colorScheme = ColorScheme.fromSeed(
+        seedColor: _appController.seedColor,
+        brightness: brightness,
+        dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+      );
+
+      return ThemeData(
+        fontFamily: 'bizUDGPR',
+        colorScheme: colorScheme,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            textStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: brightness == Brightness.light
+                  ? FontWeight.w600
+                  : FontWeight.w500,
+            ),
+          ),
+        ),
+        dialogTheme: DialogThemeData(
+          titleTextStyle: TextStyle(
+            fontSize: 26,
+            color: colorScheme.onSurface,
+            fontFamily: 'bizUDGPR',
+          ),
+          alignment: Alignment.center,
+        ),
+      );
+    }
+
+    return InheritedAppController(
+      controller: _appController,
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerConfig: _router,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
-        themeMode: _themeController.themeMode,
-        theme: ThemeData(
-          fontFamily: 'bizUDGPR',
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: _themeController.seedColor,
-            brightness: Brightness.light,
-            dynamicSchemeVariant: DynamicSchemeVariant.neutral,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              textStyle: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          dialogTheme: DialogThemeData(
-            titleTextStyle: const TextStyle(fontSize: 26),
-            alignment: .center,
-          ),
-        ),
-        darkTheme: ThemeData(
-          fontFamily: 'bizUDGPR',
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: _themeController.seedColor,
-            brightness: Brightness.dark,
-            dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              textStyle: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          dialogTheme: DialogThemeData(
-            titleTextStyle: const TextStyle(fontSize: 26),
-            alignment: .center,
-          ),
-        ),
+        themeMode: _appController.themeMode,
+        theme: buildTheme(Brightness.light),
+        darkTheme: buildTheme(Brightness.dark),
       ),
     );
   }
