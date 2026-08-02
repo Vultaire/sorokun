@@ -317,78 +317,96 @@ class _FlashAndAloudProblemInputState<T>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: SizedBox.expand(
-          child: Flex(
-            direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
-            children: [
-              Expanded(
-                flex: 8,
-                child: Column(
-                  mainAxisAlignment: .center,
-                  crossAxisAlignment: .center,
-                  children: [
-                    if (widget.showTimer) SizedBox(height: 50),
-                    SizedBox(
-                      height: 150,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: FlashTextField(data: textData),
-                      ),
-                    ),
-                    if (widget.showTimer)
-                      Opacity(
-                        opacity: 0.4,
-                        child: SizedBox(
-                          width: 400,
-                          height: 50,
-                          child: BarTimer(
-                            duration: Duration(milliseconds: widget.duration),
-                            delayOver: widget.delayOver,
-                            onComplete: () {
-                              _data.textFieldDataList[_data
-                                      .currentProblemIndex] =
-                                  textData;
-                              widget.showResult();
-                              SoLoud.instance.play(
-                                _data.isCorrect
-                                    ? sound.correct
-                                    : sound.incorrect,
-                              );
-                            },
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  onPressed: () => context.pop(),
+                  color: Colors.white,
+                  iconSize: 24,
+                ),
+              ),
+            ),
+            SizedBox.expand(
+              child: Flex(
+                direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      crossAxisAlignment: .center,
+                      children: [
+                        if (widget.showTimer) SizedBox(height: 50),
+                        SizedBox(
+                          height: 150,
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: FlashTextField(data: textData),
                           ),
                         ),
-                      ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 5,
-                child: Keypad(
-                  onAppendDigit: appendDigit,
-                  onDeleteDigit: deleteDigit,
-                  onClearAll: clearAll,
-                  onSubmit: () {
-                    if (_input.isEmpty) {
-                      SoLoud.instance.play(sound.invalid);
-                      return;
-                    }
+                        if (widget.showTimer)
+                          Opacity(
+                            opacity: 0.4,
+                            child: SizedBox(
+                              width: 400,
+                              height: 50,
+                              child: BarTimer(
+                                duration: Duration(
+                                  milliseconds: widget.duration,
+                                ),
+                                delayOver: widget.delayOver,
+                                onComplete: () {
+                                  _data.textFieldDataList[_data
+                                          .currentProblemIndex] =
+                                      textData;
+                                  widget.showResult();
+                                  SoLoud.instance.play(
+                                    _data.isCorrect
+                                        ? sound.correct
+                                        : sound.incorrect,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Keypad(
+                      onAppendDigit: appendDigit,
+                      onDeleteDigit: deleteDigit,
+                      onClearAll: clearAll,
+                      onSubmit: () {
+                        if (_input.isEmpty) {
+                          SoLoud.instance.play(sound.invalid);
+                          return;
+                        }
 
-                    _data.textFieldDataList[_data.currentProblemIndex] =
-                        textData;
-                    widget.showResult();
+                        _data.textFieldDataList[_data.currentProblemIndex] =
+                            textData;
+                        widget.showResult();
 
-                    SoLoud.instance.play(
-                      _data.isCorrect ? sound.correct : sound.incorrect,
-                    );
-                  },
-                  levelType: KeypadType.flash,
-                ),
+                        SoLoud.instance.play(
+                          _data.isCorrect ? sound.correct : sound.incorrect,
+                        );
+                      },
+                      levelType: KeypadType.flash,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

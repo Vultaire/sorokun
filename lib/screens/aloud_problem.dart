@@ -14,6 +14,8 @@ import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
+import 'package:soroban_app/screens/components/mitori_display.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/src/voicevox_sing.dart';
 
@@ -87,6 +89,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 
     _allProblems = [problem];
     _allAnswers = [answer];
+    _allFormattedProblems = problemSet.formattedProblems;
     _scores = [score];
     _textFieldDataList = [TextFieldData()];
     _currentProblemIndex = 0;
@@ -373,6 +376,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           negaimasitehaPath: widget.character.negaimasiteha,
           isSingleProblem: widget.isSingleProblem,
           chunkStream: _isRepeat ? null : _chunkStream,
+          singleProblem: _allFormattedProblems.first,
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
@@ -485,6 +489,7 @@ class AloudProblem extends StatefulWidget {
     required this.readyToPlay,
     required this.negaimasitehaPath,
     required this.isSingleProblem,
+    required this.singleProblem,
   });
 
   final List<Uint8List> chunks;
@@ -493,6 +498,7 @@ class AloudProblem extends StatefulWidget {
   final bool readyToPlay;
   final String negaimasitehaPath;
   final bool isSingleProblem;
+  final List<String> singleProblem;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -507,6 +513,7 @@ class _AloudProblemState extends State<AloudProblem> {
   bool _disposed = false;
   int _playSession = 0;
   bool _isCompleted = false;
+  bool _isMitoriExpanded = false;
 
   @override
   void dispose() {
@@ -618,7 +625,9 @@ class _AloudProblemState extends State<AloudProblem> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+    final double buttonSize = _isMitoriExpanded ? 80.0 : 120.0;
 
     Widget icon;
     VoidCallback? onPressed;
@@ -632,66 +641,179 @@ class _AloudProblemState extends State<AloudProblem> {
       onPressed = null;
     } else if (_isCompleted || _isPlaying) {
       icon = widget.isSingleProblem
-          ? const Icon(Icons.replay, size: 64)
-          : const Icon(Icons.volume_up, size: 64);
+          ? const Icon(Icons.replay_rounded, size: 120)
+          : const Icon(Icons.volume_up, size: 120);
       onPressed = (_isCompleted || !widget.isSingleProblem) ? null : _play;
     } else {
-      icon = const Icon(Icons.play_arrow, size: 64);
+      icon = const Icon(Icons.play_arrow_rounded, size: 120);
       onPressed = _play;
     }
 
-    return Stack(
-      children: [
-        // Back button in the top-left corner (AppBar position)
-        Positioned(
-          top: 8,
-          left: 8,
-          child: SafeArea(
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => context.pop(),
-              color: Colors.white,
-              iconSize: 48,
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  onPressed: () => context.pop(),
+                  color: Colors.white,
+                  iconSize: 24,
+                ),
+              ),
             ),
-          ),
-        ),
-
-        // Centered original content
-        Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTapDown: onPressed == null
-                    ? null
-                    : (_) => setState(() => _isPressed = true),
-                onTapUp: onPressed == null
-                    ? null
-                    : (_) {
-                        setState(() => _isPressed = false);
-                        onPressed!();
-                      },
-                onTapCancel: () => setState(() => _isPressed = false),
-                child: AnimatedScale(
-                  scale: _isPressed ? 0.9 : 1.0,
-                  duration: const Duration(milliseconds: 100),
-                  curve: Curves.easeOut,
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colorScheme.surfaceContainerHighest,
+            if (widget.isSingleProblem)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: SafeArea(
+                  child: NavigationButton(
+                    onPressed: () =>
+                        setState(() => _isMitoriExpanded = !_isMitoriExpanded),
+                    color: Colors.white,
+                    child: SizedBox(
+                      width: 140,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              _isMitoriExpanded
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              size: 32,
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  _isMitoriExpanded ? '問題を非表示' : '問題を表示',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Center(child: icon),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-            ],
+            Center(
+              child: Flex(
+                direction: isPortrait ? Axis.vertical : Axis.horizontal,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTapDown: onPressed == null
+                        ? null
+                        : (_) => setState(() => _isPressed = true),
+                    onTapUp: onPressed == null
+                        ? null
+                        : (_) {
+                            setState(() => _isPressed = false);
+                            onPressed!();
+                          },
+                    onTapCancel: () => setState(() => _isPressed = false),
+                    child: AnimatedScale(
+                      scale: _isPressed ? 0.9 : 1.0,
+                      duration: const Duration(milliseconds: 100),
+                      curve: Curves.easeOut,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                        width: buttonSize,
+                        height: buttonSize,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: FittedBox(fit: BoxFit.contain, child: icon),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (isPortrait)
+                    const SizedBox(height: 16)
+                  else
+                    const SizedBox(width: 16),
+                  if (widget.isSingleProblem)
+                    CollapsibleMitoriDisplay(
+                      problemIndex: null,
+                      currentProblem: widget.singleProblem,
+                      isPortrait: isPortrait,
+                      isExpanded: _isMitoriExpanded,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CollapsibleMitoriDisplay extends StatelessWidget {
+  const CollapsibleMitoriDisplay({
+    super.key,
+    required this.problemIndex,
+    required this.currentProblem,
+    required this.isPortrait,
+    required this.isExpanded,
+  });
+
+  final int? problemIndex;
+  final dynamic currentProblem;
+  final bool isPortrait;
+  final bool isExpanded;
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return ClipRect(
+      child: AnimatedAlign(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        alignment: Alignment.topCenter,
+        widthFactor: isExpanded ? 1.0 : 0.0,
+        heightFactor: isExpanded ? 1.0 : 0.0,
+        child: Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: isPortrait
+                    ? screenHeight * 0.65
+                    : screenHeight * 0.90,
+                maxWidth: screenWidth * 0.9,
+              ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: MitoriDisplay(
+                  problemIndex: problemIndex,
+                  currentProblem: currentProblem,
+                  isSimpleMitori: false,
+                ),
+              ),
+            ),
           ),
         ),
-      ],
+      ),
     );
   }
 }

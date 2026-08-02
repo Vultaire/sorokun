@@ -90,7 +90,7 @@ class _IncrementerState extends State<Incrementer> {
         SizedBox(height: 8),
         Material(
           color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
           elevation: 4,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -230,7 +230,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
         SizedBox(height: 8),
         Material(
           color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
           elevation: 4,
           child: Padding(
             padding: const EdgeInsets.all(8),

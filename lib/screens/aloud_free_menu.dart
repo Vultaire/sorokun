@@ -250,6 +250,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                         incrementers,
                         const SizedBox(height: 24),
                         minusAndVoiceSelection,
+                        const SizedBox(height: 24),
                       ],
                     );
 
@@ -267,7 +268,6 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         startButton,
                       ],
                     );
@@ -307,7 +307,7 @@ class VoiceSelectionButton extends StatelessWidget {
         }
       },
       child: Material(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(24),
         elevation: 4,
         child: Padding(
@@ -320,11 +320,7 @@ class VoiceSelectionButton extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                size: 32,
-              ),
+              Icon(Icons.chevron_right, size: 32),
             ],
           ),
         ),
@@ -420,12 +416,12 @@ class _VoiceGridItem extends StatelessWidget {
             : colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
         elevation: 4,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: FittedBox(
+            fit: .scaleDown,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .spaceEvenly,
               children: [
                 Container(
                   decoration: BoxDecoration(
@@ -447,15 +443,21 @@ class _VoiceGridItem extends StatelessWidget {
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.all(2.0),
-                  child: Text(
-                    character.displayString,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: isSelected ? colorScheme.primary : null,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
+                  child: SizedBox(
+                    width: 110,
+                    child: FittedBox(
+                      fit: .scaleDown,
+                      child: Text(
+                        character.displayString,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: isSelected ? colorScheme.primary : null,
+                          fontWeight: isSelected
+                              ? FontWeight.w800
+                              : FontWeight.normal,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
                 IconButton(

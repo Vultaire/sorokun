@@ -86,7 +86,7 @@ class ResultsScreen extends StatelessWidget {
                         elapsedValue.inMinutes > 0
                             ? '${elapsedValue.inMinutes}:${elapsedValue.inSeconds.remainder(60).toString().padLeft(2, '0')}.${elapsedValue.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}'
                             : '${elapsedValue.inSeconds}.${elapsedValue.inMilliseconds.remainder(1000).toString().padLeft(3, '0')}',
-                        style: TextStyle(fontSize: 48, fontFamily: 'bizUDPGR'),
+                        style: TextStyle(fontSize: 48, fontFamily: 'mPlus'),
                       ),
                     ],
                   ),
@@ -99,11 +99,7 @@ class ResultsScreen extends StatelessWidget {
               durationBase: Duration(milliseconds: 10),
               passThreshold: selectedLevel.levelInfo.passThreshold,
               rangedThreshold: selectedLevel.levelInfo.rangedThreshold,
-              style: TextStyle(
-                fontSize: 78,
-                fontWeight: .bold,
-                fontFamily: 'bizUDPGR',
-              ),
+              style: TextStyle(fontSize: 78, fontFamily: 'mPlus'),
             );
 
             final buttonWrap = Wrap(
@@ -135,7 +131,7 @@ class ResultsScreen extends StatelessWidget {
                     ),
                   ),
                 SizedBox(
-                  width: 250,
+                  width: 300,
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
@@ -146,6 +142,7 @@ class ResultsScreen extends StatelessWidget {
                             extra: {
                               'selectedLevel': selectedLevel,
                               'isSingleProblem': false,
+                              'examDisplayString': examDisplayString,
                             },
                           );
                         case AloudLevel _:
@@ -155,6 +152,7 @@ class ResultsScreen extends StatelessWidget {
                               'isSingleProblem': false,
                               'selectedLevel': selectedLevel,
                               'character': character,
+                              'examDisplayString': examDisplayString,
                             },
                           );
                         case PaperProblemLevel _:
@@ -164,6 +162,7 @@ class ResultsScreen extends StatelessWidget {
                               'selectedLevel': selectedLevel,
                               'isExam': isExam,
                               'time': selectedLevel.levelInfo.timeLimit,
+                              'examDisplayString': examDisplayString,
                             },
                           );
                       }
@@ -184,10 +183,19 @@ class ResultsScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  width: 250,
+                  width: 300,
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () => context.go('/paper-menu'),
+                    onPressed: () {
+                      switch (selectedLevel) {
+                        case FlashLevel _:
+                          context.go('/flash-level-menu');
+                        case AloudLevel _:
+                          context.go('/aloud-level-menu');
+                        case PaperProblemLevel _:
+                          context.go('/paper-menu');
+                      }
+                    },
                     child: Center(
                       child: iconHelper(context, Icons.settings, '設定画面に戻る'),
                     ),
@@ -204,11 +212,11 @@ class ResultsScreen extends StatelessWidget {
                       fit: .scaleDown,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 10,
                         children: [
-                          if (examDescription != null) examDescription,
+                          ?examDescription,
                           countUpCircle,
-                          if (elapsedCard != null) elapsedCard,
+                          ?elapsedCard,
+                          SizedBox(height: 24),
                           ConstrainedBox(
                             constraints: BoxConstraints(maxWidth: 500),
                             child: buttonWrap,
@@ -234,20 +242,16 @@ class ResultsScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 600),
+                                constraints: BoxConstraints(maxWidth: 620),
                                 child: Row(
                                   mainAxisAlignment: .center,
                                   spacing: 20,
-                                  children: [
-                                    if (examDescription != null)
-                                      examDescription,
-                                    if (elapsedCard != null) elapsedCard,
-                                  ],
+                                  children: [?examDescription, ?elapsedCard],
                                 ),
                               ),
                               const SizedBox(height: 10),
                               ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 600),
+                                constraints: BoxConstraints(maxWidth: 620),
                                 child: buttonWrap,
                               ),
                             ],
@@ -467,7 +471,7 @@ class _CountUpCircleState extends State<CountUpCircle>
                     child: Text(
                       '${widget.score.$2}点満点',
                       style: widget.style.copyWith(
-                        fontSize: widget.style.fontSize! * 0.5,
+                        fontSize: widget.style.fontSize! * 0.55,
                       ),
                     ),
                   ),
@@ -675,10 +679,7 @@ class _PassFailState extends State<PassFail>
       opacity: _opacity,
       child: ScaleTransition(
         scale: _scale,
-        child: Text(
-          widget.passFailText,
-          style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
-        ),
+        child: Text(widget.passFailText, style: const TextStyle(fontSize: 60)),
       ),
     );
   }

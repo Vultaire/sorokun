@@ -9,6 +9,7 @@ import 'package:soroban_app/screens/aloud_free_menu.dart';
 import 'package:soroban_app/screens/aloud_level_menu.dart';
 import 'package:soroban_app/screens/aloud_problem.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
+import 'package:soroban_app/screens/credits.dart';
 import 'package:soroban_app/screens/flash_free_menu.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
@@ -210,6 +211,7 @@ class _AbacusAppState extends State<AbacusApp> {
     initialLocation: kDebugMode ? '/paper-results' : '/home',
     routes: [
       GoRoute(path: '/home', builder: (context, state) => HomePage()),
+      GoRoute(path: '/credits', builder: (context, state) => CreditsPage()),
       GoRoute(
         path: '/flash-level-menu',
         builder: (context, state) => FlashLevelMenuPage(),
@@ -338,7 +340,7 @@ class _AbacusAppState extends State<AbacusApp> {
       );
 
       return ThemeData(
-        fontFamily: 'bizUDGPR',
+        fontFamily: 'mPlus',
         colorScheme: colorScheme,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -346,19 +348,19 @@ class _AbacusAppState extends State<AbacusApp> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            textStyle: TextStyle(
-              fontSize: 18,
-              fontWeight: brightness == Brightness.light
-                  ? FontWeight.w600
-                  : FontWeight.w500,
-            ),
+            textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
         ),
         dialogTheme: DialogThemeData(
           titleTextStyle: TextStyle(
-            fontSize: 26,
+            fontSize: 28,
             color: colorScheme.onSurface,
-            fontFamily: 'bizUDGPR',
+            fontFamily: 'mPlus',
+          ),
+          contentTextStyle: TextStyle(
+            fontSize: 20,
+            color: colorScheme.onSurface,
+            fontFamily: 'mPlus',
           ),
           alignment: Alignment.center,
         ),

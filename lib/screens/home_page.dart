@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/credits.dart';
 import 'package:soroban_app/screens/settings.dart';
 
 class HomePage extends StatelessWidget {
@@ -79,7 +80,6 @@ class HomePage extends StatelessWidget {
                               Text(
                                 'そろくん',
                                 style: TextStyle(
-                                  fontWeight: .w900,
                                   color: Theme.of(
                                     context,
                                   ).colorScheme.onPrimaryContainer,
@@ -89,7 +89,6 @@ class HomePage extends StatelessWidget {
                                 '珠算特訓アプリ',
                                 style: TextStyle(
                                   fontSize: 6,
-                                  fontWeight: .w800,
                                   color: Theme.of(
                                     context,
                                   ).colorScheme.onPrimaryContainer,
@@ -173,7 +172,6 @@ class HomePage extends StatelessWidget {
                                                 '基本種目を練習',
                                                 style: TextStyle(
                                                   fontSize: 30,
-                                                  fontWeight: FontWeight.bold,
                                                   color: Theme.of(context)
                                                       .colorScheme
                                                       .onPrimaryContainer,
@@ -243,7 +241,6 @@ class HomePage extends StatelessWidget {
                                                   'フラッシュ暗算',
                                                   style: TextStyle(
                                                     fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -253,7 +250,6 @@ class HomePage extends StatelessWidget {
                                                   '検定',
                                                   style: TextStyle(
                                                     fontSize: 30,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -282,7 +278,6 @@ class HomePage extends StatelessWidget {
                                                   'フラッシュ暗算',
                                                   style: TextStyle(
                                                     fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -292,7 +287,6 @@ class HomePage extends StatelessWidget {
                                                   'フリー',
                                                   style: TextStyle(
                                                     fontSize: 30,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -363,7 +357,6 @@ class HomePage extends StatelessWidget {
                                                   '読み上げ算',
                                                   style: TextStyle(
                                                     fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -373,7 +366,6 @@ class HomePage extends StatelessWidget {
                                                   '検定',
                                                   style: TextStyle(
                                                     fontSize: 30,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -402,7 +394,6 @@ class HomePage extends StatelessWidget {
                                                   '読み上げ算',
                                                   style: TextStyle(
                                                     fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -412,7 +403,6 @@ class HomePage extends StatelessWidget {
                                                   'フリー',
                                                   style: TextStyle(
                                                     fontSize: 30,
-                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onPrimaryContainer,
@@ -437,7 +427,23 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(top: 24, left: 24, child: SettingsGearButton()),
+          Positioned(
+            top: 24,
+            left: 24,
+            child: Row(
+              children: [
+                SettingsGearButton(),
+                NavigationButton(
+                  onPressed: () => context.push('/credits'),
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: Text(
+                    'クレジット',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

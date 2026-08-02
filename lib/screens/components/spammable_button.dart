@@ -6,12 +6,14 @@ class SpammableButton extends StatefulWidget {
   final VoidCallback onTapDown;
   final Widget child;
   final bool enableRepeat;
+  final BoxShape shape;
 
   const SpammableButton({
     super.key,
     required this.onTapDown,
     required this.child,
     this.enableRepeat = false,
+    this.shape = BoxShape.rectangle,
   });
 
   @override
@@ -80,8 +82,8 @@ class _SpammableButtonState extends State<SpammableButton> {
         ),
         child: AnimatedPhysicalModel(
           duration: const Duration(milliseconds: 50),
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(8),
+          shape: widget.shape,
+          borderRadius: BorderRadius.circular(24),
           color: _isPressed ? pressedColor : restingColor,
           shadowColor: Colors.black,
           elevation: _isPressed ? 2 : 8,

@@ -138,15 +138,24 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                                     : Expanded(flex: 1, child: selector),
                                 Expanded(
                                   flex: isPortrait ? 1 : 6,
-                                  child: AloudInfoDialog(
-                                    selectedLevel: _kyuui.aloud!,
-                                    isPortrait: isPortrait,
-                                    character: _character,
-                                    onCharacterChanged: (selected) {
-                                      setState(() => _character = selected);
-                                    },
-                                    examDisplayString:
-                                        '${_kyuui.kyuuString}の読み上げ算',
+                                  child: Center(
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints.tightFor(
+                                        height: isPortrait
+                                            ? double.infinity
+                                            : 600,
+                                      ),
+                                      child: AloudInfoDialog(
+                                        selectedLevel: _kyuui.aloud!,
+                                        isPortrait: isPortrait,
+                                        character: _character,
+                                        onCharacterChanged: (selected) {
+                                          setState(() => _character = selected);
+                                        },
+                                        examDisplayString:
+                                            '${_kyuui.kyuuString}の読み上げ算',
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -209,75 +218,76 @@ class AloudInfoDialog extends StatelessWidget {
       fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
     );
 
-    return Container(
-      padding: const .all(12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: .circular(24),
-      ),
-      child: Column(
-        mainAxisSize: .min,
-        mainAxisAlignment: .spaceEvenly,
-        crossAxisAlignment: .center,
-        children: [
-          FittedBox(
-            child: Text(denominationString, style: textTheme.headlineLarge),
-          ),
-          FittedBox(
-            fit: .scaleDown,
-            child: Material(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: .circular(24),
-              elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: isPortrait ? 250 : 900,
-                  child: Flex(
-                    direction: isPortrait ? .vertical : .horizontal,
-                    mainAxisAlignment: .spaceEvenly,
-                    children: [
-                      Text(minusString, style: textTheme.displayMedium),
-                      divider(context, isPortrait),
-                      statCell(context, digitsString, '桁'),
-                      divider(context, isPortrait),
-                      statCell(context, '$kuchi', '口'),
-                      divider(context, isPortrait),
-                      statCell(context, '$moraPerSecond', '拍/秒'),
-                      divider(context, isPortrait),
-                      statCell(context, '${msPerInterval / 1000}', '秒間隔'),
-                    ],
+    return Material(
+      color: colorScheme.surfaceContainer,
+      borderRadius: .circular(24),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisSize: .min,
+          mainAxisAlignment: .spaceEvenly,
+          crossAxisAlignment: .center,
+          children: [
+            FittedBox(
+              child: Text(denominationString, style: textTheme.headlineLarge),
+            ),
+            FittedBox(
+              fit: .scaleDown,
+              child: Material(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: .circular(24),
+                elevation: 8,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: isPortrait ? 250 : 900,
+                    child: Flex(
+                      direction: isPortrait ? .vertical : .horizontal,
+                      mainAxisAlignment: .spaceEvenly,
+                      children: [
+                        Text(minusString, style: textTheme.displayMedium),
+                        divider(context, isPortrait),
+                        statCell(context, digitsString, '桁'),
+                        divider(context, isPortrait),
+                        statCell(context, '$kuchi', '口'),
+                        divider(context, isPortrait),
+                        statCell(context, '$moraPerSecond', '拍/秒'),
+                        divider(context, isPortrait),
+                        statCell(context, '${msPerInterval / 1000}', '秒間隔'),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('全$probCount問 各10点', style: infoTextStyle),
-              Text('  ・  ', style: infoTextStyle),
-              Text('$passThreshold点で合格', style: infoTextStyle),
-            ],
-          ),
-          VoiceSelectionButton(
-            character: character,
-            onChanged: onCharacterChanged,
-          ),
-          StartButton(
-            onPressed: () {
-              context.push(
-                '/aloud-problem',
-                extra: {
-                  'isSingleProblem': false,
-                  'selectedLevel': selectedLevel,
-                  'character': character,
-                  'examDisplayString': examDisplayString,
-                },
-              );
-            },
-          ),
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('全$probCount問 各10点', style: infoTextStyle),
+                Text('  ・  ', style: infoTextStyle),
+                Text('$passThreshold点で合格', style: infoTextStyle),
+              ],
+            ),
+            VoiceSelectionButton(
+              character: character,
+              onChanged: onCharacterChanged,
+            ),
+            StartButton(
+              onPressed: () {
+                context.push(
+                  '/aloud-problem',
+                  extra: {
+                    'isSingleProblem': false,
+                    'selectedLevel': selectedLevel,
+                    'character': character,
+                    'examDisplayString': examDisplayString,
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -190,11 +190,19 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                       denominationSelector,
                                       const SizedBox(height: 6),
                                       Expanded(
-                                        child: FlashInfoDialog(
-                                          selectedLevel: _kyuui.flash!,
-                                          isPortrait: isPortrait,
-                                          examDisplayString:
-                                              '${_kyuui.kyuuString}のフラッシュ暗算',
+                                        child: Center(
+                                          child: ConstrainedBox(
+                                            constraints:
+                                                const BoxConstraints.tightFor(
+                                                  height: 600,
+                                                ),
+                                            child: FlashInfoDialog(
+                                              selectedLevel: _kyuui.flash!,
+                                              isPortrait: isPortrait,
+                                              examDisplayString:
+                                                  '${_kyuui.kyuuString}のフラッシュ暗算',
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -244,10 +252,10 @@ class FlashInfoDialog extends StatelessWidget {
 
     return Material(
       color: colorScheme.surfaceContainer,
-      borderRadius: .circular(12),
+      borderRadius: .circular(24),
       elevation: 4,
       child: Padding(
-        padding: const .all(8.0),
+        padding: const .all(12.0),
         child: Column(
           mainAxisSize: .min,
           mainAxisAlignment: .spaceEvenly,

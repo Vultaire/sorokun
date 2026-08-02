@@ -8,8 +8,9 @@ import 'package:go_router/go_router.dart';
 import 'package:soroban_app/main.dart';
 import 'package:soroban_app/problem_generation/mitori_set.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
+import 'package:soroban_app/screens/components/divmult_display.dart';
+import 'package:soroban_app/screens/components/mitori_display.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
-import 'package:soroban_app/screens/components/toggleable_appbar.dart';
 import 'package:soroban_app/screens/settings.dart';
 
 import '../models/level_definitions.dart';
@@ -63,13 +64,16 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
 
   Widget _buildWindow({required double height}) {
     if (widget.selectedLevel is MitoriLevel) {
-      return MitorizanWindow(
-        selectedLevel: widget.selectedLevel as MitoriLevel,
-        isExam: widget.isExam,
-        onComplete: () => _onComplete(outOfTime: false),
-        height: height,
-        resultPopupKey: _resultPopupKey,
-        key: _mitorizanKey,
+      return Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: MitorizanWindow(
+          selectedLevel: widget.selectedLevel as MitoriLevel,
+          isExam: widget.isExam,
+          onComplete: () => _onComplete(outOfTime: false),
+          height: height,
+          resultPopupKey: _resultPopupKey,
+          key: _mitorizanKey,
+        ),
       );
     } else if (widget.selectedLevel is DivMultLevel) {
       return DivMultWindow(
@@ -131,8 +135,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     );
   }
 
-  /// Gathers the result data needed to navigate to the results page.
-  /// Returns null if the relevant level's state couldn't be found.
   _PaperResultData? _collectResultData() {
     List<String>? allAnswers;
     List<dynamic>? allProblems;
@@ -171,7 +173,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     );
   }
 
-  /// Navigates straight to the results page with no animation.
   void _navigateToResults(_PaperResultData data) {
     GoRouter.of(context).go(
       '/paper-results',
@@ -187,8 +188,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     );
   }
 
-  /// Plays the slide-in/pause/slide-out overlay animation, then navigates
-  /// to the results page and cleans up the overlays.
   Future<void> _playCompleteAnimation({
     required bool outOfTime,
     required OverlayEntry blockingOverlay,
@@ -261,22 +260,21 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   @override
   Widget build(BuildContext context) {
     final Widget pieTimer = SizedBox(
-      width: 52,
-      height: 52,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: PieTimer(
-          duration: widget.selectedLevel.levelInfo.timeLimit,
-          delayOver: _delayOver,
-          onComplete: () => _onComplete(outOfTime: true),
-        ),
+      width: 33,
+      height: 33,
+      child: PieTimer(
+        duration: widget.selectedLevel.levelInfo.timeLimit,
+        delayOver: _delayOver,
+        onComplete: () => _onComplete(outOfTime: true),
       ),
     );
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: CustomAppBar(
         title: widget.examDisplayString ?? '',
         context: context,
-        actions: [if (widget.isExam) pieTimer],
+        black: true,
+        actionWidget: widget.isExam ? pieTimer : null,
         onBackPressed: () async {
           await showExitDialog(
             context,
@@ -288,103 +286,118 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
           );
         },
       ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return OrientationBuilder(
-              builder: (context, orientation) {
-                final isPortrait = orientation == Orientation.portrait;
-                final isMitoriLandscape =
-                    !isPortrait && widget.selectedLevel is MitoriLevel;
+      body: Container(
+        color: Colors.black,
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return OrientationBuilder(
+                builder: (context, orientation) {
+                  final isPortrait = orientation == Orientation.portrait;
+                  final isLeftHanded =
+                      InheritedAppController.of(context).handedness ==
+                      Handedness.left;
 
-                final isLeftHanded =
-                    InheritedAppController.of(context).handedness ==
-                    Handedness.left;
-
-                final problemWindow = Stack(
-                  children: [
-                    Align(
-                      alignment: .centerLeft,
-                      child: LayoutBuilder(
-                        builder: (context, innerConstraints) =>
-                            _buildWindow(height: innerConstraints.maxHeight),
-                      ),
-                    ),
-                    if (!_delayOver)
-                      DelayWindow(
-                        showLoading: _showLoading,
-                        sounds: _sound,
-                        onFinished: () {
-                          setState(() {
-                            _delayOver = true;
-                          });
-                          _stopwatch.start();
-                        },
-                      ),
-                  ],
-                );
-                final keypad = IgnorePointer(
-                  ignoring: !_delayOver,
-                  child: Stack(
+                  final problemWindow = Stack(
                     children: [
-                      Align(alignment: .center, child: _buildKeypad()),
                       Align(
-                        alignment: .center,
-                        child: ResultPopup(key: _resultPopupKey),
-                      ),
-                    ],
-                  ),
-                );
-                final Widget mainContent;
-                if (isMitoriLandscape) {
-                  mainContent = Stack(
-                    children: [
-                      Positioned(
-                        left: isLeftHanded ? null : 0,
-                        right: isLeftHanded ? 0 : null,
-                        top: 0,
-                        bottom: 0,
-                        width: constraints.maxWidth * 0.8,
-                        child: problemWindow,
-                      ),
-                      Align(
-                        alignment: isLeftHanded ? .centerLeft : .centerRight,
-                        child: FractionallySizedBox(
-                          widthFactor: 0.4,
-                          child: Stack(
-                            children: [
-                              Positioned.fill(
-                                child: GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  onTap: () {},
-                                ),
-                              ),
-                              keypad,
-                            ],
-                          ),
+                        alignment: .centerLeft,
+                        child: LayoutBuilder(
+                          builder: (context, innerConstraints) =>
+                              _buildWindow(height: innerConstraints.maxHeight),
                         ),
                       ),
+                      if (!_delayOver)
+                        DelayWindow(
+                          showLoading: _showLoading,
+                          sounds: _sound,
+                          onFinished: () {
+                            setState(() {
+                              _delayOver = true;
+                            });
+                            _stopwatch.start();
+                          },
+                        ),
                     ],
                   );
-                } else {
-                  mainContent = Flex(
+                  final keypad = IgnorePointer(
+                    ignoring: !_delayOver,
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: .center,
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              isPortrait ? 8.0 : 0,
+                              isPortrait ? 8.0 : 0,
+                              isPortrait ? 8.0 : 0,
+                              0,
+                            ),
+                            child: _buildKeypad(),
+                          ),
+                        ),
+                        Align(
+                          alignment: .center,
+                          child: ResultPopup(key: _resultPopupKey),
+                        ),
+                      ],
+                    ),
+                  );
+                  final Widget mainContent = Flex(
                     direction: isPortrait ? Axis.vertical : Axis.horizontal,
                     children: isPortrait || !isLeftHanded
                         ? [
-                            Expanded(flex: 8, child: problemWindow),
+                            Expanded(
+                              flex: 8,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxHeight: 600),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: Container(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.surface,
+                                      child: problemWindow,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                             Expanded(flex: 5, child: keypad),
                           ]
                         : [
                             Expanded(flex: 5, child: keypad),
-                            Expanded(flex: 8, child: problemWindow),
+                            Expanded(
+                              flex: 8,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxHeight: 600),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: Container(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.surface,
+                                      child: problemWindow,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                   );
-                }
-
-                return Stack(children: [Positioned.fill(child: mainContent)]);
-              },
-            );
-          },
+                  return mainContent;
+                },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -504,7 +517,7 @@ class _DelayWindowState extends State<DelayWindow>
           begin: 1.0,
           end: 0.0,
         ).chain(CurveTween(curve: Curves.linear)),
-        weight: 32, // 0.5s out of 2s = 25%
+        weight: 32,
       ),
       TweenSequenceItem(tween: ConstantTween<double>(0.0), weight: 16),
       TweenSequenceItem(
@@ -512,7 +525,7 @@ class _DelayWindowState extends State<DelayWindow>
           begin: 1.0,
           end: 0.0,
         ).chain(CurveTween(curve: Curves.linear)),
-        weight: 32, // 0.5s animation
+        weight: 32,
       ),
       TweenSequenceItem(tween: ConstantTween<double>(0.0), weight: 20),
     ]).animate(_controller);
@@ -611,6 +624,11 @@ class _MitorizanWindowState extends State<MitorizanWindow>
   late final List<TextFieldData> _textFieldDataList;
   late final KeypadSounds _sound;
   late final int _maxDigits;
+  late final double _dividerWidth =
+      (widget.selectedLevel.maxDigits * 29) +
+      (((widget.selectedLevel.maxDigits - 1) ~/ 3) * 10) +
+      60;
+  late final double _landscapeViewportFraction;
 
   @override
   bool get isExam => widget.isExam;
@@ -645,6 +663,7 @@ class _MitorizanWindowState extends State<MitorizanWindow>
 
     _sound = KeypadSounds();
     _sound.init();
+    _landscapeViewportFraction = _computeViewportFraction();
   }
 
   void _initializeProblem(MitoriLevel level) {
@@ -656,20 +675,30 @@ class _MitorizanWindowState extends State<MitorizanWindow>
     _maxDigits = fullProblemSet.maxDigits;
   }
 
+  double _computeViewportFraction() {
+    const referenceWidth = 409.0;
+    const maxFraction = 0.622;
+    const minFraction =
+        0.499; //https://github.com/serenader2014/flutter_carousel_slider/issues/419#issuecomment-2460944294
+
+    final fraction = maxFraction * (_dividerWidth / referenceWidth);
+    print(fraction.clamp(minFraction, maxFraction));
+    return fraction.clamp(minFraction, maxFraction);
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isPortrait = MediaQuery.orientationOf(context) == .portrait;
-    final isLeftHanded =
-        InheritedAppController.of(context).handedness == Handedness.left;
+
     return CarouselSlider.builder(
       carouselController: carouselController,
       options: CarouselOptions(
-        height: widget.height.clamp(0, 600),
+        height: widget.height,
         reverse: true,
-        viewportFraction: isPortrait ? 1 : 0.45,
-        padEnds: isLeftHanded ? false : true,
+        viewportFraction: isPortrait ? 1 : _landscapeViewportFraction,
+        padEnds: false,
         enlargeCenterPage: isPortrait ? false : true,
-        enlargeStrategy: .zoom,
+        enlargeStrategy: .scale,
         disableCenter: true,
         enlargeFactor: 0.2,
         onPageChanged: (index, reason) {
@@ -682,121 +711,44 @@ class _MitorizanWindowState extends State<MitorizanWindow>
       itemBuilder: (BuildContext context, int problemIndex, int realIndex) {
         final List<String> currentProblem = _allProblems[problemIndex];
         final isFocused = problemIndex == currentIndex;
-        final isPreviousProblem =
-            problemIndex + 1 == currentIndex ||
-            (currentIndex == 0 && problemIndex == _allProblems.length - 1);
         return AnimatedOpacity(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOutCubic,
-          opacity: isPreviousProblem ? 0.0 : (isFocused ? 1.0 : 0.6),
+          opacity: isFocused ? 1.0 : 0.6,
           child: FittedBox(
             fit: .scaleDown,
             clipBehavior: Clip.none,
-            child: IntrinsicWidth(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 2,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: IntrinsicWidth(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    MitoriDisplay(
+                      problemIndex: problemIndex,
+                      currentProblem: currentProblem,
+                      isSimpleMitori: widget.selectedLevel is SimpleMitoriLevel,
+                    ),
+                    Container(
+                      width: _dividerWidth,
+                      height: 2,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      margin: const EdgeInsets.only(top: 5),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CustomTextField(
+                          data: textFieldDataList[problemIndex],
+                          isFocused: isFocused,
                         ),
-                        child: Center(
-                          child: Text(
-                            '${problemIndex + 1}',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'bizUDPGR',
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textScaler: TextScaler.noScaling,
-                          ),
-                        ),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 3.0,
-                                  horizontal: 10.0,
-                                ),
-                                child: Text(
-                                  currentProblem[0],
-                                  style: switch (widget.selectedLevel) {
-                                    SimpleMitoriLevel() => const TextStyle(
-                                      fontSize: 140,
-                                      fontFamily: 'ogutama',
-                                    ),
-                                    _ => const TextStyle(
-                                      fontSize: 30,
-                                      fontFamily: 'abacusFontSpaced',
-                                    ),
-                                  },
-                                  textScaler: TextScaler.noScaling,
-                                ),
-                              ),
-                            ],
-                          ),
-                          ...currentProblem
-                              .sublist(1)
-                              .map(
-                                (n) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 3.0,
-                                    horizontal: 10.0,
-                                  ),
-                                  child: Text(
-                                    n,
-                                    style: const TextStyle(
-                                      fontSize: 30,
-                                      fontFamily: 'abacusFontSpaced',
-                                    ),
-                                    textScaler: TextScaler.noScaling,
-                                  ),
-                                ),
-                              ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width:
-                        widget.selectedLevel.maxDigits * 29 +
-                        (((widget.selectedLevel.maxDigits - 1) ~/ 3) * 10) +
-                        60,
-                    height: 2,
-                    color: Theme.of(context).colorScheme.onSurface,
-                    margin: const EdgeInsets.only(top: 5),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CustomTextField(
-                        data: textFieldDataList[problemIndex],
-                        isFocused: isFocused,
-                      ),
-                      const SizedBox(width: 6),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 6),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -854,7 +806,7 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
   GlobalKey<ResultPopupState> get resultPopupKey => widget.resultPopupKey;
 
   double _computeViewportFraction(double height) {
-    const referenceHeight = 330.0; // height at which fraction == 0.55
+    const referenceHeight = 330.0; // height at which fraction == 0.53
     const maxFraction = 0.53; // fraction for small screens
     const minFraction = 0.36; // floor for very large screens
 
@@ -915,121 +867,15 @@ class _DivMultWindowState extends State<DivMultWindow> with PaperKeypadMethods {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOutCubic,
               opacity: isFocused ? 1.0 : 0.6,
-              child: Stack(
-                children: [
-                  // Decimal Rounding Notice
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOutCubic,
-                      opacity:
-                          (problemIndex == 0 &&
-                              _intRoundIndex != -1 &&
-                              isFocused)
-                          ? 1.0
-                          : 0.0,
-                      child: Transform.translate(
-                        offset: const Offset(0, -20),
-                        child: const Text(
-                          '（注意） 小数第3位未満四捨五入。',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'bizUDPGR',
-                          ),
-                          textScaler: TextScaler.noScaling,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Integer Rounding Notice
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOutCubic,
-                      opacity: (problemIndex == _intRoundIndex && isFocused)
-                          ? 1.0
-                          : 0.0,
-                      child: Transform.translate(
-                        offset: const Offset(0, -20),
-                        child: const Text(
-                          '（注意） 整数位未満四捨五入。',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'bizUDPGR',
-                          ),
-                          textScaler: TextScaler.noScaling,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            width: 40.0,
-                            height: 40.0,
-                            margin: const EdgeInsets.all(1.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 2,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${problemIndex + 1}',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'bizUDPGR',
-                                  fontWeight: .bold,
-                                ),
-                                textScaler: .noScaling,
-                              ),
-                            ),
-                          ),
-                        ),
-                        FittedBox(
-                          fit: .contain,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0,
-                                ),
-                                child: Text(
-                                  currentProblem,
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    fontFamily: 'abacusFont',
-                                  ),
-                                  textScaler: .noScaling,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              const Text(
-                                '||',
-                                style: TextStyle(fontSize: 26),
-                                textScaler: .noScaling,
-                              ),
-                              CustomTextField(
-                                data: textFieldDataList[problemIndex],
-                                isFocused: isFocused,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              child: DivMultDisplay(
+                problemIndex: problemIndex,
+                isFocused: isFocused,
+                underEquals: CustomTextField(
+                  data: textFieldDataList[problemIndex],
+                  isFocused: isFocused,
+                ),
+                intRoundIndex: _intRoundIndex,
+                currentProblem: currentProblem,
               ),
             );
           },

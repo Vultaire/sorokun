@@ -94,6 +94,7 @@ enum Character {
     displayString: 'もち子さん',
     icon: 'assets/character_icon/20.png',
     negaimasiteha: 'assets/negaimasiteha/20.wav',
+    creditText: '(cv 明日葉よもぎ)',
   ),
   kenzakiMesou(
     singerId: 3021,
@@ -246,6 +247,7 @@ enum Character {
   final String displayString;
   final String icon;
   final String negaimasiteha;
+  final String? creditText;
 
   const Character({
     required this.singerId,
@@ -254,5 +256,6 @@ enum Character {
     required this.displayString,
     required this.icon,
     required this.negaimasiteha,
+    this.creditText,
   });
 }

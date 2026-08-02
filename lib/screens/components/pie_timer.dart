@@ -57,24 +57,21 @@ class _PieTimerState extends State<PieTimer>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        width: 100,
-        height: 100,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return CustomPaint(
-              painter: _TimerCirclePainter(
-                progress: 1 - _controller.value,
-                color: Theme.of(context).colorScheme.primary,
-                borderColor: Theme.of(context).colorScheme.primary,
-                borderWidth: 3,
-              ),
-            );
-          },
-        ),
+    return SizedBox(
+      width: 100,
+      height: 100,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _TimerCirclePainter(
+              progress: 1 - _controller.value,
+              color: Colors.white,
+              borderColor: Colors.white,
+              borderWidth: 3,
+            ),
+          );
+        },
       ),
     );
   }

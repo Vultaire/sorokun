@@ -311,18 +311,16 @@ class _TortoiseHareSlider extends StatelessWidget {
             onChanged: onSliderChanged,
           ),
           Positioned(
-            left: 90,
+            left: 85,
             bottom: 40,
             child: SpammableButton(
               onTapDown: onIncrease,
               enableRepeat: true,
+              shape: BoxShape.circle,
               child: Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.all(8),
+                height: 90,
+                width: 90,
+                padding: const EdgeInsets.all(12),
                 child: Image.asset(
                   'assets/tortoise.png',
                   color: colorScheme.onSurface,
@@ -332,18 +330,16 @@ class _TortoiseHareSlider extends StatelessWidget {
             ),
           ),
           Positioned(
-            right: 90,
+            right: 85,
             bottom: 40,
             child: SpammableButton(
               onTapDown: onDecrease,
               enableRepeat: true,
+              shape: BoxShape.circle,
               child: Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.all(8),
+                height: 90,
+                width: 90,
+                padding: const EdgeInsets.all(12),
                 child: Image.asset(
                   'assets/hare.png',
                   color: colorScheme.onSurface,

@@ -26,11 +26,7 @@ class _NavigationButtonState extends State<NavigationButton> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final pressedColor = Color.lerp(
-      widget.color,
-      colorScheme.primary,
-      0.15, // adjust intensity of the overlay effect
-    )!;
+    final pressedColor = Color.lerp(widget.color, colorScheme.primary, 0.15)!;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
