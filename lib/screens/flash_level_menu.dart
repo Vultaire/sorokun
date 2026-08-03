@@ -257,64 +257,88 @@ class FlashInfoDialog extends StatelessWidget {
       child: Padding(
         padding: const .all(12.0),
         child: Column(
-          mainAxisSize: .min,
           mainAxisAlignment: .spaceEvenly,
-          spacing: 4,
+          spacing: 16,
           crossAxisAlignment: .center,
           children: [
-            FittedBox(
-              child: Text(denominationString, style: textTheme.headlineLarge),
-            ),
-            Material(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: .circular(24),
-              elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 12,
-                ),
-                child: SizedBox(
-                  width: isPortrait ? 200 : 500,
-                  child: Flex(
-                    direction: isPortrait ? .vertical : .horizontal,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Flexible(
+              child: SizedBox(
+                width: isPortrait ? 500 : 700,
+                child: FittedBox(
+                  fit: .contain,
+                  child: Column(
+                    spacing: 16,
                     children: [
-                      statCell(context, '$digits', '桁'),
-                      divider(context, isPortrait),
-                      statCell(context, '$kuchi', '口'),
-                      divider(context, isPortrait),
-                      statCell(context, '$secondsPerProblem', '秒'),
+                      SizedBox(
+                        width: 300,
+                        child: FittedBox(
+                          fit: .contain,
+                          child: Text(
+                            textAlign: .center,
+                            denominationString,
+                            style: textTheme.headlineLarge,
+                          ),
+                        ),
+                      ),
+                      Material(
+                        color: colorScheme.surfaceContainerHighest,
+                        borderRadius: .circular(24),
+                        elevation: 8,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: SizedBox(
+                            width: isPortrait ? 200 : 500,
+                            child: Flex(
+                              direction: isPortrait ? .vertical : .horizontal,
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                statCell(context, '$digits', '桁'),
+                                divider(context, isPortrait),
+                                statCell(context, '$kuchi', '口'),
+                                divider(context, isPortrait),
+                                statCell(context, '$secondsPerProblem', '秒'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      isPortrait
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('全$probCount問 各10点', style: infoTextStyle),
+                                Text(
+                                  '$passThreshold点で合格',
+                                  style: infoTextStyle,
+                                ),
+                                if (kuriagariNashi)
+                                  Text('くりあがりなし', style: infoTextStyle),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('全$probCount問 各10点', style: infoTextStyle),
+                                Text('  ・  ', style: infoTextStyle),
+                                Text(
+                                  '$passThreshold点で合格',
+                                  style: infoTextStyle,
+                                ),
+                                if (kuriagariNashi) ...[
+                                  Text('  ・  ', style: infoTextStyle),
+                                  Text('くりあがりなし', style: infoTextStyle),
+                                ],
+                              ],
+                            ),
                     ],
                   ),
                 ),
               ),
             ),
-            isPortrait
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text('全$probCount問 各10点', style: infoTextStyle),
-                      Text('合格点：$passThreshold点以上', style: infoTextStyle),
-                      if (kuriagariNashi) Text('くりあがりなし', style: infoTextStyle),
-                    ],
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('全$probCount問 各10点', style: infoTextStyle),
-                      Text('  ・  ', style: infoTextStyle),
-                      Text('$passThreshold点で合格', style: infoTextStyle),
-                      if (kuriagariNashi) ...[
-                        Text('  ・  ', style: infoTextStyle),
-                        Text('くりあがりなし', style: infoTextStyle),
-                      ],
-                    ],
-                  ),
             StartButton(
               onPressed: () {
-                context.push(
+                context.go(
                   '/flash-problem',
                   extra: {
                     'selectedLevel': selectedLevel,
@@ -354,7 +378,6 @@ Widget divider(BuildContext context, bool isPortrait) {
       ? SizedBox(
           width: 140,
           child: Divider(
-            height: 5,
             color: Theme.of(context).colorScheme.outline,
             thickness: 1,
           ),
@@ -362,7 +385,6 @@ Widget divider(BuildContext context, bool isPortrait) {
       : SizedBox(
           height: 48,
           child: VerticalDivider(
-            width: 4,
             color: Theme.of(context).colorScheme.outline,
             thickness: 1,
           ),

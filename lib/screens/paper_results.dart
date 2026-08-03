@@ -74,7 +74,10 @@ class ResultsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 elevation: 4,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8.0,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -240,12 +243,13 @@ class ResultsScreen extends StatelessWidget {
                           countUpCircle,
                           Column(
                             mainAxisSize: MainAxisSize.min,
+                            spacing: 12,
                             children: [
                               ConstrainedBox(
                                 constraints: BoxConstraints(maxWidth: 620),
                                 child: Row(
                                   mainAxisAlignment: .center,
-                                  spacing: 20,
+                                  spacing: 24,
                                   children: [?examDescription, ?elapsedCard],
                                 ),
                               ),

@@ -10,7 +10,7 @@ enum Character {
   zundamon(
     singerId: 3003,
     baseNote: 62,
-    keyRangeAdjustment: 2,
+    keyRangeAdjustment: 3,
     displayString: 'ずんだもん',
     icon: 'assets/character_icon/1.png',
     negaimasiteha: 'assets/negaimasiteha/1.wav',
@@ -18,7 +18,7 @@ enum Character {
   kasukabeTsumugi(
     singerId: 3008,
     baseNote: 62,
-    keyRangeAdjustment: 3,
+    keyRangeAdjustment: -1,
     displayString: '春日部つむぎ',
     icon: 'assets/character_icon/8.png',
     negaimasiteha: 'assets/negaimasiteha/8.wav',
@@ -42,7 +42,7 @@ enum Character {
   kuronoTakehiro(
     singerId: 3011,
     baseNote: 50,
-    keyRangeAdjustment: -11,
+    keyRangeAdjustment: -10,
     displayString: '玄野武宏',
     icon: 'assets/character_icon/11.png',
     negaimasiteha: 'assets/negaimasiteha/11.wav',
@@ -90,7 +90,7 @@ enum Character {
   mochikosan(
     singerId: 3079,
     baseNote: 60,
-    keyRangeAdjustment: -1,
+    keyRangeAdjustment: -3,
     displayString: 'もち子さん',
     icon: 'assets/character_icon/20.png',
     negaimasiteha: 'assets/negaimasiteha/20.wav',
@@ -139,7 +139,7 @@ enum Character {
   oukaMiko(
     singerId: 3043,
     baseNote: 60,
-    keyRangeAdjustment: 0,
+    keyRangeAdjustment: -1,
     displayString: '櫻歌ミコ',
     icon: 'assets/character_icon/43.png',
     negaimasiteha: 'assets/negaimasiteha/43.wav',
@@ -147,7 +147,7 @@ enum Character {
   sayo(
     singerId: 3046,
     baseNote: 61,
-    keyRangeAdjustment: 0,
+    keyRangeAdjustment: 2,
     displayString: 'SAYO',
     icon: 'assets/character_icon/46.png',
     negaimasiteha: 'assets/negaimasiteha/46.wav',
@@ -171,7 +171,7 @@ enum Character {
   wakamatsuAkashi(
     singerId: 3052,
     baseNote: 47,
-    keyRangeAdjustment: -14,
+    keyRangeAdjustment: -16,
     displayString: '雀松朱司',
     icon: 'assets/character_icon/52.png',
     negaimasiteha: 'assets/negaimasiteha/52.wav',
@@ -203,7 +203,7 @@ enum Character {
   nekotsukaBii(
     singerId: 3058,
     baseNote: 63,
-    keyRangeAdjustment: 5,
+    keyRangeAdjustment: 0,
     displayString: '猫使ビィ',
     icon: 'assets/character_icon/58.png',
     negaimasiteha: 'assets/negaimasiteha/58.wav',
@@ -235,7 +235,7 @@ enum Character {
   kotoyomiNia(
     singerId: 3074,
     baseNote: 62,
-    keyRangeAdjustment: 2,
+    keyRangeAdjustment: 4,
     displayString: '琴詠ニア',
     icon: 'assets/character_icon/74.png',
     negaimasiteha: 'assets/negaimasiteha/74.wav',

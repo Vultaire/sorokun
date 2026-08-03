@@ -215,14 +215,12 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                     // Portrait Layout
                     if (isPortrait) {
                       return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         spacing: 16,
                         children: [
-                          Expanded(
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: constraints.maxWidth,
-                              ),
+                          Flexible(
+                            child: SizedBox(
+                              width: 490,
                               child: FittedBox(
                                 fit: BoxFit.contain,
                                 child: Column(
@@ -258,10 +256,8 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Flexible(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: constraints.maxWidth,
-                            ),
+                          child: SizedBox(
+                            width: 800,
                             child: FittedBox(
                               fit: BoxFit.contain,
                               child: content,

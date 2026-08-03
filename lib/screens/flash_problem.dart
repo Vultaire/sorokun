@@ -496,7 +496,8 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
               onPressed: () async {
                 await showExitDialog(
                   context,
-                  homeRoute: '/flash-level-menu',
+                  homeRoute:
+                      '/flash-level-menu', //TODO fix this for aloud problems
                   onSubmit: widget.onShowResults,
                 );
               },

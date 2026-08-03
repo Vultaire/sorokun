@@ -98,14 +98,8 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
     final int showDuration = (1.5 * hideDuration).round();
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(
-          MediaQuery.of(context).orientation == Orientation.landscape
-              ? 40
-              : kToolbarHeight,
-        ),
-        child: CustomAppBar(title: 'フラッシュ暗算フリー', context: context),
-      ),
+      appBar: CustomAppBar(title: 'フラッシュ暗算フリー', context: context),
+
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -164,20 +158,18 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
 
                     if (isPortrait) {
                       return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         spacing: 16,
                         children: [
-                          Expanded(
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: constraints.maxWidth,
-                              ),
+                          Flexible(
+                            child: SizedBox(
+                              width: 560,
                               child: FittedBox(
                                 fit: BoxFit.contain,
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  spacing: 8,
+                                  spacing: 4,
                                   children: [
                                     incrementers,
                                     slider,
@@ -220,10 +212,8 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Flexible(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: constraints.maxWidth,
-                            ),
+                          child: SizedBox(
+                            width: 800,
                             child: FittedBox(
                               fit: BoxFit.contain,
                               child: content,
@@ -404,9 +394,9 @@ class _DurationCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       color: colorScheme.surfaceContainer,
       child: SizedBox(
-        width: 220,
+        width: 210,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
           child: Column(
             children: [
               Text(title, style: textTheme.headlineSmall),

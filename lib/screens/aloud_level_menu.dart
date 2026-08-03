@@ -225,57 +225,122 @@ class AloudInfoDialog extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
-          mainAxisSize: .min,
           mainAxisAlignment: .spaceEvenly,
           crossAxisAlignment: .center,
+          spacing: 16,
           children: [
-            FittedBox(
-              child: Text(denominationString, style: textTheme.headlineLarge),
-            ),
-            FittedBox(
-              fit: .scaleDown,
-              child: Material(
-                color: colorScheme.surfaceContainerHighest,
-                borderRadius: .circular(24),
-                elevation: 8,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    width: isPortrait ? 250 : 900,
-                    child: Flex(
-                      direction: isPortrait ? .vertical : .horizontal,
-                      mainAxisAlignment: .spaceEvenly,
-                      children: [
-                        Text(minusString, style: textTheme.displayMedium),
-                        divider(context, isPortrait),
-                        statCell(context, digitsString, '桁'),
-                        divider(context, isPortrait),
-                        statCell(context, '$kuchi', '口'),
-                        divider(context, isPortrait),
-                        statCell(context, '$moraPerSecond', '拍/秒'),
-                        divider(context, isPortrait),
-                        statCell(context, '${msPerInterval / 1000}', '秒間隔'),
-                      ],
-                    ),
+            Flexible(
+              child: SizedBox(
+                width: isPortrait ? 400 : 900,
+                child: FittedBox(
+                  fit: .contain,
+                  child: Column(
+                    spacing: 16,
+                    children: [
+                      Text(denominationString, style: textTheme.headlineLarge),
+                      Material(
+                        color: colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(24),
+                        elevation: 8,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: SizedBox(
+                            width: isPortrait ? 250 : 500,
+                            child: isPortrait
+                                ? Flex(
+                                    direction: Axis.vertical,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(
+                                        minusString,
+                                        style: textTheme.displayMedium,
+                                      ),
+                                      divider(context, isPortrait),
+                                      statCell(context, digitsString, '桁'),
+                                      divider(context, isPortrait),
+                                      statCell(context, '$kuchi', '口'),
+                                      divider(context, isPortrait),
+                                      statCell(
+                                        context,
+                                        '$moraPerSecond',
+                                        '拍/秒',
+                                      ),
+                                      divider(context, isPortrait),
+                                      statCell(
+                                        context,
+                                        '${msPerInterval / 1000}',
+                                        '秒間隔',
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    spacing: 8,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            minusString,
+                                            style: textTheme.displayMedium,
+                                          ),
+                                          divider(context, isPortrait),
+                                          statCell(context, digitsString, '桁'),
+                                          divider(context, isPortrait),
+                                          statCell(context, '$kuchi', '口'),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          statCell(
+                                            context,
+                                            '$moraPerSecond',
+                                            '拍/秒',
+                                          ),
+                                          divider(context, isPortrait),
+                                          statCell(
+                                            context,
+                                            '${msPerInterval / 1000}',
+                                            '秒間隔',
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                      ),
+                      Flex(
+                        direction: isPortrait ? .vertical : .horizontal,
+                        spacing: 16,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('全$probCount問 各10点', style: infoTextStyle),
+                              Text('  ・  ', style: infoTextStyle),
+                              Text('$passThreshold点で合格', style: infoTextStyle),
+                            ],
+                          ),
+                          VoiceSelectionButton(
+                            character: character,
+                            onChanged: onCharacterChanged,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('全$probCount問 各10点', style: infoTextStyle),
-                Text('  ・  ', style: infoTextStyle),
-                Text('$passThreshold点で合格', style: infoTextStyle),
-              ],
-            ),
-            VoiceSelectionButton(
-              character: character,
-              onChanged: onCharacterChanged,
-            ),
             StartButton(
               onPressed: () {
                 context.push(
+                  //TODO dispose properly
                   '/aloud-problem',
                   extra: {
                     'isSingleProblem': false,

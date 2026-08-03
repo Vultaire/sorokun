@@ -219,6 +219,7 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                 enlargeCenterPage: true,
                 enlargeStrategy: .zoom,
                 enlargeFactor: 0.2,
+                enableInfiniteScroll: false,
                 onPageChanged: (index, reason) {
                   setState(() {
                     currentIndex = index;

@@ -6,6 +6,7 @@ class NavigationButton extends StatefulWidget {
   final Color color;
   final Widget child;
   final EdgeInsets? margin;
+  final BorderRadius? borderRadius;
 
   const NavigationButton({
     super.key,
@@ -14,6 +15,7 @@ class NavigationButton extends StatefulWidget {
     required this.child,
     this.duration = const Duration(milliseconds: 100),
     this.margin,
+    this.borderRadius,
   });
 
   @override
@@ -43,7 +45,7 @@ class _NavigationButtonState extends State<NavigationButton> {
         child: AnimatedPhysicalModel(
           duration: widget.duration,
           shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(24),
           color: _isPressed ? pressedColor : widget.color,
           shadowColor: Colors.black,
           elevation: _isPressed ? 2 : 8,

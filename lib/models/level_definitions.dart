@@ -1228,7 +1228,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
 enum Denomination {
   nisshou(denominationString: '日本珠算連盟'),
   zenshuren(denominationString: '全国珠算教育連盟'),
-  kyoukai(denominationString: '日本フラッシュ暗算協会');
+  kyoukai(denominationString: '日本ﾌﾗｯｼｭ暗算協会');
 
   const Denomination({required this.denominationString});
   final String denominationString;

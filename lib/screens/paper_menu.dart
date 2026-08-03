@@ -100,10 +100,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
             } else {
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.all(12),
                   child: OrientationBuilder(
                     builder: (context, orientation) {
                       final isPortrait = orientation == Orientation.portrait;
@@ -112,92 +109,76 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                         [StartButtonType.kake, StartButtonType.kakean],
                         [StartButtonType.wari, StartButtonType.warian],
                       ];
-                      final buttonGrid = ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: 600),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: Flex(
-                            direction: isPortrait
-                                ? Axis.vertical
-                                : Axis.horizontal,
-                            children: rows
-                                .map(
-                                  (pair) => Expanded(
-                                    child: LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        final startButtonSizeConstraint =
-                                            isPortrait
-                                            ? constraints.maxWidth / 2
-                                            : constraints.maxHeight / 2;
-                                        return Flex(
-                                          direction: isPortrait
-                                              ? Axis.horizontal
-                                              : Axis.vertical,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: pair.map((type) {
-                                            final hasLevel = _hasLevel(type);
-                                            return Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                AnimatedOpacity(
-                                                  opacity: hasLevel
-                                                      ? 1.0
-                                                      : 0.35,
-                                                  duration: const Duration(
-                                                    milliseconds: 300,
-                                                  ),
-                                                  curve: Curves.easeInOut,
-                                                  child: IgnorePointer(
-                                                    ignoring: !hasLevel,
-                                                    child: PaperStartButton(
-                                                      startButtonType: type,
-                                                      size:
-                                                          startButtonSizeConstraint,
-                                                      isPortrait: isPortrait,
-                                                      kyuui: _kyuui,
-                                                      isExam: _isExam,
-                                                    ),
-                                                  ),
-                                                ),
-                                                IgnorePointer(
-                                                  child: AnimatedOpacity(
-                                                    opacity: hasLevel
-                                                        ? 0.0
-                                                        : 1.0,
-                                                    duration: const Duration(
-                                                      milliseconds: 300,
-                                                    ),
-                                                    curve: Curves.easeInOut,
-                                                    child: AnimatedScale(
-                                                      scale: hasLevel
-                                                          ? 0.6
-                                                          : 1.0,
-                                                      duration: const Duration(
-                                                        milliseconds: 300,
-                                                      ),
-                                                      curve: Curves.easeOutBack,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }).toList(),
+
+                      final buttonGrid = LayoutBuilder(
+                        builder: (context, gridConstraints) {
+                          final shortestSide = MediaQuery.of(
+                            context,
+                          ).size.shortestSide;
+                          final isLargeScreen = shortestSide >= 600;
+
+                          final padding = isLargeScreen ? 20.0 : 8.0;
+                          final rowSpacing = isLargeScreen ? 28.0 : 8.0;
+                          final itemSpacing = isLargeScreen ? 28.0 : 8.0;
+
+                          final maxHeight = gridConstraints.maxHeight.isFinite
+                              ? gridConstraints.maxHeight.clamp(0, 600)
+                              : 600.0;
+                          final availableWidth =
+                              gridConstraints.maxWidth - padding * 2;
+                          final availableHeight = maxHeight - padding * 2;
+                          final itemsPerRow = rows.isNotEmpty
+                              ? rows.first.length
+                              : 1;
+                          final buttonSize = isPortrait
+                              ? (availableWidth -
+                                        itemSpacing * (itemsPerRow - 1)) /
+                                    itemsPerRow
+                              : (availableHeight -
+                                        itemSpacing * (itemsPerRow - 1)) /
+                                    itemsPerRow;
+                          return ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 600),
+                            child: Container(
+                              padding: EdgeInsets.all(padding),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainer,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Flex(
+                                direction: isPortrait
+                                    ? Axis.vertical
+                                    : Axis.horizontal,
+                                spacing: rowSpacing,
+                                children: rows.map((pair) {
+                                  return Expanded(
+                                    child: Flex(
+                                      direction: isPortrait
+                                          ? Axis.horizontal
+                                          : Axis.vertical,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      spacing: itemSpacing,
+                                      children: pair.map((type) {
+                                        return _GridButton(
+                                          type: type,
+                                          size: buttonSize,
+                                          isPortrait: isPortrait,
+                                          kyuui: _kyuui,
+                                          isExam: _isExam,
+                                          hasLevel: _hasLevel(type),
                                         );
-                                      },
+                                      }).toList(),
                                     ),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          );
+                        },
                       );
                       final selectorStack = KyuuiSelectorStack(
                         primaryDenomination: KyuuiDenomination.zs,
@@ -294,6 +275,43 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
               );
             }
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _GridButton extends StatelessWidget {
+  const _GridButton({
+    required this.type,
+    required this.size,
+    required this.isPortrait,
+    required this.kyuui,
+    required this.isExam,
+    required this.hasLevel,
+  });
+
+  final StartButtonType type;
+  final double size;
+  final bool isPortrait;
+  final Kyuui kyuui;
+  final bool isExam;
+  final bool hasLevel;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      opacity: hasLevel ? 1.0 : 0.35,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: IgnorePointer(
+        ignoring: !hasLevel,
+        child: PaperStartButton(
+          startButtonType: type,
+          size: size,
+          isPortrait: isPortrait,
+          kyuui: kyuui,
+          isExam: isExam,
         ),
       ),
     );

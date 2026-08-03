@@ -19,12 +19,11 @@ class StartButton extends StatelessWidget {
         child: NavigationButton(
           color: Theme.of(context).colorScheme.primaryContainer,
           onPressed: onPressed,
-          child: Center(
-            child: Text(
-              'スタート',
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
+          child: Text(
+            'スタート',
+            textAlign: .center,
+            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
           ),
         ),

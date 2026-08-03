@@ -58,6 +58,9 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   Timer? _readyTimer;
   List<Uint8List> _previousWavChunks = [];
   bool _isRepeat = false;
+  SendPort? _workerSendPort;
+  Completer<void>? _workerExitCompleter;
+  bool _generationComplete = false;
 
   void _initProblems() {
     AloudProblemSet fullProblemSet = AloudProblemSet(
@@ -111,41 +114,66 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     return scores;
   }
 
-  Isolate? _synthIsolate;
-
   Stream<Uint8List> _synthesizeChunks(List<String> scores) async* {
     final mainReceivePort = ReceivePort();
-    _synthIsolate = await Isolate.spawn(
+    final exitPort = ReceivePort();
+    final errorPort = ReceivePort();
+
+    final exitCompleter = Completer<void>();
+    _workerExitCompleter = exitCompleter;
+    exitPort.listen((_) {
+      if (!exitCompleter.isCompleted) exitCompleter.complete();
+      exitPort.close();
+    });
+    errorPort.listen((error) {
+      print('[synth isolate error] $error');
+    });
+
+    await Isolate.spawn(
       _synthWorkerEntry,
       mainReceivePort.sendPort,
+      onExit: exitPort.sendPort,
+      onError: errorPort.sendPort,
     );
 
     final events = StreamQueue<dynamic>(mainReceivePort);
-
-    // First message from the worker is its SendPort.
     final workerSendPort = await events.next as SendPort;
-
-    // Send init args (dictDir/vvmPath) — triggers the one-time dictionary load.
+    _workerSendPort = workerSendPort;
     workerSendPort.send([dictDir, vvmPath]);
 
-    // Now request each chunk in order and await its result before requesting
-    // the next — this keeps memory bounded and preserves chunk ordering.
-    for (final score in scores) {
-      workerSendPort.send(
-        _SynthRequest(
-          scoreJson: score,
-          speed: 1.6,
-          character: widget.character,
-        ),
-      );
-      final result = await events.next as Uint8List;
-      yield result;
+    try {
+      for (final score in scores) {
+        workerSendPort.send(
+          _SynthRequest(
+            scoreJson: score,
+            speed: 1.6,
+            character: widget.character,
+          ),
+        );
+        final result =
+            await events.next.timeout(
+                  const Duration(seconds: 15),
+                  onTimeout: () {
+                    throw TimeoutException(
+                      'Synth worker did not respond in time',
+                    );
+                  },
+                )
+                as Uint8List;
+        yield result;
+      }
+      workerSendPort.send(const _SynthDone());
+      _generationComplete = true; // only reached if every chunk succeeded
+    } catch (e, st) {
+      print('[synthesizeChunks] generation failed: $e\n$st');
+      workerSendPort.send(const _SynthDone());
+      rethrow; // let the stream's listen(onError:) below handle UI feedback
+    } finally {
+      await events.cancel();
+      mainReceivePort.close();
+      errorPort.close();
+      _workerSendPort = null;
     }
-
-    workerSendPort.send(const _SynthDone());
-    await events.cancel();
-    mainReceivePort.close();
-    _synthIsolate = null;
   }
 
   void showInput() {
@@ -203,17 +231,14 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     });
   }
 
-  void newProblem() {
-    _isRepeat = false;
-    playProblem();
-  }
-
   void _appendNewProblem() {
     final AloudProblemSet newProblemSet = AloudProblemSet(
       spec: widget.selectedLevel,
     );
     final List<int> newProblem = newProblemSet.unformattedProblems.first;
     final String newAnswer = newProblemSet.formattedAnswers.first;
+    final List<String> newFormattedProblem =
+        newProblemSet.formattedProblems.first;
     final List<Mora> problemMora = scoreMora(newProblem);
     final List<String> newScore = moraListToJsonChunks(
       moraList: problemMora,
@@ -224,6 +249,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 
     _allProblems.add(newProblem);
     _allAnswers.add(newAnswer);
+    _allFormattedProblems.add(newFormattedProblem);
     _scores.add(newScore);
     _textFieldDataList.add(TextFieldData());
 
@@ -234,6 +260,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     while (_allProblems.length > maxKept) {
       _allProblems.removeAt(0);
       _allAnswers.removeAt(0);
+      _allFormattedProblems.removeAt(0);
       _scores.removeAt(0);
       _textFieldDataList.removeAt(0);
     }
@@ -267,19 +294,40 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     return Duration(milliseconds: (seconds * 1000).round());
   }
 
-  void _resetChunkGeneration(List<String> scores) {
+  Future<void> _resetChunkGeneration(List<String> scores) async {
     _chunkSubscription?.cancel();
     _readyTimer?.cancel();
-    _synthIsolate?.kill(priority: Isolate.immediate);
-    _synthIsolate = null;
+    _generationComplete = false;
+
+    // Tell the old worker to clean up, then WAIT for it to actually exit
+    // before spawning a new one — prevents two isolates racing for the
+    // same native ONNX/VOICEVOX singleton.
+    _workerSendPort?.send(const _SynthDone());
+    if (_workerExitCompleter != null) {
+      try {
+        await _workerExitCompleter!.future.timeout(const Duration(seconds: 10));
+      } catch (e) {
+        print('[resetChunkGeneration] old isolate did not exit cleanly: $e');
+      }
+    }
+    _workerSendPort = null;
+    _workerExitCompleter = null;
+
     _wavChunks.clear();
     _readyToPlay = false;
     _genStopwatch
       ..reset()
       ..start();
+
     _chunkStream = _synthesizeChunks(scores);
     _chunkSubscription = _chunkStream!.listen(
       _onChunkReceived,
+      onError: (e) {
+        print('[resetChunkGeneration] chunk stream error: $e');
+        // Surface this to the UI instead of silently hanging — e.g. show a
+        // retry button. At minimum, avoid leaving readyToPlay stuck false
+        // forever with no explanation.
+      },
       onDone: () {
         if (mounted && !_readyToPlay) {
           setState(() => _readyToPlay = true);
@@ -362,7 +410,8 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   void dispose() {
     _chunkSubscription?.cancel();
     _readyTimer?.cancel();
-    _synthIsolate?.kill(priority: Isolate.immediate);
+    _workerSendPort?.send(const _SynthDone());
+    _workerSendPort = null;
     super.dispose();
   }
 
@@ -376,21 +425,22 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           negaimasitehaPath: widget.character.negaimasiteha,
           isSingleProblem: widget.isSingleProblem,
           chunkStream: _isRepeat ? null : _chunkStream,
-          singleProblem: _allFormattedProblems.first,
+          singleProblem: _allFormattedProblems[_currentProblemIndex],
+          generationComplete: _isRepeat ? true : _generationComplete, // NEW
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
           showResult: setInputAndShowResult,
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
-          duration: 29500,
+          duration: 14500,
           maxDigits: 17,
         );
       case 2:
         return FlashAndAloudResult<int>(
           onNextProblem: startNextProblem,
           onRepeatProblem: repeatProblem,
-          onNewProblem: newProblem,
+          onNewProblem: startNextProblem,
           onShowResults: showResults,
           inputTime: _inputTime,
           isSingleProblem: widget.isSingleProblem,
@@ -474,6 +524,7 @@ void _synthWorkerEntry(SendPort mainSendPort) async {
       final sped = speedUpWav(wav, message.speed);
       mainSendPort.send(sped);
     } else if (message is _SynthDone) {
+      singer?.dispose();
       workerReceivePort.close();
       Isolate.exit();
     }
@@ -490,6 +541,7 @@ class AloudProblem extends StatefulWidget {
     required this.negaimasitehaPath,
     required this.isSingleProblem,
     required this.singleProblem,
+    required this.generationComplete,
   });
 
   final List<Uint8List> chunks;
@@ -499,6 +551,7 @@ class AloudProblem extends StatefulWidget {
   final String negaimasitehaPath;
   final bool isSingleProblem;
   final List<String> singleProblem;
+  final bool generationComplete;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -554,11 +607,28 @@ class _AloudProblemState extends State<AloudProblem> {
         session != _playSession ||
         !_isPlaying ||
         _currentChunk >= widget.chunks.length) {
+      // If we've run out of chunks but generation isn't finished yet,
+      // this is NOT completion — just wait for more chunks to arrive.
+      if (!_disposed &&
+          session == _playSession &&
+          _isPlaying &&
+          _currentChunk >= widget.chunks.length &&
+          !widget.generationComplete) {
+        // Retry shortly instead of declaring completion.
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (!_disposed && session == _playSession) {
+            _playNextChunk(session);
+          }
+        });
+        return;
+      }
+
       final completed =
           !_disposed &&
           session == _playSession &&
           _isPlaying &&
-          _currentChunk >= widget.chunks.length;
+          _currentChunk >= widget.chunks.length &&
+          widget.generationComplete; // now requires real completion
       if (!_disposed && session == _playSession) {
         setState(() {
           _isPlaying = false;
