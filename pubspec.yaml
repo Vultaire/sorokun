@@ -40,7 +40,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/dict/open_jtalk_dic_utf_8-1.11/
-    - assets/vvms/
+    - assets/models/vvms/
     - assets/character_icon/
     - assets/negaimasiteha/
     - assets/

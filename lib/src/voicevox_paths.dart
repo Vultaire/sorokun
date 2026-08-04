@@ -21,7 +21,6 @@ Future<VoicevoxPaths> extractVoicevoxAssets() async {
     return VoicevoxPaths(dictDir: dictDest, vvmDir: vvmDest);
   }
 
-  // Extract dict
   const dictFiles = [
     'matrix.bin',
     'right-id.def',
@@ -34,15 +33,14 @@ Future<VoicevoxPaths> extractVoicevoxAssets() async {
   ];
   for (final file in dictFiles) {
     await _extractAsset(
-      'assets/voicevox/dict/open_jtalk_dic_utf_8-1.11/$file',
+      'assets/dict/open_jtalk_dic_utf_8-1.11/$file',
       '$dictDest/$file',
     );
   }
 
-  // Extract only the vvms you bundled
-  const vvmFiles = ['14.vvm', 's0.vvm']; // whatever you included
+  const vvmFiles = ['s0.vvm'];
   for (final file in vvmFiles) {
-    await _extractAsset('assets/voicevox/models/vvms/$file', '$vvmDest/$file');
+    await _extractAsset('assets/models/vvms/$file', '$vvmDest/$file');
   }
 
   return VoicevoxPaths(dictDir: dictDest, vvmDir: vvmDest);
