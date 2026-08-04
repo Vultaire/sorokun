@@ -1,0 +1,20 @@
+scripts:
+  - name: Get Flutter packages
+    script: flutter pub get
+
+  - name: Download VOICEVOX iOS frameworks
+    script: |
+      curl -L -o voicevox_core.zip "$VOICEVOX_CORE_IOS_URL"
+      unzip -o voicevox_core.zip -d ios/Frameworks/
+
+      curl -L -o voicevox_onnxruntime.zip "$VOICEVOX_ONNXRUNTIME_IOS_URL"
+      unzip -o voicevox_onnxruntime.zip -d ios/Frameworks/
+
+      echo "--- Frameworks dir contents ---"
+      find ios/Frameworks -maxdepth 3
+
+  - name: Install pods
+    script: cd ios && pod install
+
+  - name: Flutter build
+    script: flutter build ios --release --no-codesign-release --no-codesignesign

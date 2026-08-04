@@ -7,6 +7,30 @@ import 'package:ffi/ffi.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'voicevox_core_bindings.dart';
 
+DynamicLibrary loadVoicevoxCoreLib() {
+  if (Platform.isIOS || Platform.isMacOS) {
+    return DynamicLibrary.process();
+  } else if (Platform.isAndroid) {
+    return DynamicLibrary.open('libvoicevox_core.so');
+  } else if (Platform.isLinux) {
+    return DynamicLibrary.open('libvoicevox_core.so');
+  } else if (Platform.isWindows) {
+    return DynamicLibrary.open('voicevox_core.dll');
+  }
+  throw UnsupportedError('Unsupported platform');
+}
+
+String _getOnnxruntimePath() {
+  if (Platform.isIOS) {
+    final bundleDir = File(Platform.resolvedExecutable).parent.path;
+    return '$bundleDir/Frameworks/voicevox_onnxruntime.framework/voicevox_onnxruntime';
+  } else if (Platform.isLinux) {
+    final execDir = File(Platform.resolvedExecutable).parent.path;
+    return '$execDir/lib/libvoicevox_onnxruntime.so.1.17.3';
+  }
+  throw UnsupportedError('Unsupported platform for onnxruntime path');
+}
+
 class VoicevoxSing {
   final VoicevoxCore _bindings;
   final String _dictDir;
@@ -20,12 +44,7 @@ class VoicevoxSing {
   VoicevoxSing({required String dictDir, required String vvmPath})
     : _dictDir = dictDir,
       _vvmPath = vvmPath,
-      _bindings = VoicevoxCore(DynamicLibrary.open('libvoicevox_core.so'));
-
-  String _getOnnxruntimePath() {
-    final execDir = File(Platform.resolvedExecutable).parent.path;
-    return '$execDir/lib/libvoicevox_onnxruntime.so.1.17.3';
-  }
+      _bindings = VoicevoxCore(loadVoicevoxCoreLib());
 
   Uint8List synthesizeWithF0({
     required String scoreJson,
@@ -183,13 +202,7 @@ class VoicevoxTTS {
   final VoicevoxCore _bindings;
   late Pointer<VoicevoxSynthesizer> _synthesizer;
 
-  VoicevoxTTS()
-    : _bindings = VoicevoxCore(DynamicLibrary.open('libvoicevox_core.so'));
-
-  String _getOnnxruntimePath() {
-    final execDir = File(Platform.resolvedExecutable).parent.path;
-    return '$execDir/lib/libvoicevox_onnxruntime.so.1.17.3';
-  }
+  VoicevoxTTS() : _bindings = VoicevoxCore(loadVoicevoxCoreLib());
 
   void initialize({required String dictDir, required String vvmsDir}) {
     // Load ONNX runtime

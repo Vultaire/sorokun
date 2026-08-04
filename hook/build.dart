@@ -7,6 +7,15 @@ void main(List<String> args) async {
 
     final os = input.config.code.targetOS;
 
+    // iOS: the xcframework is vendored and embedded via CocoaPods
+    // (see ios/VoicevoxCore.podspec). No CodeAsset registration needed —
+    // DynamicLibrary.process() picks up the already-loaded symbols at
+    // runtime, and voicevox_onnxruntime_load_once() takes an explicit
+    // path resolved at runtime instead of a build-time asset.
+    if (os == OS.iOS) {
+      return;
+    }
+
     // Register the main library
     output.assets.code.add(
       CodeAsset(

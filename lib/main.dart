@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -31,11 +30,7 @@ void main() async {
     channels: Channels.stereo,
   );
   await appController.ready;
-  runApp(
-    DevicePreview(
-      builder: (context) => AbacusApp(appController: appController),
-    ),
-  );
+  runApp(AbacusApp(appController: appController));
 }
 
 class VoicevoxService {
@@ -372,8 +367,6 @@ class _AbacusAppState extends State<AbacusApp> {
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerConfig: _router,
-        locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
         themeMode: _appController.themeMode,
         theme: buildTheme(Brightness.light),
         darkTheme: buildTheme(Brightness.dark),

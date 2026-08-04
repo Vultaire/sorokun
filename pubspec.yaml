@@ -10,16 +10,12 @@ dependencies:
   flutter:
     sdk: flutter
   animations: ^2.0.11
-  provider: ^6.1.5
   decimal: ^3.2.6
   rational: 
   pdf: ^3.11.3
   printing: ^5.14.2
   path_provider: ^2.1.5
-  flutter_soloud:
-    git:
-      url: https://github.com/alnitak/flutter_soloud.git
-      ref: dev
+  flutter_soloud: ^4.1.6
   carousel_slider: ^5.1.1
   material_symbols_icons: ^4.2874.0
   go_router: ^17.0.1
@@ -28,7 +24,6 @@ dependencies:
   code_assets: ^1.0.0
   ffigen: ^21.0.0
   async: ^2.11.0
-  device_preview: ^1.3.1
   intl: ^0.20.2
   custom_sliding_segmented_control: ^1.8.5
   url_launcher: ^6.3.2
@@ -44,34 +39,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/voicevox/dict/open_jtalk_dic_utf_8-1.11/
-    - assets/voicevox/models/vvms/
-    - assets/correct.png
-    - assets/incorrect.png
-    - assets/yame.png
-    - assets/timesup.png
-    - assets/kanryou.png
-    - assets/finished.png
-    - assets/soroban-grey.png
-    - assets/mitori.png
-    - assets/mitorian.png
-    - assets/kake.png
-    - assets/kakean.png
-    - assets/wari.png
-    - assets/warian.png
-    - assets/tick.wav
-    - assets/passthreshold.wav
-    - assets/pass.wav
-    - assets/fail.wav
-    - assets/key-tap.wav
-    - assets/correct.wav
-    - assets/incorrect.wav
-    - assets/progress.wav
-    - assets/delete.wav
-    - assets/invalid.wav
-    - assets/starting-sine.wav
-    - assets/sine-beep.wav
-    - assets/finished.wav
+    - assets/dict/open_jtalk_dic_utf_8-1.11/
+    - assets/vvms/
     - assets/character_icon/
     - assets/negaimasiteha/
     - assets/
@@ -82,12 +51,6 @@ flutter:
     - family: abacusFontSpaced
       fonts:
         - asset: assets/abacus5spaced.ttf
-    - family: bizUDPGR
-      fonts:
-        - asset: assets/BIZUDPGothic-Regular.ttf
-    - family: bizUDGB
-      fonts:
-        - asset: assets/BIZUDGothic-Bold.ttf
     - family: mPlus
       fonts:
         - asset: assets/MPLUSRounded1c-Medium.ttf
