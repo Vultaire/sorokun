@@ -129,7 +129,7 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
                                     incorrectProblemScorers[problemIndex].index,
                                 currentProblem: currentProblem,
                                 isSimpleMitori:
-                                    widget.selectedLevel is MitoriLevel,
+                                    widget.selectedLevel is SimpleMitoriLevel,
                               ),
                               Container(
                                 width:

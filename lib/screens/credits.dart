@@ -45,8 +45,24 @@ class CreditsPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _CreditSection(
+              title: 'フォント',
+              entries: const [
+                _CreditEntry(role: 'そろばん玉のフォント', name: '小黒珠算教室　代表　小黒　元'),
+                _CreditEntry(role: '珠算の数字のフォント', name: 'Chet Lin'),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _CreditSection(
               title: '音声合成',
-              entries: buildVoicevoxCreditEntries(),
+              entries: [
+                _CreditEntry(
+                  role: 'VOICEVOX CORE',
+                  name: 'VOICEVOX Github Contributor のみなさん',
+                  onTap: () =>
+                      _launchUrl('https://github.com/VOICEVOX/voicevox_core'),
+                ),
+                ...buildVoicevoxCreditEntries(),
+              ],
             ),
           ],
         ),
