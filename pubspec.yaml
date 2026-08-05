@@ -43,6 +43,7 @@ flutter:
     - assets/models/vvms/
     - assets/character_icon/
     - assets/negaimasiteha/
+    - assets/include/
     - assets/
   fonts:
     - family: abacusFont
