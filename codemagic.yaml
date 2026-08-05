@@ -17,7 +17,7 @@ workflows:
         script: |
           curl -sSfL https://github.com/VOICEVOX/voicevox_core/releases/download/0.16.4/download-osx-arm64 -o download
           chmod +x download
-          printf '\ny\n' | ./download --exclude c-api onnxruntime additional-libraries --models-pattern s0.vvm -o assets
+          yes y | ./download --exclude c-api onnxruntime additional-libraries --models-pattern s0.vvm -o assets
           echo "--- assets/dict and assets/models contents ---"
           find assets/dict assets/models -maxdepth 2
 
