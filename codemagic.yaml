@@ -2,17 +2,6 @@ scripts:
   - name: Get Flutter packages
     script: flutter pub get
 
-  - name: Download VOICEVOX iOS frameworks
-    script: |
-      curl -L -o voicevox_core.zip "$VOICEVOX_CORE_IOS_URL"
-      unzip -o voicevox_core.zip -d ios/Frameworks/
-
-      curl -L -o voicevox_onnxruntime.zip "$VOICEVOX_ONNXRUNTIME_IOS_URL"
-      unzip -o voicevox_onnxruntime.zip -d ios/Frameworks/
-
-      echo "--- Frameworks dir contents ---"
-      find ios/Frameworks -maxdepth 3
-
   - name: Download VOICEVOX assets
     script: |
       curl -sSfL https://github.com/VOICEVOX/voicevox_core/releases/download/0.16.4/download-osx-arm64 -o download
@@ -21,8 +10,18 @@ scripts:
       echo "--- assets/dict and assets/models contents ---"
       find assets/dict assets/models -maxdepth 2
 
-  - name: Install pods
-    script: cd ios && pod install
+  - name: Download VOICEVOX iOS frameworks
+    script: |
+      curl -L -o voicevox_core.zip "$VOICEVOX_CORE_IOS_URL"
+      unzip -o voicevox_core.zip -d ios/Frameworks/
+      curl -L -o voicevox_onnxruntime.zip "$VOICEVOX_ONNXRUNTIME_IOS_URL"
+      unzip -o voicevox_onnxruntime.zip -d ios/Frameworks/
+
+  - name: Clean stale Pods state and install
+    script: |
+      cd ios
+      rm -rf Pods Podfile.lock .symlinks
+      pod install
 
   - name: Flutter build
-    script: flutter build ios --release --no-codesign-release --no-codesignesign
+    script: flutter build ios --release --no-codesign

@@ -58,3 +58,5 @@ flutter:
     - family: ogutama
       fonts:
         - asset: assets/ogutamafontS2.ttf
+  config:
+    enable-swift-package-manager: false
