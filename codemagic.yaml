@@ -32,6 +32,12 @@ workflows:
           curl -L -o voicevox_onnxruntime.zip "$VOICEVOX_ONNXRUNTIME_IOS_URL"
           unzip -o voicevox_onnxruntime.zip -d ios/Frameworks/
 
+          echo "--- Fixing invalid CFBundleIdentifier in onnxruntime framework ---"
+            find ios/Frameworks/voicevox_onnxruntime.xcframework -name Info.plist -path "*voicevox_onnxruntime.framework*" | while read -r plist; do
+          echo "Patching: $plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier jp.hiroshiba.voicevox.voicevox-onnxruntime" "$plist"
+          done
+
       - name: Clean stale Pods state and install
         script: |
           cd ios
