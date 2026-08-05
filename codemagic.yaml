@@ -1,27 +1,55 @@
-scripts:
-  - name: Get Flutter packages
-    script: flutter pub get
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: moe.nae.sorokun
+      groups:
+        - voicevox
+      vars:
+        BUNDLE_ID: moe.nae.sorokun
+        APP_STORE_APPLE_ID: 6798420420
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
 
-  - name: Download VOICEVOX assets
-    script: |
-      curl -sSfL https://github.com/VOICEVOX/voicevox_core/releases/download/0.16.4/download-osx-arm64 -o download
-      chmod +x download
-      printf '\ny\n' | ./download --exclude c-api onnxruntime additional-libraries --models-pattern s0.vvm -o assets
-      echo "--- assets/dict and assets/models contents ---"
-      find assets/dict assets/models -maxdepth 2
+      - name: Download VOICEVOX assets
+        script: |
+          curl -sSfL https://github.com/VOICEVOX/voicevox_core/releases/download/0.16.4/download-osx-arm64 -o download
+          chmod +x download
+          printf '\ny\n' | ./download --exclude c-api onnxruntime additional-libraries --models-pattern s0.vvm -o assets
+          echo "--- assets/dict and assets/models contents ---"
+          find assets/dict assets/models -maxdepth 2
 
-  - name: Download VOICEVOX iOS frameworks
-    script: |
-      curl -L -o voicevox_core.zip "$VOICEVOX_CORE_IOS_URL"
-      unzip -o voicevox_core.zip -d ios/Frameworks/
-      curl -L -o voicevox_onnxruntime.zip "$VOICEVOX_ONNXRUNTIME_IOS_URL"
-      unzip -o voicevox_onnxruntime.zip -d ios/Frameworks/
+      - name: Download VOICEVOX iOS frameworks
+        script: |
+          curl -L -o voicevox_core.zip "$VOICEVOX_CORE_IOS_URL"
+          unzip -o voicevox_core.zip -d ios/Frameworks/
+          curl -L -o voicevox_onnxruntime.zip "$VOICEVOX_ONNXRUNTIME_IOS_URL"
+          unzip -o voicevox_onnxruntime.zip -d ios/Frameworks/
 
-  - name: Clean stale Pods state and install
-    script: |
-      cd ios
-      rm -rf Pods Podfile.lock .symlinks
-      pod install
+      - name: Clean stale Pods state and install
+        script: |
+          cd ios
+          rm -rf Pods Podfile.lock .symlinks
+          pod install
 
-  - name: Flutter build
-    script: flutter build ios --release --no-codesign
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create
+
+      - name: Set up code signing
+        script: xcode-project use-profiles
+
+      - name: Flutter build ipa
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=$CM_EXPORT_OPTIONS_PLIST
+
+    artifacts:
+      - build/ios/ipa/*.ipa
