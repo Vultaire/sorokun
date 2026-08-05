@@ -61,6 +61,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   SendPort? _workerSendPort;
   Completer<void>? _workerExitCompleter;
   bool _generationComplete = false;
+  final ValueNotifier<String> debugStatus = ValueNotifier('idle');
 
   void _initProblems() {
     AloudProblemSet fullProblemSet = AloudProblemSet(
@@ -118,7 +119,6 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     final mainReceivePort = ReceivePort();
     final exitPort = ReceivePort();
     final errorPort = ReceivePort();
-
     final exitCompleter = Completer<void>();
     _workerExitCompleter = exitCompleter;
     exitPort.listen((_) {
@@ -126,7 +126,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       exitPort.close();
     });
     errorPort.listen((error) {
-      print('[synth isolate error] $error');
+      debugStatus.value = '[isolate onError] $error'; // see below
     });
 
     await Isolate.spawn(
@@ -135,11 +135,34 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       onExit: exitPort.sendPort,
       onError: errorPort.sendPort,
     );
-
     final events = StreamQueue<dynamic>(mainReceivePort);
-    final workerSendPort = await events.next as SendPort;
+
+    debugStatus.value = 'Waiting for isolate handshake...';
+    final workerSendPort =
+        await events.next.timeout(
+              const Duration(seconds: 10),
+              onTimeout: () => throw TimeoutException(
+                'Isolate handshake timed out — spawn may have failed silently',
+              ),
+            )
+            as SendPort;
     _workerSendPort = workerSendPort;
+
+    debugStatus.value = 'Sending init args: dictDir=$dictDir vvmPath=$vvmPath';
     workerSendPort.send([dictDir, vvmPath]);
+
+    debugStatus.value = 'Waiting for init confirmation...';
+    final initResult = await events.next.timeout(
+      const Duration(seconds: 15),
+      onTimeout: () => throw TimeoutException(
+        'VOICEVOX initialize() never responded — likely hung in native code',
+      ),
+    );
+    if (initResult is _SynthError) {
+      debugStatus.value = 'INIT FAILED: ${initResult.message}';
+      throw Exception(initResult.message);
+    }
+    debugStatus.value = 'Init OK, starting synthesis';
 
     try {
       for (final score in scores) {
@@ -150,24 +173,24 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
             character: widget.character,
           ),
         );
-        final result =
-            await events.next.timeout(
-                  const Duration(seconds: 15),
-                  onTimeout: () {
-                    throw TimeoutException(
-                      'Synth worker did not respond in time',
-                    );
-                  },
-                )
-                as Uint8List;
+        final result = await events.next.timeout(
+          const Duration(seconds: 15),
+          onTimeout: () =>
+              throw TimeoutException('Synth worker did not respond in time'),
+        );
+        if (result is _SynthError) {
+          debugStatus.value = 'SYNTH FAILED: ${result.message}';
+          throw Exception(result.message);
+        }
+        debugStatus.value = 'Got chunk (${(result as Uint8List).length} bytes)';
         yield result;
       }
       workerSendPort.send(const _SynthDone());
-      _generationComplete = true; // only reached if every chunk succeeded
+      _generationComplete = true;
     } catch (e, st) {
-      print('[synthesizeChunks] generation failed: $e\n$st');
+      debugStatus.value = 'GENERATION FAILED: $e';
       workerSendPort.send(const _SynthDone());
-      rethrow; // let the stream's listen(onError:) below handle UI feedback
+      rethrow;
     } finally {
       await events.cancel();
       mainReceivePort.close();
@@ -426,7 +449,8 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           isSingleProblem: widget.isSingleProblem,
           chunkStream: _isRepeat ? null : _chunkStream,
           singleProblem: _allFormattedProblems[_currentProblemIndex],
-          generationComplete: _isRepeat ? true : _generationComplete, // NEW
+          generationComplete: _isRepeat ? true : _generationComplete,
+          debugStatus: debugStatus,
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
@@ -499,30 +523,40 @@ class _SynthDone {
   const _SynthDone();
 }
 
+class _SynthError {
+  final String message;
+  const _SynthError(this.message);
+}
+
 void _synthWorkerEntry(SendPort mainSendPort) async {
   final workerReceivePort = ReceivePort();
   mainSendPort.send(workerReceivePort.sendPort);
-
-  VoicevoxSing? singer; // null until init message arrives
-
+  VoicevoxSing? singer;
   workerReceivePort.listen((message) async {
     if (singer == null) {
-      // First message we receive must be the init args.
       final initArgs = message as List<String>;
       final dictDir = initArgs[0];
       final vvmPath = initArgs[1];
-      singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
-      singer!.initialize();
+      try {
+        singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
+        singer!.initialize();
+        mainSendPort.send('INIT_OK');
+      } catch (e, st) {
+        mainSendPort.send(_SynthError('init failed: $e\n$st'));
+      }
       return;
     }
-
     if (message is _SynthRequest) {
-      final wav = singer!.synthesizeWithF0(
-        scoreJson: message.scoreJson,
-        character: message.character,
-      );
-      final sped = speedUpWav(wav, message.speed);
-      mainSendPort.send(sped);
+      try {
+        final wav = singer!.synthesizeWithF0(
+          scoreJson: message.scoreJson,
+          character: message.character,
+        );
+        final sped = speedUpWav(wav, message.speed);
+        mainSendPort.send(sped);
+      } catch (e, st) {
+        mainSendPort.send(_SynthError('synth failed: $e\n$st'));
+      }
     } else if (message is _SynthDone) {
       singer?.dispose();
       workerReceivePort.close();
@@ -542,6 +576,7 @@ class AloudProblem extends StatefulWidget {
     required this.isSingleProblem,
     required this.singleProblem,
     required this.generationComplete,
+    required this.debugStatus,
   });
 
   final List<Uint8List> chunks;
@@ -552,6 +587,7 @@ class AloudProblem extends StatefulWidget {
   final bool isSingleProblem;
   final List<String> singleProblem;
   final bool generationComplete;
+  final ValueNotifier<String> debugStatus;
 
   @override
   State<AloudProblem> createState() => _AloudProblemState();
@@ -703,10 +739,24 @@ class _AloudProblemState extends State<AloudProblem> {
     VoidCallback? onPressed;
 
     if (!_isCompleted && !widget.readyToPlay) {
-      icon = const SizedBox(
-        width: 40,
-        height: 40,
-        child: CircularProgressIndicator(strokeWidth: 4),
+      icon = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            width: 40,
+            height: 40,
+            child: CircularProgressIndicator(strokeWidth: 4),
+          ),
+          const SizedBox(height: 12),
+          ValueListenableBuilder<String>(
+            valueListenable: widget.debugStatus,
+            builder: (context, value, _) => Text(
+              value,
+              style: const TextStyle(color: Colors.white, fontSize: 10),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
       );
       onPressed = null;
     } else if (_isCompleted || _isPlaying) {
