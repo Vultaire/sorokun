@@ -44,7 +44,8 @@ workflows:
       - name: Flutter build ipa
         script: |
           set -e
-          flutter build ipa --release --export-options-plist=$CM_EXPORT_OPTIONS_PLIST
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
