@@ -6,6 +6,9 @@ workflows:
     environment:
       groups:
         - voicevox
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: moe.nae.sorokun
       vars:
         BUNDLE_ID: moe.nae.sorokun
         APP_STORE_APPLE_ID: 6798420420
@@ -35,19 +38,13 @@ workflows:
           rm -rf Pods Podfile.lock .symlinks
           pod install
 
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create
-
       - name: Set up code signing
         script: xcode-project use-profiles
 
       - name: Flutter build ipa
         script: |
-          flutter build ipa --release \
-            --export-options-plist=$CM_EXPORT_OPTIONS_PLIST
+          set -e
+          flutter build ipa --release --export-options-plist=$CM_EXPORT_OPTIONS_PLIST
 
     artifacts:
       - build/ios/ipa/*.ipa
