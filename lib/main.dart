@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -30,7 +32,29 @@ void main() async {
     channels: Channels.stereo,
   );
   await appController.ready;
-  runApp(AbacusApp(appController: appController));
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Material(
+      color: Colors.red,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            details.exceptionAsString(),
+            style: const TextStyle(color: Colors.white, fontSize: 12),
+          ),
+        ),
+      ),
+    );
+  };
+  runZonedGuarded(
+    () {
+      runApp(AbacusApp(appController: appController));
+    },
+    (error, stack) {
+      debugPrint('UNCAUGHT: $error\n$stack');
+    },
+  );
 }
 
 class VoicevoxService {
