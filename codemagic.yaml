@@ -49,11 +49,21 @@ workflows:
 
       - name: Fix symbol stripping for VOICEVOX FFI symbols
         script: |
-          xcode-project build-settings ios/Runner.xcodeproj \
-          --target Runner \
-          --configuration Release \
-          --set STRIP_STYLE=non-global \
-          --set STRIP_INSTALLED_PRODUCT=NO
+          ruby -e '
+            require "xcodeproj"
+            project_path = "ios/Runner.xcodeproj"
+            project = Xcodeproj::Project.open(project_path)
+            project.targets.each do |target|
+              target.build_configurations.each do |config|
+                if config.name == "Release"
+                  config.build_settings["STRIP_STYLE"] = "non-global"
+                  config.build_settings["STRIP_INSTALLED_PRODUCT"] = "NO"
+                end
+              end
+            end
+            project.save
+            puts "Patched Release build settings for target: #{project.targets.map(&:name).join(%q{, })}"
+          '
 
       - name: Flutter build ipa
         script: |
