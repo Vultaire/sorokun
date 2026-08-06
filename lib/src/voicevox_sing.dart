@@ -139,7 +139,7 @@ class VoicevoxSing {
   }
 
   // Load ONNX runtime
-  void initialize({required String dictDir, required String vvmsDir}) {
+  void initialize() {
     final onnxruntimePtr = calloc<Pointer<VoicevoxOnnxruntime>>();
     _check(_bindings.voicevox_onnxruntime_init_once(onnxruntimePtr));
     final onnxruntime = onnxruntimePtr.value;
