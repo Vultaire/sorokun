@@ -142,7 +142,7 @@ class VoicevoxSing {
   void initialize() {
     final onnxruntimePtr = calloc<Pointer<VoicevoxOnnxruntime>>();
     _check(_bindings.voicevox_onnxruntime_init_once(onnxruntimePtr));
-    final onnxruntime = onnxruntimePtr.value;
+    _onnxruntime = onnxruntimePtr.value;
     calloc.free(onnxruntimePtr);
 
     // Open JTalk
