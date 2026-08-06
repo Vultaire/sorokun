@@ -8,11 +8,13 @@ import 'package:soroban_app/models/singer_config.dart';
 import 'voicevox_core_bindings.dart';
 
 DynamicLibrary loadVoicevoxCoreLib() {
-  if (Platform.isIOS || Platform.isMacOS) {
+  if (Platform.isIOS) {
+    final bundleDir = File(Platform.resolvedExecutable).parent.path;
+    final path = '$bundleDir/Frameworks/voicevox_core.framework/voicevox_core';
+    return DynamicLibrary.open(path);
+  } else if (Platform.isMacOS) {
     return DynamicLibrary.process();
-  } else if (Platform.isAndroid) {
-    return DynamicLibrary.open('libvoicevox_core.so');
-  } else if (Platform.isLinux) {
+  } else if (Platform.isAndroid || Platform.isLinux) {
     return DynamicLibrary.open('libvoicevox_core.so');
   } else if (Platform.isWindows) {
     return DynamicLibrary.open('voicevox_core.dll');
