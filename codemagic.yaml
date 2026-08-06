@@ -49,8 +49,8 @@ workflows:
 
       - name: Flutter build debug ipa for testing
         script: |
-        set -e
-        flutter build ios --debug --no-codesign
+          set -e
+          flutter build ios --debug --no-codesign
 
     artifacts:
       - build/ios/ipa/*.ipa
