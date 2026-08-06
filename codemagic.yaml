@@ -47,11 +47,10 @@ workflows:
       - name: Set up code signing
         script: xcode-project use-profiles
 
-      - name: Flutter build ipa
+      - name: Flutter build debug ipa for testing
         script: |
-          set -e
-          flutter build ipa --release \
-            --export-options-plist=/Users/builder/export_options.plist
+        set -e
+        flutter build ios --debug --no-codesign
 
     artifacts:
       - build/ios/ipa/*.ipa
