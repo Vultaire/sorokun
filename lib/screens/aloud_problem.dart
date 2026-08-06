@@ -115,6 +115,24 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     return scores;
   }
 
+  Future<dynamic> _nextNonLog(
+    StreamQueue events, {
+    required Duration timeout,
+    required String label,
+  }) async {
+    while (true) {
+      final msg = await events.next.timeout(
+        timeout,
+        onTimeout: () => throw TimeoutException('$label timed out'),
+      );
+      if (msg is _SynthLog) {
+        debugStatus.value = msg.message; // safe here — this IS the main isolate
+        continue;
+      }
+      return msg;
+    }
+  }
+
   Stream<Uint8List> _synthesizeChunks(List<String> scores) async* {
     final mainReceivePort = ReceivePort();
     final exitPort = ReceivePort();
@@ -139,11 +157,10 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 
     debugStatus.value = 'Waiting for isolate handshake...';
     final workerSendPort =
-        await events.next.timeout(
-              const Duration(seconds: 10),
-              onTimeout: () => throw TimeoutException(
-                'Isolate handshake timed out — spawn may have failed silently',
-              ),
+        await _nextNonLog(
+              events,
+              timeout: const Duration(seconds: 10),
+              label: 'Isolate handshake',
             )
             as SendPort;
     _workerSendPort = workerSendPort;
@@ -152,11 +169,10 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     workerSendPort.send([dictDir, vvmPath]);
 
     debugStatus.value = 'Waiting for init confirmation...';
-    final initResult = await events.next.timeout(
-      const Duration(seconds: 15),
-      onTimeout: () => throw TimeoutException(
-        'VOICEVOX initialize() never responded — likely hung in native code',
-      ),
+    final initResult = await _nextNonLog(
+      events,
+      timeout: const Duration(seconds: 15),
+      label: 'VOICEVOX initialize()',
     );
     if (initResult is _SynthError) {
       debugStatus.value = 'INIT FAILED: ${initResult.message}';
@@ -173,10 +189,10 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
             character: widget.character,
           ),
         );
-        final result = await events.next.timeout(
-          const Duration(seconds: 15),
-          onTimeout: () =>
-              throw TimeoutException('Synth worker did not respond in time'),
+        final result = await _nextNonLog(
+          events,
+          timeout: const Duration(seconds: 15),
+          label: 'Synth worker',
         );
         if (result is _SynthError) {
           debugStatus.value = 'SYNTH FAILED: ${result.message}';
@@ -528,6 +544,11 @@ class _SynthError {
   const _SynthError(this.message);
 }
 
+class _SynthLog {
+  final String message;
+  const _SynthLog(this.message);
+}
+
 void _synthWorkerEntry(SendPort mainSendPort) async {
   final workerReceivePort = ReceivePort();
   mainSendPort.send(workerReceivePort.sendPort);
@@ -538,7 +559,11 @@ void _synthWorkerEntry(SendPort mainSendPort) async {
       final dictDir = initArgs[0];
       final vvmPath = initArgs[1];
       try {
-        singer = VoicevoxSing(dictDir: dictDir, vvmPath: vvmPath);
+        singer = VoicevoxSing(
+          dictDir: dictDir,
+          vvmPath: vvmPath,
+          onLog: (msg) => mainSendPort.send(_SynthLog(msg)),
+        );
         singer!.initialize();
         mainSendPort.send('INIT_OK');
       } catch (e, st) {
