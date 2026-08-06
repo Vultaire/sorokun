@@ -849,6 +849,22 @@ class _AloudProblemState extends State<AloudProblem> {
                   ),
                 ),
               ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 24,
+              child: ValueListenableBuilder<String>(
+                valueListenable: widget.debugStatus,
+                builder: (context, value, _) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    value,
+                    style: const TextStyle(color: Colors.yellow, fontSize: 11),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
             Center(
               child: Flex(
                 direction: isPortrait ? Axis.vertical : Axis.horizontal,
