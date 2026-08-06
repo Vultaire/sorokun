@@ -47,10 +47,19 @@ workflows:
       - name: Set up code signing
         script: xcode-project use-profiles
 
-      - name: Flutter build debug ipa for testing
+      - name: Fix symbol stripping for VOICEVOX FFI symbols
+        script: |
+          xcode-project build-settings ios/Runner.xcodeproj \
+          --target Runner \
+          --configuration Release \
+          --set STRIP_STYLE=non-global \
+          --set STRIP_INSTALLED_PRODUCT=NO
+
+      - name: Flutter build ipa
         script: |
           set -e
-          flutter build ios --debug --no-codesign
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
