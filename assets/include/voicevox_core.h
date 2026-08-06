@@ -79,8 +79,8 @@
 #include <stdint.h>
 #endif // __cplusplus
 
-//#define VOICEVOX_LINK_ONNXRUNTIME
-#define VOICEVOX_LOAD_ONNXRUNTIME
+#define VOICEVOX_LINK_ONNXRUNTIME
+//#define VOICEVOX_LOAD_ONNXRUNTIME
 
 #if !(defined(VOICEVOX_LINK_ONNXRUNTIME) || defined(VOICEVOX_LOAD_ONNXRUNTIME))
 #error "either `VOICEVOX_LINK_ONNXRUNTIME` or `VOICEVOX_LOAD_ONNXRUNTIME` must be enabled"

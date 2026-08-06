@@ -5,4 +5,4 @@ headers:
   entry-points:
     - 'assets/include/voicevox_core.h'
 compiler-opts:
-  - '-I/usr/lib/clang/21/include'
+  - '-I/usr/lib/clang/22/include'

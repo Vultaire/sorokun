@@ -138,20 +138,12 @@ class VoicevoxSing {
     return jsonEncode(score);
   }
 
-  void initialize() {
-    // Load ONNX runtime
-    final loadOptions = _bindings
-        .voicevox_make_default_load_onnxruntime_options();
-    final onnxPath = _getOnnxruntimePath().toNativeUtf8();
-    loadOptions.filename = onnxPath.cast();
-
+  // Load ONNX runtime
+  void initialize({required String dictDir, required String vvmsDir}) {
     final onnxruntimePtr = calloc<Pointer<VoicevoxOnnxruntime>>();
-    _check(
-      _bindings.voicevox_onnxruntime_load_once(loadOptions, onnxruntimePtr),
-    );
-    _onnxruntime = onnxruntimePtr.value;
+    _check(_bindings.voicevox_onnxruntime_init_once(onnxruntimePtr));
+    final onnxruntime = onnxruntimePtr.value;
     calloc.free(onnxruntimePtr);
-    calloc.free(onnxPath);
 
     // Open JTalk
     final dictPath = _dictDir.toNativeUtf8();
