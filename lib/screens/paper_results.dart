@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
@@ -103,6 +104,7 @@ class ResultsScreen extends StatelessWidget {
               passThreshold: selectedLevel.levelInfo.passThreshold,
               rangedThreshold: selectedLevel.levelInfo.rangedThreshold,
               style: TextStyle(fontSize: 78, fontFamily: 'mPlus'),
+              pointsPerProblem: selectedLevel.levelInfo.pointsPerProblem,
             );
 
             final buttonWrap = Wrap(
@@ -112,7 +114,7 @@ class ResultsScreen extends StatelessWidget {
               children: [
                 if (score.$1 != score.$2)
                   SizedBox(
-                    width: 300,
+                    width: 310,
                     child: NavigationButton(
                       color: Theme.of(context).colorScheme.primaryContainer,
                       onPressed: () {
@@ -127,14 +129,14 @@ class ResultsScreen extends StatelessWidget {
                       child: Center(
                         child: iconHelper(
                           context,
-                          Icons.error_outline,
+                          Symbols.error_outline_rounded,
                           '間違えた問題を見る',
                         ),
                       ),
                     ),
                   ),
                 SizedBox(
-                  width: 300,
+                  width: 310,
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
@@ -171,22 +173,30 @@ class ResultsScreen extends StatelessWidget {
                       }
                     },
                     child: Center(
-                      child: iconHelper(context, Icons.replay, 'もう一回挑戦する'),
+                      child: iconHelper(
+                        context,
+                        Symbols.replay_rounded,
+                        'もう一回挑戦する',
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(
-                  width: 300,
+                  width: 310,
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () => context.go('/home'),
                     child: Center(
-                      child: iconHelper(context, Icons.home, 'メインメニューに戻る'),
+                      child: iconHelper(
+                        context,
+                        Symbols.home_rounded,
+                        'メインメニューに戻る',
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(
-                  width: 300,
+                  width: 310,
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
@@ -200,7 +210,11 @@ class ResultsScreen extends StatelessWidget {
                       }
                     },
                     child: Center(
-                      child: iconHelper(context, Icons.settings, '設定画面に戻る'),
+                      child: iconHelper(
+                        context,
+                        Symbols.settings_rounded,
+                        '設定画面に戻る',
+                      ),
                     ),
                   ),
                 ),
@@ -246,7 +260,7 @@ class ResultsScreen extends StatelessWidget {
                             spacing: 12,
                             children: [
                               ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 620),
+                                constraints: BoxConstraints(maxWidth: 640),
                                 child: Row(
                                   mainAxisAlignment: .center,
                                   spacing: 24,
@@ -255,7 +269,7 @@ class ResultsScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 10),
                               ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 620),
+                                constraints: BoxConstraints(maxWidth: 640),
                                 child: buttonWrap,
                               ),
                             ],
@@ -310,6 +324,7 @@ class CountUpCircle extends StatefulWidget {
   final TextStyle style;
   final double passThreshold;
   final List<(String, int)>? rangedThreshold;
+  final int pointsPerProblem;
 
   const CountUpCircle({
     super.key,
@@ -318,6 +333,7 @@ class CountUpCircle extends StatefulWidget {
     required this.style,
     required this.passThreshold,
     required this.rangedThreshold,
+    required this.pointsPerProblem,
   });
 
   @override
@@ -414,10 +430,11 @@ class _CountUpCircleState extends State<CountUpCircle>
   void _onCountChange() {
     if (tickSound == null) return;
     int currentValue = _countAnimation.value;
-    int currentMilestone = (currentValue ~/ 10) * 10;
+    int currentMilestone =
+        (currentValue ~/ widget.pointsPerProblem) * widget.pointsPerProblem;
     if (currentMilestone > _lastSoundTrigger && currentMilestone > 0) {
       _lastSoundTrigger = currentMilestone;
-      int playCount = currentMilestone ~/ 10;
+      int playCount = currentMilestone ~/ widget.pointsPerProblem;
       double pitch = 0.8 + (playCount * 0.04);
       final handle = SoLoud.instance.play(tickSound!);
       SoLoud.instance.setRelativePlaySpeed(handle, pitch);

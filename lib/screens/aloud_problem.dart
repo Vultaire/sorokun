@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'package:async/async.dart';
-import 'dart:isolate';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soroban_app/main.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
@@ -18,7 +15,6 @@ import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/components/mitori_display.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
-import 'package:soroban_app/src/voicevox_sing.dart';
 
 class AloudProblemScreen extends StatefulWidget {
   const AloudProblemScreen({
@@ -508,6 +504,7 @@ class _AloudProblemState extends State<AloudProblem> {
       return;
     }
     _currentSource = source;
+    _deactivatePitchShiftIfNeeded();
     final handle = SoLoud.instance.play(source);
     if (session != _playSession) {
       await SoLoud.instance.stop(handle);
@@ -615,26 +612,39 @@ class _AloudProblemState extends State<AloudProblem> {
 
     Widget icon;
     VoidCallback? onPressed;
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     if (!_isCompleted && !widget.readyToPlay) {
       icon = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            width: 40,
-            height: 40,
-            child: CircularProgressIndicator(strokeWidth: 4),
+          SizedBox(
+            width: 50,
+            height: 50,
+            child: CircularProgressIndicator(
+              strokeWidth: 8,
+              strokeCap: .round,
+              color: Colors.black,
+            ),
           ),
         ],
       );
       onPressed = null;
     } else if (_isCompleted || _isPlaying) {
       icon = widget.isSingleProblem
-          ? const Icon(Icons.replay_rounded, size: 120)
-          : const Icon(Icons.volume_up, size: 120);
+          ? const Icon(Symbols.replay_rounded, size: 120, color: Colors.black)
+          : const Icon(
+              Symbols.graphic_eq_rounded,
+              size: 120,
+              color: Colors.black,
+            );
       onPressed = (_isCompleted || !widget.isSingleProblem) ? null : _play;
     } else {
-      icon = const Icon(Icons.play_arrow_rounded, size: 120);
+      icon = const Icon(
+        Icons.play_arrow_rounded,
+        size: 120,
+        color: Colors.black,
+      );
       onPressed = _play;
     }
 
@@ -663,7 +673,7 @@ class _AloudProblemState extends State<AloudProblem> {
                   child: NavigationButton(
                     onPressed: () =>
                         setState(() => _isMitoriExpanded = !_isMitoriExpanded),
-                    color: Colors.white,
+                    color: colorScheme.surface,
                     child: SizedBox(
                       width: 140,
                       child: Padding(
@@ -675,14 +685,16 @@ class _AloudProblemState extends State<AloudProblem> {
                                   ? Icons.visibility_off
                                   : Icons.visibility,
                               size: 32,
+                              color: colorScheme.onSurface,
                             ),
                             Expanded(
                               child: Center(
                                 child: Text(
                                   _isMitoriExpanded ? '問題を非表示' : '問題を表示',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(color: colorScheme.onSurface),
                                 ),
                               ),
                             ),
@@ -693,22 +705,6 @@ class _AloudProblemState extends State<AloudProblem> {
                   ),
                 ),
               ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 24,
-              child: ValueListenableBuilder<String>(
-                valueListenable: widget.debugStatus,
-                builder: (context, value, _) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    value,
-                    style: const TextStyle(color: Colors.yellow, fontSize: 11),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
             Center(
               child: Flex(
                 direction: isPortrait ? Axis.vertical : Axis.horizontal,
@@ -734,23 +730,17 @@ class _AloudProblemState extends State<AloudProblem> {
                         curve: Curves.easeOut,
                         width: buttonSize,
                         height: buttonSize,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
                         ),
                         child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: FittedBox(fit: BoxFit.contain, child: icon),
-                          ),
+                          child: FittedBox(fit: BoxFit.contain, child: icon),
                         ),
                       ),
                     ),
                   ),
-                  if (isPortrait)
-                    const SizedBox(height: 16)
-                  else
-                    const SizedBox(width: 16),
+                  const SizedBox(height: 16),
                   if (widget.isSingleProblem)
                     CollapsibleMitoriDisplay(
                       problemIndex: null,
@@ -795,7 +785,7 @@ class CollapsibleMitoriDisplay extends StatelessWidget {
         widthFactor: isExpanded ? 1.0 : 0.0,
         heightFactor: isExpanded ? 1.0 : 0.0,
         child: Material(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           clipBehavior: Clip.antiAlias,
           child: Padding(

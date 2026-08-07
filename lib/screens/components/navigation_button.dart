@@ -65,9 +65,19 @@ Widget iconHelper(BuildContext context, IconData icon, String label) {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: Theme.of(context).colorScheme.onPrimaryContainer),
-        const SizedBox(width: 8),
-        Text(label, style: Theme.of(context).textTheme.headlineSmall),
+        Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          size: 30,
+          weight: 700,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+          ),
+        ),
       ],
     ),
   );

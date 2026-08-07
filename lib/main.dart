@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -33,28 +35,7 @@ void main() async {
   );
   await appController.ready;
 
-  ErrorWidget.builder = (FlutterErrorDetails details) {
-    return Material(
-      color: Colors.red,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            details.exceptionAsString(),
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ),
-      ),
-    );
-  };
-  runZonedGuarded(
-    () {
-      runApp(AbacusApp(appController: appController));
-    },
-    (error, stack) {
-      debugPrint('UNCAUGHT: $error\n$stack');
-    },
-  );
+  runApp(AbacusApp(appController: appController));
 }
 
 class VoicevoxService {
@@ -83,26 +64,6 @@ class DebugMockData {
       '288 / 4',
       '288 / 4',
       '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
-      '288 / 4',
     ];
 
     final allAnswers = [
@@ -116,52 +77,12 @@ class DebugMockData {
       '96',
       '96',
       '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
-      '96',
     ];
 
     // Mix of correct and incorrect answers
     final answerBools = [
       false,
       false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
       true,
       true,
       true,
@@ -352,33 +273,164 @@ class _AbacusAppState extends State<AbacusApp> {
   @override
   Widget build(BuildContext context) {
     ThemeData buildTheme(Brightness brightness) {
-      final colorScheme = ColorScheme.fromSeed(
-        seedColor: _appController.seedColor,
-        brightness: brightness,
-        dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
-      );
+      final isDark = brightness == Brightness.dark;
 
-      return ThemeData(
-        fontFamily: 'mPlus',
-        colorScheme: colorScheme,
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-        ),
+      final baseTheme = isDark
+          ? FlexThemeData.dark(
+              scheme: _appController.flexScheme,
+              surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+              blendLevel: 2,
+              // Component theme configurations for dark mode.
+              subThemesData: const FlexSubThemesData(
+                interactionEffects: true,
+                tintedDisabledControls: true,
+                blendOnLevel: 10,
+                blendOnColors: true,
+                useM2StyleDividerInM3: true,
+                defaultRadius: 12.0,
+                elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+                elevatedButtonSecondarySchemeColor:
+                    SchemeColor.primaryContainer,
+                outlinedButtonOutlineSchemeColor: SchemeColor.primary,
+                toggleButtonsBorderSchemeColor: SchemeColor.primary,
+                segmentedButtonSchemeColor: SchemeColor.primary,
+                segmentedButtonBorderSchemeColor: SchemeColor.primary,
+                unselectedToggleIsColored: true,
+                sliderValueTinted: true,
+                inputDecoratorSchemeColor: SchemeColor.primary,
+                inputDecoratorIsFilled: true,
+                inputDecoratorBackgroundAlpha: 43,
+                inputDecoratorBorderType: FlexInputBorderType.outline,
+                inputDecoratorUnfocusedHasBorder: false,
+                inputDecoratorFocusedBorderWidth: 1.0,
+                inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
+                fabUseShape: true,
+                fabAlwaysCircular: true,
+                fabSchemeColor: SchemeColor.tertiary,
+                popupMenuRadius: 8.0,
+                popupMenuElevation: 3.0,
+                alignedDropdown: true,
+                drawerIndicatorRadius: 12.0,
+                drawerIndicatorSchemeColor: SchemeColor.primary,
+                bottomNavigationBarMutedUnselectedLabel: false,
+                bottomNavigationBarMutedUnselectedIcon: false,
+                menuRadius: 8.0,
+                menuElevation: 3.0,
+                menuBarRadius: 0.0,
+                menuBarElevation: 2.0,
+                menuBarShadowColor: Color(0x00000000),
+                searchBarElevation: 1.0,
+                searchViewElevation: 1.0,
+                searchUseGlobalShape: true,
+                navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationBarSelectedIconSchemeColor: SchemeColor.onPrimary,
+                navigationBarIndicatorSchemeColor: SchemeColor.primary,
+                navigationBarIndicatorRadius: 12.0,
+                navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationRailSelectedIconSchemeColor: SchemeColor.onPrimary,
+                navigationRailUseIndicator: true,
+                navigationRailIndicatorSchemeColor: SchemeColor.primary,
+                navigationRailIndicatorOpacity: 1.00,
+                navigationRailIndicatorRadius: 12.0,
+                navigationRailBackgroundSchemeColor: SchemeColor.surface,
+              ),
+              // ColorScheme seed configuration setup for dark mode.
+              keyColors: const FlexKeyColors(
+                useSecondary: true,
+                useTertiary: true,
+              ),
+              tones: FlexSchemeVariant.jolly.tones(Brightness.dark),
+              // Direct ThemeData properties.
+              visualDensity: FlexColorScheme.comfortablePlatformDensity,
+              cupertinoOverrideTheme: const CupertinoThemeData(
+                applyThemeToAll: true,
+              ),
+              fontFamily: 'mPlus',
+            )
+          : FlexThemeData.light(
+              scheme: _appController.flexScheme,
+              surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+              blendLevel: 1,
+              // Component theme configurations for light mode.
+              subThemesData: const FlexSubThemesData(
+                interactionEffects: true,
+                tintedDisabledControls: true,
+                blendOnLevel: 8,
+                useM2StyleDividerInM3: true,
+                defaultRadius: 12.0,
+                elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+                elevatedButtonSecondarySchemeColor:
+                    SchemeColor.primaryContainer,
+                outlinedButtonOutlineSchemeColor: SchemeColor.primary,
+                toggleButtonsBorderSchemeColor: SchemeColor.primary,
+                segmentedButtonSchemeColor: SchemeColor.primary,
+                segmentedButtonBorderSchemeColor: SchemeColor.primary,
+                unselectedToggleIsColored: true,
+                sliderValueTinted: true,
+                inputDecoratorSchemeColor: SchemeColor.primary,
+                inputDecoratorIsFilled: true,
+                inputDecoratorBackgroundAlpha: 31,
+                inputDecoratorBorderType: FlexInputBorderType.outline,
+                inputDecoratorUnfocusedHasBorder: false,
+                inputDecoratorFocusedBorderWidth: 1.0,
+                inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
+                fabUseShape: true,
+                fabAlwaysCircular: true,
+                fabSchemeColor: SchemeColor.tertiary,
+                popupMenuRadius: 8.0,
+                popupMenuElevation: 3.0,
+                alignedDropdown: true,
+                drawerIndicatorRadius: 12.0,
+                drawerIndicatorSchemeColor: SchemeColor.primary,
+                bottomNavigationBarMutedUnselectedLabel: false,
+                bottomNavigationBarMutedUnselectedIcon: false,
+                menuRadius: 8.0,
+                menuElevation: 3.0,
+                menuBarRadius: 0.0,
+                menuBarElevation: 2.0,
+                menuBarShadowColor: Color(0x00000000),
+                searchBarElevation: 1.0,
+                searchViewElevation: 1.0,
+                searchUseGlobalShape: true,
+
+                navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationBarSelectedIconSchemeColor: SchemeColor.onPrimary,
+                navigationBarIndicatorSchemeColor: SchemeColor.primary,
+                navigationBarIndicatorRadius: 12.0,
+                navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationRailSelectedIconSchemeColor: SchemeColor.onPrimary,
+                navigationRailUseIndicator: true,
+                navigationRailIndicatorSchemeColor: SchemeColor.primary,
+                navigationRailIndicatorOpacity: 1.00,
+                navigationRailIndicatorRadius: 12.0,
+                navigationRailBackgroundSchemeColor: SchemeColor.surface,
+              ),
+              // ColorScheme seed generation configuration for light mode.
+              keyColors: const FlexKeyColors(
+                useSecondary: true,
+                useTertiary: true,
+                keepPrimary: true,
+              ),
+              tones: FlexSchemeVariant.jolly.tones(Brightness.light),
+              // Direct ThemeData properties.
+              visualDensity: FlexColorScheme.comfortablePlatformDensity,
+              cupertinoOverrideTheme: const CupertinoThemeData(
+                applyThemeToAll: true,
+              ),
+              fontFamily: 'mPlus',
+            );
+
+      // Your existing per-widget theme overrides layer on top unchanged.
+      return baseTheme.copyWith(
         dialogTheme: DialogThemeData(
           titleTextStyle: TextStyle(
             fontSize: 28,
-            color: colorScheme.onSurface,
+            color: baseTheme.colorScheme.onSurface,
             fontFamily: 'mPlus',
           ),
           contentTextStyle: TextStyle(
             fontSize: 20,
-            color: colorScheme.onSurface,
+            color: baseTheme.colorScheme.onSurface,
             fontFamily: 'mPlus',
           ),
           alignment: Alignment.center,

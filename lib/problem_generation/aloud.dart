@@ -11,7 +11,7 @@ List<String> moraListToJsonChunks({
 }) {
   final int intervalFrames =
       (((msPerInterval * 93.75) / 1000) * frameStretchFactor).round();
-  final int halfInterval = (intervalFrames / 2).round();
+  final int halfInterval = (intervalFrames / 2).ceil();
   final int framesPerMora =
       ((((1000 / moraPerSecond) * 93.75) / 1000) * frameStretchFactor).round();
   final int highNote = baseNote + 2;

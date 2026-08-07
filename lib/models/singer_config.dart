@@ -8,10 +8,9 @@ enum Character {
     negaimasiteha: 'assets/negaimasiteha/0.wav',
   ),
   zundamon(
-    //TODO: she sounds kinda weird
     singerId: 3003,
     baseNote: 62,
-    keyRangeAdjustment: 3,
+    keyRangeAdjustment: 1,
     displayString: 'ずんだもん',
     icon: 'assets/character_icon/1.png',
     negaimasiteha: 'assets/negaimasiteha/1.wav',
@@ -75,7 +74,7 @@ enum Character {
   meimeiHimari(
     singerId: 3014,
     baseNote: 58,
-    keyRangeAdjustment: -2,
+    keyRangeAdjustment: -3,
     displayString: '冥鳴ひまり',
     icon: 'assets/character_icon/14.png',
     negaimasiteha: 'assets/negaimasiteha/14.wav',
@@ -156,7 +155,7 @@ enum Character {
   nurseRoboTypeT(
     singerId: 3047,
     baseNote: 61,
-    keyRangeAdjustment: 1,
+    keyRangeAdjustment: 0,
     displayString: 'ナースロボ＿ＴＴ',
     icon: 'assets/character_icon/47.png',
     negaimasiteha: 'assets/negaimasiteha/47.wav',
@@ -172,7 +171,7 @@ enum Character {
   wakamatsuAkashi(
     singerId: 3052,
     baseNote: 47,
-    keyRangeAdjustment: -16,
+    keyRangeAdjustment: -17,
     displayString: '雀松朱司',
     icon: 'assets/character_icon/52.png',
     negaimasiteha: 'assets/negaimasiteha/52.wav',

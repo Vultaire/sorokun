@@ -620,8 +620,12 @@ class _CircularSliderState extends State<CircularSlider> {
               child: Transform.rotate(
                 angle: _handleAngle + pi / 2,
                 child: Transform.translate(
-                  offset: Offset(0, -widget.height * 0.53),
-                  child: Icon(Icons.circle, size: 30),
+                  offset: Offset(0, -widget.height * 0.533),
+                  child: Icon(
+                    Icons.circle,
+                    size: 30,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),

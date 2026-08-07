@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/main.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
@@ -327,7 +328,7 @@ class _FlashAndAloudProblemInputState<T>
               left: 0,
               child: SafeArea(
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  icon: const Icon(Symbols.arrow_back_ios_new_rounded),
                   onPressed: () => context.pop(),
                   color: Colors.white,
                   iconSize: 24,
@@ -459,7 +460,11 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                 context.pop();
               },
               child: Center(
-                child: iconHelper(context, Icons.meeting_room, '設定画面'),
+                child: iconHelper(
+                  context,
+                  Symbols.meeting_room_rounded,
+                  '設定画面',
+                ),
               ),
             ),
           ),
@@ -468,7 +473,9 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
             child: NavigationButton(
               color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: widget.onRepeatProblem,
-              child: Center(child: iconHelper(context, Icons.replay, 'もう一回')),
+              child: Center(
+                child: iconHelper(context, Symbols.replay_rounded, 'もう一回'),
+              ),
             ),
           ),
           SizedBox(
@@ -477,7 +484,11 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
               color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: widget.onNewProblem,
               child: Center(
-                child: iconHelper(context, Icons.arrow_forward, '次の問題'),
+                child: iconHelper(
+                  context,
+                  Symbols.arrow_forward_ios_rounded,
+                  '次の問題',
+                ),
               ),
             ),
           ),

@@ -63,7 +63,7 @@ class _IncrementerState extends State<Incrementer> {
     if (_sharedIncrementSound != null) {
       return Future.value(_sharedIncrementSound);
     }
-    _loadingFuture ??= SoLoud.instance.loadAsset('assets/increment.wav').then((
+    _loadingFuture ??= SoLoud.instance.loadAsset('assets/key-tap.wav').then((
       source,
     ) {
       _sharedIncrementSound = source;

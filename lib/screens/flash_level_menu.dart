@@ -104,7 +104,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'フラッシュ暗算検定', context: context),
+      appBar: CustomAppBar(title: 'フラッシュ暗算もぎ検定', context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,

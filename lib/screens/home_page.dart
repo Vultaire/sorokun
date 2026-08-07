@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
-import 'package:soroban_app/screens/credits.dart';
 import 'package:soroban_app/screens/settings.dart';
 import 'package:stroke_text/stroke_text.dart';
 
@@ -217,9 +216,17 @@ class HomePage extends StatelessWidget {
                   NavigationButton(
                     onPressed: () => context.push('/credits'),
                     color: Theme.of(context).colorScheme.primaryContainer,
-                    child: Text(
-                      'クレジット',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        'クレジット',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                          fontWeight: .w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],

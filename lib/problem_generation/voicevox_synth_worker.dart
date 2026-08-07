@@ -128,7 +128,6 @@ class VoicevoxSynthWorker {
       debugStatus.value = 'Got chunk (${(result as Uint8List).length} bytes)';
       yield result;
     }
-    workerSendPort.send(const _SynthDone());
   }
 
   void _shutdown() {
@@ -159,10 +158,6 @@ class _SynthError {
 class _SynthLog {
   final String message;
   const _SynthLog(this.message);
-}
-
-class _SynthDone {
-  const _SynthDone();
 }
 
 void _synthWorkerEntry(SendPort mainSendPort) async {
@@ -196,9 +191,6 @@ void _synthWorkerEntry(SendPort mainSendPort) async {
       } catch (e, st) {
         mainSendPort.send(_SynthError('synth failed: $e\n$st'));
       }
-    } else if (message is _SynthDone) {
-      // No-op now — just marks "done sending requests" on the main-isolate
-      // side. The worker and its initialized VoicevoxSing stay alive.
     } else if (message is _WorkerShutdown) {
       singer?.dispose();
       workerReceivePort.close();

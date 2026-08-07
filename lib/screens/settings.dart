@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
@@ -90,9 +90,9 @@ class ColorSchemeSettingsPage extends StatelessWidget {
               ),
               SizedBox(height: 24),
               ColorWheel(
-                colors: AppController.presetSeeds,
-                selected: controller.seedColor,
-                onSelected: controller.setSeedColor,
+                schemes: AppController.presetSchemes,
+                selected: controller.flexScheme,
+                onSelected: controller.setFlexScheme,
               ),
             ],
           );
@@ -126,16 +126,16 @@ class ColorSchemeSettingsPage extends StatelessWidget {
 class ColorWheel extends StatelessWidget {
   const ColorWheel({
     super.key,
-    required this.colors,
+    required this.schemes,
     required this.selected,
     required this.onSelected,
     this.diameter = 240,
     this.swatchSize = 48,
   });
 
-  final List<Color> colors;
-  final Color selected;
-  final ValueChanged<Color> onSelected;
+  final List<FlexScheme> schemes;
+  final FlexScheme selected;
+  final Function(FlexScheme) onSelected;
   final double diameter;
   final double swatchSize;
 
@@ -158,24 +158,24 @@ class ColorWheel extends StatelessWidget {
               ],
             ),
           ),
-          for (var i = 0; i < colors.length; i++)
+          for (var i = 0; i < schemes.length; i++)
             Builder(
               builder: (context) {
-                final angle = (2 * pi * i / colors.length) - (pi / 2);
+                final angle = (2 * pi * i / schemes.length) - (pi / 2);
                 final dx = radius * cos(angle);
                 final dy = radius * sin(angle);
-                final color = colors[i];
-                final isSelected = selected == color;
+                final scheme = schemes[i];
+                final isSelected = selected == scheme;
                 return Transform.translate(
                   offset: Offset(dx, dy),
                   child: GestureDetector(
-                    onTap: () => onSelected(color),
+                    onTap: () => onSelected(scheme),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
                       width: isSelected ? swatchSize + 8 : swatchSize,
                       height: isSelected ? swatchSize + 8 : swatchSize,
                       decoration: BoxDecoration(
-                        color: color,
+                        color: scheme.colors(.light).primary,
                         shape: BoxShape.circle,
                         border: isSelected
                             ? Border.all(
@@ -185,7 +185,12 @@ class ColorWheel extends StatelessWidget {
                             : null,
                       ),
                       child: isSelected
-                          ? Icon(Icons.check, color: _contrastColor(color))
+                          ? Icon(
+                              Icons.check,
+                              color: _contrastColor(
+                                scheme.colors(.light).primary,
+                              ),
+                            )
                           : null,
                     ),
                   ),
@@ -352,26 +357,29 @@ enum KeypadNumberOrder { standard, telephone }
 enum Handedness { right, left }
 
 class AppController extends ChangeNotifier {
-  static const List<Color> presetSeeds = [
-    Color(0xFFFBF8CC),
-    Color(0xFFFDE4CF),
-    Color(0xFFFFCFD2),
-    Color(0xFFF1C0E8),
-    Color(0xFFCFBAF0),
-    Color(0xFFA3C4F3),
-    Color(0xFF90DBF4),
-    Color(0xFF8EECF5),
-    Color(0xFF98F5E1),
-    Color(0xFFB9FBC0),
+  /// Curated built-in FlexColorScheme palettes — each ships its own
+  /// hand-picked primary/secondary/tertiary, so no seed-color derivation
+  /// happens at all. Swap/reorder freely; see the full list at
+  /// https://rydmike.com/flexcolorscheme/themesplayground-latest/#/
+  static const List<FlexScheme> presetSchemes = [
+    FlexScheme.mandyRed,
+    FlexScheme.deepBlue,
+    FlexScheme.aquaBlue,
+    FlexScheme.brandBlue,
+    FlexScheme.jungle,
+    FlexScheme.mango,
+    FlexScheme.redWine,
+    FlexScheme.wasabi,
+    FlexScheme.blueWhale,
   ];
 
-  static const _seedColorKey = 'theme_seed_color';
+  static const _schemeKey = 'theme_flex_scheme';
   static const _themeModeKey = 'theme_mode';
   static const _numberOrderKey = 'keypad_number_order';
   static const _handednessKey = 'handedness';
 
-  Color _seedColor = Colors.white;
-  Color get seedColor => _seedColor;
+  FlexScheme _flexScheme = FlexScheme.mandyRed;
+  FlexScheme get flexScheme => _flexScheme;
 
   ThemeMode _themeMode = ThemeMode.dark;
   ThemeMode get themeMode => _themeMode;
@@ -391,9 +399,12 @@ class AppController extends ChangeNotifier {
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final storedSeed = prefs.getInt(_seedColorKey);
-    if (storedSeed != null) {
-      _seedColor = Color(storedSeed);
+    final storedScheme = prefs.getString(_schemeKey);
+    if (storedScheme != null) {
+      _flexScheme = FlexScheme.values.firstWhere(
+        (e) => e.name == storedScheme,
+        orElse: () => FlexScheme.mandyRed,
+      );
     }
 
     final storedThemeMode = prefs.getString(_themeModeKey);
@@ -423,12 +434,12 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setSeedColor(Color color) {
-    if (_seedColor == color) return;
-    _seedColor = color;
+  void setFlexScheme(FlexScheme scheme) {
+    if (_flexScheme == scheme) return;
+    _flexScheme = scheme;
     notifyListeners();
     SharedPreferences.getInstance().then(
-      (prefs) => prefs.setInt(_seedColorKey, color.toARGB32()),
+      (prefs) => prefs.setString(_schemeKey, scheme.name),
     );
   }
 
@@ -457,13 +468,23 @@ class AppController extends ChangeNotifier {
     await prefs.setString(_handednessKey, handedness.name);
   }
 
-  ColorScheme get colorScheme => ColorScheme.fromSeed(
-    seedColor: _seedColor,
-    brightness: _themeMode == ThemeMode.dark
+  /// Was: ColorScheme.fromSeed(seedColor: _seedColor, brightness: ...)
+  ///
+  /// Now built straight from a predefined FlexScheme palette — primary,
+  /// secondary, and tertiary all come hand-picked from the scheme itself,
+  /// so there's no seed-derivation step (and no monotone hue-rotation risk)
+  /// at all.
+  ColorScheme get colorScheme {
+    final brightness = _themeMode == ThemeMode.dark
         ? Brightness.dark
-        : Brightness.light,
-    dynamicSchemeVariant: DynamicSchemeVariant.expressive,
-  );
+        : Brightness.light;
+
+    final flexTheme = brightness == Brightness.dark
+        ? FlexColorScheme.dark(scheme: _flexScheme)
+        : FlexColorScheme.light(scheme: _flexScheme);
+
+    return flexTheme.toScheme;
+  }
 
   /// Returns the 9 digit rows (3x3) in the currently selected number order.
   List<List<String>> get numberRows {

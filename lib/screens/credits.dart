@@ -34,14 +34,9 @@ class CreditsPage extends StatelessWidget {
                 ),
               ),
             ),
-            Text('貢献したいと思ってくださった方は、どなたでも歓迎します。', style: textTheme.titleMedium),
-            const SizedBox(height: 24),
-            _CreditSection(
-              title: 'サウンド素材',
-              entries: const [
-                _CreditEntry(role: '効果音', name: 'Sound Asset Source Name'),
-                _CreditEntry(role: 'BGM', name: 'BGM Source Name'),
-              ],
+            Text(
+              'そろくんの開発に貢献したいと思ってくださった方は、どなたでも歓迎します。',
+              style: textTheme.titleMedium,
             ),
             const SizedBox(height: 24),
             _CreditSection(

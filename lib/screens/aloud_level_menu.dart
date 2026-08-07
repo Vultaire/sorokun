@@ -100,7 +100,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: '読み上げ算検定', context: context),
+      appBar: CustomAppBar(title: '読み上げ算もぎ検定', context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,

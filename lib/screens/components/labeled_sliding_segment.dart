@@ -10,24 +10,29 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
   });
 
   final T groupValue;
-  final List<(T value, dynamic label)>
-  options; // Supports String or Widget (e.g. Icon)
+  final List<(T value, dynamic label)> options;
   final ValueChanged<T> onValueChanged;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return CupertinoSlidingSegmentedControl<T>(
       groupValue: groupValue,
-      backgroundColor: theme.colorScheme.surfaceContainer,
-      thumbColor: theme.colorScheme.primaryContainer,
+      backgroundColor: colorScheme.surfaceContainer,
+      thumbColor: colorScheme.secondaryContainer,
       children: {
         for (final option in options)
           option.$1: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: _buildLabelWidget(option.$2, textTheme),
+            child: _buildLabelWidget(
+              label: option.$2,
+              isSelected: option.$1 == groupValue,
+              textTheme: textTheme,
+              colorScheme: colorScheme,
+            ),
           ),
       },
       onValueChanged: (value) {
@@ -38,13 +43,25 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
     );
   }
 
-  Widget _buildLabelWidget(dynamic label, TextTheme textTheme) {
+  Widget _buildLabelWidget({
+    required dynamic label,
+    required bool isSelected,
+    required TextTheme textTheme,
+    required ColorScheme colorScheme,
+  }) {
+    final activeColor = isSelected
+        ? colorScheme.onSecondaryContainer
+        : colorScheme.onSurface;
+
+    final baseStyle = textTheme.headlineSmall!.copyWith(color: activeColor);
+
     if (label is Widget) {
-      return label;
+      return IconTheme(
+        data: IconThemeData(color: activeColor),
+        child: DefaultTextStyle(style: baseStyle, child: label),
+      );
     }
-    if (label is String) {
-      return Text(label, style: textTheme.headlineSmall);
-    }
-    return Text(label.toString(), style: textTheme.headlineSmall);
+
+    return Text(label.toString(), style: baseStyle);
   }
 }

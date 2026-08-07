@@ -68,6 +68,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   @override
   void dispose() {
     VoicevoxSynthWorker.instance.release();
+
     _prefs.setInt('moraPerSecond', _moraPerSecond);
     _prefs.setInt('msPerInterval', _msPerInterval);
     _prefs.setBool('hasMinus', _hasMinus);
@@ -293,6 +294,7 @@ class VoiceSelectionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () async {
         final selected = await Navigator.push<Character>(
@@ -306,7 +308,7 @@ class VoiceSelectionButton extends StatelessWidget {
         }
       },
       child: Material(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(24),
         elevation: 4,
         child: Padding(
@@ -316,10 +318,17 @@ class VoiceSelectionButton extends StatelessWidget {
             children: [
               Text(
                 '声: ${character.displayString}',
-                style: Theme.of(context).textTheme.headlineMedium,
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  color: colorScheme.onSecondaryContainer,
+                ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.chevron_right, size: 32),
+              Icon(
+                Symbols.arrow_forward_ios_rounded,
+                size: 28,
+                fontWeight: .w700,
+                color: colorScheme.onSecondaryContainer,
+              ),
             ],
           ),
         ),
@@ -462,10 +471,10 @@ class _VoiceGridItem extends StatelessWidget {
                 IconButton(
                   padding: EdgeInsets.zero,
                   icon: const Icon(
-                    Symbols.play_circle,
-                    weight: 200,
+                    Symbols.play_circle_rounded,
                     size: 60,
                     fill: 0,
+                    weight: 400,
                   ),
                   onPressed: () => _playSample(character.negaimasiteha),
                 ),

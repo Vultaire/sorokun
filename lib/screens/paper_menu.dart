@@ -90,7 +90,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: '基本種目', context: context),
+      appBar: CustomAppBar(title: '総合種目', context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,
@@ -398,38 +398,41 @@ class PaperStartButton extends StatelessWidget {
             : () {},
         child: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: isPortrait ? 3 : 5,
-                  child: Align(
-                    child: Image.asset(
-                      imagePath,
-                      fit: .contain,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      colorBlendMode: BlendMode.srcIn,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: isPortrait ? 3 : 5,
+                    child: Align(
+                      child: Image.asset(
+                        imagePath,
+                        fit: .contain,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        colorBlendMode: BlendMode.srcIn,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: isPortrait ? 1 : 2,
-                  child: FittedBox(
-                    fit: .scaleDown,
-                    child: Text(
-                      label,
-                      style: Theme.of(context).textTheme.displayMedium!
-                          .copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onPrimaryContainer,
-                          ),
-                      textAlign: TextAlign.center,
+                  Expanded(
+                    flex: isPortrait ? 1 : 2,
+                    child: FittedBox(
+                      fit: .scaleDown,
+                      child: Text(
+                        label,
+                        style: Theme.of(context).textTheme.displayMedium!
+                            .copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onPrimaryContainer,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Positioned(
               top: 0,
@@ -445,7 +448,7 @@ class PaperStartButton extends StatelessWidget {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutBack,
                     child: IconButton(
-                      icon: Icon(Symbols.info_rounded, size: 28, weight: 700),
+                      icon: Icon(Symbols.info_rounded, size: 28, weight: 1200),
                       padding: .zero,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                       splashColor: Colors.transparent,

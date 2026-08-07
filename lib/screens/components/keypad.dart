@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/screens/settings.dart';
 
 import '../../problem_generation/helpers.dart';
@@ -117,6 +117,7 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
   bool get isExam;
   VoidCallback get onComplete;
   static final _digitsOnlyRegex = RegExp(r'[,.\-]');
+  bool _isSubmitting = false;
 
   KeypadSounds get sound;
 
@@ -202,11 +203,17 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
   }
 
   void submit() {
+    if (_isSubmitting) return;
+
     if (textFieldDataList[currentIndex].internalString.isEmpty) {
       SoLoud.instance.play(sound.invalid);
       return;
     }
+
+    _isSubmitting = true;
+
     final isCorrect = _isAnswerCorrect();
+
     if (!isExam && !isCorrect) {
       resultPopupKey.currentState?.show(false);
       setState(() {
@@ -215,15 +222,25 @@ mixin PaperKeypadMethods<T extends StatefulWidget> on State<T> {
         _updateText(data);
       });
       SoLoud.instance.play(sound.incorrect);
+
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _isSubmitting = false;
+      });
       return;
     }
+
     if (!isExam) {
       resultPopupKey.currentState?.show(true);
       SoLoud.instance.play(sound.correct);
     } else {
       SoLoud.instance.play(sound.progress);
     }
+
     _moveToNextEmptyQuestion();
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) _isSubmitting = false;
+    });
   }
 
   bool _isAnswerCorrect() {
@@ -302,8 +319,8 @@ class Keypad extends StatelessWidget {
                     onTapDown: onDeleteDigit,
                     onLongPress: onClearAll,
                     child: Icon(
-                      Icons.backspace,
-                      size: 40,
+                      Symbols.backspace_rounded,
+                      size: 80,
                       color: colorScheme.onPrimaryContainer,
                     ),
                   ),
@@ -315,8 +332,8 @@ class Keypad extends StatelessWidget {
                     margin: EdgeInsets.zero,
                     onTapDown: onSubmit,
                     child: Icon(
-                      Icons.check,
-                      size: 45,
+                      Symbols.check_rounded,
+                      size: 85,
                       color: colorScheme.onPrimaryContainer,
                     ),
                   ),
@@ -362,7 +379,7 @@ class Keypad extends StatelessWidget {
                   angle: pi,
                   child: Icon(
                     Icons.start,
-                    size: 40,
+                    size: 60,
                     color: colorScheme.onSurface,
                   ),
                 ),
@@ -467,12 +484,12 @@ class _KeypadButtonState extends State<KeypadButton> {
       onTapCancel: () => _handleTapUp(),
       child: AnimatedContainer(
         duration: widget.duration,
-        transform: Matrix4.translationValues(0, _isPressed ? 4 : 0.0, 0),
+        transform: Matrix4.translationValues(0, _isPressed ? 8 : 0.0, 0),
         margin: widget.margin ?? const EdgeInsets.all(0),
         child: AnimatedPhysicalModel(
           duration: widget.duration,
           shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
           color: _isPressed ? pressedColor : widget.color,
           shadowColor: Colors.black,
           elevation: _isPressed ? 2 : 8,
