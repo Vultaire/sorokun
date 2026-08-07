@@ -7,8 +7,8 @@ List<String> moraListToJsonChunks({
   required int moraPerSecond,
   required int msPerInterval,
   required int baseNote,
+  required double frameStretchFactor,
 }) {
-  const double frameStretchFactor = 1.6;
   final int intervalFrames =
       (((msPerInterval * 93.75) / 1000) * frameStretchFactor).round();
   final int halfInterval = (intervalFrames / 2).round();

@@ -131,6 +131,30 @@ class VoicevoxCore {
       _voicevox_frame_phoneme_validatePtr
           .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
+  ffi.Pointer<ffi.Char> voicevox_get_onnxruntime_lib_unversioned_filename() {
+    return _voicevox_get_onnxruntime_lib_unversioned_filename();
+  }
+
+  late final _voicevox_get_onnxruntime_lib_unversioned_filenamePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+        'voicevox_get_onnxruntime_lib_unversioned_filename',
+      );
+  late final _voicevox_get_onnxruntime_lib_unversioned_filename =
+      _voicevox_get_onnxruntime_lib_unversioned_filenamePtr
+          .asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  ffi.Pointer<ffi.Char> voicevox_get_onnxruntime_lib_versioned_filename() {
+    return _voicevox_get_onnxruntime_lib_versioned_filename();
+  }
+
+  late final _voicevox_get_onnxruntime_lib_versioned_filenamePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+        'voicevox_get_onnxruntime_lib_versioned_filename',
+      );
+  late final _voicevox_get_onnxruntime_lib_versioned_filename =
+      _voicevox_get_onnxruntime_lib_versioned_filenamePtr
+          .asFunction<ffi.Pointer<ffi.Char> Function()>();
+
   ffi.Pointer<ffi.Char> voicevox_get_version() {
     return _voicevox_get_version();
   }
@@ -164,6 +188,19 @@ class VoicevoxCore {
   late final _voicevox_make_default_initialize_options =
       _voicevox_make_default_initialize_optionsPtr
           .asFunction<VoicevoxInitializeOptions Function()>();
+
+  VoicevoxLoadOnnxruntimeOptions
+  voicevox_make_default_load_onnxruntime_options() {
+    return _voicevox_make_default_load_onnxruntime_options();
+  }
+
+  late final _voicevox_make_default_load_onnxruntime_optionsPtr =
+      _lookup<ffi.NativeFunction<VoicevoxLoadOnnxruntimeOptions Function()>>(
+        'voicevox_make_default_load_onnxruntime_options',
+      );
+  late final _voicevox_make_default_load_onnxruntime_options =
+      _voicevox_make_default_load_onnxruntime_optionsPtr
+          .asFunction<VoicevoxLoadOnnxruntimeOptions Function()>();
 
   VoicevoxSynthesisOptions voicevox_make_default_synthesis_options() {
     return _voicevox_make_default_synthesis_options();
@@ -249,6 +286,31 @@ class VoicevoxCore {
       );
   late final _voicevox_onnxruntime_get = _voicevox_onnxruntime_getPtr
       .asFunction<ffi.Pointer<VoicevoxOnnxruntime> Function()>();
+
+  int voicevox_onnxruntime_load_once(
+    VoicevoxLoadOnnxruntimeOptions options,
+    ffi.Pointer<ffi.Pointer<VoicevoxOnnxruntime>> out_onnxruntime,
+  ) {
+    return _voicevox_onnxruntime_load_once(options, out_onnxruntime);
+  }
+
+  late final _voicevox_onnxruntime_load_oncePtr =
+      _lookup<
+        ffi.NativeFunction<
+          VoicevoxResultCode$1 Function(
+            VoicevoxLoadOnnxruntimeOptions,
+            ffi.Pointer<ffi.Pointer<VoicevoxOnnxruntime>>,
+          )
+        >
+      >('voicevox_onnxruntime_load_once');
+  late final _voicevox_onnxruntime_load_once =
+      _voicevox_onnxruntime_load_oncePtr
+          .asFunction<
+            int Function(
+              VoicevoxLoadOnnxruntimeOptions,
+              ffi.Pointer<ffi.Pointer<VoicevoxOnnxruntime>>,
+            )
+          >();
 
   int voicevox_onnxruntime_init_once(
     ffi.Pointer<ffi.Pointer<VoicevoxOnnxruntime>> out_onnxruntime,
@@ -1545,6 +1607,25 @@ final class VoicevoxInitializeOptions extends ffi.Struct {
   }) => $allocator<VoicevoxInitializeOptions>()
     ..ref.acceleration_mode = acceleration_mode
     ..ref.cpu_num_threads = cpu_num_threads;
+}
+
+/// ::voicevox_onnxruntime_load_once のオプション。
+///
+/// \availability{
+/// [リリース](https://github.com/voicevox/voicevox_core/releases)されているライブラリではiOSを除くプラットフォームで利用可能。詳細は<a href="#voicevox-core-availability">ファイルレベルの"Availability"の節</a>を参照。
+/// }
+///
+/// \no-orig-impl{VoicevoxLoadOnnxruntimeOptions}
+final class VoicevoxLoadOnnxruntimeOptions extends ffi.Struct {
+  /// ONNX Runtimeのファイル名（モジュール名）もしくはファイルパスを指定する。
+  ///
+  /// `dlopen`/[`LoadLibraryExW`](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryexw)の引数に使われる。デフォルトは ::voicevox_get_onnxruntime_lib_versioned_filename と同じ。
+  external ffi.Pointer<ffi.Char> filename;
+
+  static ffi.Pointer<VoicevoxLoadOnnxruntimeOptions> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<ffi.Char> filename,
+  }) => $allocator<VoicevoxLoadOnnxruntimeOptions>()..ref.filename = filename;
 }
 
 final class VoicevoxOnnxruntime extends ffi.Opaque {}

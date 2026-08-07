@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
+import 'package:soroban_app/problem_generation/voicevox_synth_worker.dart';
 import 'package:soroban_app/screens/aloud_free_menu.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
@@ -27,6 +28,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   void initState() {
     super.initState();
     _prefsFuture = _loadPrefs();
+    VoicevoxSynthWorker.instance.acquire();
   }
 
   late final Future<void> _prefsFuture;
@@ -85,6 +87,8 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
 
   @override
   void dispose() {
+    VoicevoxSynthWorker.instance.release();
+
     _prefs.setInt('aloud_kyuui', _kyuui.index);
     _prefs.setInt('aloud_kyuuiDenomination', _kyuuiDenomination.index);
     _prefs.setInt('aloud_zsIndex', _zsIndex);

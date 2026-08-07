@@ -13,6 +13,7 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
+import 'package:soroban_app/problem_generation/voicevox_synth_worker.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/components/mitori_display.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
@@ -58,10 +59,12 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   Timer? _readyTimer;
   List<Uint8List> _previousWavChunks = [];
   bool _isRepeat = false;
-  SendPort? _workerSendPort;
-  Completer<void>? _workerExitCompleter;
   bool _generationComplete = false;
-  final ValueNotifier<String> debugStatus = ValueNotifier('idle');
+
+  double get speed {
+    if (widget.selectedLevel.moraPerSecond <= 9) return 1.0;
+    return 1.0 + (widget.selectedLevel.moraPerSecond - 9) * 0.1;
+  }
 
   void _initProblems() {
     AloudProblemSet fullProblemSet = AloudProblemSet(
@@ -89,6 +92,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       moraPerSecond: widget.selectedLevel.moraPerSecond,
       msPerInterval: widget.selectedLevel.msPerInterval,
       baseNote: widget.character.baseNote,
+      frameStretchFactor: speed,
     );
 
     _allProblems = [problem];
@@ -109,110 +113,11 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           moraPerSecond: widget.selectedLevel.moraPerSecond,
           msPerInterval: widget.selectedLevel.msPerInterval,
           baseNote: widget.character.baseNote,
+          frameStretchFactor: speed,
         ),
       );
     }
     return scores;
-  }
-
-  Future<dynamic> _nextNonLog(
-    StreamQueue events, {
-    required Duration timeout,
-    required String label,
-  }) async {
-    while (true) {
-      final msg = await events.next.timeout(
-        timeout,
-        onTimeout: () => throw TimeoutException('$label timed out'),
-      );
-      if (msg is _SynthLog) {
-        debugStatus.value = msg.message; // safe here — this IS the main isolate
-        continue;
-      }
-      return msg;
-    }
-  }
-
-  Stream<Uint8List> _synthesizeChunks(List<String> scores) async* {
-    final mainReceivePort = ReceivePort();
-    final exitPort = ReceivePort();
-    final errorPort = ReceivePort();
-    final exitCompleter = Completer<void>();
-    _workerExitCompleter = exitCompleter;
-    exitPort.listen((_) {
-      if (!exitCompleter.isCompleted) exitCompleter.complete();
-      exitPort.close();
-    });
-    errorPort.listen((error) {
-      debugStatus.value = '[isolate onError] $error'; // see below
-    });
-
-    await Isolate.spawn(
-      _synthWorkerEntry,
-      mainReceivePort.sendPort,
-      onExit: exitPort.sendPort,
-      onError: errorPort.sendPort,
-    );
-    final events = StreamQueue<dynamic>(mainReceivePort);
-
-    debugStatus.value = 'Waiting for isolate handshake...';
-    final workerSendPort =
-        await _nextNonLog(
-              events,
-              timeout: const Duration(seconds: 10),
-              label: 'Isolate handshake',
-            )
-            as SendPort;
-    _workerSendPort = workerSendPort;
-
-    debugStatus.value = 'Sending init args: dictDir=$dictDir vvmPath=$vvmPath';
-    workerSendPort.send([dictDir, vvmPath]);
-
-    debugStatus.value = 'Waiting for init confirmation...';
-    final initResult = await _nextNonLog(
-      events,
-      timeout: const Duration(seconds: 15),
-      label: 'VOICEVOX initialize()',
-    );
-    if (initResult is _SynthError) {
-      debugStatus.value = 'INIT FAILED: ${initResult.message}';
-      throw Exception(initResult.message);
-    }
-    debugStatus.value = 'Init OK, starting synthesis';
-
-    try {
-      for (final score in scores) {
-        workerSendPort.send(
-          _SynthRequest(
-            scoreJson: score,
-            speed: 1.6,
-            character: widget.character,
-          ),
-        );
-        final result = await _nextNonLog(
-          events,
-          timeout: const Duration(seconds: 15),
-          label: 'Synth worker',
-        );
-        if (result is _SynthError) {
-          debugStatus.value = 'SYNTH FAILED: ${result.message}';
-          throw Exception(result.message);
-        }
-        debugStatus.value = 'Got chunk (${(result as Uint8List).length} bytes)';
-        yield result;
-      }
-      workerSendPort.send(const _SynthDone());
-      _generationComplete = true;
-    } catch (e, st) {
-      debugStatus.value = 'GENERATION FAILED: $e';
-      workerSendPort.send(const _SynthDone());
-      rethrow;
-    } finally {
-      await events.cancel();
-      mainReceivePort.close();
-      errorPort.close();
-      _workerSendPort = null;
-    }
   }
 
   void showInput() {
@@ -284,6 +189,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       moraPerSecond: widget.selectedLevel.moraPerSecond,
       msPerInterval: widget.selectedLevel.msPerInterval,
       baseNote: widget.character.baseNote,
+      frameStretchFactor: speed,
     );
 
     _allProblems.add(newProblem);
@@ -321,55 +227,35 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     );
   }
 
-  Duration _wavDuration(Uint8List wavBytes) {
-    final data = ByteData.sublistView(wavBytes);
-    final numChannels = data.getUint16(22, Endian.little);
-    final sampleRate = data.getUint32(24, Endian.little);
-    final bitsPerSample = data.getUint16(34, Endian.little);
-    final dataSize = data.getUint32(40, Endian.little);
-    final byteRate = sampleRate * numChannels * (bitsPerSample ~/ 8);
-    if (byteRate == 0) return Duration.zero;
-    final seconds = dataSize / byteRate;
-    return Duration(milliseconds: (seconds * 1000).round());
+  Stream<Uint8List> _synthesizeChunks(List<String> scores) {
+    return VoicevoxSynthWorker.instance.synthesizeChunks(
+      scores,
+      widget.character,
+    );
   }
 
   Future<void> _resetChunkGeneration(List<String> scores) async {
     _chunkSubscription?.cancel();
     _readyTimer?.cancel();
     _generationComplete = false;
-
-    // Tell the old worker to clean up, then WAIT for it to actually exit
-    // before spawning a new one — prevents two isolates racing for the
-    // same native ONNX/VOICEVOX singleton.
-    _workerSendPort?.send(const _SynthDone());
-    if (_workerExitCompleter != null) {
-      try {
-        await _workerExitCompleter!.future.timeout(const Duration(seconds: 10));
-      } catch (e) {
-        print('[resetChunkGeneration] old isolate did not exit cleanly: $e');
-      }
-    }
-    _workerSendPort = null;
-    _workerExitCompleter = null;
-
     _wavChunks.clear();
     _readyToPlay = false;
     _genStopwatch
       ..reset()
       ..start();
-
     _chunkStream = _synthesizeChunks(scores);
     _chunkSubscription = _chunkStream!.listen(
       _onChunkReceived,
       onError: (e) {
-        print('[resetChunkGeneration] chunk stream error: $e');
-        // Surface this to the UI instead of silently hanging — e.g. show a
-        // retry button. At minimum, avoid leaving readyToPlay stuck false
-        // forever with no explanation.
+        VoicevoxSynthWorker.instance.debugStatus.value =
+            '[resetChunkGeneration] chunk stream error: $e';
       },
       onDone: () {
-        if (mounted && !_readyToPlay) {
-          setState(() => _readyToPlay = true);
+        if (mounted) {
+          setState(() {
+            _generationComplete = true;
+            if (!_readyToPlay) _readyToPlay = true;
+          });
         }
       },
     );
@@ -435,8 +321,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   @override
   void initState() {
     super.initState();
-    dictDir = VoicevoxService.paths.dictDir;
-    vvmPath = '${VoicevoxService.paths.vvmDir}/s0.vvm';
+    VoicevoxSynthWorker.instance.acquire();
     if (widget.isSingleProblem) {
       _initSingleProblem();
     } else {
@@ -449,8 +334,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   void dispose() {
     _chunkSubscription?.cancel();
     _readyTimer?.cancel();
-    _workerSendPort?.send(const _SynthDone());
-    _workerSendPort = null;
+    VoicevoxSynthWorker.instance.release();
     super.dispose();
   }
 
@@ -466,7 +350,8 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           chunkStream: _isRepeat ? null : _chunkStream,
           singleProblem: _allFormattedProblems[_currentProblemIndex],
           generationComplete: _isRepeat ? true : _generationComplete,
-          debugStatus: debugStatus,
+          debugStatus: VoicevoxSynthWorker.instance.debugStatus,
+          speed: speed,
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
@@ -523,71 +408,16 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   }
 }
 
-class _SynthRequest {
-  final String scoreJson;
-  final double speed;
-  final Character character;
-  const _SynthRequest({
-    required this.scoreJson,
-    required this.speed,
-    required this.character,
-  });
-}
-
-// Sentinel to tell the worker there's no more work
-class _SynthDone {
-  const _SynthDone();
-}
-
-class _SynthError {
-  final String message;
-  const _SynthError(this.message);
-}
-
-class _SynthLog {
-  final String message;
-  const _SynthLog(this.message);
-}
-
-void _synthWorkerEntry(SendPort mainSendPort) async {
-  final workerReceivePort = ReceivePort();
-  mainSendPort.send(workerReceivePort.sendPort);
-  VoicevoxSing? singer;
-  workerReceivePort.listen((message) async {
-    if (singer == null) {
-      final initArgs = message as List<String>;
-      final dictDir = initArgs[0];
-      final vvmPath = initArgs[1];
-      try {
-        singer = VoicevoxSing(
-          dictDir: dictDir,
-          vvmPath: vvmPath,
-          onLog: (msg) => mainSendPort.send(_SynthLog(msg)),
-        );
-        singer!.initialize();
-        mainSendPort.send('INIT_OK');
-      } catch (e, st) {
-        mainSendPort.send(_SynthError('init failed: $e\n$st'));
-      }
-      return;
-    }
-    if (message is _SynthRequest) {
-      try {
-        final wav = singer!.synthesizeWithF0(
-          scoreJson: message.scoreJson,
-          character: message.character,
-        );
-        final sped = speedUpWav(wav, message.speed);
-        mainSendPort.send(sped);
-      } catch (e, st) {
-        mainSendPort.send(_SynthError('synth failed: $e\n$st'));
-      }
-    } else if (message is _SynthDone) {
-      singer?.dispose();
-      workerReceivePort.close();
-      Isolate.exit();
-    }
-  });
+Duration _wavDuration(Uint8List wavBytes) {
+  final data = ByteData.sublistView(wavBytes);
+  final numChannels = data.getUint16(22, Endian.little);
+  final sampleRate = data.getUint32(24, Endian.little);
+  final bitsPerSample = data.getUint16(34, Endian.little);
+  final dataSize = data.getUint32(40, Endian.little);
+  final byteRate = sampleRate * numChannels * (bitsPerSample ~/ 8);
+  if (byteRate == 0) return Duration.zero;
+  final seconds = dataSize / byteRate;
+  return Duration(milliseconds: (seconds * 1000).round());
 }
 
 class AloudProblem extends StatefulWidget {
@@ -602,8 +432,8 @@ class AloudProblem extends StatefulWidget {
     required this.singleProblem,
     required this.generationComplete,
     required this.debugStatus,
+    this.speed = 1.0,
   });
-
   final List<Uint8List> chunks;
   final Stream<Uint8List>? chunkStream;
   final VoidCallback onComplete;
@@ -613,7 +443,7 @@ class AloudProblem extends StatefulWidget {
   final List<String> singleProblem;
   final bool generationComplete;
   final ValueNotifier<String> debugStatus;
-
+  final double speed;
   @override
   State<AloudProblem> createState() => _AloudProblemState();
 }
@@ -639,7 +469,36 @@ class _AloudProblemState extends State<AloudProblem> {
     if (_currentSource != null) {
       SoLoud.instance.disposeSource(_currentSource!);
     }
+    _deactivatePitchShiftIfNeeded();
     super.dispose();
+  }
+
+  /// Applies the current speed + compensating pitch shift to a freshly
+  /// started handle. Call this right after obtaining a new SoundHandle.
+  void _applySpeed(SoundHandle handle) {
+    final speed = widget.speed;
+    SoLoud.instance.setRelativePlaySpeed(handle, speed);
+    if (speed == 1.0) {
+      _deactivatePitchShiftIfNeeded();
+    } else {
+      if (!SoLoud.instance.filters.pitchShiftFilter.isActive) {
+        SoLoud.instance.filters.pitchShiftFilter.activate();
+      }
+      final pitch = 1.0 / speed;
+      SoLoud.instance.filters.pitchShiftFilter.shift.value = pitch;
+    }
+  }
+
+  Duration _actualPlaybackDuration(Duration nominal) {
+    final speed = widget.speed;
+    if (speed == 1.0) return nominal;
+    return Duration(microseconds: (nominal.inMicroseconds / speed).round());
+  }
+
+  void _deactivatePitchShiftIfNeeded() {
+    if (SoLoud.instance.filters.pitchShiftFilter.isActive) {
+      SoLoud.instance.filters.pitchShiftFilter.deactivate();
+    }
   }
 
   Future<void> _playPreamble(int session) async {
@@ -668,14 +527,11 @@ class _AloudProblemState extends State<AloudProblem> {
         session != _playSession ||
         !_isPlaying ||
         _currentChunk >= widget.chunks.length) {
-      // If we've run out of chunks but generation isn't finished yet,
-      // this is NOT completion — just wait for more chunks to arrive.
       if (!_disposed &&
           session == _playSession &&
           _isPlaying &&
           _currentChunk >= widget.chunks.length &&
           !widget.generationComplete) {
-        // Retry shortly instead of declaring completion.
         Future.delayed(const Duration(milliseconds: 200), () {
           if (!_disposed && session == _playSession) {
             _playNextChunk(session);
@@ -683,13 +539,12 @@ class _AloudProblemState extends State<AloudProblem> {
         });
         return;
       }
-
       final completed =
           !_disposed &&
           session == _playSession &&
           _isPlaying &&
           _currentChunk >= widget.chunks.length &&
-          widget.generationComplete; // now requires real completion
+          widget.generationComplete;
       if (!_disposed && session == _playSession) {
         setState(() {
           _isPlaying = false;
@@ -718,9 +573,10 @@ class _AloudProblemState extends State<AloudProblem> {
       return;
     }
     _currentHandle = handle;
+    _applySpeed(handle);
     final duration = SoLoud.instance.getLength(source);
     _currentChunk++;
-    Future.delayed(duration, () async {
+    Future.delayed(_actualPlaybackDuration(duration), () async {
       await SoLoud.instance.disposeSource(source);
       if (!_disposed && session == _playSession && _isPlaying) {
         _playNextChunk(session);
@@ -740,15 +596,12 @@ class _AloudProblemState extends State<AloudProblem> {
       });
       return;
     }
-
     _playSession++;
     final session = _playSession;
-
     setState(() {
       _isPlaying = true;
       _currentChunk = 0;
     });
-
     await _playPreamble(session);
     if (_disposed || session != _playSession || !_isPlaying) return;
     _playNextChunk(session);
@@ -771,15 +624,6 @@ class _AloudProblemState extends State<AloudProblem> {
             width: 40,
             height: 40,
             child: CircularProgressIndicator(strokeWidth: 4),
-          ),
-          const SizedBox(height: 12),
-          ValueListenableBuilder<String>(
-            valueListenable: widget.debugStatus,
-            builder: (context, value, _) => Text(
-              value,
-              style: const TextStyle(color: Colors.white, fontSize: 10),
-              textAlign: TextAlign.center,
-            ),
           ),
         ],
       );
@@ -977,114 +821,4 @@ class CollapsibleMitoriDisplay extends StatelessWidget {
       ),
     );
   }
-}
-
-Uint8List speedUpWav(Uint8List wavBytes, double speed) {
-  final byteData = ByteData.sublistView(wavBytes);
-  final numChannels = byteData.getUint16(22, Endian.little);
-  final sampleRate = byteData.getUint32(24, Endian.little);
-  final bitsPerSample = byteData.getUint16(34, Endian.little);
-  final bytesPerSample = bitsPerSample ~/ 8;
-  final blockAlign = numChannels * bytesPerSample;
-
-  final audioData = wavBytes.sublist(44);
-  final totalFrames = audioData.length ~/ blockAlign;
-
-  // Read all samples interleaved
-  final samples = Int16List(totalFrames * numChannels);
-  for (int i = 0; i < samples.length; i++) {
-    samples[i] = byteData.getInt16(44 + i * bytesPerSample, Endian.little);
-  }
-
-  // WSOLA parameters — larger window reduces buzzing
-  final windowFrames = (sampleRate * 0.08).round(); // 80ms window
-  final outputHop = (sampleRate * 0.04).round(); // 40ms hop (50% overlap)
-  final inputHop = (outputHop * speed).round();
-  final searchRadius = (sampleRate * 0.02).round(); // 20ms search
-
-  // Hann window
-  final window = Float64List(windowFrames);
-  for (int i = 0; i < windowFrames; i++) {
-    window[i] = 0.5 * (1 - cos(2 * pi * i / (windowFrames - 1)));
-  }
-
-  final estimatedOutputFrames = (totalFrames / speed).ceil() + windowFrames * 2;
-  final output = Float64List(estimatedOutputFrames * numChannels);
-  final normalization = Float64List(estimatedOutputFrames * numChannels);
-
-  // Cross-correlation on channel 0 only, but compare against the
-  // *normalized* output so far (i.e. what the waveform actually looks like)
-  int findBestOffset(int inputPos, int outputPos) {
-    double bestCorr = double.negativeInfinity;
-    int bestOffset = 0;
-
-    for (int offset = -searchRadius; offset <= searchRadius; offset++) {
-      final candidatePos = inputPos + offset;
-      if (candidatePos < 0 || candidatePos + windowFrames > totalFrames)
-        continue;
-
-      double corr = 0;
-      for (int frame = 0; frame < windowFrames; frame++) {
-        final outIdx = (outputPos + frame) * numChannels;
-        final inIdx = (candidatePos + frame) * numChannels;
-        if (outIdx >= output.length) break;
-
-        // Normalize the output sample before correlating
-        final norm = normalization[outIdx] > 0 ? normalization[outIdx] : 1.0;
-        final outSample = output[outIdx] / norm;
-        corr += outSample * samples[inIdx];
-      }
-
-      if (corr > bestCorr) {
-        bestCorr = corr;
-        bestOffset = offset;
-      }
-    }
-    return bestOffset;
-  }
-
-  int inputPos = 0;
-  int outputPos = 0;
-
-  while (inputPos + windowFrames <= totalFrames) {
-    final offset = outputPos == 0 ? 0 : findBestOffset(inputPos, outputPos);
-    final alignedInput = (inputPos + offset).clamp(
-      0,
-      totalFrames - windowFrames,
-    );
-
-    for (int frame = 0; frame < windowFrames; frame++) {
-      final w = window[frame];
-      for (int ch = 0; ch < numChannels; ch++) {
-        final inIdx = (alignedInput + frame) * numChannels + ch;
-        final outIdx = (outputPos + frame) * numChannels + ch;
-        if (inIdx >= samples.length || outIdx >= output.length) continue;
-        output[outIdx] += samples[inIdx] * w;
-        normalization[outIdx] += w;
-      }
-    }
-
-    inputPos += inputHop;
-    outputPos += outputHop;
-  }
-
-  // Normalize and convert back to Int16
-  final outFrameCount = outputPos + windowFrames;
-  final outSamples = Int16List(outFrameCount * numChannels);
-  for (int i = 0; i < outSamples.length; i++) {
-    if (i >= output.length) break;
-    final norm = normalization[i] > 0 ? normalization[i] : 1.0;
-    outSamples[i] = (output[i] / norm).round().clamp(-32768, 32767);
-  }
-
-  // Rebuild WAV
-  final newAudioBytes = outSamples.buffer.asUint8List();
-  final newFileSize = 44 + newAudioBytes.length;
-  final outputWav = Uint8List(newFileSize);
-  outputWav.setRange(0, 44, wavBytes);
-  final outByteData = ByteData.sublistView(outputWav);
-  outByteData.setUint32(4, newFileSize - 8, Endian.little);
-  outByteData.setUint32(40, newAudioBytes.length, Endian.little);
-  outputWav.setRange(44, newFileSize, newAudioBytes);
-  return outputWav;
 }

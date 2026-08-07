@@ -141,10 +141,22 @@ class VoicevoxSing {
   // Load ONNX runtime
   void initialize() {
     final onnxruntimePtr = calloc<Pointer<VoicevoxOnnxruntime>>();
-    _check(_bindings.voicevox_onnxruntime_init_once(onnxruntimePtr));
+
+    if (Platform.isIOS) {
+      _check(_bindings.voicevox_onnxruntime_init_once(onnxruntimePtr));
+    } else {
+      final loadOptions = _bindings
+          .voicevox_make_default_load_onnxruntime_options();
+      final onnxPath = _getOnnxruntimePath().toNativeUtf8();
+      loadOptions.filename = onnxPath.cast();
+      _check(
+        _bindings.voicevox_onnxruntime_load_once(loadOptions, onnxruntimePtr),
+      );
+      calloc.free(onnxPath);
+    }
+
     _onnxruntime = onnxruntimePtr.value;
     calloc.free(onnxruntimePtr);
-
     // Open JTalk
     final dictPath = _dictDir.toNativeUtf8();
     final openjtalkPtr = calloc<Pointer<OpenJtalkRc>>();
@@ -155,6 +167,10 @@ class VoicevoxSing {
 
     // Create synthesizer
     final initOptions = _bindings.voicevox_make_default_initialize_options();
+    initOptions.acceleration_mode =
+        VoicevoxAccelerationMode.VOICEVOX_ACCELERATION_MODE_CPU.value;
+    initOptions.cpu_num_threads = Platform.numberOfProcessors;
+
     final synthPtr = calloc<Pointer<VoicevoxSynthesizer>>();
     _check(
       _bindings.voicevox_synthesizer_new(

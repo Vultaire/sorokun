@@ -8,6 +8,7 @@ enum Character {
     negaimasiteha: 'assets/negaimasiteha/0.wav',
   ),
   zundamon(
+    //TODO: she sounds kinda weird
     singerId: 3003,
     baseNote: 62,
     keyRangeAdjustment: 3,

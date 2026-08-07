@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
+import 'package:soroban_app/problem_generation/voicevox_synth_worker.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/incrementer.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
@@ -30,6 +31,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
   @override
   void initState() {
     super.initState();
+    VoicevoxSynthWorker.instance.acquire();
     _loadPrefs();
   }
 
@@ -65,6 +67,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
 
   @override
   void dispose() {
+    VoicevoxSynthWorker.instance.release();
     _prefs.setInt('moraPerSecond', _moraPerSecond);
     _prefs.setInt('msPerInterval', _msPerInterval);
     _prefs.setBool('hasMinus', _hasMinus);
