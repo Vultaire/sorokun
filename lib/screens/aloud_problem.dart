@@ -5,7 +5,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
@@ -647,9 +646,9 @@ class _AloudProblemState extends State<AloudProblem> {
       onPressed = null;
     } else if (_isCompleted || _isPlaying) {
       icon = widget.isSingleProblem
-          ? const Icon(Symbols.replay_rounded, size: 120, color: Colors.black)
+          ? const Icon(Icons.replay_rounded, size: 120, color: Colors.black)
           : const Icon(
-              Symbols.graphic_eq_rounded,
+              Icons.graphic_eq_rounded,
               size: 120,
               color: Colors.black,
             );

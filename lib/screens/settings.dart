@@ -324,7 +324,7 @@ class _KeypadOption extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isSelected
-              ? colorScheme.primaryContainer
+              ? colorScheme.primaryFixedDim
               : colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(

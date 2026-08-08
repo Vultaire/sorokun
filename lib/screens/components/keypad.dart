@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/screens/settings.dart';
 
 import '../../problem_generation/helpers.dart';
@@ -319,7 +318,7 @@ class Keypad extends StatelessWidget {
                     onTapDown: onDeleteDigit,
                     onLongPress: onClearAll,
                     child: Icon(
-                      Symbols.backspace_rounded,
+                      Icons.backspace_rounded,
                       size: 80,
                       color: colorScheme.onPrimaryContainer,
                     ),
@@ -332,7 +331,7 @@ class Keypad extends StatelessWidget {
                     margin: EdgeInsets.zero,
                     onTapDown: onSubmit,
                     child: Icon(
-                      Symbols.check_rounded,
+                      Icons.check_rounded,
                       size: 85,
                       color: colorScheme.onPrimaryContainer,
                     ),

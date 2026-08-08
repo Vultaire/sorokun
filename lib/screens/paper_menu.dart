@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
@@ -448,7 +447,11 @@ class PaperStartButton extends StatelessWidget {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutBack,
                     child: IconButton(
-                      icon: Icon(Symbols.info_rounded, size: 28, weight: 1200),
+                      icon: Icon(
+                        Icons.info_outline_rounded,
+                        size: 28,
+                        weight: 1200,
+                      ),
                       padding: .zero,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                       splashColor: Colors.transparent,

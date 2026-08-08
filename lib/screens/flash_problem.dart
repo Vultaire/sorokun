@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import 'package:soroban_app/screens/components/exit_button.dart';
@@ -446,7 +445,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
               color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: widget.onRepeatProblem,
               child: Center(
-                child: iconHelper(context, Symbols.replay_rounded, 'もう一回'),
+                child: iconHelper(context, Icons.replay_rounded, 'もう一回'),
               ),
             ),
           ),
@@ -458,7 +457,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
               child: Center(
                 child: iconHelper(
                   context,
-                  Symbols.arrow_forward_ios_rounded,
+                  Icons.arrow_forward_ios_rounded,
                   '次の問題',
                 ),
               ),
@@ -512,7 +511,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
               child: Container(
                 padding: EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: colorScheme.surface,
+                  color: colorScheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Column(
@@ -554,7 +553,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                             constraints: const BoxConstraints(minWidth: 220),
                             child: Material(
                               elevation: 4,
-                              color: colorScheme.surfaceContainer,
+                              color: colorScheme.surfaceContainerHigh,
                               borderRadius: .all(.circular(16)),
                               child: Padding(
                                 padding: const .all(10),
@@ -584,7 +583,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                             constraints: const BoxConstraints(minWidth: 220),
                             child: Material(
                               elevation: 4,
-                              color: colorScheme.surfaceContainer,
+                              color: colorScheme.surfaceContainerHigh,
                               borderRadius: .all(.circular(16)),
                               child: Padding(
                                 padding: const .all(10),
@@ -613,7 +612,7 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
                           if (!widget.isSingleProblem)
                             Material(
                               elevation: 4,
-                              color: colorScheme.surfaceContainer,
+                              color: colorScheme.surfaceContainerHigh,
                               borderRadius: .all(.circular(16)),
                               child: Padding(
                                 padding: const .symmetric(

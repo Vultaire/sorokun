@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
@@ -129,7 +128,7 @@ class ResultsScreen extends StatelessWidget {
                       child: Center(
                         child: iconHelper(
                           context,
-                          Symbols.error_outline_rounded,
+                          Icons.error_outline_rounded,
                           '間違えた問題を見る',
                         ),
                       ),
@@ -175,7 +174,7 @@ class ResultsScreen extends StatelessWidget {
                     child: Center(
                       child: iconHelper(
                         context,
-                        Symbols.replay_rounded,
+                        Icons.replay_rounded,
                         'もう一回挑戦する',
                       ),
                     ),
@@ -189,7 +188,7 @@ class ResultsScreen extends StatelessWidget {
                     child: Center(
                       child: iconHelper(
                         context,
-                        Symbols.home_rounded,
+                        Icons.home_rounded,
                         'メインメニューに戻る',
                       ),
                     ),
@@ -212,7 +211,7 @@ class ResultsScreen extends StatelessWidget {
                     child: Center(
                       child: iconHelper(
                         context,
-                        Symbols.settings_rounded,
+                        Icons.settings_rounded,
                         '設定画面に戻る',
                       ),
                     ),

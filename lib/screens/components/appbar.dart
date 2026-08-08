@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({
@@ -81,7 +80,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   minHeight: height,
                 ),
                 icon: Icon(
-                  Symbols.arrow_back_ios_new_rounded,
+                  Icons.arrow_back_ios_new_rounded,
                   size: iconSize,
                   weight: 800,
                 ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/singer_config.dart';
@@ -324,7 +323,7 @@ class VoiceSelectionButton extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Icon(
-                Symbols.arrow_forward_ios_rounded,
+                Icons.arrow_forward_ios_rounded,
                 size: 28,
                 fontWeight: .w700,
                 color: colorScheme.onSecondaryContainer,
@@ -472,7 +471,7 @@ class _VoiceGridItem extends StatelessWidget {
                 IconButton(
                   padding: EdgeInsets.zero,
                   icon: const Icon(
-                    Symbols.play_circle_rounded,
+                    Icons.play_circle_rounded,
                     size: 60,
                     fill: 0,
                     weight: 300,
