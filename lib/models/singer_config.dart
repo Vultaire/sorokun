@@ -58,7 +58,7 @@ enum Character {
   aoyamaRyuusei(
     singerId: 3013,
     baseNote: 44,
-    keyRangeAdjustment: -15,
+    keyRangeAdjustment: -20,
     displayString: '青山龍星',
     icon: 'assets/character_icon/13.png',
     negaimasiteha: 'assets/negaimasiteha/13.wav',

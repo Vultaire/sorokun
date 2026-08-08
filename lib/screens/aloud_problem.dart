@@ -11,6 +11,7 @@ import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/problem_generation/aloud.dart';
 import 'package:soroban_app/problem_generation/aloud_set.dart';
 import 'package:soroban_app/problem_generation/voicevox_synth_worker.dart';
+import 'package:soroban_app/screens/components/exit_button.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/components/mitori_display.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
@@ -208,7 +209,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     _currentProblemIndex = 0;
   }
 
-  void showResults() {
+  void showResultPage() {
     context.go(
       '/paper-results',
       extra: {
@@ -351,7 +352,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
         );
       case 1:
         return FlashAndAloudProblemInput<int>(
-          showResult: setInputAndShowResult,
+          showAnswer: setInputAndShowResult,
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
           duration: 14500,
@@ -362,10 +363,9 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
           onNextProblem: startNextProblem,
           onRepeatProblem: repeatProblem,
           onNewProblem: startNextProblem,
-          onShowResults: showResults,
+          onShowResults: showResultPage,
           inputTime: _inputTime,
           isSingleProblem: widget.isSingleProblem,
-          homeRoute: '/aloud-level-menu',
         );
       default:
         return const SizedBox.shrink();
@@ -374,9 +374,9 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-    final Size screenSize = media.size;
-    final bool isPortrait = media.orientation == Orientation.portrait;
+    final Size screenSize = MediaQuery.sizeOf(context);
+    final bool isPortrait =
+        MediaQuery.orientationOf(context) == Orientation.portrait;
 
     return FlashAndAloudProblemData<int>(
       screenSize: screenSize,
@@ -386,18 +386,33 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
       allProblems: _allProblems,
       textFieldDataList: _textFieldDataList,
       child: Scaffold(
-        body: PageTransitionSwitcher(
-          duration: const Duration(milliseconds: 300),
-          reverse: _currentPageIndex == 0,
-          transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-            return FadeThroughTransition(
-              animation: primaryAnimation,
-              secondaryAnimation: secondaryAnimation,
-              fillColor: Colors.black,
-              child: child,
-            );
-          },
-          child: _buildPage(_currentPageIndex),
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: PageTransitionSwitcher(
+            duration: const Duration(milliseconds: 300),
+            reverse: _currentPageIndex == 0,
+            transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+              return FadeThroughTransition(
+                animation: primaryAnimation,
+                secondaryAnimation: secondaryAnimation,
+                fillColor: Colors.black,
+                child: child,
+              );
+            },
+            child: Stack(
+              key: ValueKey('${_currentProblemIndex}_$_currentPageIndex'),
+              children: [
+                _buildPage(_currentPageIndex),
+                ExitButton(
+                  homeRoute: widget.isSingleProblem
+                      ? 'aloud-free-menu'
+                      : '/aloud-level-menu',
+                  onShowResults: showResultPage,
+                  isSingleProblem: widget.isSingleProblem,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -607,7 +622,7 @@ class _AloudProblemState extends State<AloudProblem> {
   @override
   Widget build(BuildContext context) {
     final bool isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
+        MediaQuery.orientationOf(context) == Orientation.portrait;
     final double buttonSize = _isMitoriExpanded ? 80.0 : 120.0;
 
     Widget icon;
@@ -653,18 +668,6 @@ class _AloudProblemState extends State<AloudProblem> {
         padding: const EdgeInsets.all(8.0),
         child: Stack(
           children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              child: SafeArea(
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                  onPressed: () => context.pop(),
-                  color: Colors.white,
-                  iconSize: 24,
-                ),
-              ),
-            ),
             if (widget.isSingleProblem)
               Positioned(
                 top: 0,
@@ -740,7 +743,7 @@ class _AloudProblemState extends State<AloudProblem> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 16, width: 16),
                   if (widget.isSingleProblem)
                     CollapsibleMitoriDisplay(
                       problemIndex: null,
@@ -774,8 +777,8 @@ class CollapsibleMitoriDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
 
     return ClipRect(
       child: AnimatedAlign(

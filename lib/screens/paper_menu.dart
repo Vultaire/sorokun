@@ -112,9 +112,9 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
 
                       final buttonGrid = LayoutBuilder(
                         builder: (context, gridConstraints) {
-                          final shortestSide = MediaQuery.of(
+                          final shortestSide = MediaQuery.sizeOf(
                             context,
-                          ).size.shortestSide;
+                          ).shortestSide;
                           final isLargeScreen = shortestSide >= 600;
 
                           final padding = isLargeScreen ? 20.0 : 8.0;
@@ -144,7 +144,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                               decoration: BoxDecoration(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.surfaceContainer,
+                                ).colorScheme.surfaceContainerLowest,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Flex(

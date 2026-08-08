@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:soroban_app/main.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
+import 'package:soroban_app/screens/components/exit_button.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/components/pie_timer.dart';
@@ -132,9 +132,9 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-    final Size screenSize = media.size;
-    final bool isPortrait = media.orientation == Orientation.portrait;
+    final Size screenSize = MediaQuery.sizeOf(context);
+    final bool isPortrait =
+        MediaQuery.orientationOf(context) == Orientation.portrait;
 
     return FlashAndAloudProblemData<String>(
       screenSize: screenSize,
@@ -144,19 +144,34 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
       allProblems: _allProblems,
       textFieldDataList: _textFieldDataList,
       child: Scaffold(
-        backgroundColor: Colors.black, // TODO: remove hardcode
-        body: PageTransitionSwitcher(
-          duration: const Duration(milliseconds: 300),
-          reverse: _currentPageIndex == 0,
-          transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-            return FadeThroughTransition(
-              animation: primaryAnimation,
-              secondaryAnimation: secondaryAnimation,
-              fillColor: Colors.black,
-              child: child,
-            );
-          },
-          child: _buildPage(_currentPageIndex),
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: PageTransitionSwitcher(
+            duration: const Duration(milliseconds: 300),
+            reverse: _currentPageIndex == 0,
+            transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+              return FadeThroughTransition(
+                animation: primaryAnimation,
+                secondaryAnimation: secondaryAnimation,
+                fillColor: Colors.black,
+                child: child,
+              );
+            },
+            child: Stack(
+              key: ValueKey('${_currentProblemIndex}_$_currentPageIndex'),
+              children: [
+                _buildPage(_currentPageIndex),
+                if (_currentPageIndex != 0)
+                  ExitButton(
+                    homeRoute: widget.isSingleProblem
+                        ? 'flash-free-menu'
+                        : '/flash-level-menu',
+                    onShowResults: showResultPage,
+                    isSingleProblem: widget.isSingleProblem,
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -174,7 +189,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
       case 1:
         return FlashAndAloudProblemInput<String>(
           key: ValueKey('input_$_currentProblemIndex'),
-          showResult: setInputAndShowResult,
+          showAnswer: setInputAndShowResult,
           showTimer: !widget.isSingleProblem,
           delayOver: _delayOver,
           duration: 14500,
@@ -189,7 +204,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           onShowResults: showResultPage,
           inputTime: _inputTime,
           isSingleProblem: widget.isSingleProblem,
-          homeRoute: '/flash-level-menu',
         );
       default:
         return const SizedBox.shrink();
@@ -272,13 +286,13 @@ class FlashTextField extends StatelessWidget {
 class FlashAndAloudProblemInput<T> extends StatefulWidget {
   const FlashAndAloudProblemInput({
     super.key,
-    required this.showResult,
+    required this.showAnswer,
     required this.showTimer,
     required this.delayOver,
     required this.duration,
     required this.maxDigits,
   });
-  final VoidCallback showResult;
+  final VoidCallback showAnswer;
   final bool showTimer;
   final bool delayOver;
   final int duration;
@@ -318,93 +332,69 @@ class _FlashAndAloudProblemInputState<T>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Stack(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox.expand(
+        child: Flex(
+          direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
           children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              child: SafeArea(
-                child: IconButton(
-                  icon: const Icon(Symbols.arrow_back_ios_new_rounded),
-                  onPressed: () => context.pop(),
-                  color: Colors.white,
-                  iconSize: 24,
-                ),
+            Expanded(
+              flex: 8,
+              child: Column(
+                mainAxisAlignment: .center,
+                crossAxisAlignment: .center,
+                children: [
+                  if (widget.showTimer) SizedBox(height: 50),
+                  SizedBox(
+                    height: 150,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: FlashTextField(data: textData),
+                    ),
+                  ),
+                  if (widget.showTimer)
+                    Opacity(
+                      opacity: 0.4,
+                      child: SizedBox(
+                        width: 400,
+                        height: 50,
+                        child: BarTimer(
+                          duration: Duration(milliseconds: widget.duration),
+                          delayOver: widget.delayOver,
+                          onComplete: () {
+                            _data.textFieldDataList[_data.currentProblemIndex] =
+                                textData;
+                            widget.showAnswer();
+                            SoLoud.instance.play(
+                              _data.isCorrect ? sound.correct : sound.incorrect,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-            SizedBox.expand(
-              child: Flex(
-                direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
-                children: [
-                  Expanded(
-                    flex: 8,
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      crossAxisAlignment: .center,
-                      children: [
-                        if (widget.showTimer) SizedBox(height: 50),
-                        SizedBox(
-                          height: 150,
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: FlashTextField(data: textData),
-                          ),
-                        ),
-                        if (widget.showTimer)
-                          Opacity(
-                            opacity: 0.4,
-                            child: SizedBox(
-                              width: 400,
-                              height: 50,
-                              child: BarTimer(
-                                duration: Duration(
-                                  milliseconds: widget.duration,
-                                ),
-                                delayOver: widget.delayOver,
-                                onComplete: () {
-                                  _data.textFieldDataList[_data
-                                          .currentProblemIndex] =
-                                      textData;
-                                  widget.showResult();
-                                  SoLoud.instance.play(
-                                    _data.isCorrect
-                                        ? sound.correct
-                                        : sound.incorrect,
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: Keypad(
-                      onAppendDigit: appendDigit,
-                      onDeleteDigit: deleteDigit,
-                      onClearAll: clearAll,
-                      onSubmit: () {
-                        if (_input.isEmpty) {
-                          SoLoud.instance.play(sound.invalid);
-                          return;
-                        }
+            Expanded(
+              flex: 5,
+              child: Keypad(
+                onAppendDigit: appendDigit,
+                onDeleteDigit: deleteDigit,
+                onClearAll: clearAll,
+                onSubmit: () {
+                  if (_input.isEmpty) {
+                    SoLoud.instance.play(sound.invalid);
+                    return;
+                  }
 
-                        _data.textFieldDataList[_data.currentProblemIndex] =
-                            textData;
-                        widget.showResult();
+                  _data.textFieldDataList[_data.currentProblemIndex] = textData;
+                  widget.showAnswer();
 
-                        SoLoud.instance.play(
-                          _data.isCorrect ? sound.correct : sound.incorrect,
-                        );
-                      },
-                      levelType: KeypadType.flash,
-                    ),
-                  ),
-                ],
+                  SoLoud.instance.play(
+                    _data.isCorrect ? sound.correct : sound.incorrect,
+                  );
+                },
+                levelType: KeypadType.flash,
               ),
             ),
           ],
@@ -423,7 +413,6 @@ class FlashAndAloudResult<T> extends StatefulWidget {
     required this.onRepeatProblem,
     required this.onNewProblem,
     required this.onShowResults,
-    required this.homeRoute,
   });
   final VoidCallback onNextProblem;
   final VoidCallback onRepeatProblem;
@@ -431,7 +420,6 @@ class FlashAndAloudResult<T> extends StatefulWidget {
   final VoidCallback onShowResults;
   final String inputTime;
   final bool isSingleProblem;
-  final String homeRoute;
 
   @override
   State<FlashAndAloudResult<T>> createState() => _FlashAndAloudResultState<T>();
@@ -452,22 +440,6 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
         spacing: 20,
         runSpacing: 12,
         children: [
-          SizedBox(
-            width: 160,
-            child: NavigationButton(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              onPressed: () {
-                context.pop();
-              },
-              child: Center(
-                child: iconHelper(
-                  context,
-                  Symbols.meeting_room_rounded,
-                  '設定画面',
-                ),
-              ),
-            ),
-          ),
           SizedBox(
             width: 160,
             child: NavigationButton(
@@ -495,50 +467,25 @@ class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
         ],
       );
     } else {
-      return Wrap(
-        alignment: .center,
-        spacing: 20,
-        runSpacing: 12,
-        children: [
-          SizedBox(
-            width: 180,
-            child: NavigationButton(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              onPressed: () async {
-                await showExitDialog(
-                  context,
-                  homeRoute:
-                      '/flash-level-menu', //TODO fix this for aloud problems
-                  onSubmit: widget.onShowResults,
-                );
-              },
-              child: Center(
-                child: iconHelper(context, Icons.meeting_room, '設定画面'),
-              ),
+      return SizedBox(
+        width: 180,
+        child: NavigationButton(
+          onPressed: _data.currentProblemIndex == _data.allAnswers.length - 1
+              ? widget.onShowResults
+              : widget.onNextProblem,
+          color: Theme.of(context).colorScheme.primaryContainer,
+          child: Center(
+            child: iconHelper(
+              context,
+              _data.currentProblemIndex == _data.allAnswers.length - 1
+                  ? Icons.grade
+                  : Icons.arrow_forward,
+              _data.currentProblemIndex == _data.allAnswers.length - 1
+                  ? '採点'
+                  : '次の問題',
             ),
           ),
-          SizedBox(
-            width: 180,
-            child: NavigationButton(
-              onPressed:
-                  _data.currentProblemIndex == _data.allAnswers.length - 1
-                  ? widget.onShowResults
-                  : widget.onNextProblem,
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: Center(
-                child: iconHelper(
-                  context,
-                  _data.currentProblemIndex == _data.allAnswers.length - 1
-                      ? Icons.grade
-                      : Icons.arrow_forward,
-                  _data.currentProblemIndex == _data.allAnswers.length - 1
-                      ? '採点'
-                      : '次の問題',
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       );
     }
   }

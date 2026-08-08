@@ -50,7 +50,7 @@ class _SpammableButtonState extends State<SpammableButton> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final restingColor = colorScheme.surfaceContainer;
+    final restingColor = colorScheme.surfaceContainerHigh;
     final pressedColor = Color.lerp(restingColor, colorScheme.primary, 0.15)!;
 
     return GestureDetector(

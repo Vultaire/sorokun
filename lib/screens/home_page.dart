@@ -10,9 +10,9 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-    final Size size = media.size;
-    final bool isPortrait = media.orientation == Orientation.portrait;
+    final size = MediaQuery.sizeOf(context);
+    final bool isPortrait =
+        MediaQuery.orientationOf(context) == Orientation.portrait;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -71,9 +71,7 @@ class HomePage extends StatelessWidget {
                               vertical: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primaryFixedDim,
+                              color: Theme.of(context).colorScheme.primary,
                               borderRadius: BorderRadius.circular(220),
                             ),
                             child: Padding(
@@ -141,8 +139,8 @@ class HomePage extends StatelessWidget {
                                 buttons: [
                                   _MenuButtonData(
                                     label: '種目を選ぶ',
-                                    color: scheme.primaryContainer,
-                                    onColor: scheme.onPrimaryContainer,
+                                    color: scheme.primary,
+                                    onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/paper-menu'),
                                   ),
@@ -159,15 +157,15 @@ class HomePage extends StatelessWidget {
                                 buttons: [
                                   _MenuButtonData(
                                     label: '検定',
-                                    color: scheme.primaryContainer,
-                                    onColor: scheme.onPrimaryContainer,
+                                    color: scheme.primary,
+                                    onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/flash-level-menu'),
                                   ),
                                   _MenuButtonData(
                                     label: 'フリー',
-                                    color: scheme.primaryContainer,
-                                    onColor: scheme.onPrimaryContainer,
+                                    color: scheme.primary,
+                                    onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/flash-free-menu'),
                                   ),
@@ -184,15 +182,15 @@ class HomePage extends StatelessWidget {
                                 buttons: [
                                   _MenuButtonData(
                                     label: '検定',
-                                    color: scheme.primaryContainer,
-                                    onColor: scheme.onPrimaryContainer,
+                                    color: scheme.primary,
+                                    onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/aloud-level-menu'),
                                   ),
                                   _MenuButtonData(
                                     label: 'フリー',
-                                    color: scheme.primaryContainer,
-                                    onColor: scheme.onPrimaryContainer,
+                                    color: scheme.primary,
+                                    onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/aloud-free-menu'),
                                   ),
@@ -211,6 +209,7 @@ class HomePage extends StatelessWidget {
               top: 24,
               left: 24,
               child: Row(
+                spacing: 12,
                 children: [
                   SettingsGearButton(),
                   NavigationButton(
@@ -281,32 +280,28 @@ class _MenuRow extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Base layer: pill background + buttons, offset to leave room
-          // for the title on the left.
-          Container(
-            decoration: BoxDecoration(
-              color: background,
-              borderRadius: BorderRadius.circular(150),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              spacing: 12,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(width: _reservedWidth), // invisible spacer
-                Expanded(
-                  child: Row(
-                    spacing: 10,
-                    children: buttons
-                        .map((b) => Expanded(child: _MenuButton(data: b)))
-                        .toList(),
+          Material(
+            color: background,
+            borderRadius: BorderRadius.circular(150),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                spacing: 12,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(width: _reservedWidth), // invisible spacer
+                  Expanded(
+                    child: Row(
+                      spacing: 10,
+                      children: buttons
+                          .map((b) => Expanded(child: _MenuButton(data: b)))
+                          .toList(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          // Overlay layer: oversized rotated title, free to spill outside
-          // the pill's edge since the Stack has clipBehavior: Clip.none.
           Positioned(
             left: -18,
             top: 8,
@@ -415,7 +410,7 @@ class _ScrollingBackgroundState extends State<ScrollingBackground>
       animation: _controller,
       builder: (context, _) {
         return CustomPaint(
-          size: Size(MediaQuery.of(context).size.width, 250),
+          size: Size(MediaQuery.sizeOf(context).width, 250),
           painter: _TiledScrollPainter(
             image: _image,
             progress: _controller.value,

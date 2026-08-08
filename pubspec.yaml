@@ -12,8 +12,6 @@ dependencies:
   animations: ^2.0.11
   decimal: ^3.2.6
   rational: 
-  pdf: ^3.11.3
-  printing: ^5.14.2
   path_provider: ^2.1.5
   flutter_soloud: ^4.1.6
   carousel_slider: ^5.1.1
@@ -36,6 +34,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -61,3 +60,9 @@ flutter:
         - asset: assets/ogutamafontS2.ttf
   config:
     enable-swift-package-manager: false
+
+flutter_launcher_icons:
+  image_path: "assets/icon.png"
+  ios: true
+  android: false
+  remove_alpha_ios: true

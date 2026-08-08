@@ -89,9 +89,9 @@ class _IncrementerState extends State<Incrementer> {
         ),
         SizedBox(height: 8),
         Material(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(24),
-          elevation: 4,
+          elevation: 8,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ConstrainedBox(
@@ -229,9 +229,9 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
         ),
         SizedBox(height: 8),
         Material(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(24),
-          elevation: 4,
+          elevation: 8,
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: ConstrainedBox(
@@ -245,7 +245,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                   Row(
                     children: [
                       SizedBox(
-                        width: 82,
+                        width: 75,
                         height: 62,
                         child: Center(
                           child: Text(
@@ -260,7 +260,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                         ),
                       ),
                       SizedBox(
-                        width: 32,
+                        width: 39,
                         height: 62,
                         child: Center(
                           child: Text(
@@ -275,7 +275,7 @@ class _RangeIncrementerState extends State<RangeIncrementer> {
                         ),
                       ),
                       SizedBox(
-                        width: 82,
+                        width: 75,
                         height: 62,
                         child: Center(
                           child: Text(

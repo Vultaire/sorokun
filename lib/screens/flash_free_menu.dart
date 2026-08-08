@@ -391,8 +391,8 @@ class _DurationCard extends StatelessWidget {
 
     return Material(
       elevation: 4,
-      borderRadius: BorderRadius.circular(8),
-      color: colorScheme.surfaceContainer,
+      borderRadius: BorderRadius.circular(24),
+      color: colorScheme.surfaceContainerHigh,
       child: SizedBox(
         width: 210,
         child: Padding(

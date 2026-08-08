@@ -251,7 +251,7 @@ class FlashInfoDialog extends StatelessWidget {
     final infoTextStyle = textTheme.titleLarge;
 
     return Material(
-      color: colorScheme.surfaceContainer,
+      color: colorScheme.surfaceContainerLow,
       borderRadius: .circular(24),
       elevation: 4,
       child: Padding(
@@ -281,7 +281,7 @@ class FlashInfoDialog extends StatelessWidget {
                         ),
                       ),
                       Material(
-                        color: colorScheme.surfaceContainerHighest,
+                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: .circular(24),
                         elevation: 8,
                         child: Padding(

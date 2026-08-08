@@ -223,7 +223,7 @@ class AloudInfoDialog extends StatelessWidget {
     );
 
     return Material(
-      color: colorScheme.surfaceContainer,
+      color: colorScheme.surfaceContainerLow,
       borderRadius: .circular(24),
       elevation: 4,
       child: Padding(
@@ -243,7 +243,7 @@ class AloudInfoDialog extends StatelessWidget {
                     children: [
                       Text(denominationString, style: textTheme.headlineLarge),
                       Material(
-                        color: colorScheme.surfaceContainerHighest,
+                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(24),
                         elevation: 8,
                         child: Padding(

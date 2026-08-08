@@ -352,7 +352,7 @@ class VoiceSelectionPage extends StatelessWidget {
       body: SafeArea(
         child: OrientationBuilder(
           builder: (context, orientation) {
-            final screenWidth = MediaQuery.of(context).size.width;
+            final screenWidth = MediaQuery.sizeOf(context).width;
             final isLandscape = orientation == Orientation.landscape;
             final isLargeScreen = screenWidth >= 600;
 
@@ -438,14 +438,16 @@ class _VoiceGridItem extends StatelessWidget {
                     border: Border.all(
                       color: isSelected
                           ? colorScheme.primary
-                          : Colors.grey.withAlpha(80),
+                          : colorScheme.outlineVariant,
                       width: isSelected ? 4 : 3,
                     ),
                   ),
                   child: CircleAvatar(
                     radius: 48,
                     backgroundImage: AssetImage(character.icon),
-                    backgroundColor: colorScheme.surfaceContainerHigh,
+                    backgroundColor: isSelected
+                        ? colorScheme.surfaceContainer
+                        : colorScheme.surface,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -457,11 +459,10 @@ class _VoiceGridItem extends StatelessWidget {
                       fit: .scaleDown,
                       child: Text(
                         character.displayString,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: isSelected ? colorScheme.primary : null,
-                          fontWeight: isSelected
-                              ? FontWeight.w800
-                              : FontWeight.normal,
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: isSelected
+                              ? colorScheme.onSecondaryContainer
+                              : null,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -474,7 +475,7 @@ class _VoiceGridItem extends StatelessWidget {
                     Symbols.play_circle_rounded,
                     size: 60,
                     fill: 0,
-                    weight: 400,
+                    weight: 300,
                   ),
                   onPressed: () => _playSample(character.negaimasiteha),
                 ),

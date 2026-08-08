@@ -23,9 +23,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isCompact;
 
   static bool _checkIsCompact(BuildContext context, double threshold) {
-    final mediaQuery = MediaQuery.of(context);
-    return mediaQuery.orientation == Orientation.landscape &&
-        mediaQuery.size.height < threshold;
+    final orientation = MediaQuery.orientationOf(context);
+    final height = MediaQuery.sizeOf(context).height;
+    return orientation == Orientation.landscape && height < threshold;
   }
 
   double get height => isCompact ? 32.0 : kToolbarHeight;

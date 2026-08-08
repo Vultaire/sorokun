@@ -357,20 +357,16 @@ enum KeypadNumberOrder { standard, telephone }
 enum Handedness { right, left }
 
 class AppController extends ChangeNotifier {
-  /// Curated built-in FlexColorScheme palettes — each ships its own
-  /// hand-picked primary/secondary/tertiary, so no seed-color derivation
-  /// happens at all. Swap/reorder freely; see the full list at
-  /// https://rydmike.com/flexcolorscheme/themesplayground-latest/#/
   static const List<FlexScheme> presetSchemes = [
-    FlexScheme.mandyRed,
-    FlexScheme.deepBlue,
-    FlexScheme.aquaBlue,
-    FlexScheme.brandBlue,
-    FlexScheme.jungle,
-    FlexScheme.mango,
-    FlexScheme.redWine,
-    FlexScheme.wasabi,
-    FlexScheme.blueWhale,
+    FlexScheme.shadGreen,
+    FlexScheme.shadBlue,
+    FlexScheme.shadViolet,
+    FlexScheme.shadRose,
+    FlexScheme.shadNeutral,
+    FlexScheme.shadGray,
+    FlexScheme.shadRed,
+    FlexScheme.shadOrange,
+    FlexScheme.shadYellow,
   ];
 
   static const _schemeKey = 'theme_flex_scheme';
@@ -378,7 +374,7 @@ class AppController extends ChangeNotifier {
   static const _numberOrderKey = 'keypad_number_order';
   static const _handednessKey = 'handedness';
 
-  FlexScheme _flexScheme = FlexScheme.mandyRed;
+  FlexScheme _flexScheme = FlexScheme.shadBlue;
   FlexScheme get flexScheme => _flexScheme;
 
   ThemeMode _themeMode = ThemeMode.dark;
@@ -468,12 +464,6 @@ class AppController extends ChangeNotifier {
     await prefs.setString(_handednessKey, handedness.name);
   }
 
-  /// Was: ColorScheme.fromSeed(seedColor: _seedColor, brightness: ...)
-  ///
-  /// Now built straight from a predefined FlexScheme palette — primary,
-  /// secondary, and tertiary all come hand-picked from the scheme itself,
-  /// so there's no seed-derivation step (and no monotone hue-rotation risk)
-  /// at all.
   ColorScheme get colorScheme {
     final brightness = _themeMode == ThemeMode.dark
         ? Brightness.dark

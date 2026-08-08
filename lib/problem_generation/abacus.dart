@@ -94,9 +94,3 @@ class Abacus {
   @override
   String toString() => 'Abacus(value=$_value, carry=$_carry, digits=$_digits)';
 }
-
-void main() {
-  Abacus a1 = Abacus(35);
-  a1.add(-7);
-  print(" ${a1.value}, carry: ${a1.carry}, digits: ${a1.digitsValues()}");
-}

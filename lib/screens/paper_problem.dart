@@ -238,7 +238,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
             builder: (context, value, child) {
               return Center(
                 child: Transform.translate(
-                  offset: Offset(value * MediaQuery.of(context).size.width, 0),
+                  offset: Offset(value * MediaQuery.sizeOf(context).width, 0),
                   child: outOfTime
                       ? Image.asset('assets/yame.png', width: 200, height: 200)
                       : Image.asset(
@@ -569,7 +569,7 @@ class _DelayWindowState extends State<DelayWindow>
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: colorScheme.surface,
       child: Center(
         child: widget.showLoading
             ? AnimatedBuilder(
