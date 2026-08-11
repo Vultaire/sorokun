@@ -64,6 +64,14 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
     }
   }
 
+  void _savePrefs() {
+    _prefs.setInt('paper_kyuui', _kyuui.index);
+    _prefs.setBool('paper_isExam', _isExam);
+    _prefs.setInt('paper_kyuuiDenomination', _kyuuiDenomination.index);
+    _prefs.setInt('paper_zsIndex', _zsIndex);
+    _prefs.setInt('paper_nsIndex', _nsIndex);
+  }
+
   bool _hasLevel(StartButtonType startButtonType) {
     return switch (startButtonType) {
       StartButtonType.mitori => _kyuui.mitoriSoroban != null,
@@ -77,12 +85,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
 
   @override
   void dispose() {
-    _prefs.setInt('paper_kyuui', _kyuui.index);
-    _prefs.setBool('paper_isExam', _isExam);
-    _prefs.setInt('paper_kyuuiDenomination', _kyuuiDenomination.index);
-    _prefs.setInt('paper_zsIndex', _zsIndex);
-    _prefs.setInt('paper_nsIndex', _nsIndex);
-
+    _savePrefs();
     super.dispose();
   }
 
@@ -169,6 +172,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                           kyuui: _kyuui,
                                           isExam: _isExam,
                                           hasLevel: _hasLevel(type),
+                                          savePrefs: _savePrefs,
                                         );
                                       }).toList(),
                                     ),
@@ -288,6 +292,7 @@ class _GridButton extends StatelessWidget {
     required this.kyuui,
     required this.isExam,
     required this.hasLevel,
+    required this.savePrefs,
   });
 
   final StartButtonType type;
@@ -296,6 +301,7 @@ class _GridButton extends StatelessWidget {
   final Kyuui kyuui;
   final bool isExam;
   final bool hasLevel;
+  final VoidCallback savePrefs;
 
   @override
   Widget build(BuildContext context) {
@@ -311,6 +317,7 @@ class _GridButton extends StatelessWidget {
           isPortrait: isPortrait,
           kyuui: kyuui,
           isExam: isExam,
+          savePrefs: savePrefs,
         ),
       ),
     );
@@ -325,12 +332,14 @@ class PaperStartButton extends StatelessWidget {
     required this.isPortrait,
     required this.kyuui,
     required this.isExam,
+    required this.savePrefs,
   });
   final StartButtonType startButtonType;
   final double size;
   final bool isPortrait;
   final Kyuui kyuui;
   final bool isExam;
+  final VoidCallback savePrefs;
 
   @override
   Widget build(BuildContext context) {
@@ -385,7 +394,8 @@ class PaperStartButton extends StatelessWidget {
         margin: EdgeInsets.all(4),
         onPressed: hasLevel
             ? () {
-                context.go(
+                savePrefs();
+                context.push(
                   '/paper-problem',
                   extra: {
                     'selectedLevel': selectedLevel,

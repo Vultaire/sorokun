@@ -325,7 +325,7 @@ class Keypad extends StatelessWidget {
                     onLongPress: onClearAll,
                     child: Icon(
                       Icons.backspace_rounded,
-                      size: 80,
+                      size: 65,
                       color: colorScheme.onPrimaryContainer,
                     ),
                   ),

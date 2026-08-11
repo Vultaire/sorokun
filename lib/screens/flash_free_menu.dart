@@ -21,7 +21,7 @@ class FlashFreeMenuPage extends StatefulWidget {
   State<FlashFreeMenuPage> createState() => _FlashFreeMenuPageState();
 }
 
-class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
+class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
   double _secondsPerProblem = 10.0;
   int _kuchi = 15;
   int _digits = 3;
@@ -57,6 +57,12 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
     });
   }
 
+  void _savePrefs() {
+    _prefs.setDouble('secondsPerProblem', _secondsPerProblem);
+    _prefs.setInt('kuchi', _kuchi);
+    _prefs.setInt('digits', _digits);
+  }
+
   void _decreaseValue() {
     double newValue;
     if (_secondsPerProblem > CircularSlider.range1End) {
@@ -85,9 +91,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
 
   @override
   void dispose() {
-    _prefs.setDouble('secondsPerProblem', _secondsPerProblem);
-    _prefs.setInt('kuchi', _kuchi);
-    _prefs.setInt('digits', _digits);
+    _savePrefs();
     super.dispose();
   }
 
@@ -140,13 +144,14 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
 
                     final startButton = StartButton(
                       onPressed: () {
+                        _savePrefs();
                         FlashSingleProblemSpec spec = FlashSingleProblemSpec(
                           digits: _digits,
                           kuchi: _kuchi,
                           secondsPerProblem: _secondsPerProblem,
                           builder: mitoriStyle,
                         );
-                        context.go(
+                        context.push(
                           '/flash-problem',
                           extra: {
                             'isSingleProblem': true,

@@ -62,6 +62,13 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
     }
   }
 
+  void _savePrefs() {
+    _prefs.setInt('aloud_kyuui', _kyuui.index);
+    _prefs.setInt('aloud_kyuuiDenomination', _kyuuiDenomination.index);
+    _prefs.setInt('aloud_zsIndex', _zsIndex);
+    _prefs.setInt('character', _character.index);
+  }
+
   List<Kyuui> _buildKyuuiList(KyuuiDenomination denomination) => [
     denomination.k10,
     denomination.k9,
@@ -88,12 +95,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
   @override
   void dispose() {
     VoicevoxSynthWorker.instance.release();
-
-    _prefs.setInt('aloud_kyuui', _kyuui.index);
-    _prefs.setInt('aloud_kyuuiDenomination', _kyuuiDenomination.index);
-    _prefs.setInt('aloud_zsIndex', _zsIndex);
-    _prefs.setInt('character', _character.index);
-
+    _savePrefs();
     super.dispose();
   }
 
@@ -158,6 +160,7 @@ class _AloudLevelMenuPageState extends State<AloudLevelMenuPage> {
                                         },
                                         examDisplayString:
                                             '${_kyuui.kyuuString}の読み上げ算',
+                                        savePrefs: _savePrefs,
                                       ),
                                     ),
                                   ),
@@ -187,6 +190,7 @@ class AloudInfoDialog extends StatelessWidget {
     required this.character,
     required this.onCharacterChanged,
     required this.examDisplayString,
+    required this.savePrefs,
   });
 
   final AloudLevel selectedLevel;
@@ -194,6 +198,7 @@ class AloudInfoDialog extends StatelessWidget {
   final Character character;
   final ValueChanged<Character> onCharacterChanged;
   final String examDisplayString;
+  final VoidCallback savePrefs;
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +348,8 @@ class AloudInfoDialog extends StatelessWidget {
             ),
             StartButton(
               onPressed: () {
-                context.go(
+                savePrefs();
+                context.push(
                   '/aloud-problem',
                   extra: {
                     'isSingleProblem': false,

@@ -609,7 +609,6 @@ CustomTransitionPage blackFadeTransition({
 
 Future<void> showExitDialog(
   BuildContext context, {
-  required String homeRoute,
   VoidCallback? onSubmit,
 }) async {
   return showDialog<void>(
@@ -634,7 +633,7 @@ Future<void> showExitDialog(
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
-            GoRouter.of(context).go(homeRoute);
+            GoRouter.of(context).pop();
           },
           child: const Text('やめる'),
         ),

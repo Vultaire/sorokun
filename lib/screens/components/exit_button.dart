@@ -5,12 +5,10 @@ import 'package:soroban_app/main.dart';
 class ExitButton extends StatelessWidget {
   const ExitButton({
     super.key,
-    required this.homeRoute,
     required this.onShowResults,
     required this.isSingleProblem,
   });
 
-  final String homeRoute;
   final VoidCallback onShowResults;
   final bool isSingleProblem;
 
@@ -20,14 +18,10 @@ class ExitButton extends StatelessWidget {
       icon: const Icon(Icons.arrow_back_ios_new_rounded),
       onPressed: () async {
         if (isSingleProblem) {
-          context.go(homeRoute);
+          context.pop();
           return;
         }
-        await showExitDialog(
-          context,
-          homeRoute: homeRoute,
-          onSubmit: onShowResults,
-        );
+        await showExitDialog(context, onSubmit: onShowResults);
       },
       color: Colors.white,
       iconSize: 22,

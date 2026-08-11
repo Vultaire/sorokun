@@ -278,7 +278,6 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         onBackPressed: () async {
           await showExitDialog(
             context,
-            homeRoute: '/paper-menu',
             onSubmit: () {
               final data = _collectResultData();
               if (data != null) _navigateToResults(data);

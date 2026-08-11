@@ -162,9 +162,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
                 _buildPage(_currentPageIndex),
                 if (_currentPageIndex != 0)
                   ExitButton(
-                    homeRoute: widget.isSingleProblem
-                        ? 'flash-free-menu'
-                        : '/flash-level-menu',
                     onShowResults: showResultPage,
                     isSingleProblem: widget.isSingleProblem,
                   ),

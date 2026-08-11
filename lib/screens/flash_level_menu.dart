@@ -58,6 +58,13 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
     }
   }
 
+  void _savePrefs() {
+    _prefs.setInt('flash_kyuui', _kyuui.index);
+    _prefs.setInt('flash_kyuuiDenomination', _kyuuiDenomination.index);
+    _prefs.setInt('flash_zsIndex', _zsIndex);
+    _prefs.setInt('flash_kkIndex', _kkIndex);
+  }
+
   List<Kyuui> _buildFlashKyuuiList(KyuuiDenomination denomination) => [
     denomination.k20,
     denomination.k19,
@@ -93,11 +100,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
 
   @override
   void dispose() {
-    _prefs.setInt('flash_kyuui', _kyuui.index);
-    _prefs.setInt('flash_kyuuiDenomination', _kyuuiDenomination.index);
-    _prefs.setInt('flash_zsIndex', _zsIndex);
-    _prefs.setInt('flash_kkIndex', _kkIndex);
-
+    _savePrefs();
     super.dispose();
   }
 
@@ -174,6 +177,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                     isPortrait: isPortrait,
                                     examDisplayString:
                                         '${_kyuui.kyuuString}のフラッシュ暗算',
+                                    savePrefs: _savePrefs,
                                   ),
                                 ),
                               ],
@@ -201,6 +205,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                               isPortrait: isPortrait,
                                               examDisplayString:
                                                   '${_kyuui.kyuuString}のフラッシュ暗算',
+                                              savePrefs: _savePrefs,
                                             ),
                                           ),
                                         ),
@@ -228,10 +233,12 @@ class FlashInfoDialog extends StatelessWidget {
     required this.selectedLevel,
     required this.isPortrait,
     required this.examDisplayString,
+    required this.savePrefs,
   });
   final FlashLevel selectedLevel;
   final bool isPortrait;
   final String examDisplayString;
+  final VoidCallback savePrefs;
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +345,8 @@ class FlashInfoDialog extends StatelessWidget {
             ),
             StartButton(
               onPressed: () {
-                context.go(
+                savePrefs();
+                context.push(
                   '/flash-problem',
                   extra: {
                     'selectedLevel': selectedLevel,

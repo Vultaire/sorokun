@@ -64,10 +64,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
     });
   }
 
-  @override
-  void dispose() {
-    VoicevoxSynthWorker.instance.release();
-
+  void _savePrefs() {
     _prefs.setInt('moraPerSecond', _moraPerSecond);
     _prefs.setInt('msPerInterval', _msPerInterval);
     _prefs.setBool('hasMinus', _hasMinus);
@@ -75,7 +72,12 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
     _prefs.setInt('minDigits', _minDigits);
     _prefs.setInt('maxDigits', _maxDigits);
     _prefs.setInt('character', _character.index);
+  }
 
+  @override
+  void dispose() {
+    VoicevoxSynthWorker.instance.release();
+    _savePrefs();
     super.dispose();
   }
 
@@ -196,6 +198,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
 
                     final startButton = StartButton(
                       onPressed: () {
+                        _savePrefs();
                         AloudSingleProblemSpec spec = AloudSingleProblemSpec(
                           kuchi: _kuchi,
                           moraPerSecond: _moraPerSecond,
@@ -204,7 +207,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                           maxDigits: _maxDigits,
                           minusCount: _hasMinus ? (_kuchi * 0.3).round() : 0,
                         );
-                        context.go(
+                        context.push(
                           '/aloud-problem',
                           extra: {
                             'isSingleProblem': true,

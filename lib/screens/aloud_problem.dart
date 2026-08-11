@@ -382,9 +382,6 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
               children: [
                 _buildPage(_currentPageIndex),
                 ExitButton(
-                  homeRoute: widget.isSingleProblem
-                      ? 'aloud-free-menu'
-                      : '/aloud-level-menu',
                   onShowResults: showResultPage,
                   isSingleProblem: widget.isSingleProblem,
                 ),
