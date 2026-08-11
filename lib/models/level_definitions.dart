@@ -94,13 +94,13 @@ enum DivMultLevel implements PaperProblemLevel {
   zsmdan(
     split: .zsmdan,
     divMultSource: MultiplicationSource.zsdan,
-    levelInfo: .zs,
+    levelInfo: .zsdan,
     builder: MultiplicationProblem.new,
   ),
   zsmadan(
     split: .fourToEight,
     divMultSource: MultiplicationSource.zsadan,
-    levelInfo: .zs,
+    levelInfo: .zsadan,
     builder: MultiplicationProblem.new,
   ),
   zsdk8(
@@ -406,7 +406,7 @@ enum DivMultLevel implements PaperProblemLevel {
   nsdadan(
     split: .nsadan,
     divMultSource: DivisionSource.nsadan,
-    levelInfo: .nsak6To1DivMult,
+    levelInfo: .nsadanDivMult,
     builder: DivisionProblem.new,
   ),
   nsmak4(
@@ -1176,12 +1176,18 @@ enum ComplexMitoriLevel implements MitoriLevel {
   nsadan(
     templates: [
       [
-        {"digits": 3, "count": 10},
+        {"digits": 4, "count": 10},
+      ],
+      [
+        {"digits": 6, "count": 10},
+      ],
+      [
+        {"digits": 8, "count": 10},
       ],
     ],
     minusCount: 4,
     levelInfo: .nsadanMitori,
-    problemCountPerTemplate: [20],
+    problemCountPerTemplate: [10, 10, 10],
     repeat: 1,
   );
 
@@ -1392,14 +1398,14 @@ enum LevelInfo {
     timeLimit: Duration(minutes: 4),
   ),
   nsadanDivMult(
-    passThreshold: 0.8,
+    passThreshold: 0.33,
     pointsPerProblem: 5,
     denomination: .nisshou,
     timeLimit: Duration(minutes: 3),
     rangedThreshold: nsdanRangedThreshold,
   ),
   nsadanMitori(
-    passThreshold: 0.8,
+    passThreshold: 0.33,
     pointsPerProblem: 10,
     denomination: .nisshou,
     timeLimit: Duration(minutes: 4),

@@ -209,7 +209,7 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
   }
 
   void showResultPage() {
-    context.go(
+    context.pushReplacement(
       '/paper-results',
       extra: {
         'selectedLevel': widget.selectedLevel,

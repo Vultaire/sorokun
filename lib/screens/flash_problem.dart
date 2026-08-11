@@ -86,7 +86,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   }
 
   void showResultPage() {
-    context.go(
+    context.pushReplacement(
       '/paper-results',
       extra: {
         'selectedLevel': widget.selectedLevel,

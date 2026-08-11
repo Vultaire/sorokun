@@ -142,7 +142,7 @@ class ResultsScreen extends StatelessWidget {
                     onPressed: () {
                       switch (selectedLevel) {
                         case FlashLevel _:
-                          context.go(
+                          context.pushReplacement(
                             '/flash-problem',
                             extra: {
                               'selectedLevel': selectedLevel,
@@ -151,7 +151,7 @@ class ResultsScreen extends StatelessWidget {
                             },
                           );
                         case AloudLevel _:
-                          context.go(
+                          context.pushReplacement(
                             '/aloud-problem',
                             extra: {
                               'isSingleProblem': false,
@@ -161,7 +161,7 @@ class ResultsScreen extends StatelessWidget {
                             },
                           );
                         case PaperProblemLevel _:
-                          context.go(
+                          context.pushReplacement(
                             '/paper-problem',
                             extra: {
                               'selectedLevel': selectedLevel,
@@ -200,14 +200,7 @@ class ResultsScreen extends StatelessWidget {
                   child: NavigationButton(
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
-                      switch (selectedLevel) {
-                        case FlashLevel _:
-                          context.go('/flash-level-menu');
-                        case AloudLevel _:
-                          context.go('/aloud-level-menu');
-                        case PaperProblemLevel _:
-                          context.go('/paper-menu');
-                      }
+                      context.pop();
                     },
                     child: Center(
                       child: iconHelper(

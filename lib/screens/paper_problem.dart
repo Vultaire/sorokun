@@ -174,7 +174,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   }
 
   void _navigateToResults(_PaperResultData data) {
-    GoRouter.of(context).go(
+    GoRouter.of(context).pushReplacement(
       '/paper-results',
       extra: {
         'selectedLevel': data.selectedLevel,
