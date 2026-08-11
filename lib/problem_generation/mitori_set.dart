@@ -334,9 +334,6 @@ void applyZenshurenMinus({
           if (runningSum < 0) {
             valid = false;
             if (attempts >= maxAttempts) {
-              print(
-                '[applyZenshurenMinus] Could not find valid minus combination after $attempts attempts. Regenerating problem. problem: $problem, minusCount: $minusCount',
-              );
               problem = regenerateProblem(rand);
               attempts = 0;
             }
@@ -353,11 +350,4 @@ void applyZenshurenMinus({
     }
     templateProblems[actualIdx].newProblem = problem;
   }
-}
-
-void main() {
-  var problem = MitoriProblemSet(level: ComplexMitoriLevel.nsdan);
-
-  print(problem.formattedProblems);
-  print(problem.formattedAnswers);
 }

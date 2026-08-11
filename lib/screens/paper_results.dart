@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -421,8 +422,12 @@ class _CountUpCircleState extends State<CountUpCircle>
       passFailAppearSound = userPassed
           ? await SoLoud.instance.loadAsset('assets/pass.wav')
           : await SoLoud.instance.loadAsset('assets/fail.wav');
-    } catch (e) {
-      print('Error initializing sound: $e');
+    } catch (e, st) {
+      developer.log(
+        'Failed to initialize KeypadSounds — sound will be disabled',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 

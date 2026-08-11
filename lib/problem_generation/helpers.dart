@@ -167,7 +167,3 @@ Decimal randomDecimalNoTrailingZero(int digits, Random rand) {
 
   return (unscaledValue.shift(-scalePower), scalePower);
 }
-
-void main() {
-  print(scaleValue(Decimal.parse('255'), Random()));
-}

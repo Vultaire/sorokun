@@ -79,9 +79,3 @@ List<int> generateDigitList({
 
   return [minDigits, maxDigits, ...filling.take(kuchi - 2)]..shuffle(rand);
 }
-
-void main() {
-  print(
-    generateDigitList(minDigits: 2, maxDigits: 5, kuchi: 4, rand: Random()),
-  );
-}

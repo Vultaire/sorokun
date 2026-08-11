@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:decimal/decimal.dart';
 import 'package:soroban_app/problem_generation/helpers.dart';
-import '../models/level_definitions.dart';
 import 'divmult_set.dart';
 
 class MultiplicationProblem extends DivMultProblem {
@@ -156,15 +155,4 @@ class MultiplicationProblem extends DivMultProblem {
 
     return MultiplicationProblem._(multiplicand, multiplier, product, intRound);
   }
-}
-
-void main() {
-  final problems = DivMultProblemSet(level: DivMultLevel.nsmadan);
-
-  print(problems.formattedProblems);
-  print(problems.formattedAnswers);
-
-  // for (var i = 0; i < problems.length; i++) {
-  //   print("Problem ${i + 1}: ${problems[i]}");
-  // }
 }

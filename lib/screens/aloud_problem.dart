@@ -266,49 +266,28 @@ class _AloudProblemScreenState extends State<AloudProblemScreen> {
     final playDuration = _wavDuration(chunk);
     final d = playDuration.inMilliseconds;
     final n = _totalChunksExpected ?? 1;
-    const negaimasitehaTime = 2.3;
-
-    print('[chunkReady] genTime=${g}ms playDuration=${d}ms totalChunks=$n');
 
     if (d <= 0) {
-      print(
-        '[chunkReady] could not parse WAV duration, falling back to onDone',
-      );
       return; // couldn't parse duration; fall back to onDone
     }
 
     if (g <= d) {
       // Generation is at least real-time — safe right now.
-      print('[chunkReady] g <= d, unlocking immediately (no wait)');
       setState(() => _readyToPlay = true);
       return;
     }
 
     // Worst-case lead time needed, per the derivation above, is driven
     // by the last chunk: s_min = N*G - (N-1)*D.
-    final requiredLeadMs = ((n * g - (n - 1) * d) - negaimasitehaTime).round();
+    final requiredLeadMs = ((n * g - (n - 1) * d)).round();
     final remainingWaitMs = requiredLeadMs - g; // g ms have already elapsed
 
-    print(
-      '[chunkReady] g > d, requiredLeadMs=$requiredLeadMs '
-      '(elapsed so far=${g}ms) -> remainingWaitMs=$remainingWaitMs',
-    );
-
     if (remainingWaitMs <= 0) {
-      print('[chunkReady] remainingWaitMs <= 0, unlocking immediately');
       setState(() => _readyToPlay = true);
     } else {
-      print('[chunkReady] scheduling unlock timer for ${remainingWaitMs}ms');
       _readyTimer = Timer(Duration(milliseconds: remainingWaitMs), () {
         if (mounted && !_readyToPlay) {
-          print(
-            '[chunkReady] timer fired after ${remainingWaitMs}ms, unlocking',
-          );
           setState(() => _readyToPlay = true);
-        } else {
-          print(
-            '[chunkReady] timer fired but already ready or unmounted, skipping',
-          );
         }
       });
     }

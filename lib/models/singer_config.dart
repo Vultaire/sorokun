@@ -162,8 +162,8 @@ enum Character {
   ),
   holyKnightBeniZakura(
     singerId: 3051,
-    baseNote: 52,
-    keyRangeAdjustment: -8,
+    baseNote: 53,
+    keyRangeAdjustment: -11,
     displayString: '†聖騎士 紅桜†',
     icon: 'assets/character_icon/51.png',
     negaimasiteha: 'assets/negaimasiteha/51.wav',

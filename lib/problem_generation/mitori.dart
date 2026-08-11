@@ -56,10 +56,6 @@ List<int> generateMitoriProblemFromDigitList(List<int> digitList, Random rand) {
     }).toList();
   }
 
-  print('generateMitoriProblemFromDigitList failed after 5 attempts');
-  print('digitList=$digitList sum=$sum pool=$pool');
-  print('last attempted array (post-_fixViolations, still violating):');
-  lastArray?.forEach((row) => print('  $row'));
   throw Exception('Cannot satisfy constraints after 5 attempts');
 }
 

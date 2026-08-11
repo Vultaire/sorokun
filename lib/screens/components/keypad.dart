@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:developer' as developer;
 
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +32,13 @@ class KeypadSounds {
       delete = await SoLoud.instance.loadAsset('assets/delete.wav');
       invalid = await SoLoud.instance.loadAsset('assets/invalid.wav');
       progress = await SoLoud.instance.loadAsset('assets/progress.wav');
-    } catch (e) {
-      print('Error initializing SoundController: $e');
+    } catch (e, st) {
+      developer.log(
+        'Failed to initialize KeypadSounds',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
     }
   }
 }

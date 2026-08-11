@@ -377,7 +377,7 @@ class AppController extends ChangeNotifier {
   FlexScheme _flexScheme = FlexScheme.shadBlue;
   FlexScheme get flexScheme => _flexScheme;
 
-  ThemeMode _themeMode = ThemeMode.dark;
+  ThemeMode _themeMode = ThemeMode.system;
   ThemeMode get themeMode => _themeMode;
 
   KeypadNumberOrder _numberOrder = KeypadNumberOrder.standard;

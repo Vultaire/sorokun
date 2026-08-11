@@ -90,9 +90,3 @@ List<int> multiplierBuilder(FlashLevel level, Random rand) {
 
   return numbers;
 }
-
-void main() {
-  var problems = FlashProblemSet(FlashLevel.zsk11);
-  print(problems.formattedProblems);
-  print(problems.formattedAnswers);
-}

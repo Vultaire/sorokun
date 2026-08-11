@@ -682,7 +682,6 @@ class _MitorizanWindowState extends State<MitorizanWindow>
         0.499; //https://github.com/serenader2014/flutter_carousel_slider/issues/419#issuecomment-2460944294
 
     final fraction = maxFraction * (_dividerWidth / referenceWidth);
-    print(fraction.clamp(minFraction, maxFraction));
     return fraction.clamp(minFraction, maxFraction);
   }
 
