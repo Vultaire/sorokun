@@ -150,7 +150,11 @@ class _AbacusAppState extends State<AbacusApp> {
   late final _router = GoRouter(
     initialLocation: kDebugMode ? '/paper-results' : '/home',
     routes: [
-      GoRoute(path: '/home', builder: (context, state) => HomePage()),
+      GoRoute(
+        path: '/home',
+        pageBuilder: (context, state) =>
+            blackFadeTransition(key: state.pageKey, child: HomePage()),
+      ),
       GoRoute(path: '/credits', builder: (context, state) => CreditsPage()),
       GoRoute(
         path: '/flash-level-menu',

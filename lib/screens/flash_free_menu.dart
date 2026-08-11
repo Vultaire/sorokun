@@ -146,7 +146,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> {
                           secondsPerProblem: _secondsPerProblem,
                           builder: mitoriStyle,
                         );
-                        context.push(
+                        context.go(
                           '/flash-problem',
                           extra: {
                             'isSingleProblem': true,

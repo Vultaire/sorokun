@@ -204,7 +204,7 @@ class AloudFreeMenuPageState extends State<AloudFreeMenuPage> {
                           maxDigits: _maxDigits,
                           minusCount: _hasMinus ? (_kuchi * 0.3).round() : 0,
                         );
-                        context.push(
+                        context.go(
                           '/aloud-problem',
                           extra: {
                             'isSingleProblem': true,
