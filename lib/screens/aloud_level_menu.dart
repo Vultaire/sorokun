@@ -343,8 +343,7 @@ class AloudInfoDialog extends StatelessWidget {
             ),
             StartButton(
               onPressed: () {
-                context.push(
-                  //TODO dispose properly
+                context.go(
                   '/aloud-problem',
                   extra: {
                     'isSingleProblem': false,
