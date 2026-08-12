@@ -34,7 +34,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsmak5(
     split: .threeDigitA,
     divMultSource: MultiplicationSource.zsak5,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: MultiplicationProblem.new,
   ),
   zsmk5(
@@ -46,7 +46,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsmak4(
     split: .threeAndFourB,
     divMultSource: MultiplicationSource.zsak4,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: MultiplicationProblem.new,
   ),
   zsmk4(
@@ -58,7 +58,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsmak3(
     split: .fourSpecialB,
     divMultSource: MultiplicationSource.zsak3,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: MultiplicationProblem.new,
   ),
   zsmk3(
@@ -70,7 +70,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsmak2(
     split: .fourDigitB,
     divMultSource: MultiplicationSource.zsak2,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: MultiplicationProblem.new,
   ),
   zsmk2(
@@ -82,7 +82,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsmak1(
     split: .fourAndFive,
     divMultSource: MultiplicationSource.zsak1,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: MultiplicationProblem.new,
   ),
   zsmk1(
@@ -124,7 +124,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsdak5(
     split: .threeDigitB,
     divMultSource: DivisionSource.zsak5,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: DivisionProblem.new,
   ),
   zsdk5(
@@ -136,7 +136,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsdak4(
     split: .threeAndFourA,
     divMultSource: DivisionSource.zsak4,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: DivisionProblem.new,
   ),
   zsdk4(
@@ -148,7 +148,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsdak3(
     split: .fourSpecialA,
     divMultSource: DivisionSource.zsak3,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: DivisionProblem.new,
   ),
   zsdk3(
@@ -160,7 +160,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsdak2(
     split: .fourDigitB,
     divMultSource: DivisionSource.zsak2,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: DivisionProblem.new,
   ),
   zsdk2(
@@ -172,7 +172,7 @@ enum DivMultLevel implements PaperProblemLevel {
   zsdak1(
     split: .fourAndFive,
     divMultSource: DivisionSource.zsak1,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     builder: DivisionProblem.new,
   ),
   zsdk1(
@@ -412,7 +412,7 @@ enum DivMultLevel implements PaperProblemLevel {
   nsmak4(
     split: .threeDigitA,
     divMultSource: MultiplicationSource.nsak4, // sic
-    levelInfo: .nsk6To4DivMult,
+    levelInfo: .nsak6To1DivMult,
     builder: MultiplicationProblem.new,
   ),
   nsmakj3(
@@ -477,8 +477,10 @@ enum DivMultLevel implements PaperProblemLevel {
     (sum, map) => sum + (map['problemCount'] as int),
   );
   @override
-  Set<int> get houshouJippou =>
-      divMultSource.templates.map((map) => map['digits'] as int).toSet();
+  Set<int> get houshouJippou => divMultSource.templates
+      .map((map) => map['digits'] as int)
+      .where((digits) => digits != 0)
+      .toSet();
   @override
   int get maxDigits => 0;
 }
@@ -712,7 +714,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     ],
     minusCount: 0,
     minusProblemsPerTemplate: 0,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     problemCountPerTemplate: [20],
     repeat: 1,
   ),
@@ -725,7 +727,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     ],
     minusCount: 0,
     minusProblemsPerTemplate: 0,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     problemCountPerTemplate: [20],
     repeat: 1,
   ),
@@ -741,7 +743,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     ],
     minusCount: 0,
     minusProblemsPerTemplate: 0,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     problemCountPerTemplate: [10, 10],
     repeat: 1,
   ),
@@ -753,7 +755,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     ],
     minusCount: 0,
     minusProblemsPerTemplate: 0,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     problemCountPerTemplate: [20],
     repeat: 1,
   ),
@@ -765,7 +767,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     ],
     minusCount: 0,
     minusProblemsPerTemplate: 0,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     problemCountPerTemplate: [20],
     repeat: 1,
   ),
@@ -778,7 +780,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     ],
     minusCount: 2,
     minusProblemsPerTemplate: 2,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     problemCountPerTemplate: [5],
     repeat: 4,
     neverNegative: true,
@@ -791,7 +793,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
     ],
     minusCount: 2,
     minusProblemsPerTemplate: 2,
-    levelInfo: .zs,
+    levelInfo: .zsa,
     problemCountPerTemplate: [5],
     repeat: 4,
     neverNegative: true,
@@ -1059,7 +1061,7 @@ enum ComplexMitoriLevel implements MitoriLevel {
       ],
     ],
     minusCount: 0,
-    levelInfo: .nsak7To1Mitori,
+    levelInfo: .nsak7Mitori,
     problemCountPerTemplate: [15, 15, 20],
     repeat: 1,
   ),
@@ -1219,7 +1221,8 @@ enum ComplexMitoriLevel implements MitoriLevel {
       )
       .toSet();
   @override
-  int get problemCount => problemCountPerTemplate.reduce((a, b) => a + b);
+  int get problemCount =>
+      problemCountPerTemplate.reduce((a, b) => a + b) * repeat;
   @override
   Set<int>? get houshouJippou => null;
   @override
@@ -1365,21 +1368,21 @@ enum LevelInfo {
     passThreshold: 0.5,
     pointsPerProblem: 10,
     denomination: .nisshou,
-    timeLimit: Duration(minutes: 10),
+    timeLimit: Duration(minutes: 12),
   ),
   nsak9Mitori(
     passThreshold: 0.6,
     pointsPerProblem: 10,
     denomination: .nisshou,
-    timeLimit: Duration(minutes: 10),
+    timeLimit: Duration(minutes: 12),
   ),
   nsak8Mitori(
     passThreshold: 0.7,
     pointsPerProblem: 10,
     denomination: .nisshou,
-    timeLimit: Duration(minutes: 10),
+    timeLimit: Duration(minutes: 12),
   ),
-  nsak7To1Mitori(
+  nsak7Mitori(
     passThreshold: 0.8,
     pointsPerProblem: 10,
     denomination: .nisshou,
@@ -1416,6 +1419,18 @@ enum LevelInfo {
     pointsPerProblem: 10,
     denomination: .zenshuren,
     timeLimit: Duration(minutes: 7),
+  ),
+  zsa(
+    passThreshold: 0.7,
+    pointsPerProblem: 5,
+    denomination: .zenshuren,
+    timeLimit: Duration(minutes: 3),
+  ),
+  zsak10to8(
+    passThreshold: 0.7,
+    pointsPerProblem: 10,
+    denomination: .zenshuren,
+    timeLimit: Duration(minutes: 3),
   ),
   zsdan(
     passThreshold: 0.33,
@@ -1481,7 +1496,7 @@ enum Kyuui {
   nsk10(
     mitoriSoroban: .nsk10,
     mitoriAnzan: ComplexMitoriLevel.nsak10,
-    multSoroban: null,
+    multSoroban: .nsmk10,
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
@@ -1797,9 +1812,9 @@ enum Kyuui {
 }
 
 enum SimpleMitoriLevel implements MitoriLevel {
-  zsak10(levelInfo: .zs),
-  zsak9(levelInfo: .zs),
-  zsak8(levelInfo: .zs);
+  zsak10(levelInfo: .zsak10to8),
+  zsak9(levelInfo: .zsak10to8),
+  zsak8(levelInfo: .zsak10to8);
 
   const SimpleMitoriLevel({required this.levelInfo});
   @override

@@ -121,7 +121,7 @@ class SimpleMitoriProblemSet extends MitoriProblemSet {
     Random rand = Random();
 
     switch (level) {
-      case .zsak10:
+      case .zsak10: //全珠連10級みとり暗算AとBの形式の違いが正直わからん。知っている人はissueかPRで教えてください！
         for (var i = 0; i < 5; i++) {
           List<int> numbers = noCarry(.zsk18, rand);
           MitoriProblem problem = MitoriProblem(numbers);
