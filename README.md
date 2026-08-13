@@ -1,16 +1,17 @@
-# flutter_application_1
+## そろくん！
 
-A new Flutter project.
+そろくん！は、そろばんや暗算を練習したい人向けにDart/Flutterで開発されたiOSアプリです。3つのモードを提供しています。
 
-## Getting Started
+# 総合種目
 
-This project is a starting point for a Flutter application.
+珠算の大会や検定で出題される基本種目——みとり算・かけ算・わり算と、それぞれの暗算種目——を、自分のレベルに合わせて出題します。解答はアプリ内で直接記入できます。練習モードでは、答えが合っているか間違っているか、その場ですぐに分かります。検定モードでは時間制限が設けられ、提出するまで成否を確認することはできません。出題は全珠連式・日珠連式それぞれの級位に対応しています。
 
-A few resources to get you started if this is your first Flutter project:
+# フラッシュ暗算
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+画面に次々と表示される数字を暗算でひたすら足していくトレーニングです。級位に沿って挑戦する検定モードと、口数・桁数・表示時間を自由に設定できるフリーモードの2種類を用意しています。検定モードは全珠連式・日本フラッシュ暗算協会式のそれぞれの級位に対応しています。
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# 読み上げ算
+
+読み上げられる数字を暗算で足し引きするトレーニングです。VOICEVOXの音声合成で問題を読み上げ、読み手のキャラクターも選択できます。フラッシュ暗算と同じく、検定モードとフリーモードの2つがあります。検定モードでは、全珠連式の読み上げ算の模擬検定に挑戦できます。フリーモードでは、口数・桁数の範囲・読み上げの速さを自由に決められるほか、足し算だけにするか、引き算も含めるかを選ぶこともできます。
+
+
