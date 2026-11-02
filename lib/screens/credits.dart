@@ -1,4 +1,4 @@
-// Modified by Vultaire on 2026-11-01.
+// Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
@@ -57,6 +57,9 @@ class CreditsPage extends StatelessWidget {
               l10n.englishTranslationDisclosure,
               style: textTheme.titleMedium,
             ),
+            const SizedBox(height: 24),
+            _CreditSection(title: l10n.gradeReferenceTitle, entries: const []),
+            Text(l10n.gradeReferenceDisclosure, style: textTheme.titleMedium),
             const SizedBox(height: 24),
             _CreditSection(
               title: l10n.fontCredits,

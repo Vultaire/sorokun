@@ -32,6 +32,16 @@ class AppLocalizationsJa extends AppLocalizations {
       '英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。';
 
   @override
+  String get gradeReferenceTitle => '級位・段位の表示について';
+
+  @override
+  String get gradeReferenceDisclosure =>
+      '本フォークのそろくん！は独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携関係はなく、各団体から公認・推奨を受けたものでもありません。アプリ内の級位・段位等は練習用の目安であり、各団体の最新の基準や検定要件と異なる場合があります。最新の要件は各団体にご確認ください。';
+
+  @override
+  String get close => '閉じる';
+
+  @override
   String get keypadPosition => 'テンキーの配置';
 
   @override

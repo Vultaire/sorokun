@@ -1,6 +1,6 @@
 > **Machine-generated translation notice:** This file is an English translation of the original Japanese [`README.md`](README.md). If the two versions differ, the Japanese README is authoritative.
 >
-> **Modified fork notice — 2026-11-01; Japanese/English localization update — 2026-11-02:** This is a modified version of Sorokun maintained by Vultaire at <https://github.com/Vultaire/sorokun>. The original project is by Chet Lin. This fork removes yomiagezan (spoken arithmetic) and VOICEVOX and adds web-build support and Japanese/English localization. It remains licensed under GNU GPL v3.0; see `LICENSE.txt`.
+> **Modified fork notice — 2026-11-02; Japanese/English localization update — 2026-11-02:** This is a modified version of Sorokun maintained by Vultaire at <https://github.com/Vultaire/sorokun>. The original project is by Chet Lin. This fork removes yomiagezan (spoken arithmetic) and VOICEVOX and adds web-build support and Japanese/English localization. It remains licensed under GNU GPL v3.0; see `LICENSE.txt`.
 
 ## Sorokun!
 
@@ -13,6 +13,10 @@ Changes introduced in this fork—including the removal of yomiagezan and VOICEV
 ## Languages and translation
 
 Choose 日本語 or English in Settings. On first launch, if there is no saved choice, the app uses Japanese only when the first preferred device/browser locale has language code `ja`; otherwise it uses English. The English interface was prepared with LLM assistance; Japanese is the original text. Please report corrections or suggestions in this fork's [GitHub repository](https://github.com/Vultaire/sorokun). The Credits page includes the same disclosure.
+
+## Unofficial grade references
+
+This fork of Sorokun! is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it has no affiliation with or endorsement from these organizations. Grade and level labels are provided for practice and may differ from their current official standards or examination requirements. Please confirm current requirements with the relevant organization.
 
 ## Comprehensive subjects
 

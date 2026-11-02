@@ -32,6 +32,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'English interface translations were prepared with LLM assistance; Japanese is the original text. Corrections are welcome.';
 
   @override
+  String get gradeReferenceTitle => 'About grade references';
+
+  @override
+  String get gradeReferenceDisclosure =>
+      'This fork of Sorokun! is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it has no affiliation with or endorsement from these organizations. Grade and level labels are provided for practice and may differ from their current official standards or examination requirements. Please confirm current requirements with the relevant organization.';
+
+  @override
+  String get close => 'Close';
+
+  @override
   String get keypadPosition => 'Keypad position';
 
   @override

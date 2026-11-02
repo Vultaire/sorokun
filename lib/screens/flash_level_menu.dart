@@ -7,6 +7,7 @@ import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
+import 'package:soroban_app/screens/components/grade_reference_info_button.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/organization_option.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
@@ -113,7 +114,11 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: CustomAppBar(title: l10n.flashExamTitle, context: context),
+      appBar: CustomAppBar(
+        title: l10n.flashExamTitle,
+        context: context,
+        actionWidget: const GradeReferenceInfoButton(),
+      ),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,

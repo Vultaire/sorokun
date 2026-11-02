@@ -6,6 +6,15 @@
   "japaneseLanguage": "日本語",
   "englishLanguage": "English",
   "englishTranslationDisclosure": "English interface translations were prepared with LLM assistance; Japanese is the original text. Corrections are welcome.",
+  "gradeReferenceTitle": "About grade references",
+  "@gradeReferenceTitle": {
+    "description": "Heading and accessible tooltip for the independent-practice grade disclaimer."
+  },
+  "gradeReferenceDisclosure": "This fork of Sorokun! is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it has no affiliation with or endorsement from these organizations. Grade and level labels are provided for practice and may differ from their current official standards or examination requirements. Please confirm current requirements with the relevant organization.",
+  "@gradeReferenceDisclosure": {
+    "description": "Clarify that this fork is independent and unofficial, and that its grade and level labels may not match current organizational standards."
+  },
+  "close": "Close",
   "keypadPosition": "Keypad position",
   "leftHanded": "Left-handed",
   "rightHanded": "Right-handed",
