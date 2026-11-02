@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:math';
 
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -36,6 +38,37 @@ class ColorSchemeSettingsPage extends StatelessWidget {
         builder: (context, _) {
           final isPortrait =
               MediaQuery.orientationOf(context) == Orientation.portrait;
+
+          final languageGroup = Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('言語 / Language', style: textTheme.headlineLarge),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
+                ),
+                child: LabeledSlidingSegmentedControl<AppLanguage>(
+                  groupValue: controller.language,
+                  options: const [
+                    (AppLanguage.japanese, '日本語'),
+                    (AppLanguage.english, 'English'),
+                  ],
+                  onValueChanged: controller.setLanguage,
+                ),
+              ),
+              if (controller.language == AppLanguage.english)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    '英語翻訳はまだ利用できません。 / '
+                    'English translation is not available yet.',
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyMedium,
+                  ),
+                ),
+            ],
+          );
 
           final keypadGroup = Column(
             children: [
@@ -97,24 +130,46 @@ class ColorSchemeSettingsPage extends StatelessWidget {
             ],
           );
 
-          return Center(
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Flex(
-                  direction: isPortrait ? Axis.vertical : Axis.horizontal,
+          return SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final useVerticalLayout =
+                    isPortrait || constraints.maxWidth < 760;
+                final settingsGroups = Flex(
+                  direction: useVerticalLayout
+                      ? Axis.vertical
+                      : Axis.horizontal,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     appearanceGroup,
                     SizedBox(
-                      width: isPortrait ? 0 : 40,
-                      height: isPortrait ? 24 : 0,
+                      width: useVerticalLayout ? 0 : 40,
+                      height: useVerticalLayout ? 24 : 0,
                     ),
                     keypadGroup,
                   ],
-                ),
-              ),
+                );
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1100),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          languageGroup,
+                          const SizedBox(height: 24),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: settingsGroups,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },
@@ -352,6 +407,8 @@ class _KeypadOption extends StatelessWidget {
   }
 }
 
+enum AppLanguage { japanese, english }
+
 enum KeypadNumberOrder { standard, telephone }
 
 enum Handedness { right, left }
@@ -371,6 +428,7 @@ class AppController extends ChangeNotifier {
 
   static const _schemeKey = 'theme_flex_scheme';
   static const _themeModeKey = 'theme_mode';
+  static const _languageKey = 'ui_language';
   static const _numberOrderKey = 'keypad_number_order';
   static const _handednessKey = 'handedness';
 
@@ -379,6 +437,11 @@ class AppController extends ChangeNotifier {
 
   ThemeMode _themeMode = ThemeMode.system;
   ThemeMode get themeMode => _themeMode;
+
+  // Prototype preference only; other app strings remain Japanese until full
+  // localization is added in a later change.
+  AppLanguage _language = AppLanguage.japanese;
+  AppLanguage get language => _language;
 
   KeypadNumberOrder _numberOrder = KeypadNumberOrder.standard;
   KeypadNumberOrder get numberOrder => _numberOrder;
@@ -408,6 +471,14 @@ class AppController extends ChangeNotifier {
       _themeMode = ThemeMode.values.firstWhere(
         (e) => e.name == storedThemeMode,
         orElse: () => ThemeMode.dark,
+      );
+    }
+
+    final storedLanguage = prefs.getString(_languageKey);
+    if (storedLanguage != null) {
+      _language = AppLanguage.values.firstWhere(
+        (e) => e.name == storedLanguage,
+        orElse: () => AppLanguage.japanese,
       );
     }
 
@@ -446,6 +517,14 @@ class AppController extends ChangeNotifier {
     SharedPreferences.getInstance().then(
       (prefs) => prefs.setString(_themeModeKey, mode.name),
     );
+  }
+
+  Future<void> setLanguage(AppLanguage language) async {
+    if (_language == language) return;
+    _language = language;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_languageKey, language.name);
   }
 
   Future<void> setNumberOrder(KeypadNumberOrder order) async {
