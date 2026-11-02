@@ -212,7 +212,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           KyuuiDenomination.zs,
                           organizationOption(
                             context,
-                            name: l10n.organizationZenshuren,
+                            name: l10n.selectorZenshuren,
                             gloss: l10n.sorobanOrganizationGloss,
                           ),
                         ),
@@ -220,7 +220,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           KyuuiDenomination.ns,
                           organizationOption(
                             context,
-                            name: l10n.organizationNisshuren,
+                            name: l10n.selectorNisshuren,
                             gloss: l10n.sorobanOrganizationGloss,
                           ),
                         ),
@@ -588,7 +588,8 @@ class PaperInfoDialog extends StatelessWidget {
           Text(l10n.methodDigits(l10n.jippou, _rangeOrSingle(jippou!))),
         if (houshou != null)
           Text(l10n.methodDigits(l10n.houshou, _rangeOrSingle(houshou!))),
-        if (selectedLevel is MitoriLevel) Text(l10n.mitorizanExplanation),
+        if (selectedLevel is MitoriLevel && l10n.localeName == 'en')
+          Text(l10n.mitorizanExplanation),
       ],
     );
   }

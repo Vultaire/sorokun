@@ -3,13 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
 
-Widget organizationOption(
+dynamic organizationOption(
   BuildContext context, {
   required String name,
   required String gloss,
 }) {
-  final textTheme = Theme.of(context).textTheme;
   final l10n = AppLocalizations.of(context);
+  if (Localizations.localeOf(context).languageCode == 'ja') return name;
+
+  final textTheme = Theme.of(context).textTheme;
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [

@@ -207,7 +207,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeFlashLine1.
   ///
   /// In ja, this message translates to:
-  /// **'フラッシュ'**
+  /// **'ﾌﾗｯｼｭ'**
   String get homeFlashLine1;
 
   /// No description provided for @homeFlashLine2.
@@ -249,7 +249,7 @@ abstract class AppLocalizations {
   /// No description provided for @originalSourceIntro.
   ///
   /// In ja, this message translates to:
-  /// **'オリジナル Sorokun のソースコード：'**
+  /// **'元のそろくんのソースコードはこちらで公開されています：'**
   String get originalSourceIntro;
 
   /// No description provided for @forkSourceIntro.
@@ -267,13 +267,13 @@ abstract class AppLocalizations {
   /// No description provided for @forkDevelopmentDisclosure.
   ///
   /// In ja, this message translates to:
-  /// **'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。'**
+  /// **'Changes in this fork were made through agentic development using an LLM, under Vultaire\'s direction.'**
   String get forkDevelopmentDisclosure;
 
   /// No description provided for @localizationUpdateNotice.
   ///
   /// In ja, this message translates to:
-  /// **'日本語・English インターフェースのローカライズを2026-11-02に追加しました。'**
+  /// **'Japanese/English interface localization was added on 2026-11-02.'**
   String get localizationUpdateNotice;
 
   /// No description provided for @fontCredits.
@@ -348,23 +348,41 @@ abstract class AppLocalizations {
   /// **'総合種目'**
   String get combinedSubjectsTitle;
 
-  /// Romanized proper name for the Japanese grade-system organization; do not invent an official English name.
+  /// Use the original Japanese organization name in Japanese; use its romanized name in English, without claiming an official English title.
   ///
   /// In ja, this message translates to:
-  /// **'Zenshuren'**
+  /// **'全国珠算教育連盟'**
   String get organizationZenshuren;
 
-  /// Romanized proper name for the Japanese grade-system organization; do not invent an official English name.
+  /// Use the original Japanese organization name in Japanese; use its romanized name in English, without claiming an official English title.
   ///
   /// In ja, this message translates to:
-  /// **'Nisshuren'**
+  /// **'日本珠算連盟'**
   String get organizationNisshuren;
 
-  /// Use this romanized name as a descriptive label, not as a verified official English title.
+  /// Use the original Japanese organization name in Japanese; use this romanized descriptive label in English, not as a verified official English title.
   ///
   /// In ja, this message translates to:
-  /// **'Japan Flash Anzan Association'**
+  /// **'日本ﾌﾗｯｼｭ暗算協会'**
   String get organizationFlashAnzan;
+
+  /// No description provided for @selectorZenshuren.
+  ///
+  /// In ja, this message translates to:
+  /// **'全珠連'**
+  String get selectorZenshuren;
+
+  /// No description provided for @selectorNisshuren.
+  ///
+  /// In ja, this message translates to:
+  /// **'日珠連'**
+  String get selectorNisshuren;
+
+  /// No description provided for @selectorFlashAnzan.
+  ///
+  /// In ja, this message translates to:
+  /// **'協会'**
+  String get selectorFlashAnzan;
 
   /// Descriptive, non-official gloss for the selector: this organization is associated with a soroban grade system.
   ///
@@ -585,7 +603,7 @@ abstract class AppLocalizations {
   /// Points awarded per problem and maximum possible score.
   ///
   /// In ja, this message translates to:
-  /// **'各{points}点（{maximum}点満点）'**
+  /// **'各{points}点 ({maximum}点満点)'**
   String pointsEach(int points, int maximum);
 
   /// Minimum passing score.
@@ -813,7 +831,7 @@ abstract class AppLocalizations {
   /// No description provided for @unknownLevelType.
   ///
   /// In ja, this message translates to:
-  /// **'不明なレベル形式'**
+  /// **'Unknown level type'**
   String get unknownLevelType;
 
   /// No description provided for @timeUp.
@@ -831,13 +849,13 @@ abstract class AppLocalizations {
   /// No description provided for @roundingDecimalNotice.
   ///
   /// In ja, this message translates to:
-  /// **'（注意）小数第3位未満を四捨五入します。'**
+  /// **'（注意） 小数第3位未満四捨五入。'**
   String get roundingDecimalNotice;
 
   /// No description provided for @roundingIntegerNotice.
   ///
   /// In ja, this message translates to:
-  /// **'（注意）整数位未満を四捨五入します。'**
+  /// **'（注意） 整数位未満四捨五入。'**
   String get roundingIntegerNotice;
 
   /// No description provided for @backspaceSemantics.

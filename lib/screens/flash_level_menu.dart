@@ -153,7 +153,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           KyuuiDenomination.zsFlash,
                           organizationOption(
                             context,
-                            name: l10n.organizationZenshuren,
+                            name: l10n.selectorZenshuren,
                             gloss: l10n.sorobanOrganizationGloss,
                           ),
                         ),
@@ -161,7 +161,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           KyuuiDenomination.kkFlash,
                           organizationOption(
                             context,
-                            name: l10n.organizationFlashAnzan,
+                            name: l10n.selectorFlashAnzan,
                             gloss: l10n.flashAnzanOrganizationGloss,
                           ),
                         ),

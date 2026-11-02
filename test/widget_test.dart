@@ -8,6 +8,7 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/screens/home_page.dart';
 import 'package:soroban_app/screens/settings.dart';
+import 'package:soroban_app/screens/credits.dart';
 
 Widget _localizedApp(AppController controller, Widget home) {
   return AnimatedBuilder(
@@ -100,6 +101,25 @@ void main() {
     controller.dispose();
   });
 
+  testWidgets('Credits retain the original Japanese copy', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ja'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: const CreditsPage(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('元のそろくんのソースコードはこちらで公開されています：'), findsOneWidget);
+    expect(find.text('このフォークのソースコード：'), findsOneWidget);
+    expect(find.textContaining('2026-11-02'), findsNothing);
+    expect(find.textContaining('LLM'), findsNothing);
+  });
+
   testWidgets('settings switches locale immediately and persists the choice', (
     WidgetTester tester,
   ) async {
@@ -166,6 +186,13 @@ void main() {
                 Text(Kyuui.zsd1.localizedLabel(l10n)),
                 Text(Denomination.zenshuren.localizedName(l10n)),
                 Text(RankLabel.preShodan.localizedName(l10n)),
+                Text(l10n.homeFlashLine1),
+                Text(l10n.originalSourceIntro),
+                Text(l10n.selectorZenshuren),
+                Text(l10n.organizationZenshuren),
+                Text(l10n.pointsEach(10, 100)),
+                Text(l10n.roundingDecimalNotice),
+                Text(l10n.roundingIntegerNotice),
                 Text(l10n.problemCount(1)),
                 Text(l10n.problemCount(2)),
                 Text(l10n.timeLimit(1)),
@@ -191,6 +218,13 @@ void main() {
         '1 dan',
         'Zenshuren',
         'Pre-1 dan',
+        'Flash',
+        'Original Sorokun source code:',
+        'Zenshuren',
+        'Zenshuren',
+        '10 points each (max 100 points)',
+        'Note: Round to the nearest hundredth.',
+        'Note: Round to the nearest whole number.',
         '1 problem',
         '2 problems',
         'Time limit: 1 minute',
@@ -210,8 +244,15 @@ void main() {
         '10級',
         '準3級',
         '初段',
-        'Zenshuren',
+        '全国珠算教育連盟',
         '準初段',
+        'ﾌﾗｯｼｭ',
+        '元のそろくんのソースコードはこちらで公開されています：',
+        '全珠連',
+        '全国珠算教育連盟',
+        '各10点 (100点満点)',
+        '（注意） 小数第3位未満四捨五入。',
+        '（注意） 整数位未満四捨五入。',
         '問題数：1題',
         '問題数：2題',
         '制限時間：1分',

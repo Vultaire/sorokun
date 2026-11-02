@@ -53,6 +53,9 @@
   "@organizationFlashAnzan": {
     "description": "Use this romanized name as a descriptive label, not as a verified official English title."
   },
+  "selectorZenshuren": "Zenshuren",
+  "selectorNisshuren": "Nisshuren",
+  "selectorFlashAnzan": "Japan Flash Anzan Association",
   "sorobanOrganizationGloss": "soroban grade system",
   "@sorobanOrganizationGloss": {
     "description": "Descriptive, non-official gloss for the selector: this organization is associated with a soroban grade system."

@@ -150,6 +150,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get organizationFlashAnzan => 'Japan Flash Anzan Association';
 
   @override
+  String get selectorZenshuren => 'Zenshuren';
+
+  @override
+  String get selectorNisshuren => 'Nisshuren';
+
+  @override
+  String get selectorFlashAnzan => 'Japan Flash Anzan Association';
+
+  @override
   String get sorobanOrganizationGloss => 'soroban grade system';
 
   @override

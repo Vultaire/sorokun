@@ -65,7 +65,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeSelectSubject => '種目を選ぶ';
 
   @override
-  String get homeFlashLine1 => 'フラッシュ';
+  String get homeFlashLine1 => 'ﾌﾗｯｼｭ';
 
   @override
   String get homeFlashLine2 => '暗算';
@@ -86,7 +86,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get developerRole => '開発者';
 
   @override
-  String get originalSourceIntro => 'オリジナル Sorokun のソースコード：';
+  String get originalSourceIntro => '元のそろくんのソースコードはこちらで公開されています：';
 
   @override
   String get forkSourceIntro => 'このフォークのソースコード：';
@@ -97,11 +97,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get forkDevelopmentDisclosure =>
-      'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。';
+      'Changes in this fork were made through agentic development using an LLM, under Vultaire\'s direction.';
 
   @override
   String get localizationUpdateNotice =>
-      '日本語・English インターフェースのローカライズを2026-11-02に追加しました。';
+      'Japanese/English interface localization was added on 2026-11-02.';
 
   @override
   String get fontCredits => 'フォント';
@@ -141,13 +141,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get combinedSubjectsTitle => '総合種目';
 
   @override
-  String get organizationZenshuren => 'Zenshuren';
+  String get organizationZenshuren => '全国珠算教育連盟';
 
   @override
-  String get organizationNisshuren => 'Nisshuren';
+  String get organizationNisshuren => '日本珠算連盟';
 
   @override
-  String get organizationFlashAnzan => 'Japan Flash Anzan Association';
+  String get organizationFlashAnzan => '日本ﾌﾗｯｼｭ暗算協会';
+
+  @override
+  String get selectorZenshuren => '全珠連';
+
+  @override
+  String get selectorNisshuren => '日珠連';
+
+  @override
+  String get selectorFlashAnzan => '協会';
 
   @override
   String get sorobanOrganizationGloss => '珠算の級位制度';
@@ -291,7 +300,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String pointsEach(int points, int maximum) {
-    return '各$points点（$maximum点満点）';
+    return '各$points点 ($maximum点満点)';
   }
 
   @override
@@ -435,7 +444,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get failed => '不合格';
 
   @override
-  String get unknownLevelType => '不明なレベル形式';
+  String get unknownLevelType => 'Unknown level type';
 
   @override
   String get timeUp => '時間切れ！';
@@ -444,10 +453,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get practiceComplete => '終了！';
 
   @override
-  String get roundingDecimalNotice => '（注意）小数第3位未満を四捨五入します。';
+  String get roundingDecimalNotice => '（注意） 小数第3位未満四捨五入。';
 
   @override
-  String get roundingIntegerNotice => '（注意）整数位未満を四捨五入します。';
+  String get roundingIntegerNotice => '（注意） 整数位未満四捨五入。';
 
   @override
   String get backspaceSemantics => '末尾の数字を削除（長押しですべて消去）';
