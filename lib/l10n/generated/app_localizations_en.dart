@@ -160,7 +160,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zenshurenOrganizationSubtitle =>
-      'The League for\nSoroban Education\nof Japan, Inc.';
+      'The League for Soroban\nEducation of Japan';
 
   @override
   String get nisshurenOrganizationSubtitle =>

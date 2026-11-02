@@ -333,7 +333,7 @@ void main() {
 
     expect(find.text('Zenshuren'), findsOneWidget);
     expect(
-      find.text('(The League for\nSoroban Education\nof Japan, Inc.)'),
+      find.text('(The League for Soroban\nEducation of Japan)'),
       findsOneWidget,
     );
     expect(find.text('Nisshuren'), findsOneWidget);

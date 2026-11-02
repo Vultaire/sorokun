@@ -56,9 +56,9 @@
   "selectorZenshuren": "Zenshuren",
   "selectorNisshuren": "Nisshuren",
   "selectorFlashAnzan": "Japan Flash Anzan Association",
-  "zenshurenOrganizationSubtitle": "The League for\nSoroban Education\nof Japan, Inc.",
+  "zenshurenOrganizationSubtitle": "The League for Soroban\nEducation of Japan",
   "@zenshurenOrganizationSubtitle": {
-    "description": "Official English name shown in the footer of https://www.soroban.or.jp/. Display below the primary label Zenshuren; the line break is for compact layout."
+    "description": "Based on the official English name shown in the footer of https://www.soroban.or.jp/; omit ', Inc.' for brevity. Display below the primary label Zenshuren; the line break is for compact layout."
   },
   "nisshurenOrganizationSubtitle": "The League of Japan\nAbacus Associations",
   "@nisshurenOrganizationSubtitle": {
