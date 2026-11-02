@@ -1,4 +1,4 @@
-// Modified by Vultaire on 2026-11-01.
+// Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -207,13 +207,15 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           });
                         },
                       );
+                      final isJapanese =
+                          Localizations.localeOf(context).languageCode == 'ja';
                       final localizedDenominationOptions = [
                         (
                           KyuuiDenomination.zs,
                           organizationOption(
                             context,
                             name: l10n.selectorZenshuren,
-                            gloss: l10n.sorobanOrganizationGloss,
+                            subtitle: l10n.zenshurenOrganizationSubtitle,
                           ),
                         ),
                         (
@@ -221,7 +223,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           organizationOption(
                             context,
                             name: l10n.selectorNisshuren,
-                            gloss: l10n.sorobanOrganizationGloss,
+                            subtitle: l10n.nisshurenOrganizationSubtitle,
                           ),
                         ),
                       ];
@@ -230,6 +232,8 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           LabeledSlidingSegmentedControl<KyuuiDenomination>(
                             groupValue: _kyuuiDenomination,
                             options: localizedDenominationOptions,
+                            horizontalPadding: isJapanese ? 16 : 8,
+                            verticalPadding: isJapanese ? 16 : 8,
                             onValueChanged: (value) {
                               setState(() {
                                 _kyuuiDenomination = value;
@@ -255,12 +259,14 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                         },
                       );
 
+                      final selectorHeight = isJapanese ? 64.0 : 88.0;
+
                       return isPortrait
                           ? Column(
                               crossAxisAlignment: .stretch,
                               children: [
                                 SizedBox(
-                                  height: 64,
+                                  height: selectorHeight,
                                   child: Center(child: denominationSelector),
                                 ),
                                 SizedBox(height: 80, child: selectorStack),

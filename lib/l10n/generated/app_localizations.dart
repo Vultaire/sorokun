@@ -384,23 +384,23 @@ abstract class AppLocalizations {
   /// **'協会'**
   String get selectorFlashAnzan;
 
-  /// Descriptive, non-official gloss for the selector: this organization is associated with a soroban grade system.
+  /// Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle.
   ///
   /// In ja, this message translates to:
-  /// **'珠算の級位制度'**
-  String get sorobanOrganizationGloss;
+  /// **'全国珠算教育連盟'**
+  String get zenshurenOrganizationSubtitle;
 
-  /// Descriptive, non-official gloss for the organization responsible for these Flash Anzan grade labels.
+  /// Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle.
   ///
   /// In ja, this message translates to:
-  /// **'フラッシュ暗算の級位制度'**
-  String get flashAnzanOrganizationGloss;
+  /// **'日本珠算連盟'**
+  String get nisshurenOrganizationSubtitle;
 
-  /// A compact parenthesized descriptive gloss displayed below a romanized organization name.
+  /// Format an organization subtitle in parentheses beneath its primary selector label.
   ///
   /// In ja, this message translates to:
-  /// **'（{gloss}）'**
-  String organizationGlossLine(String gloss);
+  /// **'（{subtitle}）'**
+  String organizationSubtitleLine(String subtitle);
 
   /// Standard kyu grade label.
   ///

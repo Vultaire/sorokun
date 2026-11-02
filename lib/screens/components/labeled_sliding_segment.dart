@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-02.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,11 +9,15 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
     required this.groupValue,
     required this.options,
     required this.onValueChanged,
+    this.horizontalPadding = 16,
+    this.verticalPadding = 16,
   });
 
   final T groupValue;
   final List<(T value, dynamic label)> options;
   final ValueChanged<T> onValueChanged;
+  final double horizontalPadding;
+  final double verticalPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +32,10 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
       children: {
         for (final option in options)
           option.$1: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: verticalPadding,
+            ),
             child: _buildLabelWidget(
               label: option.$2,
               isSelected: option.$1 == groupValue,

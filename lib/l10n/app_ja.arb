@@ -56,18 +56,18 @@
   "selectorZenshuren": "全珠連",
   "selectorNisshuren": "日珠連",
   "selectorFlashAnzan": "協会",
-  "sorobanOrganizationGloss": "珠算の級位制度",
-  "@sorobanOrganizationGloss": {
-    "description": "Descriptive, non-official gloss for the selector: this organization is associated with a soroban grade system."
+  "zenshurenOrganizationSubtitle": "全国珠算教育連盟",
+  "@zenshurenOrganizationSubtitle": {
+    "description": "Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle."
   },
-  "flashAnzanOrganizationGloss": "フラッシュ暗算の級位制度",
-  "@flashAnzanOrganizationGloss": {
-    "description": "Descriptive, non-official gloss for the organization responsible for these Flash Anzan grade labels."
+  "nisshurenOrganizationSubtitle": "日本珠算連盟",
+  "@nisshurenOrganizationSubtitle": {
+    "description": "Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle."
   },
-  "organizationGlossLine": "（{gloss}）",
-  "@organizationGlossLine": {
-    "description": "A compact parenthesized descriptive gloss displayed below a romanized organization name.",
-    "placeholders": { "gloss": { "type": "String" } }
+  "organizationSubtitleLine": "（{subtitle}）",
+  "@organizationSubtitleLine": {
+    "description": "Format an organization subtitle in parentheses beneath its primary selector label.",
+    "placeholders": { "subtitle": { "type": "String" } }
   },
   "kyuGrade": "{grade, plural, other{{grade}級}}",
   "@kyuGrade": {

@@ -1,4 +1,4 @@
-// Modified by Vultaire on 2026-11-01.
+// Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -148,13 +148,15 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                         },
                       );
 
+                      final isJapanese =
+                          Localizations.localeOf(context).languageCode == 'ja';
                       final denominationOptions = [
                         (
                           KyuuiDenomination.zsFlash,
                           organizationOption(
                             context,
                             name: l10n.selectorZenshuren,
-                            gloss: l10n.sorobanOrganizationGloss,
+                            subtitle: l10n.zenshurenOrganizationSubtitle,
                           ),
                         ),
                         (
@@ -162,7 +164,6 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           organizationOption(
                             context,
                             name: l10n.selectorFlashAnzan,
-                            gloss: l10n.flashAnzanOrganizationGloss,
                           ),
                         ),
                       ];
@@ -171,6 +172,8 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           LabeledSlidingSegmentedControl<KyuuiDenomination>(
                             groupValue: _kyuuiDenomination,
                             options: denominationOptions,
+                            horizontalPadding: isJapanese ? 16 : 8,
+                            verticalPadding: isJapanese ? 16 : 8,
                             onValueChanged: (value) {
                               setState(() {
                                 _kyuuiDenomination = value;

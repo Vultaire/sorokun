@@ -159,14 +159,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectorFlashAnzan => 'Japan Flash Anzan Association';
 
   @override
-  String get sorobanOrganizationGloss => 'soroban grade system';
+  String get zenshurenOrganizationSubtitle =>
+      'The League for\nSoroban Education\nof Japan, Inc.';
 
   @override
-  String get flashAnzanOrganizationGloss => 'Flash Anzan grades';
+  String get nisshurenOrganizationSubtitle =>
+      'The League of Japan\nAbacus Associations';
 
   @override
-  String organizationGlossLine(String gloss) {
-    return '($gloss)';
+  String organizationSubtitleLine(String subtitle) {
+    return '($subtitle)';
   }
 
   @override

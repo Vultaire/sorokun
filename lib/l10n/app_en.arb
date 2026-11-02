@@ -43,11 +43,11 @@
   "combinedSubjectsTitle": "Combined practice",
   "organizationZenshuren": "Zenshuren",
   "@organizationZenshuren": {
-    "description": "Romanized proper name for the Japanese grade-system organization; do not invent an official English name."
+    "description": "Romanized proper name retained as the primary English label; the organization's English name is shown separately as a subtitle."
   },
   "organizationNisshuren": "Nisshuren",
   "@organizationNisshuren": {
-    "description": "Romanized proper name for the Japanese grade-system organization; do not invent an official English name."
+    "description": "Romanized proper name retained as the primary English label; the organization's English name is shown separately as a subtitle."
   },
   "organizationFlashAnzan": "Japan Flash Anzan Association",
   "@organizationFlashAnzan": {
@@ -56,18 +56,18 @@
   "selectorZenshuren": "Zenshuren",
   "selectorNisshuren": "Nisshuren",
   "selectorFlashAnzan": "Japan Flash Anzan Association",
-  "sorobanOrganizationGloss": "soroban grade system",
-  "@sorobanOrganizationGloss": {
-    "description": "Descriptive, non-official gloss for the selector: this organization is associated with a soroban grade system."
+  "zenshurenOrganizationSubtitle": "The League for\nSoroban Education\nof Japan, Inc.",
+  "@zenshurenOrganizationSubtitle": {
+    "description": "Official English name shown in the footer of https://www.soroban.or.jp/. Display below the primary label Zenshuren; the line break is for compact layout."
   },
-  "flashAnzanOrganizationGloss": "Flash Anzan grades",
-  "@flashAnzanOrganizationGloss": {
-    "description": "Descriptive, non-official gloss for the organization responsible for these Flash Anzan grade labels."
+  "nisshurenOrganizationSubtitle": "The League of Japan\nAbacus Associations",
+  "@nisshurenOrganizationSubtitle": {
+    "description": "Official English name shown in the footer of https://www.shuzan.jp/. Display below the primary label Nisshuren; the line break is for compact layout."
   },
-  "organizationGlossLine": "({gloss})",
-  "@organizationGlossLine": {
-    "description": "A compact parenthesized descriptive gloss displayed below a romanized organization name.",
-    "placeholders": { "gloss": { "type": "String" } }
+  "organizationSubtitleLine": "({subtitle})",
+  "@organizationSubtitleLine": {
+    "description": "Format an organization subtitle in parentheses beneath its primary selector label.",
+    "placeholders": { "subtitle": { "type": "String" } }
   },
   "kyuGrade": "{grade, plural, =1{{grade} kyu} other{{grade} kyu}}",
   "@kyuGrade": {

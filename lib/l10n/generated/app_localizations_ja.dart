@@ -159,14 +159,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectorFlashAnzan => '協会';
 
   @override
-  String get sorobanOrganizationGloss => '珠算の級位制度';
+  String get zenshurenOrganizationSubtitle => '全国珠算教育連盟';
 
   @override
-  String get flashAnzanOrganizationGloss => 'フラッシュ暗算の級位制度';
+  String get nisshurenOrganizationSubtitle => '日本珠算連盟';
 
   @override
-  String organizationGlossLine(String gloss) {
-    return '（$gloss）';
+  String organizationSubtitleLine(String subtitle) {
+    return '（$subtitle）';
   }
 
   @override

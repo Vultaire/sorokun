@@ -9,6 +9,7 @@ import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/screens/home_page.dart';
 import 'package:soroban_app/screens/settings.dart';
 import 'package:soroban_app/screens/credits.dart';
+import 'package:soroban_app/screens/components/organization_option.dart';
 
 Widget _localizedApp(AppController controller, Widget home) {
   return AnimatedBuilder(
@@ -127,9 +128,7 @@ void main() {
     expect(find.text('元のそろくんのソースコードはこちらで公開されています：'), findsOneWidget);
     expect(find.text('このフォークのソースコード：'), findsOneWidget);
     expect(
-      find.text(
-        'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。',
-      ),
+      find.text('このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。'),
       findsOneWidget,
     );
     expect(
@@ -137,9 +136,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.text(
-        '英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。',
-      ),
+      find.text('英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。'),
       findsOneWidget,
     );
   });
@@ -290,5 +287,70 @@ void main() {
         '2口',
       ],
     );
+  });
+
+  testWidgets('organization selectors show official English subtitles only', (
+    WidgetTester tester,
+  ) async {
+    Widget organizationSamples(Locale locale) => MaterialApp(
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: Builder(
+        builder: (context) {
+          final l10n = AppLocalizations.of(context);
+          Widget asWidget(dynamic option) =>
+              option is Widget ? option : Text(option.toString());
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              asWidget(
+                organizationOption(
+                  context,
+                  name: l10n.selectorZenshuren,
+                  subtitle: l10n.zenshurenOrganizationSubtitle,
+                ),
+              ),
+              asWidget(
+                organizationOption(
+                  context,
+                  name: l10n.selectorNisshuren,
+                  subtitle: l10n.nisshurenOrganizationSubtitle,
+                ),
+              ),
+              asWidget(
+                organizationOption(context, name: l10n.selectorFlashAnzan),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    await tester.pumpWidget(organizationSamples(const Locale('en')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Zenshuren'), findsOneWidget);
+    expect(
+      find.text('(The League for\nSoroban Education\nof Japan, Inc.)'),
+      findsOneWidget,
+    );
+    expect(find.text('Nisshuren'), findsOneWidget);
+    expect(
+      find.text('(The League of Japan\nAbacus Associations)'),
+      findsOneWidget,
+    );
+    expect(find.text('Japan Flash Anzan Association'), findsOneWidget);
+    expect(find.text('(Flash Anzan grades)'), findsNothing);
+
+    await tester.pumpWidget(organizationSamples(const Locale('ja')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('全珠連'), findsOneWidget);
+    expect(find.text('日珠連'), findsOneWidget);
+    expect(find.text('協会'), findsOneWidget);
+    expect(find.text('（全国珠算教育連盟）'), findsNothing);
+    expect(find.text('（日本珠算連盟）'), findsNothing);
   });
 }
