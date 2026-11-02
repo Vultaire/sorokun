@@ -6,6 +6,10 @@
 
 Sorokun! is a Dart/Flutter app for practicing soroban and mental arithmetic. It provides two modes: comprehensive subjects and flash mental arithmetic.
 
+## Development transparency
+
+Changes introduced in this fork—including the removal of yomiagezan and VOICEVOX, web support, and related documentation—were carried out through agentic development using a large language model (LLM), under Vultaire's direction. This disclosure applies only to this fork's modifications, not to the original upstream code.
+
 ## Comprehensive subjects
 
 Practice core soroban competition and examination subjects—mitori-zan, multiplication, division, and their corresponding mental-arithmetic exercises—at a level suited to you. Answers are entered directly in the app. In practice mode, you see immediately whether an answer is correct. In examination mode, there is a time limit and results are hidden until you submit. Problems follow the grade systems of Zenshuren and Nisshuren.
