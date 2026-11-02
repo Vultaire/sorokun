@@ -119,8 +119,11 @@ void main() {
       ),
     );
 
-    expect(find.text('ようこそ、そろくん！'), findsOneWidget);
-    expect(find.text('Welcome to Sorokun!'), findsOneWidget);
+    expect(find.text('そろくん！のフォークをお試しいただき、ありがとうございます。'), findsOneWidget);
+    expect(
+      find.text('Thank you for trying my fork of Sorokun!'),
+      findsOneWidget,
+    );
     expect(
       tester.getTopLeft(find.text('日本語')).dy,
       lessThan(tester.getTopLeft(find.text('English')).dy),
@@ -149,7 +152,10 @@ void main() {
     await tester.pumpWidget(app.AbacusApp(appController: controller));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome to Sorokun!'), findsOneWidget);
+    expect(
+      find.text('Thank you for trying my fork of Sorokun!'),
+      findsOneWidget,
+    );
     await tester.tap(find.byType(CheckboxListTile));
     await tester.pump();
     await tester.tap(find.text('OK'));
@@ -178,7 +184,10 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pump();
 
-    expect(find.text('Welcome to Sorokun!'), findsOneWidget);
+    expect(
+      find.text('Thank you for trying my fork of Sorokun!'),
+      findsOneWidget,
+    );
     expect(find.byType(CheckboxListTile), findsNothing);
     await tester.tap(find.text('OK'));
     await tester.pump(const Duration(seconds: 1));

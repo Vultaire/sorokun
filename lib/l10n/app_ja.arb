@@ -19,11 +19,11 @@
   "@welcomeJapaneseLanguageHeading": {
     "description": "Language heading for the Japanese block of the bilingual welcome screen."
   },
-  "welcomeJapaneseTitle": "ようこそ、そろくん！",
+  "welcomeJapaneseTitle": "そろくん！のフォークをお試しいただき、ありがとうございます。",
   "@welcomeJapaneseTitle": {
     "description": "Title shown above the Japanese welcome copy."
   },
-  "welcomeJapaneseIntro": "そろくん！のフォークをお試しいただき、ありがとうございます。\n\nChet Linさんが作ったオリジナル版は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加することを試みました。このフォークはその成果です。",
+  "welcomeJapaneseIntro": "Chet Linさんが作ったオリジナル版は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加することを試みました。このフォークはその成果です。",
   "@welcomeJapaneseIntro": {
     "description": "Japanese introduction for the first-run bilingual welcome screen, shown before the English block."
   },
@@ -43,11 +43,11 @@
   "@welcomeEnglishLanguageHeading": {
     "description": "Language heading for the English block of the bilingual welcome screen."
   },
-  "welcomeEnglishTitle": "Welcome to Sorokun!",
+  "welcomeEnglishTitle": "Thank you for trying my fork of Sorokun!",
   "@welcomeEnglishTitle": {
     "description": "Title shown above the English welcome copy."
   },
-  "welcomeEnglishIntro": "Thank you for trying my fork of Sorokun!\n\nI found Chet Lin's original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This fork is the result of that experiment.",
+  "welcomeEnglishIntro": "I found Chet Lin's original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This fork is the result of that experiment.",
   "@welcomeEnglishIntro": {
     "description": "English introduction for the first-run bilingual welcome screen."
   },

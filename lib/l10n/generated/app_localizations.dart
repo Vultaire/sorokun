@@ -165,13 +165,13 @@ abstract class AppLocalizations {
   /// Title shown above the Japanese welcome copy.
   ///
   /// In ja, this message translates to:
-  /// **'ようこそ、そろくん！'**
+  /// **'そろくん！のフォークをお試しいただき、ありがとうございます。'**
   String get welcomeJapaneseTitle;
 
   /// Japanese introduction for the first-run bilingual welcome screen, shown before the English block.
   ///
   /// In ja, this message translates to:
-  /// **'そろくん！のフォークをお試しいただき、ありがとうございます。\n\nChet Linさんが作ったオリジナル版は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加することを試みました。このフォークはその成果です。'**
+  /// **'Chet Linさんが作ったオリジナル版は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加することを試みました。このフォークはその成果です。'**
   String get welcomeJapaneseIntro;
 
   /// Japanese heading for the welcome screen's affiliation and grade-level caveat.
@@ -201,13 +201,13 @@ abstract class AppLocalizations {
   /// Title shown above the English welcome copy.
   ///
   /// In ja, this message translates to:
-  /// **'Welcome to Sorokun!'**
+  /// **'Thank you for trying my fork of Sorokun!'**
   String get welcomeEnglishTitle;
 
   /// English introduction for the first-run bilingual welcome screen.
   ///
   /// In ja, this message translates to:
-  /// **'Thank you for trying my fork of Sorokun!\n\nI found Chet Lin\'s original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This fork is the result of that experiment.'**
+  /// **'I found Chet Lin\'s original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This fork is the result of that experiment.'**
   String get welcomeEnglishIntro;
 
   /// English heading for the welcome screen's affiliation and grade-level caveat.
