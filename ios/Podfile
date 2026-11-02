@@ -1,3 +1,5 @@
+# Modified by Vultaire on 2026-11-01.
+# Fork: https://github.com/Vultaire/sorokun
 platform :ios, '16.2'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
@@ -35,8 +37,6 @@ target 'Runner' do
     inherit! :search_paths
   end
 
-  # --- VOICEVOX ---
-  pod 'VoicevoxCore', :path => '.'
 end
 
 post_install do |installer|

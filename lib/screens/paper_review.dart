@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:soroban_app/models/level_definitions.dart';
@@ -80,7 +82,7 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
     }
 
     final Widget body = switch (widget.selectedLevel) {
-      FlashLevel _ || AloudLevel _ || MitoriLevel _ => Stack(
+      FlashLevel _ || MitoriLevel _ => Stack(
         children: [
           Align(
             alignment: isPortrait ? .center : .topCenter,

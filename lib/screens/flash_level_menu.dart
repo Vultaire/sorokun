@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,7 +18,7 @@ class FlashLevelMenuPage extends StatefulWidget {
 
 class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
   Kyuui _kyuui = .zsk20;
-  KyuuiDenomination _kyuuiDenomination = .zsAloudAndFlash;
+  KyuuiDenomination _kyuuiDenomination = .zsFlash;
   int _zsIndex = 0;
   int _kkIndex = 0;
   late final SharedPreferencesWithCache _prefs;
@@ -124,7 +126,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           orientation == Orientation.portrait;
 
                       final selectorStack = KyuuiSelectorStack(
-                        primaryDenomination: KyuuiDenomination.zsAloudAndFlash,
+                        primaryDenomination: KyuuiDenomination.zsFlash,
                         secondaryDenomination: KyuuiDenomination.kkFlash,
                         initialPrimaryIndex: _zsIndex,
                         initialSecondaryIndex: _kkIndex,
@@ -133,8 +135,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                         onChanged: (denomination, index, kyuui) {
                           setState(() {
                             _kyuui = kyuui;
-                            if (denomination ==
-                                KyuuiDenomination.zsAloudAndFlash) {
+                            if (denomination == KyuuiDenomination.zsFlash) {
                               _zsIndex = index;
                             } else {
                               _kkIndex = index;
@@ -147,7 +148,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           LabeledSlidingSegmentedControl<KyuuiDenomination>(
                             groupValue: _kyuuiDenomination,
                             options: const [
-                              (KyuuiDenomination.zsAloudAndFlash, '全珠連'),
+                              (KyuuiDenomination.zsFlash, '全珠連'),
                               (KyuuiDenomination.kkFlash, '協会'),
                             ],
                             onValueChanged: (value) {
@@ -155,7 +156,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                 _kyuuiDenomination = value;
                                 final newList = _buildFlashKyuuiList(value);
                                 final newIndex =
-                                    value == KyuuiDenomination.zsAloudAndFlash
+                                    value == KyuuiDenomination.zsFlash
                                     ? _zsIndex
                                     : _kkIndex;
                                 _kyuui = newList[newIndex];

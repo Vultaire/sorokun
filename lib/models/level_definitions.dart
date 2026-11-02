@@ -1,10 +1,11 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:soroban_app/models/divmult_source.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import '../problem_generation/multiplication.dart';
 import '../problem_generation/division.dart';
 
 part 'flash_source.dart';
-part 'aloud_source.dart';
 
 enum DivMultLevel implements PaperProblemLevel {
   zsmk9(
@@ -1457,12 +1458,6 @@ enum LevelInfo {
     pointsPerProblem: 10,
     denomination: .kyoukai,
     timeLimit: Duration(minutes: 7),
-  ),
-  zsAloud(
-    passThreshold: 0.8,
-    pointsPerProblem: 10,
-    denomination: .zenshuren,
-    timeLimit: Duration(minutes: 7),
   );
 
   const LevelInfo({
@@ -1636,7 +1631,6 @@ enum Kyuui {
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
-    aloud: .zsk10,
     flash: .zsk10,
     kyuuString: '10級',
   ),
@@ -1647,7 +1641,6 @@ enum Kyuui {
     multAnzan: null,
     divSoroban: null,
     divAnzan: null,
-    aloud: .zsk9,
     flash: .zsk9,
     kyuuString: '9級',
   ),
@@ -1658,7 +1651,6 @@ enum Kyuui {
     multAnzan: null,
     divSoroban: .zsdk8,
     divAnzan: null,
-    aloud: .zsk8,
     flash: .zsk8,
     kyuuString: '8級',
   ),
@@ -1669,7 +1661,6 @@ enum Kyuui {
     multAnzan: .zsmak5, //sic
     divSoroban: .zsdk7,
     divAnzan: null,
-    aloud: .zsk7,
     flash: .zsk7,
     kyuuString: '7級',
   ),
@@ -1680,7 +1671,6 @@ enum Kyuui {
     multAnzan: .zsmak5, //sic
     divSoroban: .zsdk6,
     divAnzan: .zsdak5, //sic
-    aloud: .zsk6,
     flash: .zsk6,
     kyuuString: '6級',
   ),
@@ -1691,7 +1681,6 @@ enum Kyuui {
     multAnzan: .zsmak5,
     divSoroban: .zsdk5,
     divAnzan: .zsdak5,
-    aloud: .zsk5,
     flash: .zsk5,
     kyuuString: '5級',
   ),
@@ -1702,7 +1691,6 @@ enum Kyuui {
     multAnzan: .zsmak4,
     divSoroban: .zsdk4,
     divAnzan: .zsdak4,
-    aloud: .zsk4,
     flash: .zsk4,
     kyuuString: '4級',
   ),
@@ -1713,7 +1701,6 @@ enum Kyuui {
     multAnzan: .zsmak3,
     divSoroban: .zsdk3,
     divAnzan: .zsdak3,
-    aloud: .zsk3,
     flash: .zsk3,
     kyuuString: '3級',
   ),
@@ -1724,7 +1711,6 @@ enum Kyuui {
     multAnzan: .zsmak2,
     divSoroban: .zsdk2,
     divAnzan: .zsdak2,
-    aloud: .zsk2,
     flash: .zsk2,
     kyuuString: '2級',
   ),
@@ -1735,7 +1721,6 @@ enum Kyuui {
     multAnzan: .zsmak1,
     divSoroban: .zsdk1,
     divAnzan: .zsdak1,
-    aloud: .zsk1,
     flash: .zsk1,
     kyuuString: '1級',
   ),
@@ -1748,16 +1733,16 @@ enum Kyuui {
     divAnzan: .zsdadan,
     kyuuString: '段位',
   ),
-  zsd1(aloud: .zsd1, flash: .zsd1, kyuuString: '初段'),
-  zsd2(aloud: .zsd2, flash: .zsd2, kyuuString: '二段'),
-  zsd3(aloud: .zsd3, flash: .zsd3, kyuuString: '三段'),
-  zsd4(aloud: .zsd4, flash: .zsd4, kyuuString: '四段'),
-  zsd5(aloud: .zsd5, flash: .zsd5, kyuuString: '五段'),
-  zsd6(aloud: .zsd6, flash: .zsd6, kyuuString: '六段'),
-  zsd7(aloud: .zsd7, flash: .zsd7, kyuuString: '七段'),
-  zsd8(aloud: .zsd8, flash: .zsd8, kyuuString: '八段'),
-  zsd9(aloud: .zsd9, flash: .zsd9, kyuuString: '九段'),
-  zsd10(aloud: .zsd10, flash: .zsd10, kyuuString: '十段'),
+  zsd1(flash: .zsd1, kyuuString: '初段'),
+  zsd2(flash: .zsd2, kyuuString: '二段'),
+  zsd3(flash: .zsd3, kyuuString: '三段'),
+  zsd4(flash: .zsd4, kyuuString: '四段'),
+  zsd5(flash: .zsd5, kyuuString: '五段'),
+  zsd6(flash: .zsd6, kyuuString: '六段'),
+  zsd7(flash: .zsd7, kyuuString: '七段'),
+  zsd8(flash: .zsd8, kyuuString: '八段'),
+  zsd9(flash: .zsd9, kyuuString: '九段'),
+  zsd10(flash: .zsd10, kyuuString: '十段'),
   kkk20(flash: .kkk20, kyuuString: '20級'),
   kkk19(flash: .kkk19, kyuuString: '19級'),
   kkk18(flash: .kkk18, kyuuString: '18級'),
@@ -1796,7 +1781,6 @@ enum Kyuui {
     this.multAnzan,
     this.divSoroban,
     this.divAnzan,
-    this.aloud,
     this.flash,
     required this.kyuuString,
   });
@@ -1806,7 +1790,6 @@ enum Kyuui {
   final DivMultLevel? multAnzan;
   final DivMultLevel? divSoroban;
   final DivMultLevel? divAnzan;
-  final AloudLevel? aloud;
   final FlashLevel? flash;
   final String kyuuString;
 }
@@ -1848,7 +1831,7 @@ enum KyuuiDenomination {
     dan: .zsdan,
     displayString: '全国珠算教育連盟',
   ),
-  zsAloudAndFlash(
+  zsFlash(
     k20: .zsk20,
     k19: .zsk19,
     k18: .zsk18,

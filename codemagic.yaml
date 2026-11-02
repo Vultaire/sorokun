@@ -1,11 +1,11 @@
+# Modified by Vultaire on 2026-11-01.
+# Fork: https://github.com/Vultaire/sorokun
 workflows:
   ios-workflow:
     name: iOS Workflow
     integrations:
       app_store_connect: codemagic
     environment:
-      groups:
-        - voicevox
       ios_signing:
         distribution_type: app_store
         bundle_identifier: moe.nae.sorokun
@@ -15,35 +15,6 @@ workflows:
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
-
-      - name: Download VOICEVOX assets
-        script: |
-          curl -sSfL https://github.com/VOICEVOX/voicevox_core/releases/download/0.16.4/download-osx-arm64 -o download
-          chmod +x download
-          export GITHUB_TOKEN="$GH_TOKEN"
-          yes y | ./download --exclude c-api onnxruntime additional-libraries --models-pattern s0.vvm -o assets
-          echo "--- assets/dict and assets/models contents ---"
-          find assets/dict assets/models -maxdepth 2
-
-      - name: Download VOICEVOX iOS frameworks
-        script: |
-          curl -L -o voicevox_core.zip "$VOICEVOX_CORE_IOS_URL"
-          unzip -o voicevox_core.zip -d ios/Frameworks/
-          curl -L -o voicevox_onnxruntime.zip "$VOICEVOX_ONNXRUNTIME_IOS_URL"
-          unzip -o voicevox_onnxruntime.zip -d ios/Frameworks/
-          echo "--- Fixing invalid CFBundleIdentifier in onnxruntime framework ---"
-          find ios/Frameworks/voicevox_onnxruntime.xcframework -name Info.plist -path "*voicevox_onnxruntime.framework*" | while read -r plist; do
-            echo "Patching: $plist"
-            /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier jp.hiroshiba.voicevox.voicevox-onnxruntime" "$plist"
-          done
-          echo "--- Re-signing onnxruntime framework to match patched identifier ---"
-          find ios/Frameworks/voicevox_onnxruntime.xcframework -name "voicevox_onnxruntime.framework" -type d | while read -r framework; do
-            echo "Re-signing: $framework"
-            codesign --force --deep \
-              --sign - \
-              --identifier "jp.hiroshiba.voicevox.voicevox-onnxruntime" \
-              "$framework"
-          done
 
       - name: Clean stale Pods state and install
         script: |

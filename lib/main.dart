@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:async';
 
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -7,10 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/models/level_definitions.dart';
-import 'package:soroban_app/models/singer_config.dart';
-import 'package:soroban_app/screens/aloud_free_menu.dart';
-import 'package:soroban_app/screens/aloud_level_menu.dart';
-import 'package:soroban_app/screens/aloud_problem.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/credits.dart';
 import 'package:soroban_app/screens/flash_free_menu.dart';
@@ -20,13 +18,11 @@ import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
 import 'package:soroban_app/screens/settings.dart';
-import 'package:soroban_app/src/voicevox_paths.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  VoicevoxService.paths = await extractVoicevoxAssets();
   final appController = AppController();
   await SoLoud.instance.init(
     sampleRate: 44100,
@@ -36,11 +32,6 @@ void main() async {
   await appController.ready;
 
   runApp(AbacusApp(appController: appController));
-}
-
-class VoicevoxService {
-  VoicevoxService._();
-  static late VoicevoxPaths paths;
 }
 
 class AbacusApp extends StatefulWidget {
@@ -116,7 +107,6 @@ class DebugMockData {
       'allProblems': allProblems,
       'allAnswers': allAnswers,
       'textFieldDataList': textFieldDataList,
-      'character': Character.shikokuMetan,
       'elapsed': Duration(minutes: 1, seconds: 30),
     };
   }
@@ -148,7 +138,7 @@ class DebugMockData {
 class _AbacusAppState extends State<AbacusApp> {
   late final AppController _appController = widget.appController;
   late final _router = GoRouter(
-    initialLocation: kDebugMode ? '/paper-results' : '/home',
+    initialLocation: '/home',
     routes: [
       GoRoute(
         path: '/home',
@@ -195,30 +185,6 @@ class _AbacusAppState extends State<AbacusApp> {
         },
       ),
       GoRoute(
-        path: '/aloud-level-menu',
-        builder: (context, state) => AloudLevelMenuPage(),
-      ),
-      GoRoute(
-        path: '/aloud-free-menu',
-        builder: (context, state) => AloudFreeMenuPage(),
-      ),
-      GoRoute(
-        path: '/aloud-problem',
-        pageBuilder: (context, state) {
-          final args = state.extra as Map<String, dynamic>?;
-
-          return blackFadeTransition(
-            key: state.pageKey,
-            child: AloudProblemScreen(
-              isSingleProblem: args?['isSingleProblem'],
-              selectedLevel: args?['selectedLevel'],
-              examDisplayString: args?['examDisplayString'],
-              character: args?['character'],
-            ),
-          );
-        },
-      ),
-      GoRoute(
         path: '/paper-results',
         pageBuilder: (context, state) {
           final args =
@@ -234,7 +200,6 @@ class _AbacusAppState extends State<AbacusApp> {
               allProblems: args['allProblems'],
               textFieldDataList: args['textFieldDataList'],
               elapsed: args['elapsed'],
-              character: args['character'],
             ),
           );
         },

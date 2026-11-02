@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -135,7 +137,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
     final bool isPortrait =
         MediaQuery.orientationOf(context) == Orientation.portrait;
 
-    return FlashAndAloudProblemData<String>(
+    return FlashProblemData<String>(
       screenSize: screenSize,
       isPortrait: isPortrait,
       currentProblemIndex: _currentProblemIndex,
@@ -183,7 +185,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           onEnd: showInput,
         );
       case 1:
-        return FlashAndAloudProblemInput<String>(
+        return FlashProblemInput<String>(
           key: ValueKey('input_$_currentProblemIndex'),
           showAnswer: setInputAndShowResult,
           showTimer: !widget.isSingleProblem,
@@ -192,7 +194,7 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           maxDigits: 7,
         );
       case 2:
-        return FlashAndAloudResult<String>(
+        return FlashResult<String>(
           key: ValueKey('result_$_currentProblemIndex'),
           onNextProblem: startNextProblem,
           onRepeatProblem: playProblem,
@@ -207,8 +209,8 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   }
 }
 
-class FlashAndAloudProblemData<T> extends InheritedWidget {
-  const FlashAndAloudProblemData({
+class FlashProblemData<T> extends InheritedWidget {
+  const FlashProblemData({
     super.key,
     required this.screenSize,
     required this.isPortrait,
@@ -237,13 +239,12 @@ class FlashAndAloudProblemData<T> extends InheritedWidget {
       textFieldDataList[currentProblemIndex].formatted ==
       allAnswers[currentProblemIndex];
 
-  static FlashAndAloudProblemData<T> of<T>(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<FlashAndAloudProblemData<T>>()!;
+  static FlashProblemData<T> of<T>(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<FlashProblemData<T>>()!;
   }
 
   @override
-  bool updateShouldNotify(FlashAndAloudProblemData<T> old) =>
+  bool updateShouldNotify(FlashProblemData<T> old) =>
       screenSize != old.screenSize ||
       isPortrait != old.isPortrait ||
       currentProblemIndex != old.currentProblemIndex ||
@@ -279,8 +280,8 @@ class FlashTextField extends StatelessWidget {
   }
 }
 
-class FlashAndAloudProblemInput<T> extends StatefulWidget {
-  const FlashAndAloudProblemInput({
+class FlashProblemInput<T> extends StatefulWidget {
+  const FlashProblemInput({
     super.key,
     required this.showAnswer,
     required this.showTimer,
@@ -295,15 +296,12 @@ class FlashAndAloudProblemInput<T> extends StatefulWidget {
   final int maxDigits;
 
   @override
-  State<FlashAndAloudProblemInput<T>> createState() =>
-      _FlashAndAloudProblemInputState<T>();
+  State<FlashProblemInput<T>> createState() => _FlashProblemInputState<T>();
 }
 
-class _FlashAndAloudProblemInputState<T>
-    extends State<FlashAndAloudProblemInput<T>>
+class _FlashProblemInputState<T> extends State<FlashProblemInput<T>>
     with FlashKeypadMethods {
-  FlashAndAloudProblemData<T> get _data =>
-      FlashAndAloudProblemData.of<T>(context);
+  FlashProblemData<T> get _data => FlashProblemData.of<T>(context);
   @override
   TextFieldData textData = TextFieldData();
   @override
@@ -400,8 +398,8 @@ class _FlashAndAloudProblemInputState<T>
   }
 }
 
-class FlashAndAloudResult<T> extends StatefulWidget {
-  const FlashAndAloudResult({
+class FlashResult<T> extends StatefulWidget {
+  const FlashResult({
     super.key,
     required this.onNextProblem,
     required this.inputTime,
@@ -418,12 +416,11 @@ class FlashAndAloudResult<T> extends StatefulWidget {
   final bool isSingleProblem;
 
   @override
-  State<FlashAndAloudResult<T>> createState() => _FlashAndAloudResultState<T>();
+  State<FlashResult<T>> createState() => _FlashResultState<T>();
 }
 
-class _FlashAndAloudResultState<T> extends State<FlashAndAloudResult<T>> {
-  FlashAndAloudProblemData<T> get _data =>
-      FlashAndAloudProblemData.of<T>(context);
+class _FlashResultState<T> extends State<FlashResult<T>> {
+  FlashProblemData<T> get _data => FlashProblemData.of<T>(context);
   int? _frozenIndex;
   List<bool?>? _frozenAnswerResults;
   String? _frozenAnswer;
@@ -729,8 +726,7 @@ class FlashProblem extends StatefulWidget {
 
 class FlashProblemState extends State<FlashProblem>
     with SingleTickerProviderStateMixin {
-  FlashAndAloudProblemData<String> get _data =>
-      FlashAndAloudProblemData.of<String>(context);
+  FlashProblemData<String> get _data => FlashProblemData.of<String>(context);
   late final AnimationController _controller;
   List<String> get currentProblem =>
       _data.allProblems[_data.currentProblemIndex];

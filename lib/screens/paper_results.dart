@@ -1,10 +1,11 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:math';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
 import '../models/level_definitions.dart';
@@ -18,7 +19,6 @@ class ResultsScreen extends StatelessWidget {
   final List<dynamic> allProblems;
   final List<TextFieldData> textFieldDataList;
   final Duration? elapsed;
-  final Character? character;
   static final _countUpCircleKey = GlobalKey();
 
   ResultsScreen({
@@ -30,7 +30,6 @@ class ResultsScreen extends StatelessWidget {
     required this.textFieldDataList,
     this.examDisplayString,
     this.elapsed,
-    this.character,
   });
 
   @override
@@ -147,16 +146,6 @@ class ResultsScreen extends StatelessWidget {
                             extra: {
                               'selectedLevel': selectedLevel,
                               'isSingleProblem': false,
-                              'examDisplayString': examDisplayString,
-                            },
-                          );
-                        case AloudLevel _:
-                          context.pushReplacement(
-                            '/aloud-problem',
-                            extra: {
-                              'isSingleProblem': false,
-                              'selectedLevel': selectedLevel,
-                              'character': character,
                               'examDisplayString': examDisplayString,
                             },
                           );
@@ -284,7 +273,7 @@ class ResultsScreen extends StatelessWidget {
 class ProblemScorer {
   final int index;
   final dynamic
-  problem; // can be either List<List<String>> for Mitori/Flash/Aloud or List<String> for DivMult
+  problem; // can be either List<List<String>> for Mitori/Flash or List<String> for DivMult
   final String answer;
   final String userAnswer;
 

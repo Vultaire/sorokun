@@ -1,3 +1,5 @@
+# Modified by Vultaire on 2026-11-01.
+# Fork: https://github.com/Vultaire/sorokun
 name: soroban_app
 description: "Trainer for soroban."
 publish_to: 'none'
@@ -9,18 +11,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.8
   animations: ^2.0.11
   decimal: ^3.2.6
   rational: 
-  path_provider: ^2.1.5
   flutter_soloud: ^4.1.6
   carousel_slider: ^5.1.1
   go_router: ^17.0.1
   shared_preferences: ^2.5.4
-  hooks: ^2.0.2
-  code_assets: ^1.0.0
-  ffigen: ^21.0.0
-  async: ^2.11.0
   intl: ^0.20.2
   custom_sliding_segmented_control: ^1.8.5
   url_launcher: ^6.3.2
@@ -38,12 +36,39 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/dict/open_jtalk_dic_utf_8-1.11/
-    - assets/models/vvms/
-    - assets/character_icon/
-    - assets/negaimasiteha/
-    - assets/include/
-    - assets/
+    - assets/MPLUSRounded1c-Medium.ttf
+    - assets/abacus5.ttf
+    - assets/abacus5spaced.ttf
+    - assets/correct.png
+    - assets/correct.wav
+    - assets/delete.wav
+    - assets/fail.wav
+    - assets/hare.png
+    - assets/icon.png
+    - assets/incorrect.png
+    - assets/incorrect.wav
+    - assets/invalid.wav
+    - assets/kake.png
+    - assets/kakean.png
+    - assets/kanryou.png
+    - assets/key-tap.wav
+    - assets/mitori.png
+    - assets/mitorian.png
+    - assets/ogutamafontS2.ttf
+    - assets/pass.wav
+    - assets/passthreshold.wav
+    - assets/progress.wav
+    - assets/sine-beep.wav
+    - assets/soroban-grey-tr.png
+    - assets/soroban-grey.png
+    - assets/sorokun_color.png
+    - assets/sorokun_white.png
+    - assets/starting-sine.wav
+    - assets/tick.wav
+    - assets/tortoise.png
+    - assets/wari.png
+    - assets/warian.png
+    - assets/yame.png
   fonts:
     - family: abacusFont
       fonts:

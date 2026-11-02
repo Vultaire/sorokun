@@ -1,5 +1,6 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
-import 'package:soroban_app/models/singer_config.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,10 +21,7 @@ class CreditsPage extends StatelessWidget {
               title: '開発',
               entries: const [_CreditEntry(role: 'デベロッパー', name: 'Chet Lin')],
             ),
-            Text(
-              'そろくんはオープンソースで、ソースコードはこちらで公開しています：',
-              style: textTheme.titleMedium,
-            ),
+            Text('元のそろくんのソースコードはこちらで公開されています：', style: textTheme.titleMedium),
             InkWell(
               onTap: () => _launchUrl('https://github.com/konomu/sorokun'),
               child: Text(
@@ -34,8 +32,19 @@ class CreditsPage extends StatelessWidget {
                 ),
               ),
             ),
+            Text('このフォークのソースコード：', style: textTheme.titleMedium),
+            InkWell(
+              onTap: () => _launchUrl('https://github.com/Vultaire/sorokun'),
+              child: Text(
+                'https://github.com/Vultaire/sorokun',
+                style: textTheme.titleMedium?.copyWith(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
             Text(
-              'そろくんの開発に貢献したいと思ってくださった方は、どなたでも歓迎します。',
+              '原作: Chet Lin。Vultaire による改変版です（2026-11-01）。読み上げ算と VOICEVOX を削除し、Web ビルド対応を行いました。',
               style: textTheme.titleMedium,
             ),
             const SizedBox(height: 24),
@@ -48,16 +57,20 @@ class CreditsPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _CreditSection(
-              title: '音声合成',
+              title: 'ライセンス',
               entries: [
                 _CreditEntry(
-                  role: 'VOICEVOX CORE',
-                  name: 'VOICEVOX Github Contributor のみなさん',
-                  onTap: () =>
-                      _launchUrl('https://github.com/VOICEVOX/voicevox_core'),
+                  role: 'ライセンス',
+                  name: 'GNU General Public License v3.0',
+                  onTap: () => _launchUrl(
+                    'https://github.com/Vultaire/sorokun/blob/main/LICENSE.txt',
+                  ),
                 ),
-                ...buildVoicevoxCreditEntries(),
               ],
+            ),
+            Text(
+              '本ソフトウェアは無保証です。GPL v3.0 の条件に従って再配布・改変できます。ライセンス全文は上記リンクから確認できます。',
+              style: textTheme.titleMedium,
             ),
           ],
         ),
@@ -96,15 +109,6 @@ Future<void> _launchUrl(String url) async {
   if (await canLaunchUrl(uri)) {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
-}
-
-List<_CreditEntry> buildVoicevoxCreditEntries({
-  List<Character> characters = Character.values,
-}) {
-  return characters.map((character) {
-    final name = '${character.displayString}${character.creditText ?? ''}';
-    return _CreditEntry(role: 'VOICEVOX', name: name);
-  }).toList();
 }
 
 class _CreditEntry extends StatelessWidget {

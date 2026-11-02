@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -110,7 +112,7 @@ class HomePage extends StatelessWidget {
                         const desiredHeight = 86.0;
                         const minHeight = 72.0;
                         const spacing = 24.0;
-                        const rows = 3;
+                        const rows = 2;
                         double rowHeight = desiredHeight;
                         if (constraints.maxHeight.isFinite) {
                           final maxAllowed =
@@ -168,31 +170,6 @@ class HomePage extends StatelessWidget {
                                     onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/flash-free-menu'),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: spacing),
-                              _MenuRow(
-                                height: rowHeight,
-                                background: scheme.primaryFixedDim,
-                                titleColor: scheme.onPrimaryFixedVariant,
-                                titleLine1: '読上',
-                                titleLine2: '算',
-                                rotation: -0.2,
-                                buttons: [
-                                  _MenuButtonData(
-                                    label: '検定',
-                                    color: scheme.primary,
-                                    onColor: scheme.onPrimary,
-                                    onPressed: () =>
-                                        context.push('/aloud-level-menu'),
-                                  ),
-                                  _MenuButtonData(
-                                    label: 'フリー',
-                                    color: scheme.primary,
-                                    onColor: scheme.onPrimary,
-                                    onPressed: () =>
-                                        context.push('/aloud-free-menu'),
                                   ),
                                 ],
                               ),
