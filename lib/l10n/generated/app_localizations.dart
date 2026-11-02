@@ -267,13 +267,13 @@ abstract class AppLocalizations {
   /// No description provided for @forkDevelopmentDisclosure.
   ///
   /// In ja, this message translates to:
-  /// **'Changes in this fork were made through agentic development using an LLM, under Vultaire\'s direction.'**
+  /// **'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。'**
   String get forkDevelopmentDisclosure;
 
   /// No description provided for @localizationUpdateNotice.
   ///
   /// In ja, this message translates to:
-  /// **'Japanese/English interface localization was added on 2026-11-02.'**
+  /// **'日本語・English インターフェースのローカライズを2026-11-02に追加しました。'**
   String get localizationUpdateNotice;
 
   /// No description provided for @fontCredits.

@@ -116,8 +116,22 @@ void main() {
 
     expect(find.text('元のそろくんのソースコードはこちらで公開されています：'), findsOneWidget);
     expect(find.text('このフォークのソースコード：'), findsOneWidget);
-    expect(find.textContaining('2026-11-02'), findsNothing);
-    expect(find.textContaining('LLM'), findsNothing);
+    expect(
+      find.text(
+        'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text('日本語・English インターフェースのローカライズを2026-11-02に追加しました。'),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        '英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('settings switches locale immediately and persists the choice', (

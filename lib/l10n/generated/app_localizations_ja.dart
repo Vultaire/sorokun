@@ -97,11 +97,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get forkDevelopmentDisclosure =>
-      'Changes in this fork were made through agentic development using an LLM, under Vultaire\'s direction.';
+      'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。';
 
   @override
   String get localizationUpdateNotice =>
-      'Japanese/English interface localization was added on 2026-11-02.';
+      '日本語・English インターフェースのローカライズを2026-11-02に追加しました。';
 
   @override
   String get fontCredits => 'フォント';

@@ -48,20 +48,15 @@ class CreditsPage extends StatelessWidget {
               ),
             ),
             Text(l10n.forkModificationNotice, style: textTheme.titleMedium),
-            if (l10n.localeName == 'en') ...[
-              const SizedBox(height: 8),
-              Text(
-                l10n.forkDevelopmentDisclosure,
-                style: textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(l10n.localizationUpdateNotice, style: textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Text(
-                l10n.englishTranslationDisclosure,
-                style: textTheme.titleMedium,
-              ),
-            ],
+            const SizedBox(height: 8),
+            Text(l10n.forkDevelopmentDisclosure, style: textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(l10n.localizationUpdateNotice, style: textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(
+              l10n.englishTranslationDisclosure,
+              style: textTheme.titleMedium,
+            ),
             const SizedBox(height: 24),
             _CreditSection(
               title: l10n.fontCredits,
