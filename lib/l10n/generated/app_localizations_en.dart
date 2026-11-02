@@ -42,6 +42,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
+  String get welcomeJapaneseLanguageHeading => '日本語';
+
+  @override
+  String get welcomeJapaneseTitle => 'ようこそ、そろくん！';
+
+  @override
+  String get welcomeJapaneseIntro =>
+      'そろくん！のフォークをお試しいただき、ありがとうございます。\n\nChet Linさんのオリジナル版は、iOSでそろばんを学ぶための優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを加えることを試みました。このフォークは、その試みの結果です。';
+
+  @override
+  String get welcomeJapaneseDisclaimerHeading => '団体との関係と級位について';
+
+  @override
+  String get welcomeJapaneseDisclaimer =>
+      'このフォークは独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携関係や公認・推奨を受けたものでもありません。オリジナル版もこれらの団体と公式な関係にはなかったと認識していますが、作者に代わって断言することはできません。\n\n総合種目とフラッシュ暗算の検定モードで選べる級位は、該当する団体の制度をもとにしているようです。フラッシュ暗算のフリーモードは例外で、口数や桁数などを自由に設定して練習できます。これらの級位は、私自身のそろばん学習経験からはおおむね妥当と思われますが、各団体の最新の基準と一つひとつ照合したわけではありません。内容が不完全であったり、現在の検定要件と異なったりする可能性があり、一致を保証するものではありません。現在そろばん教室に通っている方は、ご自身のレベルに適した練習内容について先生にご相談ください。最新の検定要件は各団体にご確認ください。';
+
+  @override
+  String get welcomeJapaneseClosing =>
+      'このフォークでは、オリジナル版の読み上げ算を削除し、Web対応や英語インターフェースなどを追加しました。無料の練習用アプリとして提供しており、検定の認定や合格を保証するものではありません。\n\nお楽しみいただければ幸いです。原作者のChet Linさん、素晴らしいアプリをありがとうございます。\n\n— Paul Goins (Vultaire)';
+
+  @override
+  String get welcomeEnglishLanguageHeading => 'English';
+
+  @override
+  String get welcomeEnglishTitle => 'Welcome to Sorokun!';
+
+  @override
+  String get welcomeEnglishIntro =>
+      'Thank you for trying my fork of Sorokun!\n\nI found Chet Lin\'s original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This fork is the result of that experiment.';
+
+  @override
+  String get welcomeEnglishDisclaimerHeading =>
+      'About affiliations and grade levels';
+
+  @override
+  String get welcomeEnglishDisclaimer =>
+      'This fork is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it is not affiliated with or endorsed by any of them. To the best of my knowledge, the original Sorokun! was not officially affiliated with these organizations either, though I cannot speak for its author.\n\nThe selectable grade levels in Soroban Practice and Flash Anzan Exam appear to be modeled on the relevant organizations\' systems. Based on my experience studying soroban, they seem broadly accurate, but I have not checked each one against the organizations\' current standards. They may be incomplete or out of date, and I cannot guarantee that they match current exam requirements. If you are currently taking soroban classes, please ask your teacher which practice materials are appropriate for your level. For current exam requirements, check with the relevant organization.';
+
+  @override
+  String get welcomeEnglishClosing =>
+      'This fork removes the original read-aloud exercises and adds web support, a basic English interface, and other features. It is offered as a free study aid, not as a certification tool or a guarantee of exam readiness.\n\nI hope you enjoy it. To Chet Lin, the original author: thank you for an excellent program.\n\n— Paul Goins (Vultaire)';
+
+  @override
+  String get welcomeDoNotShowAgain => '次回から表示しない / Do not show this again';
+
+  @override
+  String get welcomeOk => 'OK';
+
+  @override
+  String get welcomeReplayButton => 'Show welcome screen again';
+
+  @override
   String get keypadPosition => 'Keypad position';
 
   @override
@@ -66,7 +118,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get color => 'Color';
 
   @override
-  String get homeCombinedLine1 => 'Combined';
+  String get homeCombinedLine1 => 'Soroban';
 
   @override
   String get homeCombinedLine2 => 'Practice';
@@ -148,7 +200,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get back => 'Back';
 
   @override
-  String get combinedSubjectsTitle => 'Combined practice';
+  String get combinedSubjectsTitle => 'Soroban Practice';
 
   @override
   String get organizationZenshuren => 'Zenshuren';

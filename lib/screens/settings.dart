@@ -1,4 +1,4 @@
-// Modified by Vultaire on 2026-11-01.
+// Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'dart:math';
 
@@ -463,6 +463,7 @@ class AppController extends ChangeNotifier {
   static const _languageKey = 'ui_language';
   static const _numberOrderKey = 'keypad_number_order';
   static const _handednessKey = 'handedness';
+  static const _welcomeSuppressedKey = 'welcome_screen_suppressed';
 
   FlexScheme _flexScheme = FlexScheme.shadBlue;
   FlexScheme get flexScheme => _flexScheme;
@@ -479,6 +480,11 @@ class AppController extends ChangeNotifier {
 
   Handedness _handedness = Handedness.right;
   Handedness get handedness => _handedness;
+
+  bool _welcomeSuppressed = false;
+  bool _welcomeDismissedThisLaunch = false;
+  bool get shouldShowWelcomeScreen =>
+      !_welcomeSuppressed && !_welcomeDismissedThisLaunch;
 
   late final Future<void> ready;
 
@@ -514,6 +520,8 @@ class AppController extends ChangeNotifier {
       savedLanguage: storedLanguage,
     );
     _preferredLocales = null;
+
+    _welcomeSuppressed = prefs.getBool(_welcomeSuppressedKey) ?? false;
 
     final storedOrder = prefs.getString(_numberOrderKey);
     if (storedOrder != null) {
@@ -559,6 +567,15 @@ class AppController extends ChangeNotifier {
     }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_languageKey, language.name);
+  }
+
+  Future<void> completeWelcome({required bool doNotShowAgain}) async {
+    _welcomeDismissedThisLaunch = true;
+    if (!doNotShowAgain) return;
+
+    _welcomeSuppressed = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_welcomeSuppressedKey, true);
   }
 
   Future<void> setNumberOrder(KeypadNumberOrder order) async {

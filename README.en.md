@@ -4,7 +4,7 @@
 
 ## Sorokun!
 
-Sorokun! is a Dart/Flutter app for practicing soroban and mental arithmetic. It provides two modes: comprehensive subjects and flash mental arithmetic.
+Sorokun! is a Dart/Flutter app for practicing soroban and mental arithmetic. It provides two modes: Soroban Practice and Flash Anzan.
 
 ## Development transparency
 
@@ -12,17 +12,17 @@ Changes introduced in this fork—including the removal of yomiagezan and VOICEV
 
 ## Languages and translation
 
-Choose 日本語 or English in Settings. On first launch, if there is no saved choice, the app uses Japanese only when the first preferred device/browser locale has language code `ja`; otherwise it uses English. The English interface was prepared with LLM assistance; Japanese is the original text. Please report corrections or suggestions in this fork's [GitHub repository](https://github.com/Vultaire/sorokun). The Credits page includes the same disclosure.
+Choose 日本語 or English in Settings. On first launch, if there is no saved choice, the app uses Japanese only when the first preferred device/browser locale has language code `ja`; otherwise it uses English. A bilingual welcome screen appears at startup, Japanese first and English second. Check “Do not show this again” to skip it on later launches; you can reopen it from Credits. The English interface was prepared with LLM assistance; Japanese is the original text. Please report corrections or suggestions in this fork's [GitHub repository](https://github.com/Vultaire/sorokun). The Credits page includes the translation disclosure.
 
 ## Unofficial grade references
 
 This fork of Sorokun! is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it has no affiliation with or endorsement from these organizations. Grade and level labels are provided for practice and may differ from their current official standards or examination requirements. Please confirm current requirements with the relevant organization.
 
-## Comprehensive subjects
+## Soroban Practice
 
 Practice core soroban competition and examination subjects—mitori-zan, multiplication, division, and their corresponding mental-arithmetic exercises—at a level suited to you. Answers are entered directly in the app. In practice mode, you see immediately whether an answer is correct. In examination mode, there is a time limit and results are hidden until you submit. Problems follow the grade systems of Zenshuren and Nisshuren.
 
-## Flash mental arithmetic
+## Flash Anzan
 
 Practice addition by calculating numbers that appear rapidly on screen. Choose examination mode, which follows the applicable grade system, or free mode, where you can set the number of numbers, digit range, and display time. Examination grades follow both the Zenshuren and Japan Flash Anzan Association systems.
 

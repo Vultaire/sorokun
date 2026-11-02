@@ -11,6 +11,8 @@ import 'package:soroban_app/screens/settings.dart';
 import 'package:soroban_app/screens/credits.dart';
 import 'package:soroban_app/screens/components/organization_option.dart';
 import 'package:soroban_app/screens/components/grade_reference_info_button.dart';
+import 'package:soroban_app/screens/welcome_screen.dart';
+import 'package:soroban_app/main.dart' as app;
 
 Widget _localizedApp(AppController controller, Widget home) {
   return AnimatedBuilder(
@@ -65,6 +67,123 @@ void main() {
         AppLanguage.japanese,
       );
     });
+  });
+
+  group('welcome screen preference', () {
+    test('unchecked dismissal lasts for this launch only', () async {
+      SharedPreferences.setMockInitialValues({});
+      final controller = AppController(preferredLocales: const []);
+      await controller.ready;
+
+      expect(controller.shouldShowWelcomeScreen, isTrue);
+      await controller.completeWelcome(doNotShowAgain: false);
+      expect(controller.shouldShowWelcomeScreen, isFalse);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getBool('welcome_screen_suppressed'), isNull);
+      controller.dispose();
+
+      final nextLaunch = AppController(preferredLocales: const []);
+      await nextLaunch.ready;
+      expect(nextLaunch.shouldShowWelcomeScreen, isTrue);
+      nextLaunch.dispose();
+    });
+
+    test('checked dismissal persists across launches', () async {
+      SharedPreferences.setMockInitialValues({});
+      final controller = AppController(preferredLocales: const []);
+      await controller.ready;
+      await controller.completeWelcome(doNotShowAgain: true);
+      expect(controller.shouldShowWelcomeScreen, isFalse);
+      controller.dispose();
+
+      final nextLaunch = AppController(preferredLocales: const []);
+      await nextLaunch.ready;
+      expect(nextLaunch.shouldShowWelcomeScreen, isFalse);
+      nextLaunch.dispose();
+    });
+  });
+
+  testWidgets('welcome screen presents Japanese before English', (
+    WidgetTester tester,
+  ) async {
+    bool? doNotShowAgain;
+    await tester.pumpWidget(
+      MaterialApp(
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: WelcomeScreen(
+          showDoNotShowAgain: true,
+          onContinue: (value) async => doNotShowAgain = value,
+        ),
+      ),
+    );
+
+    expect(find.text('ようこそ、そろくん！'), findsOneWidget);
+    expect(find.text('Welcome to Sorokun!'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('日本語')).dy,
+      lessThan(tester.getTopLeft(find.text('English')).dy),
+    );
+    expect(
+      tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+      isFalse,
+    );
+
+    await tester.tap(find.byType(CheckboxListTile));
+    await tester.pump();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(doNotShowAgain, isTrue);
+  });
+
+  testWidgets('startup welcome can be reopened from Credits', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final controller = AppController(
+      preferredLocales: const [Locale('en', 'US')],
+    );
+    await controller.ready;
+
+    await tester.pumpWidget(app.AbacusApp(appController: controller));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome to Sorokun!'), findsOneWidget);
+    await tester.tap(find.byType(CheckboxListTile));
+    await tester.pump();
+    await tester.tap(find.text('OK'));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
+
+    expect(find.text('Choose a subject'), findsOneWidget);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('welcome_screen_suppressed'), isTrue);
+
+    await tester.tap(find.text('Credits'));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    final reopenButton = find.text('Show welcome screen again');
+    final creditsList = find.byType(Scrollable).first;
+    for (var i = 0; i < 8 && reopenButton.evaluate().isEmpty; i++) {
+      await tester.drag(
+        creditsList,
+        const Offset(0, -240),
+        warnIfMissed: false,
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.ensureVisible(reopenButton);
+    await tester.tap(reopenButton);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+
+    expect(find.text('Welcome to Sorokun!'), findsOneWidget);
+    expect(find.byType(CheckboxListTile), findsNothing);
+    await tester.tap(find.text('OK'));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    expect(find.text('Show welcome screen again'), findsOneWidget);
   });
 
   testWidgets('home page presents the available practice modes', (
@@ -255,6 +374,9 @@ void main() {
                 Text(Kyuui.zsd1.localizedLabel(l10n)),
                 Text(Denomination.zenshuren.localizedName(l10n)),
                 Text(RankLabel.preShodan.localizedName(l10n)),
+                Text(l10n.homeCombinedLine1),
+                Text(l10n.homeCombinedLine2),
+                Text(l10n.combinedSubjectsTitle),
                 Text(l10n.homeFlashLine1),
                 Text(l10n.originalSourceIntro),
                 Text(l10n.selectorZenshuren),
@@ -288,6 +410,9 @@ void main() {
         '1 dan',
         'Zenshuren',
         'Pre-1 dan',
+        'Soroban',
+        'Practice',
+        'Soroban Practice',
         'Flash',
         'Original Sorokun source code:',
         'Zenshuren',
@@ -317,6 +442,9 @@ void main() {
         '初段',
         '全国珠算教育連盟',
         '準初段',
+        '総合',
+        '種目',
+        '総合種目',
         'ﾌﾗｯｼｭ',
         '元のそろくんのソースコードはこちらで公開されています：',
         '全珠連',

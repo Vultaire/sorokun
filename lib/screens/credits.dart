@@ -1,6 +1,7 @@
 // Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -60,6 +61,15 @@ class CreditsPage extends StatelessWidget {
             const SizedBox(height: 24),
             _CreditSection(title: l10n.gradeReferenceTitle, entries: const []),
             Text(l10n.gradeReferenceDisclosure, style: textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                onPressed: () => context.push('/welcome', extra: true),
+                icon: const Icon(Icons.article_outlined),
+                label: Text(l10n.welcomeReplayButton),
+              ),
+            ),
             const SizedBox(height: 24),
             _CreditSection(
               title: l10n.fontCredits,

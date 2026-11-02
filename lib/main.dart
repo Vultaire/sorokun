@@ -1,4 +1,4 @@
-// Modified by Vultaire on 2026-11-01.
+// Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'dart:async';
 
@@ -19,6 +19,7 @@ import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
 import 'package:soroban_app/screens/settings.dart';
+import 'package:soroban_app/screens/welcome_screen.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
 
@@ -139,8 +140,45 @@ class DebugMockData {
 class _AbacusAppState extends State<AbacusApp> {
   late final AppController _appController = widget.appController;
   late final _router = GoRouter(
-    initialLocation: '/home',
+    initialLocation: _appController.shouldShowWelcomeScreen
+        ? '/welcome'
+        : '/home',
+    redirect: (context, state) {
+      if (!_appController.shouldShowWelcomeScreen ||
+          state.matchedLocation == '/welcome') {
+        return null;
+      }
+
+      return Uri(
+        path: '/welcome',
+        queryParameters: {'continueTo': state.uri.toString()},
+      ).toString();
+    },
     routes: [
+      GoRoute(
+        path: '/welcome',
+        builder: (context, state) {
+          final isReview = state.extra == true;
+          final continueTo = state.uri.queryParameters['continueTo'];
+
+          return WelcomeScreen(
+            showDoNotShowAgain: !isReview,
+            onContinue: (doNotShowAgain) async {
+              if (isReview) {
+                if (context.mounted) context.pop();
+                return;
+              }
+
+              await _appController.completeWelcome(
+                doNotShowAgain: doNotShowAgain,
+              );
+              if (context.mounted) {
+                context.go(_safeWelcomeDestination(continueTo));
+              }
+            },
+          );
+        },
+      ),
       GoRoute(
         path: '/home',
         pageBuilder: (context, state) =>
@@ -541,6 +579,25 @@ class _AbacusAppState extends State<AbacusApp> {
       ),
     );
   }
+}
+
+String _safeWelcomeDestination(String? destination) {
+  if (destination == null) return '/home';
+  final uri = Uri.tryParse(destination);
+  const directEntryRoutes = {
+    '/home',
+    '/credits',
+    '/paper-menu',
+    '/flash-level-menu',
+    '/flash-free-menu',
+  };
+  if (uri == null ||
+      uri.hasScheme ||
+      uri.hasAuthority ||
+      !directEntryRoutes.contains(uri.path)) {
+    return '/home';
+  }
+  return uri.toString();
 }
 
 CustomTransitionPage blackFadeTransition({
