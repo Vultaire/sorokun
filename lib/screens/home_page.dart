@@ -1,4 +1,4 @@
-// Modified by Vultaire on 2026-11-01.
+// Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'dart:ui' as ui;
 
@@ -14,7 +14,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isJapanese = Localizations.localeOf(context).languageCode == 'ja';
     final size = MediaQuery.sizeOf(context);
     final bool isPortrait =
         MediaQuery.orientationOf(context) == Orientation.portrait;
@@ -86,43 +85,23 @@ class HomePage extends StatelessWidget {
                               ),
                               child: Semantics(
                                 label: l10n.appTitle,
-                                child: isJapanese
-                                    ? Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Image.asset(
-                                            'assets/sorokun_white.png',
-                                          ),
-                                          ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimaryFixedVariant,
-                                              BlendMode.modulate,
-                                            ),
-                                            child: Image.asset(
-                                              'assets/sorokun_color.png',
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : SizedBox(
-                                        width: 355,
-                                        height: 165,
-                                        child: Center(
-                                          child: Text(
-                                            l10n.appTitle,
-                                            style: TextStyle(
-                                              fontSize: 82,
-                                              fontFamily: 'mPlus',
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.onPrimary,
-                                            ),
-                                          ),
-                                        ),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Image.asset('assets/sorokun_white.png'),
+                                    ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimaryFixedVariant,
+                                        BlendMode.modulate,
                                       ),
+                                      child: Image.asset(
+                                        'assets/sorokun_color.png',
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -278,6 +257,7 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isJapanese = Localizations.localeOf(context).languageCode == 'ja';
     return SizedBox(
       height: height,
       child: Stack(
@@ -322,13 +302,13 @@ class _MenuRow extends StatelessWidget {
                       text: '$titleLine1\n$titleLine2',
                       textAlign: TextAlign.center,
                       textStyle: TextStyle(
-                        fontSize: 42,
+                        fontSize: isJapanese ? 42 : 24,
                         fontFamily: 'mPlus',
                         height: 1.05,
                         color: Colors.white,
                       ),
                       strokeColor: titleColor,
-                      strokeWidth: 7,
+                      strokeWidth: isJapanese ? 7 : 4,
                     ),
                   ),
                 ),

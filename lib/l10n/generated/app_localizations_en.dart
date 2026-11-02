@@ -13,7 +13,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Sorokun';
+  String get appTitle => 'Sorokun!';
 
   @override
   String get languageLabel => '言語 / Language';

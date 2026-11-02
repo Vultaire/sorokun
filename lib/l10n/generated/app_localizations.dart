@@ -105,7 +105,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In ja, this message translates to:
-  /// **'Sorokun'**
+  /// **'そろくん！'**
   String get appTitle;
 
   /// No description provided for @languageLabel.

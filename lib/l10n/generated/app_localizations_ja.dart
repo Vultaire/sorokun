@@ -13,7 +13,7 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => 'Sorokun';
+  String get appTitle => 'そろくん！';
 
   @override
   String get languageLabel => '言語 / Language';

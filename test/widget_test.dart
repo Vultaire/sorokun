@@ -1,4 +1,4 @@
-// Modified by Vultaire on 2026-11-01.
+// Modified by Vultaire on 2026-11-02.
 // Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -84,7 +84,7 @@ void main() {
     controller.dispose();
   });
 
-  testWidgets('English home branding uses the language-neutral app name', (
+  testWidgets('English home branding retains the original logo artwork', (
     WidgetTester tester,
   ) async {
     SharedPreferences.setMockInitialValues({'ui_language': 'english'});
@@ -96,8 +96,18 @@ void main() {
     await tester.pumpWidget(_localizedApp(controller, const HomePage()));
     await tester.pump();
 
-    expect(find.text('Sorokun'), findsOneWidget);
-    expect(find.text('そろくん！'), findsNothing);
+    bool hasAsset(String path) => tester
+        .widgetList<Image>(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is Image &&
+                widget.image is AssetImage &&
+                (widget.image as AssetImage).assetName == path,
+          ),
+        )
+        .isNotEmpty;
+    expect(hasAsset('assets/sorokun_white.png'), isTrue);
+    expect(hasAsset('assets/sorokun_color.png'), isTrue);
     controller.dispose();
   });
 
@@ -196,6 +206,7 @@ void main() {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(Kyuui.zsk10.localizedLabel(l10n)),
+                Text(l10n.appTitle),
                 Text(Kyuui.nskj3.localizedLabel(l10n)),
                 Text(Kyuui.zsd1.localizedLabel(l10n)),
                 Text(Denomination.zenshuren.localizedName(l10n)),
@@ -228,6 +239,7 @@ void main() {
       tester.widgetList<Text>(find.byType(Text)).map((text) => text.data),
       [
         '10 kyu',
+        'Sorokun!',
         'Pre-3 kyu',
         '1 dan',
         'Zenshuren',
@@ -256,6 +268,7 @@ void main() {
       tester.widgetList<Text>(find.byType(Text)).map((text) => text.data),
       [
         '10級',
+        'そろくん！',
         '準3級',
         '初段',
         '全国珠算教育連盟',
