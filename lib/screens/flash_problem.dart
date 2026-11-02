@@ -316,6 +316,17 @@ class _FlashProblemInputState<T> extends State<FlashProblemInput<T>>
 
   String get _input => textData.formatted;
 
+  void _submit() {
+    if (_input.isEmpty) {
+      SoLoud.instance.play(sound.invalid);
+      return;
+    }
+
+    _data.textFieldDataList[_data.currentProblemIndex] = textData;
+    widget.showAnswer();
+    SoLoud.instance.play(_data.isCorrect ? sound.correct : sound.incorrect);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -326,72 +337,70 @@ class _FlashProblemInputState<T> extends State<FlashProblemInput<T>>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox.expand(
-        child: Flex(
-          direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
-          children: [
-            Expanded(
-              flex: 8,
-              child: Column(
-                mainAxisAlignment: .center,
-                crossAxisAlignment: .center,
-                children: [
-                  if (widget.showTimer) SizedBox(height: 50),
-                  SizedBox(
-                    height: 150,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: FlashTextField(data: textData),
-                    ),
-                  ),
-                  if (widget.showTimer)
-                    Opacity(
-                      opacity: 0.4,
-                      child: SizedBox(
-                        width: 400,
-                        height: 50,
-                        child: BarTimer(
-                          duration: Duration(milliseconds: widget.duration),
-                          delayOver: widget.delayOver,
-                          onComplete: () {
-                            _data.textFieldDataList[_data.currentProblemIndex] =
-                                textData;
-                            widget.showAnswer();
-                            SoLoud.instance.play(
-                              _data.isCorrect ? sound.correct : sound.incorrect,
-                            );
-                          },
-                        ),
+    return KeypadKeyboardListener(
+      keypadType: KeypadType.flash,
+      onAppendDigit: appendDigit,
+      onDeleteDigit: deleteDigit,
+      onClearAll: clearAll,
+      onSubmit: _submit,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox.expand(
+          child: Flex(
+            direction: _data.isPortrait ? Axis.vertical : Axis.horizontal,
+            children: [
+              Expanded(
+                flex: 8,
+                child: Column(
+                  mainAxisAlignment: .center,
+                  crossAxisAlignment: .center,
+                  children: [
+                    if (widget.showTimer) SizedBox(height: 50),
+                    SizedBox(
+                      height: 150,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: FlashTextField(data: textData),
                       ),
                     ),
-                ],
+                    if (widget.showTimer)
+                      Opacity(
+                        opacity: 0.4,
+                        child: SizedBox(
+                          width: 400,
+                          height: 50,
+                          child: BarTimer(
+                            duration: Duration(milliseconds: widget.duration),
+                            delayOver: widget.delayOver,
+                            onComplete: () {
+                              _data.textFieldDataList[_data
+                                      .currentProblemIndex] =
+                                  textData;
+                              widget.showAnswer();
+                              SoLoud.instance.play(
+                                _data.isCorrect
+                                    ? sound.correct
+                                    : sound.incorrect,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              flex: 5,
-              child: Keypad(
-                onAppendDigit: appendDigit,
-                onDeleteDigit: deleteDigit,
-                onClearAll: clearAll,
-                onSubmit: () {
-                  if (_input.isEmpty) {
-                    SoLoud.instance.play(sound.invalid);
-                    return;
-                  }
-
-                  _data.textFieldDataList[_data.currentProblemIndex] = textData;
-                  widget.showAnswer();
-
-                  SoLoud.instance.play(
-                    _data.isCorrect ? sound.correct : sound.incorrect,
-                  );
-                },
-                levelType: KeypadType.flash,
+              Expanded(
+                flex: 5,
+                child: Keypad(
+                  onAppendDigit: appendDigit,
+                  onDeleteDigit: deleteDigit,
+                  onClearAll: clearAll,
+                  onSubmit: _submit,
+                  levelType: KeypadType.flash,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

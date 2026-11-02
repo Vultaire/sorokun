@@ -1,3 +1,5 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:async';
 import 'dart:math';
 
@@ -39,6 +41,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
       GlobalKey<ResultPopupState>();
   bool _delayOver = false;
   bool _showLoading = false;
+  bool _isCompleting = false;
   late final PaperProblemSounds _sound;
   Stopwatch _stopwatch = Stopwatch();
   @override
@@ -92,19 +95,18 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
   Widget _buildKeypad() {
     if (widget.selectedLevel is MitoriLevel) {
       return Keypad(
-        onAppendDigit: (digit) =>
-            _mitorizanKey.currentState?.appendDigit(digit),
-        onDeleteDigit: () => _mitorizanKey.currentState?.deleteDigit(),
-        onClearAll: () => _mitorizanKey.currentState?.clearAll(),
-        onSubmit: () => _mitorizanKey.currentState?.submit(),
+        onAppendDigit: _appendDigit,
+        onDeleteDigit: _deleteDigit,
+        onClearAll: _clearAll,
+        onSubmit: _submit,
         levelType: .mitori,
       );
     } else if (widget.selectedLevel is DivMultLevel) {
       return Keypad(
-        onAppendDigit: (digit) => _divMultKey.currentState?.appendDigit(digit),
-        onDeleteDigit: () => _divMultKey.currentState?.deleteDigit(),
-        onClearAll: () => _divMultKey.currentState?.clearAll(),
-        onSubmit: () => _divMultKey.currentState?.submit(),
+        onAppendDigit: _appendDigit,
+        onDeleteDigit: _deleteDigit,
+        onClearAll: _clearAll,
+        onSubmit: _submit,
         levelType: .divMult,
       );
     } else {
@@ -112,11 +114,50 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
     }
   }
 
+  KeypadType get _keypadType => widget.selectedLevel is MitoriLevel
+      ? KeypadType.mitori
+      : KeypadType.divMult;
+
+  void _appendDigit(String digit) {
+    if (widget.selectedLevel is MitoriLevel) {
+      _mitorizanKey.currentState?.appendDigit(digit);
+    } else {
+      _divMultKey.currentState?.appendDigit(digit);
+    }
+  }
+
+  void _deleteDigit() {
+    if (widget.selectedLevel is MitoriLevel) {
+      _mitorizanKey.currentState?.deleteDigit();
+    } else {
+      _divMultKey.currentState?.deleteDigit();
+    }
+  }
+
+  void _clearAll() {
+    if (widget.selectedLevel is MitoriLevel) {
+      _mitorizanKey.currentState?.clearAll();
+    } else {
+      _divMultKey.currentState?.clearAll();
+    }
+  }
+
+  void _submit() {
+    if (widget.selectedLevel is MitoriLevel) {
+      _mitorizanKey.currentState?.submit();
+    } else {
+      _divMultKey.currentState?.submit();
+    }
+  }
+
   void _onComplete({required bool outOfTime}) async {
+    if (_isCompleting) return;
     _stopwatch.stop();
 
     final data = _collectResultData();
     if (data == null || !mounted) return;
+
+    setState(() => _isCompleting = true);
 
     final blockingOverlay = OverlayEntry(
       builder: (context) => Positioned.fill(
@@ -319,27 +360,35 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
                         ),
                     ],
                   );
-                  final keypad = IgnorePointer(
-                    ignoring: !_delayOver,
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: .center,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              isPortrait ? 8.0 : 0,
-                              isPortrait ? 8.0 : 0,
-                              isPortrait ? 8.0 : 0,
-                              0,
+                  final keypad = KeypadKeyboardListener(
+                    keypadType: _keypadType,
+                    enabled: _delayOver && !_isCompleting,
+                    onAppendDigit: _appendDigit,
+                    onDeleteDigit: _deleteDigit,
+                    onClearAll: _clearAll,
+                    onSubmit: _submit,
+                    child: IgnorePointer(
+                      ignoring: !_delayOver,
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: .center,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                isPortrait ? 8.0 : 0,
+                                isPortrait ? 8.0 : 0,
+                                isPortrait ? 8.0 : 0,
+                                0,
+                              ),
+                              child: _buildKeypad(),
                             ),
-                            child: _buildKeypad(),
                           ),
-                        ),
-                        Align(
-                          alignment: .center,
-                          child: ResultPopup(key: _resultPopupKey),
-                        ),
-                      ],
+                          Align(
+                            alignment: .center,
+                            child: ResultPopup(key: _resultPopupKey),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                   final Widget mainContent = Flex(

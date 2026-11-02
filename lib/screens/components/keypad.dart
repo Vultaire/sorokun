@@ -1,9 +1,12 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:async';
 import 'dart:math';
 import 'dart:developer' as developer;
 
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:soroban_app/screens/settings.dart';
 
@@ -509,6 +512,136 @@ class _KeypadButtonState extends State<KeypadButton> {
 }
 
 enum KeypadType { divMult, mitori, flash }
+
+enum KeypadKeyboardCommandType { appendDigit, deleteDigit, clearAll, submit }
+
+@immutable
+class KeypadKeyboardCommand {
+  const KeypadKeyboardCommand.appendDigit(String value)
+    : this._(KeypadKeyboardCommandType.appendDigit, value);
+  const KeypadKeyboardCommand.deleteDigit()
+    : this._(KeypadKeyboardCommandType.deleteDigit);
+  const KeypadKeyboardCommand.clearAll()
+    : this._(KeypadKeyboardCommandType.clearAll);
+  const KeypadKeyboardCommand.submit()
+    : this._(KeypadKeyboardCommandType.submit);
+
+  const KeypadKeyboardCommand._(this.type, [this.digit]);
+
+  final KeypadKeyboardCommandType type;
+  final String? digit;
+}
+
+final _keyboardDigits = <LogicalKeyboardKey, String>{
+  LogicalKeyboardKey.digit0: '0',
+  LogicalKeyboardKey.digit1: '1',
+  LogicalKeyboardKey.digit2: '2',
+  LogicalKeyboardKey.digit3: '3',
+  LogicalKeyboardKey.digit4: '4',
+  LogicalKeyboardKey.digit5: '5',
+  LogicalKeyboardKey.digit6: '6',
+  LogicalKeyboardKey.digit7: '7',
+  LogicalKeyboardKey.digit8: '8',
+  LogicalKeyboardKey.digit9: '9',
+  LogicalKeyboardKey.numpad0: '0',
+  LogicalKeyboardKey.numpad1: '1',
+  LogicalKeyboardKey.numpad2: '2',
+  LogicalKeyboardKey.numpad3: '3',
+  LogicalKeyboardKey.numpad4: '4',
+  LogicalKeyboardKey.numpad5: '5',
+  LogicalKeyboardKey.numpad6: '6',
+  LogicalKeyboardKey.numpad7: '7',
+  LogicalKeyboardKey.numpad8: '8',
+  LogicalKeyboardKey.numpad9: '9',
+};
+
+KeypadKeyboardCommand? keypadKeyboardCommandFor(
+  LogicalKeyboardKey key,
+  KeypadType keypadType,
+) {
+  final digit = _keyboardDigits[key];
+  if (digit != null) return KeypadKeyboardCommand.appendDigit(digit);
+
+  if (key == LogicalKeyboardKey.backspace) {
+    return const KeypadKeyboardCommand.deleteDigit();
+  }
+  if (key == LogicalKeyboardKey.delete) {
+    return const KeypadKeyboardCommand.clearAll();
+  }
+  if (key == LogicalKeyboardKey.enter ||
+      key == LogicalKeyboardKey.numpadEnter) {
+    return const KeypadKeyboardCommand.submit();
+  }
+  if (keypadType == KeypadType.mitori &&
+      (key == LogicalKeyboardKey.minus ||
+          key == LogicalKeyboardKey.numpadSubtract)) {
+    return const KeypadKeyboardCommand.appendDigit('-');
+  }
+  if (keypadType == KeypadType.divMult &&
+      (key == LogicalKeyboardKey.period ||
+          key == LogicalKeyboardKey.numpadDecimal)) {
+    return const KeypadKeyboardCommand.appendDigit('.');
+  }
+  if (keypadType == KeypadType.mitori && key == LogicalKeyboardKey.keyA) {
+    // This is the existing Mitori keypad's auxiliary action; the `a` marker is
+    // interpreted by its existing answer formatter.
+    return const KeypadKeyboardCommand.appendDigit('a');
+  }
+  return null;
+}
+
+/// Handles physical keyboard input without creating a text-input client.
+/// Focus alone does not open the software keyboard on mobile devices.
+class KeypadKeyboardListener extends StatelessWidget {
+  const KeypadKeyboardListener({
+    super.key,
+    required this.keypadType,
+    required this.onAppendDigit,
+    required this.onDeleteDigit,
+    required this.onClearAll,
+    required this.onSubmit,
+    required this.child,
+    this.enabled = true,
+  });
+
+  final KeypadType keypadType;
+  final ValueChanged<String> onAppendDigit;
+  final VoidCallback onDeleteDigit;
+  final VoidCallback onClearAll;
+  final VoidCallback onSubmit;
+  final Widget child;
+  final bool enabled;
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent ||
+        HardwareKeyboard.instance.isControlPressed ||
+        HardwareKeyboard.instance.isAltPressed ||
+        HardwareKeyboard.instance.isMetaPressed) {
+      return KeyEventResult.ignored;
+    }
+
+    final command = keypadKeyboardCommandFor(event.logicalKey, keypadType);
+    if (command == null) return KeyEventResult.ignored;
+    if (!enabled) return KeyEventResult.handled;
+
+    switch (command.type) {
+      case KeypadKeyboardCommandType.appendDigit:
+        onAppendDigit(command.digit!);
+      case KeypadKeyboardCommandType.deleteDigit:
+        onDeleteDigit();
+      case KeypadKeyboardCommandType.clearAll:
+        onClearAll();
+      case KeypadKeyboardCommandType.submit:
+        onSubmit();
+    }
+    return KeyEventResult.handled;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(autofocus: true, onKeyEvent: _handleKeyEvent, child: child);
+  }
+}
 
 class ResultPopup extends StatefulWidget {
   const ResultPopup({super.key});

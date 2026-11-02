@@ -18,6 +18,17 @@ Practice core soroban competition and examination subjects—mitori-zan, multipl
 
 Practice addition by calculating numbers that appear rapidly on screen. Choose examination mode, which follows the applicable grade system, or free mode, where you can set the number of numbers, digit range, and display time. Examination grades follow both the Zenshuren and Japan Flash Anzan Association systems.
 
+## Keyboard input (PC)
+
+Answers can be entered with a physical PC keyboard while an answer-entry screen is active. The on-screen custom keypad remains available. No text input field is used, so tapping the app on a phone will not open the operating system's software keyboard.
+
+- Number-row or numpad `0`–`9`: enter a digit
+- `Backspace`: delete the last character
+- `Delete`: clear the current answer
+- `Enter` or numpad Enter: submit the answer
+- In Mitori-zan, `-` is supported, and `A` activates the keypad's auxiliary action
+- The decimal-point key is supported for multiplication/division
+
 ## Build and self-host the web app
 
 Install the Flutter SDK (this fork was built with Flutter 3.47.9 / Dart 3.13.7), then run these commands from the repository root:
