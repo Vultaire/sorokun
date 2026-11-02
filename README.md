@@ -1,4 +1,4 @@
-> **Modified fork notice — 2026-11-01:** This is a modified version of Sorokun maintained by Vultaire at <https://github.com/Vultaire/sorokun>. The original project is by Chet Lin. This fork removes yomiagezan and VOICEVOX and adds web-build support. It remains licensed under GPL-3.0; see `LICENSE.txt`.
+> **改変版のお知らせ（2026-11-01）:** 本リポジトリは Vultaire が保守する「そろくん！」の改変版です。フォーク先は <https://github.com/Vultaire/sorokun>、原作は Chet Lin によるものです。このフォークでは読み上げ算と VOICEVOX を削除し、Web ビルド対応を追加しました。ライセンスは GNU GPL v3.0 です。詳しくは `LICENSE.txt` をご覧ください。
 
 ## そろくん！
 
@@ -12,9 +12,9 @@
 
 画面に次々と表示される数字を暗算でひたすら足していくトレーニングです。級位に沿って挑戦する検定モードと、口数・桁数・表示時間を自由に設定できるフリーモードの2種類を用意しています。検定モードは全珠連式・日本フラッシュ暗算協会式のそれぞれの級位に対応しています。
 
-## Build and self-host the web app
+## Webアプリのビルドとセルフホスティング
 
-Install Flutter (the fork is built with Flutter 3.47.9 / Dart 3.13.7), then run these commands from the repository root:
+Flutter SDK をインストールしてください（このフォークは Flutter 3.47.9 / Dart 3.13.7 でビルドしています）。リポジトリのルートで次のコマンドを実行します。
 
 ```sh
 flutter pub get
@@ -23,26 +23,26 @@ flutter test
 flutter build web --release --base-href /
 ```
 
-The static site is written to `build/web/`. Copy the **contents** of that directory to the web server's document root to serve the app at `https://vultaire.net/`.
+静的サイトは `build/web/` に生成されます。`https://example.com/` で公開する場合は、このディレクトリ**内のファイルとフォルダー一式**を Web サーバーのドキュメントルートへ配置してください。
 
-If you want to serve it from a subdirectory such as `https://vultaire.net/sorokun/`, build with a matching base href instead:
+`https://example.com/sorokun/` のようなサブディレクトリで公開する場合は、URL のパスに合わせてビルドします。
 
 ```sh
 flutter build web --release --base-href /sorokun/
 ```
 
-Then copy the contents of `build/web/` into the server's `/sorokun/` directory. The base href must match the public path, including the trailing slash.
+その後、`build/web/` の中身をサーバーの `/sorokun/` ディレクトリへ配置してください。`--base-href` は末尾のスラッシュも含め、公開するパスと一致させます。
 
-### Static-host configuration
+### 静的 Web サーバーの設定
 
-Configure the server to:
+サーバーでは次の点を確認してください。
 
-1. Serve static files normally and return `.wasm` files with the `application/wasm` MIME type.
-2. The app currently uses hash-based GoRouter URLs (for example, `/#/home`), so refreshing an app route requests the root document and does not require an SPA route rewrite. If you later switch to path-based URLs, configure the static host to return `index.html` for unknown app paths. For Nginx at the domain root, the usual rule is `try_files $uri $uri/ /index.html;`; for a subdirectory, use that subdirectory's `index.html` as the fallback.
-3. Serve the site over HTTPS for public use.
+1. 静的ファイルを通常どおり配信し、`.wasm` ファイルの MIME type を `application/wasm` にします。
+2. 現在のアプリは `/#/home` のようなハッシュ形式の GoRouter URL を使うため、画面の再読み込み時に SPA 用のフォールバック設定は不要です。将来、パス形式の URL に変更する場合は、アプリ内の未知のパスに対して `index.html` を返す設定を追加してください。Nginx でドメイン直下に置く場合の一般的な設定は `try_files $uri $uri/ /index.html;` です。サブディレクトリの場合は、そのディレクトリの `index.html` をフォールバック先にします。
+3. 公開サイトは HTTPS で配信してください。
 
-The current SoLoud web plugin version bundles its WebAssembly support and does not require cross-origin-isolation headers. The app's Credits page links to this fork and its GPLv3 license; keep that source link available when publishing the compiled site.
+現在使用している SoLoud Web プラグインは WebAssembly 関連ファイルを同梱しており、Cross-Origin Isolation 用のヘッダーは不要です。アプリの「クレジット」画面には、このフォークのソースコードと GPL v3.0 ライセンスへのリンクがあります。ビルド済みアプリを公開する際も、ソースコードへのリンクを利用できる状態にしてください。
 
-Browsers restrict autoplay: sound effects become available after the visitor's first click or touch interaction.
+ブラウザーの自動再生制限により、効果音は利用者が最初にクリックまたはタッチ操作を行った後に再生可能になります。
 
-For a quick local static preview after building, run `python3 -m http.server 8000 --directory build/web` and open `http://localhost:8000/`. This simple server does not configure SPA route fallbacks, so use the production server's fallback rule when testing deep links or page refreshes.
+ビルド後、ローカルで簡単に確認するには `python3 -m http.server 8000 --directory build/web` を実行して `http://localhost:8000/` を開きます。この簡易サーバーでは SPA 用のフォールバックを設定しません。パス形式の URL や再読み込みを確認する場合は、本番サーバーと同様のフォールバックを設定してください。
