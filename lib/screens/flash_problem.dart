@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/problem_generation/flash_set.dart';
 import 'package:soroban_app/screens/components/exit_button.dart';
@@ -257,13 +258,14 @@ class FlashTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       height: 155,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Center(
           child: Text(
-            data.formatted.isEmpty ? '答えを記入してください。' : data.formatted,
+            data.formatted.isEmpty ? l10n.flashAnswerPrompt : data.formatted,
             style: data.formatted.isEmpty
                 ? Theme.of(context).textTheme.displayLarge?.copyWith(
                     color: Theme.of(context).colorScheme.primaryFixed,
@@ -436,6 +438,7 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
   bool? _frozenIsCorrect;
 
   Widget freeOrLevelButtons(bool isSingleProblem) {
+    final l10n = AppLocalizations.of(context);
     if (isSingleProblem) {
       return Wrap(
         alignment: .center,
@@ -448,7 +451,11 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
               color: Theme.of(context).colorScheme.primaryContainer,
               onPressed: widget.onRepeatProblem,
               child: Center(
-                child: iconHelper(context, Icons.replay_rounded, 'もう一回'),
+                child: iconHelper(
+                  context,
+                  Icons.replay_rounded,
+                  l10n.repeatProblem,
+                ),
               ),
             ),
           ),
@@ -461,7 +468,7 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
                 child: iconHelper(
                   context,
                   Icons.arrow_forward_ios_rounded,
-                  '次の問題',
+                  l10n.nextProblem,
                 ),
               ),
             ),
@@ -483,8 +490,8 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
                   ? Icons.grade
                   : Icons.arrow_forward,
               _data.currentProblemIndex == _data.allAnswers.length - 1
-                  ? '採点'
-                  : '次の問題',
+                  ? l10n.grade
+                  : l10n.nextProblem,
             ),
           ),
         ),
@@ -494,6 +501,7 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     _frozenIndex ??= _data.currentProblemIndex;
     _frozenAnswerResults ??= _data.answerResults;
@@ -535,7 +543,7 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
                       ),
                       child: Center(
                         child: Text(
-                          _frozenIsCorrect! ? '正解' : '不正解',
+                          _frozenIsCorrect! ? l10n.correct : l10n.incorrect,
                           style: Theme.of(context).textTheme.displayLarge
                               ?.copyWith(
                                 color: _frozenIsCorrect!
@@ -563,7 +571,7 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
                                 child: Column(
                                   children: [
                                     Text(
-                                      '答え',
+                                      l10n.answer,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.headlineMedium,
@@ -593,7 +601,7 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
                                 child: Column(
                                   children: [
                                     Text(
-                                      '回答タイム',
+                                      l10n.answerTime,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.headlineMedium,
@@ -601,7 +609,7 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
                                     FittedBox(
                                       fit: .scaleDown,
                                       child: Text(
-                                        '${widget.inputTime}秒',
+                                        l10n.answerTimeValue(widget.inputTime),
                                         style: Theme.of(
                                           context,
                                         ).textTheme.displayMedium,

@@ -1,4 +1,7 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 
 class DivMultDisplay extends StatelessWidget {
   const DivMultDisplay({
@@ -30,8 +33,8 @@ class DivMultDisplay extends StatelessWidget {
                 : 0.0,
             child: Transform.translate(
               offset: const Offset(0, -20),
-              child: const Text(
-                '（注意） 小数第3位未満四捨五入。',
+              child: Text(
+                AppLocalizations.of(context).roundingDecimalNotice,
                 style: TextStyle(fontSize: 18, fontFamily: 'mPlus'),
                 textScaler: TextScaler.noScaling,
               ),
@@ -48,8 +51,8 @@ class DivMultDisplay extends StatelessWidget {
             opacity: (problemIndex == intRoundIndex && isFocused) ? 1.0 : 0.0,
             child: Transform.translate(
               offset: const Offset(0, -20),
-              child: const Text(
-                '（注意） 整数位未満四捨五入。',
+              child: Text(
+                AppLocalizations.of(context).roundingIntegerNotice,
                 style: TextStyle(fontSize: 18, fontFamily: 'mPlus'),
                 textScaler: TextScaler.noScaling,
               ),

@@ -26,7 +26,7 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
       children: {
         for (final option in options)
           option.$1: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: _buildLabelWidget(
               label: option.$2,
               isSelected: option.$1 == groupValue,

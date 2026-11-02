@@ -1,0 +1,248 @@
+{
+  "@@locale": "en",
+  "appTitle": "Sorokun",
+  "languageLabel": "言語 / Language",
+  "settingsTitle": "Settings",
+  "japaneseLanguage": "日本語",
+  "englishLanguage": "English",
+  "englishTranslationDisclosure": "English interface translations were prepared with LLM assistance; Japanese is the original text. Corrections are welcome.",
+  "keypadPosition": "Keypad position",
+  "leftHanded": "Left-handed",
+  "rightHanded": "Right-handed",
+  "keypadLayout": "Keypad layout",
+  "screenBrightness": "Appearance",
+  "automatic": "System",
+  "theme": "Theme",
+  "color": "Color",
+  "homeCombinedLine1": "Combined",
+  "homeCombinedLine2": "Practice",
+  "homeSelectSubject": "Choose a subject",
+  "homeFlashLine1": "Flash",
+  "homeFlashLine2": "Anzan",
+  "homeExam": "Exam",
+  "homeFree": "Free",
+  "credits": "Credits",
+  "creditsDevelopment": "Development",
+  "developerRole": "Developer",
+  "originalSourceIntro": "Original Sorokun source code:",
+  "forkSourceIntro": "Source code for this fork:",
+  "forkModificationNotice": "Originally by Chet Lin. Modified by Vultaire (2026-11-01). Removed yomiagezan and VOICEVOX and added web-build support.",
+  "forkDevelopmentDisclosure": "Changes in this fork were made through agentic development using an LLM, under Vultaire's direction.",
+  "localizationUpdateNotice": "Japanese/English interface localization was added on 2026-11-02.",
+  "fontCredits": "Fonts",
+  "abacusBeadFont": "Soroban bead font",
+  "sorobanNumeralFont": "Soroban numeral font",
+  "license": "License",
+  "noWarrantyLicenseNotice": "This software comes with no warranty. Redistribution and modification are permitted under GPL v3.0. See the link above for the full license.",
+  "exitDialogTitle": "Exit practice?",
+  "exitDialogMessage": "Submit your answers or quit this session.",
+  "cancel": "Cancel",
+  "submit": "Submit",
+  "quit": "Quit",
+  "back": "Back",
+  "combinedSubjectsTitle": "Combined practice",
+  "organizationZenshuren": "Zenshuren",
+  "@organizationZenshuren": {
+    "description": "Romanized proper name for the Japanese grade-system organization; do not invent an official English name."
+  },
+  "organizationNisshuren": "Nisshuren",
+  "@organizationNisshuren": {
+    "description": "Romanized proper name for the Japanese grade-system organization; do not invent an official English name."
+  },
+  "organizationFlashAnzan": "Japan Flash Anzan Association",
+  "@organizationFlashAnzan": {
+    "description": "Use this romanized name as a descriptive label, not as a verified official English title."
+  },
+  "sorobanOrganizationGloss": "soroban grade system",
+  "@sorobanOrganizationGloss": {
+    "description": "Descriptive, non-official gloss for the selector: this organization is associated with a soroban grade system."
+  },
+  "flashAnzanOrganizationGloss": "Flash Anzan grades",
+  "@flashAnzanOrganizationGloss": {
+    "description": "Descriptive, non-official gloss for the organization responsible for these Flash Anzan grade labels."
+  },
+  "organizationGlossLine": "({gloss})",
+  "@organizationGlossLine": {
+    "description": "A compact parenthesized descriptive gloss displayed below a romanized organization name.",
+    "placeholders": { "gloss": { "type": "String" } }
+  },
+  "kyuGrade": "{grade, plural, =1{{grade} kyu} other{{grade} kyu}}",
+  "@kyuGrade": {
+    "description": "Standard kyu grade label; retain the Japanese term kyu.",
+    "placeholders": { "grade": { "type": "int" } }
+  },
+  "preKyuGrade": "Pre-{grade} kyu",
+  "@preKyuGrade": {
+    "description": "Preparatory kyu grade label; retain the Japanese term kyu.",
+    "placeholders": { "grade": { "type": "int" } }
+  },
+  "danGroupGrade": "Dan",
+  "danGrade": "{grade} dan",
+  "@danGrade": {
+    "description": "Dan grade label; retain the Japanese term dan.",
+    "placeholders": { "grade": { "type": "String" } }
+  },
+  "rankPreShodan": "Pre-1 dan",
+  "rankShodan": "1 dan",
+  "rankPreNidan": "Pre-2 dan",
+  "rankNidan": "2 dan",
+  "rankPreSandan": "Pre-3 dan",
+  "rankSandan": "3 dan",
+  "rankPreYondan": "Pre-4 dan",
+  "rankYondan": "4 dan",
+  "rankPreGodan": "Pre-5 dan",
+  "rankGodan": "5 dan",
+  "rankPreRokudan": "Pre-6 dan",
+  "rankRokudan": "6 dan",
+  "rankNanadan": "7 dan",
+  "rankHachidan": "8 dan",
+  "rankKudan": "9 dan",
+  "rankJudan": "10 dan",
+  "paperPractice": "Practice",
+  "paperExam": "Exam",
+  "mitoriZan": "Mitorizan (+/−)",
+  "@mitoriZan": {
+    "description": "Compact practice-mode label; retain Mitorizan and the plus/minus notation."
+  },
+  "division": "Division",
+  "multiplication": "Multiplication",
+  "mitoriAnzan": "Mental Mitorizan",
+  "@mitoriAnzan": {
+    "description": "Mental-arithmetic version of Mitorizan."
+  },
+  "divisionAnzan": "Mental division",
+  "multiplicationAnzan": "Mental multiplication",
+  "flashAnzanSubject": "Flash Anzan",
+  "gradeActivity": "{grade} {activity}",
+  "@gradeActivity": {
+    "description": "Grade label paired with a practice subject.",
+    "placeholders": {
+      "grade": { "type": "String", "example": "10 kyu" },
+      "activity": { "type": "String", "example": "Mitori-zan" }
+    }
+  },
+  "start": "Start",
+  "timeLimit": "Time limit: {minutes, plural, one{{minutes} minute} other{{minutes} minutes}}",
+  "@timeLimit": {
+    "description": "Time limit in minutes.",
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "problemCount": "{count, plural, =1{{count} problem} other{{count} problems}}",
+  "@problemCount": {
+    "description": "Number of questions in a practice set.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "pointsEach": "{points} points each (max {maximum} points)",
+  "@pointsEach": {
+    "description": "Points awarded per problem and maximum possible score.",
+    "placeholders": {
+      "points": { "type": "int" },
+      "maximum": { "type": "int" }
+    }
+  },
+  "passingScore": "Passing score: {score}+ points",
+  "@passingScore": {
+    "description": "Minimum passing score.",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "oneProblemDigits": "{range} digits per problem",
+  "@oneProblemDigits": {
+    "description": "Number of digits in each Mitori-zan problem.",
+    "placeholders": { "range": { "type": "String" } }
+  },
+  "methodDigits": "{method}: {range} digits total",
+  "@methodDigits": {
+    "description": "Digit range for a multiplication or division method.",
+    "placeholders": {
+      "method": { "type": "String" },
+      "range": { "type": "String" }
+    }
+  },
+  "jippou": "Multiplicand + multiplier",
+  "@jippou": {
+    "description": "Abbreviation for the two factors whose digits are counted together."
+  },
+  "houshou": "Divisor + quotient",
+  "@houshou": {
+    "description": "Abbreviation for divisor and quotient digits counted together."
+  },
+  "mitorizanExplanation": "Mitorizan (+/−): add and subtract a vertical list of numbers in sequence.",
+  "@mitorizanExplanation": {
+    "description": "Inline help gloss for the compact Mitorizan (+/−) label; Japanese is the original text."
+  },
+  "flashExamTitle": "Flash Anzan Practice Exam",
+  "@flashExamTitle": {
+    "description": "Menu title for Flash Anzan examination practice."
+  },
+  "flashFreeTitle": "Free Flash Anzan",
+  "flashDigitsLabel": "Digits",
+  "flashKuchiLabel": "Numbers",
+  "@flashKuchiLabel": {
+    "description": "Number of sequential numbers shown in one Flash Anzan problem."
+  },
+  "digitsUnit": "{count, plural, one{ digit} other{ digits}}",
+  "@digitsUnit": {
+    "description": "Unit for the number of digits in one Flash Anzan problem.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "kuchiUnit": "{count, plural, one{ number} other{ numbers}}",
+  "@kuchiUnit": {
+    "description": "Unit for the number of values shown in one Flash Anzan problem.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "secondsUnit": " sec",
+  "flashAllProblems": "{count, plural, =1{{count} problem} other{{count} problems}}, 10 points each",
+  "@flashAllProblems": {
+    "description": "Flash Anzan question count and points per question.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "flashPassingScore": "Pass with {score} points",
+  "@flashPassingScore": {
+    "description": "Passing score for Flash Anzan.",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "noCarry": "No carrying",
+  "displayInterval": "Display interval",
+  "blankInterval": "Blank interval",
+  "millisecondsShort": "ms",
+  "flashAnswerPrompt": "Enter your answer.",
+  "repeatProblem": "Try again",
+  "nextProblem": "Next problem",
+  "grade": "Results",
+  "correct": "Correct",
+  "incorrect": "Incorrect",
+  "answer": "Answer",
+  "answerTime": "Answer time",
+  "answerTimeValue": "{time} sec",
+  "@answerTimeValue": {
+    "description": "Time taken to enter an answer, in seconds.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "time": "Time",
+  "reviewIncorrect": "Review incorrect answers",
+  "tryAgain": "Try again",
+  "returnHome": "Return to main menu",
+  "returnToSettings": "Return to settings",
+  "pointsOutOf": "out of {maximum} points",
+  "@pointsOutOf": {
+    "description": "Maximum possible points in a result score.",
+    "placeholders": { "maximum": { "type": "int" } }
+  },
+  "pointsUnit": "points",
+  "passed": "Passed",
+  "failed": "Not passed",
+  "unknownLevelType": "Unknown level type",
+  "timeUp": "Time's up!",
+  "practiceComplete": "Complete!",
+  "roundingDecimalNotice": "Note: Round to the nearest hundredth.",
+  "roundingIntegerNotice": "Note: Round to the nearest whole number.",
+  "backspaceSemantics": "Delete the last digit; hold to clear",
+  "submitSemantics": "Submit answer",
+  "themeColorWheelSemantics": "Choose a theme color",
+  "standardKeypadLayout": "Standard keypad layout",
+  "telephoneKeypadLayout": "Telephone keypad layout",
+  "increaseValue": "Increase value",
+  "decreaseValue": "Decrease value",
+  "increaseTime": "Increase display time",
+  "decreaseTime": "Decrease display time"
+}

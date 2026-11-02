@@ -1,6 +1,7 @@
 // Modified by Vultaire on 2026-11-01.
 // Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -10,18 +11,21 @@ class CreditsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'クレジット', context: context),
+      appBar: CustomAppBar(title: l10n.credits, context: context),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             _CreditSection(
-              title: '開発',
-              entries: const [_CreditEntry(role: 'デベロッパー', name: 'Chet Lin')],
+              title: l10n.creditsDevelopment,
+              entries: [
+                _CreditEntry(role: l10n.developerRole, name: 'Chet Lin'),
+              ],
             ),
-            Text('元のそろくんのソースコードはこちらで公開されています：', style: textTheme.titleMedium),
+            Text(l10n.originalSourceIntro, style: textTheme.titleMedium),
             InkWell(
               onTap: () => _launchUrl('https://github.com/konomu/sorokun'),
               child: Text(
@@ -32,7 +36,7 @@ class CreditsPage extends StatelessWidget {
                 ),
               ),
             ),
-            Text('このフォークのソースコード：', style: textTheme.titleMedium),
+            Text(l10n.forkSourceIntro, style: textTheme.titleMedium),
             InkWell(
               onTap: () => _launchUrl('https://github.com/Vultaire/sorokun'),
               child: Text(
@@ -43,24 +47,30 @@ class CreditsPage extends StatelessWidget {
                 ),
               ),
             ),
+            Text(l10n.forkModificationNotice, style: textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(l10n.forkDevelopmentDisclosure, style: textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(l10n.localizationUpdateNotice, style: textTheme.titleMedium),
+            const SizedBox(height: 8),
             Text(
-              '原作: Chet Lin。Vultaire による改変版です（2026-11-01）。読み上げ算と VOICEVOX を削除し、Web ビルド対応を行いました。',
+              l10n.englishTranslationDisclosure,
               style: textTheme.titleMedium,
             ),
             const SizedBox(height: 24),
             _CreditSection(
-              title: 'フォント',
-              entries: const [
-                _CreditEntry(role: 'そろばん玉のフォント', name: '小黒珠算教室　代表　小黒　元'),
-                _CreditEntry(role: '珠算の数字のフォント', name: 'Chet Lin'),
+              title: l10n.fontCredits,
+              entries: [
+                _CreditEntry(role: l10n.abacusBeadFont, name: '小黒珠算教室　代表　小黒　元'),
+                _CreditEntry(role: l10n.sorobanNumeralFont, name: 'Chet Lin'),
               ],
             ),
             const SizedBox(height: 24),
             _CreditSection(
-              title: 'ライセンス',
+              title: l10n.license,
               entries: [
                 _CreditEntry(
-                  role: 'ライセンス',
+                  role: l10n.license,
                   name: 'GNU General Public License v3.0',
                   onTap: () => _launchUrl(
                     'https://github.com/Vultaire/sorokun/blob/main/LICENSE.txt',
@@ -68,10 +78,7 @@ class CreditsPage extends StatelessWidget {
                 ),
               ],
             ),
-            Text(
-              '本ソフトウェアは無保証です。GPL v3.0 の条件に従って再配布・改変できます。ライセンス全文は上記リンクから確認できます。',
-              style: textTheme.titleMedium,
-            ),
+            Text(l10n.noWarrantyLicenseNotice, style: textTheme.titleMedium),
           ],
         ),
       ),
@@ -121,6 +128,7 @@ class _CreditEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final roleWidth = MediaQuery.sizeOf(context).width < 500 ? 110.0 : 175.0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -129,12 +137,13 @@ class _CreditEntry extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-              width: 110,
+              width: roleWidth,
               child: Text(
                 role,
                 style: textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
               ),
             ),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 name,

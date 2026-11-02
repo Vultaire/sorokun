@@ -7,6 +7,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/main.dart';
 import 'package:soroban_app/problem_generation/mitori_set.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
@@ -88,7 +89,7 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
         key: _divMultKey,
       );
     } else {
-      return const Center(child: Text('Unknown level type'));
+      return Center(child: Text(AppLocalizations.of(context).unknownLevelType));
     }
   }
 
@@ -277,15 +278,52 @@ class _PaperProblemScreenState extends State<PaperProblemScreen> {
               }
             },
             builder: (context, value, child) {
+              final isJapanese =
+                  Localizations.localeOf(context).languageCode == 'ja';
               return Center(
                 child: Transform.translate(
                   offset: Offset(value * MediaQuery.sizeOf(context).width, 0),
-                  child: outOfTime
-                      ? Image.asset('assets/yame.png', width: 200, height: 200)
-                      : Image.asset(
-                          'assets/kanryou.png',
-                          width: 200,
+                  child: isJapanese
+                      ? outOfTime
+                            ? Image.asset(
+                                'assets/yame.png',
+                                width: 200,
+                                height: 200,
+                              )
+                            : Image.asset(
+                                'assets/kanryou.png',
+                                width: 200,
+                                height: 200,
+                              )
+                      : SizedBox(
+                          width: 320,
                           height: 200,
+                          child: FittedBox(
+                            child: Text(
+                              outOfTime
+                                  ? AppLocalizations.of(context).timeUp
+                                  : AppLocalizations.of(
+                                      context,
+                                    ).practiceComplete,
+                              style: const TextStyle(
+                                fontSize: 72,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF8296FF),
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.white,
+                                    blurRadius: 3,
+                                    offset: Offset(-2, -2),
+                                  ),
+                                  Shadow(
+                                    color: Colors.white,
+                                    blurRadius: 3,
+                                    offset: Offset(2, 2),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                 ),
               );

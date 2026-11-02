@@ -1,10 +1,15 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
+import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
+import 'package:soroban_app/screens/components/organization_option.dart';
 import '../models/level_definitions.dart';
 
 class PaperMenuPage extends StatefulWidget {
@@ -91,8 +96,9 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: CustomAppBar(title: '総合種目', context: context),
+      appBar: CustomAppBar(title: l10n.combinedSubjectsTitle, context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,
@@ -201,13 +207,29 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           });
                         },
                       );
+                      final localizedDenominationOptions = [
+                        (
+                          KyuuiDenomination.zs,
+                          organizationOption(
+                            context,
+                            name: l10n.organizationZenshuren,
+                            gloss: l10n.sorobanOrganizationGloss,
+                          ),
+                        ),
+                        (
+                          KyuuiDenomination.ns,
+                          organizationOption(
+                            context,
+                            name: l10n.organizationNisshuren,
+                            gloss: l10n.sorobanOrganizationGloss,
+                          ),
+                        ),
+                      ];
+
                       final denominationSelector =
                           LabeledSlidingSegmentedControl<KyuuiDenomination>(
                             groupValue: _kyuuiDenomination,
-                            options: const [
-                              (KyuuiDenomination.zs, '全珠連'),
-                              (KyuuiDenomination.ns, '日珠連'),
-                            ],
+                            options: localizedDenominationOptions,
                             onValueChanged: (value) {
                               setState(() {
                                 _kyuuiDenomination = value;
@@ -222,7 +244,10 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
 
                       final modeSelector = LabeledSlidingSegmentedControl<bool>(
                         groupValue: _isExam,
-                        options: const [(false, '練習'), (true, '検定')],
+                        options: [
+                          (false, l10n.paperPractice),
+                          (true, l10n.paperExam),
+                        ],
                         onValueChanged: (value) {
                           setState(() {
                             _isExam = value;
@@ -234,7 +259,10 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                           ? Column(
                               crossAxisAlignment: .stretch,
                               children: [
-                                denominationSelector,
+                                SizedBox(
+                                  height: 64,
+                                  child: Center(child: denominationSelector),
+                                ),
                                 SizedBox(height: 80, child: selectorStack),
                                 modeSelector,
                                 SizedBox(height: 6),
@@ -343,6 +371,7 @@ class PaperStartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     late final String label;
     late final PaperProblemLevel? selectedLevel;
     late final String imagePath;
@@ -351,32 +380,32 @@ class PaperStartButton extends StatelessWidget {
     Set<int>? jippou;
     switch (startButtonType) {
       case .mitori:
-        label = 'みとり算';
+        label = l10n.mitoriZan;
         selectedLevel = kyuui.mitoriSoroban;
         imagePath = 'assets/mitori.png';
         letterCounts = selectedLevel?.letterCounts;
       case .wari:
-        label = 'わり算';
+        label = l10n.division;
         selectedLevel = kyuui.divSoroban;
         imagePath = 'assets/wari.png';
         houshou = selectedLevel?.houshouJippou;
       case .kake:
-        label = 'かけ算';
+        label = l10n.multiplication;
         selectedLevel = kyuui.multSoroban;
         imagePath = 'assets/kake.png';
         jippou = selectedLevel?.houshouJippou;
       case .mitorian:
-        label = 'みとり暗算';
+        label = l10n.mitoriAnzan;
         selectedLevel = kyuui.mitoriAnzan;
         imagePath = 'assets/mitorian.png';
         letterCounts = selectedLevel?.letterCounts;
       case .warian:
-        label = 'わり暗算';
+        label = l10n.divisionAnzan;
         selectedLevel = kyuui.divAnzan;
         imagePath = 'assets/warian.png';
         houshou = selectedLevel?.houshouJippou;
       case .kakean:
-        label = 'かけ暗算';
+        label = l10n.multiplicationAnzan;
         selectedLevel = kyuui.multAnzan;
         imagePath = 'assets/kakean.png';
         jippou = selectedLevel?.houshouJippou;
@@ -400,7 +429,10 @@ class PaperStartButton extends StatelessWidget {
                   extra: {
                     'selectedLevel': selectedLevel,
                     'isExam': isExam,
-                    'examDisplayString': '${kyuui.kyuuString}の$label',
+                    'examDisplayString': l10n.gradeActivity(
+                      kyuui.localizedLabel(l10n),
+                      label,
+                    ),
                   },
                 );
               }
@@ -472,7 +504,12 @@ class PaperStartButton extends StatelessWidget {
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: Text('${kyuui.kyuuString}の$label'),
+                                  title: Text(
+                                    l10n.gradeActivity(
+                                      kyuui.localizedLabel(l10n),
+                                      label,
+                                    ),
+                                  ),
                                   content: PaperInfoDialog(
                                     selectedLevel: selectedLevel!,
                                     letterCounts: letterCounts,
@@ -517,20 +554,18 @@ class PaperInfoDialog extends StatelessWidget {
   final Set<int>? houshou;
   final Set<int>? jippou;
 
-  String _rangeOrSingle(Set<int> values, String prefix, String suffix) {
+  String _rangeOrSingle(Set<int> values) {
     final min = values.reduce((a, b) => a < b ? a : b);
     final max = values.reduce((a, b) => a > b ? a : b);
-    return values.length == 1
-        ? '$prefix$min$suffix'
-        : '$prefix$min〜$max$suffix';
+    return values.length == 1 ? '$min' : '$min–$max';
   }
 
   @override
   Widget build(BuildContext context) {
-    final String denominationString =
-        selectedLevel.levelInfo.denomination.denominationString;
+    final l10n = AppLocalizations.of(context);
+    final denominationString = selectedLevel.levelInfo.denomination
+        .localizedName(l10n);
     final Duration timeLimit = selectedLevel.levelInfo.timeLimit;
-    final String timeLimitString = '${timeLimit.inMinutes}分';
     final int pointsPerProblem = selectedLevel.levelInfo.pointsPerProblem;
     final int problemCount = selectedLevel.problemCount;
     final int passThreshold =
@@ -541,14 +576,19 @@ class PaperInfoDialog extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(denominationString),
-        Text('制限時間：$timeLimitString'),
-        Text('問題数：$problemCount題'),
-        Text('各$pointsPerProblem点 (${pointsPerProblem * problemCount}点満点)'),
-        Text('合格点：$passThreshold点以上'),
+        Text(l10n.timeLimit(timeLimit.inMinutes)),
+        Text(l10n.problemCount(problemCount)),
+        Text(
+          l10n.pointsEach(pointsPerProblem, pointsPerProblem * problemCount),
+        ),
+        Text(l10n.passingScore(passThreshold)),
         if (letterCounts != null)
-          Text('一題あたり${_rangeOrSingle(letterCounts!, '', '字')}'),
-        if (jippou != null) Text('実法あわせて${_rangeOrSingle(jippou!, '', '桁')}'),
-        if (houshou != null) Text('法商あわせて${_rangeOrSingle(houshou!, '', '桁')}'),
+          Text(l10n.oneProblemDigits(_rangeOrSingle(letterCounts!))),
+        if (jippou != null)
+          Text(l10n.methodDigits(l10n.jippou, _rangeOrSingle(jippou!))),
+        if (houshou != null)
+          Text(l10n.methodDigits(l10n.houshou, _rangeOrSingle(houshou!))),
+        if (selectedLevel is MitoriLevel) Text(l10n.mitorizanExplanation),
       ],
     );
   }
@@ -678,7 +718,9 @@ class _KyuuiSelectorState extends State<KyuuiSelector> {
                   opacity: isFocused ? 1.0 : 0.5,
                   child: Center(
                     child: Text(
-                      widget.kyuuiList[index].kyuuString,
+                      widget.kyuuiList[index].localizedLabel(
+                        AppLocalizations.of(context),
+                      ),
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ),

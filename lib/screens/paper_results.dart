@@ -6,6 +6,8 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
+import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
 import '../models/level_definitions.dart';
@@ -34,6 +36,7 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final List<ProblemScorer> problemScorerList = [
       for (int i = 0; i < allProblems.length; i++)
         ProblemScorer(
@@ -56,7 +59,7 @@ class ResultsScreen extends StatelessWidget {
               examDescription = Column(
                 children: [
                   Text(
-                    selectedLevel.levelInfo.denomination.denominationString,
+                    selectedLevel.levelInfo.denomination.localizedName(l10n),
                     style: Theme.of(context).textTheme.displaySmall,
                   ),
                   Text(
@@ -82,7 +85,7 @@ class ResultsScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'タイム',
+                        l10n.time,
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       Text(
@@ -129,7 +132,7 @@ class ResultsScreen extends StatelessWidget {
                         child: iconHelper(
                           context,
                           Icons.error_outline_rounded,
-                          '間違えた問題を見る',
+                          l10n.reviewIncorrect,
                         ),
                       ),
                     ),
@@ -165,7 +168,7 @@ class ResultsScreen extends StatelessWidget {
                       child: iconHelper(
                         context,
                         Icons.replay_rounded,
-                        'もう一回挑戦する',
+                        l10n.tryAgain,
                       ),
                     ),
                   ),
@@ -179,7 +182,7 @@ class ResultsScreen extends StatelessWidget {
                       child: iconHelper(
                         context,
                         Icons.home_rounded,
-                        'メインメニューに戻る',
+                        l10n.returnHome,
                       ),
                     ),
                   ),
@@ -195,7 +198,7 @@ class ResultsScreen extends StatelessWidget {
                       child: iconHelper(
                         context,
                         Icons.settings_rounded,
-                        '設定画面に戻る',
+                        l10n.returnToSettings,
                       ),
                     ),
                   ),
@@ -305,7 +308,7 @@ class CountUpCircle extends StatefulWidget {
   final Duration durationBase;
   final TextStyle style;
   final double passThreshold;
-  final List<(String, int)>? rangedThreshold;
+  final List<(RankLabel, int)>? rangedThreshold;
   final int pointsPerProblem;
 
   const CountUpCircle({
@@ -335,7 +338,7 @@ class _CountUpCircleState extends State<CountUpCircle>
   int _lastSoundTrigger = 0;
   bool _animatePassFail = false;
   bool _thresholdSoundPlayed = false;
-  late final String passFailText;
+  late final RankLabel? achievedRank;
 
   bool get userPassed =>
       widget.score.$1 / widget.score.$2 >= widget.passThreshold;
@@ -344,15 +347,15 @@ class _CountUpCircleState extends State<CountUpCircle>
   void initState() {
     super.initState();
     if (widget.rangedThreshold != null) {
-      String computedText = '不合格';
+      RankLabel? computedRank;
       for (final threshold in widget.rangedThreshold!) {
         if (widget.score.$1 >= threshold.$2) {
-          computedText = threshold.$1;
+          computedRank = threshold.$1;
         }
       }
-      passFailText = computedText;
+      achievedRank = computedRank;
     } else {
-      passFailText = userPassed ? '合格' : '不合格';
+      achievedRank = null;
     }
     Duration duration =
         Duration(milliseconds: 800) + widget.durationBase * widget.score.$1;
@@ -454,6 +457,12 @@ class _CountUpCircleState extends State<CountUpCircle>
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final passFailText = widget.rangedThreshold != null
+        ? achievedRank?.localizedName(l10n) ?? l10n.failed
+        : userPassed
+        ? l10n.passed
+        : l10n.failed;
     return AnimatedBuilder(
       animation: Listenable.merge([_controller, _pulseController]),
       builder: (context, child) {
@@ -476,7 +485,7 @@ class _CountUpCircleState extends State<CountUpCircle>
                   Transform.translate(
                     offset: Offset(0, 10),
                     child: Text(
-                      '${widget.score.$2}点満点',
+                      l10n.pointsOutOf(widget.score.$2),
                       style: widget.style.copyWith(
                         fontSize: widget.style.fontSize! * 0.55,
                       ),
@@ -493,7 +502,7 @@ class _CountUpCircleState extends State<CountUpCircle>
                             children: [
                               Text('${widget.score.$1}', style: widget.style),
                               Text(
-                                '点',
+                                l10n.pointsUnit,
                                 style: widget.style.copyWith(
                                   fontSize: widget.style.fontSize! * 0.75,
                                 ),
@@ -513,7 +522,7 @@ class _CountUpCircleState extends State<CountUpCircle>
                               ),
                             ),
                             Text(
-                              '点',
+                              l10n.pointsUnit,
                               style: widget.style.copyWith(
                                 fontSize: widget.style.fontSize! * 0.75,
                               ),

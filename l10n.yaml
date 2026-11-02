@@ -1,0 +1,10 @@
+arb-dir: lib/l10n
+template-arb-file: app_ja.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+output-dir: lib/l10n/generated
+nullable-getter: false
+header: |
+  // Generated localization code for Sorokun.
+  // Localization resources updated by Vultaire on 2026-11-02.
+  // Fork: https://github.com/Vultaire/sorokun

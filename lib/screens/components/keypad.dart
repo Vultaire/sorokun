@@ -8,6 +8,7 @@ import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/screens/settings.dart';
 
 import '../../problem_generation/helpers.dart';
@@ -292,6 +293,7 @@ class Keypad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final numberRows = InheritedAppController.of(context).numberRows;
     return Container(
       constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
@@ -326,10 +328,14 @@ class Keypad extends StatelessWidget {
                     margin: EdgeInsets.zero,
                     onTapDown: onDeleteDigit,
                     onLongPress: onClearAll,
-                    child: Icon(
-                      Icons.backspace_rounded,
-                      size: 65,
-                      color: colorScheme.onPrimaryContainer,
+                    child: Semantics(
+                      button: true,
+                      label: l10n.backspaceSemantics,
+                      child: Icon(
+                        Icons.backspace_rounded,
+                        size: 65,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
                     ),
                   ),
                 ),
@@ -339,10 +345,14 @@ class Keypad extends StatelessWidget {
                     color: colorScheme.primaryContainer,
                     margin: EdgeInsets.zero,
                     onTapDown: onSubmit,
-                    child: Icon(
-                      Icons.check_rounded,
-                      size: 85,
-                      color: colorScheme.onPrimaryContainer,
+                    child: Semantics(
+                      button: true,
+                      label: l10n.submitSemantics,
+                      child: Icon(
+                        Icons.check_rounded,
+                        size: 85,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
                     ),
                   ),
                 ),

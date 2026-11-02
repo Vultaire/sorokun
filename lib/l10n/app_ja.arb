@@ -1,0 +1,248 @@
+{
+  "@@locale": "ja",
+  "appTitle": "Sorokun",
+  "languageLabel": "言語 / Language",
+  "settingsTitle": "アプリ設定",
+  "japaneseLanguage": "日本語",
+  "englishLanguage": "English",
+  "englishTranslationDisclosure": "英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。",
+  "keypadPosition": "テンキーの配置",
+  "leftHanded": "左利き",
+  "rightHanded": "右利き",
+  "keypadLayout": "キーレイアウト",
+  "screenBrightness": "画面の明るさ",
+  "automatic": "自動",
+  "theme": "テーマ",
+  "color": "カラー",
+  "homeCombinedLine1": "総合",
+  "homeCombinedLine2": "種目",
+  "homeSelectSubject": "種目を選ぶ",
+  "homeFlashLine1": "フラッシュ",
+  "homeFlashLine2": "暗算",
+  "homeExam": "検定",
+  "homeFree": "フリー",
+  "credits": "クレジット",
+  "creditsDevelopment": "開発",
+  "developerRole": "開発者",
+  "originalSourceIntro": "オリジナル Sorokun のソースコード：",
+  "forkSourceIntro": "このフォークのソースコード：",
+  "forkModificationNotice": "原作: Chet Lin。Vultaire による改変版です（2026-11-01）。読み上げ算と VOICEVOX を削除し、Web ビルド対応を行いました。",
+  "forkDevelopmentDisclosure": "このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。",
+  "localizationUpdateNotice": "日本語・English インターフェースのローカライズを2026-11-02に追加しました。",
+  "fontCredits": "フォント",
+  "abacusBeadFont": "そろばん玉のフォント",
+  "sorobanNumeralFont": "珠算の数字のフォント",
+  "license": "ライセンス",
+  "noWarrantyLicenseNotice": "本ソフトウェアは無保証です。GPL v3.0 の条件に従って再配布・改変できます。ライセンス全文は上記リンクから確認できます。",
+  "exitDialogTitle": "終了しますか？",
+  "exitDialogMessage": "提出するか、途中でやめるか選んでください。",
+  "cancel": "キャンセル",
+  "submit": "提出",
+  "quit": "やめる",
+  "back": "戻る",
+  "combinedSubjectsTitle": "総合種目",
+  "organizationZenshuren": "Zenshuren",
+  "@organizationZenshuren": {
+    "description": "Romanized proper name for the Japanese grade-system organization; do not invent an official English name."
+  },
+  "organizationNisshuren": "Nisshuren",
+  "@organizationNisshuren": {
+    "description": "Romanized proper name for the Japanese grade-system organization; do not invent an official English name."
+  },
+  "organizationFlashAnzan": "Japan Flash Anzan Association",
+  "@organizationFlashAnzan": {
+    "description": "Use this romanized name as a descriptive label, not as a verified official English title."
+  },
+  "sorobanOrganizationGloss": "珠算の級位制度",
+  "@sorobanOrganizationGloss": {
+    "description": "Descriptive, non-official gloss for the selector: this organization is associated with a soroban grade system."
+  },
+  "flashAnzanOrganizationGloss": "フラッシュ暗算の級位制度",
+  "@flashAnzanOrganizationGloss": {
+    "description": "Descriptive, non-official gloss for the organization responsible for these Flash Anzan grade labels."
+  },
+  "organizationGlossLine": "（{gloss}）",
+  "@organizationGlossLine": {
+    "description": "A compact parenthesized descriptive gloss displayed below a romanized organization name.",
+    "placeholders": { "gloss": { "type": "String" } }
+  },
+  "kyuGrade": "{grade, plural, other{{grade}級}}",
+  "@kyuGrade": {
+    "description": "Standard kyu grade label.",
+    "placeholders": { "grade": { "type": "int" } }
+  },
+  "preKyuGrade": "準{grade}級",
+  "@preKyuGrade": {
+    "description": "Preparatory kyu grade label.",
+    "placeholders": { "grade": { "type": "int" } }
+  },
+  "danGroupGrade": "段位",
+  "danGrade": "{grade, select, 1{初段} 2{二段} 3{三段} 4{四段} 5{五段} 6{六段} 7{七段} 8{八段} 9{九段} 10{十段} other{{grade}段}}",
+  "@danGrade": {
+    "description": "Dan grade label. Use the traditional Japanese rank names.",
+    "placeholders": { "grade": { "type": "String" } }
+  },
+  "rankPreShodan": "準初段",
+  "rankShodan": "初段",
+  "rankPreNidan": "準二段",
+  "rankNidan": "二段",
+  "rankPreSandan": "準三段",
+  "rankSandan": "三段",
+  "rankPreYondan": "準四段",
+  "rankYondan": "四段",
+  "rankPreGodan": "準五段",
+  "rankGodan": "五段",
+  "rankPreRokudan": "準六段",
+  "rankRokudan": "六段",
+  "rankNanadan": "七段",
+  "rankHachidan": "八段",
+  "rankKudan": "九段",
+  "rankJudan": "十段",
+  "paperPractice": "練習",
+  "paperExam": "検定",
+  "mitoriZan": "みとり算",
+  "@mitoriZan": {
+    "description": "Compact practice-mode label for Mitorizan (+/−); keep the English term Mitorizan compact."
+  },
+  "division": "わり算",
+  "multiplication": "かけ算",
+  "mitoriAnzan": "みとり暗算",
+  "@mitoriAnzan": {
+    "description": "Mental-arithmetic version of Mitorizan."
+  },
+  "divisionAnzan": "わり暗算",
+  "multiplicationAnzan": "かけ暗算",
+  "flashAnzanSubject": "フラッシュ暗算",
+  "gradeActivity": "{grade}の{activity}",
+  "@gradeActivity": {
+    "description": "Grade label paired with a practice subject.",
+    "placeholders": {
+      "grade": { "type": "String", "example": "10級" },
+      "activity": { "type": "String", "example": "みとり算" }
+    }
+  },
+  "start": "スタート",
+  "timeLimit": "制限時間：{minutes}分",
+  "@timeLimit": {
+    "description": "Time limit in minutes.",
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "problemCount": "問題数：{count}題",
+  "@problemCount": {
+    "description": "Number of questions in a practice set.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "pointsEach": "各{points}点（{maximum}点満点）",
+  "@pointsEach": {
+    "description": "Points awarded per problem and maximum possible score.",
+    "placeholders": {
+      "points": { "type": "int" },
+      "maximum": { "type": "int" }
+    }
+  },
+  "passingScore": "合格点：{score}点以上",
+  "@passingScore": {
+    "description": "Minimum passing score.",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "oneProblemDigits": "一題あたり{range}字",
+  "@oneProblemDigits": {
+    "description": "Number of digits in each Mitori-zan problem.",
+    "placeholders": { "range": { "type": "String" } }
+  },
+  "methodDigits": "{method}あわせて{range}桁",
+  "@methodDigits": {
+    "description": "Digit range for a multiplication or division method.",
+    "placeholders": {
+      "method": { "type": "String" },
+      "range": { "type": "String" }
+    }
+  },
+  "jippou": "実法",
+  "@jippou": {
+    "description": "Abbreviation for the two factors (multiplicand and multiplier) whose digits are counted together."
+  },
+  "houshou": "法商",
+  "@houshou": {
+    "description": "Abbreviation for divisor and quotient digits counted together."
+  },
+  "mitorizanExplanation": "Mitorizan (+/−)：縦に並んだ数を、足し算・引き算を交互に使って計算します。",
+  "@mitorizanExplanation": {
+    "description": "Inline help gloss: explain that Mitorizan is a vertical sequence of addition and subtraction; this appears in an existing details dialog."
+  },
+  "flashExamTitle": "フラッシュ暗算もぎ検定",
+  "@flashExamTitle": {
+    "description": "Menu title for Flash Anzan examination practice."
+  },
+  "flashFreeTitle": "フラッシュ暗算フリー",
+  "flashDigitsLabel": "桁数",
+  "flashKuchiLabel": "口数",
+  "@flashKuchiLabel": {
+    "description": "Number of sequential numbers shown in one Flash Anzan problem."
+  },
+  "digitsUnit": "{count, plural, other{桁}}",
+  "@digitsUnit": {
+    "description": "Unit for the number of digits in one Flash Anzan problem.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "kuchiUnit": "{count, plural, other{口}}",
+  "@kuchiUnit": {
+    "description": "Unit for the number of values shown in one Flash Anzan problem.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "secondsUnit": "秒",
+  "flashAllProblems": "全{count}問 各10点",
+  "@flashAllProblems": {
+    "description": "Flash Anzan question count and points per question.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "flashPassingScore": "{score}点で合格",
+  "@flashPassingScore": {
+    "description": "Passing score for Flash Anzan.",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "noCarry": "くりあがりなし",
+  "displayInterval": "表示間隔",
+  "blankInterval": "消画間隔",
+  "millisecondsShort": "ms",
+  "flashAnswerPrompt": "答えを記入してください。",
+  "repeatProblem": "もう一回",
+  "nextProblem": "次の問題",
+  "grade": "採点",
+  "correct": "正解",
+  "incorrect": "不正解",
+  "answer": "答え",
+  "answerTime": "回答タイム",
+  "answerTimeValue": "{time}秒",
+  "@answerTimeValue": {
+    "description": "Time taken to enter an answer, in seconds.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "time": "タイム",
+  "reviewIncorrect": "間違えた問題を見る",
+  "tryAgain": "もう一回挑戦する",
+  "returnHome": "メインメニューに戻る",
+  "returnToSettings": "設定画面に戻る",
+  "pointsOutOf": "{maximum}点満点",
+  "@pointsOutOf": {
+    "description": "Maximum possible points in a result score.",
+    "placeholders": { "maximum": { "type": "int" } }
+  },
+  "pointsUnit": "点",
+  "passed": "合格",
+  "failed": "不合格",
+  "unknownLevelType": "不明なレベル形式",
+  "timeUp": "時間切れ！",
+  "practiceComplete": "終了！",
+  "roundingDecimalNotice": "（注意）小数第3位未満を四捨五入します。",
+  "roundingIntegerNotice": "（注意）整数位未満を四捨五入します。",
+  "backspaceSemantics": "末尾の数字を削除（長押しですべて消去）",
+  "submitSemantics": "回答を送信",
+  "themeColorWheelSemantics": "テーマカラーを選択",
+  "standardKeypadLayout": "標準のテンキー配列",
+  "telephoneKeypadLayout": "電話式のテンキー配列",
+  "increaseValue": "値を増やす",
+  "decreaseValue": "値を減らす",
+  "increaseTime": "表示時間を長くする",
+  "decreaseTime": "表示時間を短くする"
+}

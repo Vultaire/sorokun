@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/settings.dart';
 import 'package:stroke_text/stroke_text.dart';
@@ -12,6 +13,8 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isJapanese = Localizations.localeOf(context).languageCode == 'ja';
     final size = MediaQuery.sizeOf(context);
     final bool isPortrait =
         MediaQuery.orientationOf(context) == Orientation.portrait;
@@ -81,22 +84,45 @@ class HomePage extends StatelessWidget {
                                 horizontal: 44,
                                 vertical: 44,
                               ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Image.asset('assets/sorokun_white.png'),
-                                  ColorFiltered(
-                                    colorFilter: ColorFilter.mode(
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimaryFixedVariant,
-                                      BlendMode.modulate,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/sorokun_color.png',
-                                    ),
-                                  ),
-                                ],
+                              child: Semantics(
+                                label: l10n.appTitle,
+                                child: isJapanese
+                                    ? Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Image.asset(
+                                            'assets/sorokun_white.png',
+                                          ),
+                                          ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant,
+                                              BlendMode.modulate,
+                                            ),
+                                            child: Image.asset(
+                                              'assets/sorokun_color.png',
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : SizedBox(
+                                        width: 355,
+                                        height: 165,
+                                        child: Center(
+                                          child: Text(
+                                            l10n.appTitle,
+                                            style: TextStyle(
+                                              fontSize: 82,
+                                              fontFamily: 'mPlus',
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
@@ -135,12 +161,12 @@ class HomePage extends StatelessWidget {
                                 height: rowHeight,
                                 background: scheme.primaryFixedDim,
                                 titleColor: scheme.onPrimaryFixedVariant,
-                                titleLine1: '総合',
-                                titleLine2: '種目',
+                                titleLine1: l10n.homeCombinedLine1,
+                                titleLine2: l10n.homeCombinedLine2,
                                 rotation: -0.2,
                                 buttons: [
                                   _MenuButtonData(
-                                    label: '種目を選ぶ',
+                                    label: l10n.homeSelectSubject,
                                     color: scheme.primary,
                                     onColor: scheme.onPrimary,
                                     onPressed: () =>
@@ -153,19 +179,19 @@ class HomePage extends StatelessWidget {
                                 height: rowHeight,
                                 background: scheme.primaryFixedDim,
                                 titleColor: scheme.onPrimaryFixedVariant,
-                                titleLine1: 'ﾌﾗｯｼｭ',
-                                titleLine2: '暗算',
+                                titleLine1: l10n.homeFlashLine1,
+                                titleLine2: l10n.homeFlashLine2,
                                 rotation: -0.2,
                                 buttons: [
                                   _MenuButtonData(
-                                    label: '検定',
+                                    label: l10n.homeExam,
                                     color: scheme.primary,
                                     onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/flash-level-menu'),
                                   ),
                                   _MenuButtonData(
-                                    label: 'フリー',
+                                    label: l10n.homeFree,
                                     color: scheme.primary,
                                     onColor: scheme.onPrimary,
                                     onPressed: () =>
@@ -195,7 +221,7 @@ class HomePage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
-                        'クレジット',
+                        l10n.credits,
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           color: Theme.of(
                             context,

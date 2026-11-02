@@ -3,9 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
+import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
+import 'package:soroban_app/screens/components/organization_option.dart';
 import 'package:soroban_app/screens/components/start_button.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 
@@ -108,8 +111,9 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: CustomAppBar(title: 'フラッシュ暗算もぎ検定', context: context),
+      appBar: CustomAppBar(title: l10n.flashExamTitle, context: context),
       body: SafeArea(
         child: FutureBuilder(
           future: _prefsFuture,
@@ -144,13 +148,29 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                         },
                       );
 
+                      final denominationOptions = [
+                        (
+                          KyuuiDenomination.zsFlash,
+                          organizationOption(
+                            context,
+                            name: l10n.organizationZenshuren,
+                            gloss: l10n.sorobanOrganizationGloss,
+                          ),
+                        ),
+                        (
+                          KyuuiDenomination.kkFlash,
+                          organizationOption(
+                            context,
+                            name: l10n.organizationFlashAnzan,
+                            gloss: l10n.flashAnzanOrganizationGloss,
+                          ),
+                        ),
+                      ];
+
                       final denominationSelector =
                           LabeledSlidingSegmentedControl<KyuuiDenomination>(
                             groupValue: _kyuuiDenomination,
-                            options: const [
-                              (KyuuiDenomination.zsFlash, '全珠連'),
-                              (KyuuiDenomination.kkFlash, '協会'),
-                            ],
+                            options: denominationOptions,
                             onValueChanged: (value) {
                               setState(() {
                                 _kyuuiDenomination = value;
@@ -168,7 +188,10 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           ? Column(
                               crossAxisAlignment: .stretch,
                               children: [
-                                denominationSelector,
+                                SizedBox(
+                                  height: 96,
+                                  child: Center(child: denominationSelector),
+                                ),
                                 const SizedBox(height: 6),
                                 SizedBox(height: 80, child: selectorStack),
                                 const SizedBox(height: 6),
@@ -176,8 +199,10 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                   child: FlashInfoDialog(
                                     selectedLevel: _kyuui.flash!,
                                     isPortrait: isPortrait,
-                                    examDisplayString:
-                                        '${_kyuui.kyuuString}のフラッシュ暗算',
+                                    examDisplayString: l10n.gradeActivity(
+                                      _kyuui.localizedLabel(l10n),
+                                      l10n.flashAnzanSubject,
+                                    ),
                                     savePrefs: _savePrefs,
                                   ),
                                 ),
@@ -204,8 +229,11 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                             child: FlashInfoDialog(
                                               selectedLevel: _kyuui.flash!,
                                               isPortrait: isPortrait,
-                                              examDisplayString:
-                                                  '${_kyuui.kyuuString}のフラッシュ暗算',
+                                              examDisplayString: l10n
+                                                  .gradeActivity(
+                                                    _kyuui.localizedLabel(l10n),
+                                                    l10n.flashAnzanSubject,
+                                                  ),
                                               savePrefs: _savePrefs,
                                             ),
                                           ),
@@ -248,8 +276,9 @@ class FlashInfoDialog extends StatelessWidget {
     final int digits = selectedLevel.digits;
     final int kuchi = selectedLevel.kuchi;
     final bool kuriagariNashi = selectedLevel.kuriagariNashi;
-    final String denominationString =
-        selectedLevel.levelInfo.denomination.denominationString;
+    final l10n = AppLocalizations.of(context);
+    final denominationString = selectedLevel.levelInfo.denomination
+        .localizedName(l10n);
     final int passThreshold =
         (selectedLevel.levelInfo.passThreshold * probCount).round() * 10;
 
@@ -301,11 +330,23 @@ class FlashInfoDialog extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                statCell(context, '$digits', '桁'),
+                                statCell(
+                                  context,
+                                  '$digits',
+                                  l10n.digitsUnit(digits),
+                                ),
                                 divider(context, isPortrait),
-                                statCell(context, '$kuchi', '口'),
+                                statCell(
+                                  context,
+                                  '$kuchi',
+                                  l10n.kuchiUnit(kuchi),
+                                ),
                                 divider(context, isPortrait),
-                                statCell(context, '$secondsPerProblem', '秒'),
+                                statCell(
+                                  context,
+                                  '$secondsPerProblem',
+                                  l10n.secondsUnit,
+                                ),
                               ],
                             ),
                           ),
@@ -315,27 +356,33 @@ class FlashInfoDialog extends StatelessWidget {
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text('全$probCount問 各10点', style: infoTextStyle),
                                 Text(
-                                  '$passThreshold点で合格',
+                                  l10n.flashAllProblems(probCount),
+                                  style: infoTextStyle,
+                                ),
+                                Text(
+                                  l10n.flashPassingScore(passThreshold),
                                   style: infoTextStyle,
                                 ),
                                 if (kuriagariNashi)
-                                  Text('くりあがりなし', style: infoTextStyle),
+                                  Text(l10n.noCarry, style: infoTextStyle),
                               ],
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('全$probCount問 各10点', style: infoTextStyle),
+                                Text(
+                                  l10n.flashAllProblems(probCount),
+                                  style: infoTextStyle,
+                                ),
                                 Text('  ・  ', style: infoTextStyle),
                                 Text(
-                                  '$passThreshold点で合格',
+                                  l10n.flashPassingScore(passThreshold),
                                   style: infoTextStyle,
                                 ),
                                 if (kuriagariNashi) ...[
                                   Text('  ・  ', style: infoTextStyle),
-                                  Text('くりあがりなし', style: infoTextStyle),
+                                  Text(l10n.noCarry, style: infoTextStyle),
                                 ],
                               ],
                             ),

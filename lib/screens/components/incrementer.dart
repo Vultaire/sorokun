@@ -1,5 +1,8 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/screens/components/spammable_button.dart';
 
 const upArrow = Icon(Icons.keyboard_arrow_up_rounded, size: 40);
@@ -82,10 +85,18 @@ class _IncrementerState extends State<Incrementer> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SpammableButton(
-          onTapDown: _increment,
-          enableRepeat: true,
-          child: SizedBox(height: 60, width: 80, child: Center(child: upArrow)),
+        Semantics(
+          button: true,
+          label: AppLocalizations.of(context).increaseValue,
+          child: SpammableButton(
+            onTapDown: _increment,
+            enableRepeat: true,
+            child: SizedBox(
+              height: 60,
+              width: 80,
+              child: Center(child: upArrow),
+            ),
+          ),
         ),
         SizedBox(height: 8),
         Material(
@@ -114,13 +125,17 @@ class _IncrementerState extends State<Incrementer> {
           ),
         ),
         SizedBox(height: 8),
-        SpammableButton(
-          onTapDown: _decrement,
-          enableRepeat: true,
-          child: SizedBox(
-            height: 60,
-            width: 80,
-            child: Center(child: downArrow),
+        Semantics(
+          button: true,
+          label: AppLocalizations.of(context).decreaseValue,
+          child: SpammableButton(
+            onTapDown: _decrement,
+            enableRepeat: true,
+            child: SizedBox(
+              height: 60,
+              width: 80,
+              child: Center(child: downArrow),
+            ),
           ),
         ),
       ],

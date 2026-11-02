@@ -1,4 +1,7 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/screens/components/navigation_button.dart';
 
 class StartButton extends StatelessWidget {
@@ -20,7 +23,7 @@ class StartButton extends StatelessWidget {
           color: Theme.of(context).colorScheme.primaryContainer,
           onPressed: onPressed,
           child: Text(
-            'スタート',
+            AppLocalizations.of(context).start,
             textAlign: .center,
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
               color: Theme.of(context).colorScheme.onPrimaryContainer,

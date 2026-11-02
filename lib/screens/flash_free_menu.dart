@@ -1,8 +1,11 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'dart:async';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'dart:math';
 
 import 'package:go_router/go_router.dart';
@@ -97,12 +100,13 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final int hideDuration = (_secondsPerProblem / (2.5 * _kuchi - 1) * 1000)
         .round();
     final int showDuration = (1.5 * hideDuration).round();
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'フラッシュ暗算フリー', context: context),
+      appBar: CustomAppBar(title: l10n.flashFreeTitle, context: context),
 
       body: SafeArea(
         child: Center(
@@ -259,7 +263,7 @@ class _IncrementerSection extends StatelessWidget {
       children: [
         Incrementer(
           value: kuchi,
-          label: '口数',
+          label: AppLocalizations.of(context).flashKuchiLabel,
           onChanged: (newValue) => onKuchiChanged(newValue.toInt()),
           min: 1,
           max: 30,
@@ -267,7 +271,7 @@ class _IncrementerSection extends StatelessWidget {
         const SizedBox(width: 16),
         Incrementer(
           value: digits,
-          label: '桁数',
+          label: AppLocalizations.of(context).flashDigitsLabel,
           onChanged: (newValue) => onDigitsChanged(newValue.toInt()),
           min: 1,
           max: 6,
@@ -308,18 +312,22 @@ class _TortoiseHareSlider extends StatelessWidget {
           Positioned(
             left: 85,
             bottom: 40,
-            child: SpammableButton(
-              onTapDown: onIncrease,
-              enableRepeat: true,
-              shape: BoxShape.circle,
-              child: Container(
-                height: 90,
-                width: 90,
-                padding: const EdgeInsets.all(12),
-                child: Image.asset(
-                  'assets/tortoise.png',
-                  color: colorScheme.onSurface,
-                  colorBlendMode: BlendMode.srcIn,
+            child: Semantics(
+              button: true,
+              label: AppLocalizations.of(context).increaseTime,
+              child: SpammableButton(
+                onTapDown: onIncrease,
+                enableRepeat: true,
+                shape: BoxShape.circle,
+                child: Container(
+                  height: 90,
+                  width: 90,
+                  padding: const EdgeInsets.all(12),
+                  child: Image.asset(
+                    'assets/tortoise.png',
+                    color: colorScheme.onSurface,
+                    colorBlendMode: BlendMode.srcIn,
+                  ),
                 ),
               ),
             ),
@@ -327,18 +335,22 @@ class _TortoiseHareSlider extends StatelessWidget {
           Positioned(
             right: 85,
             bottom: 40,
-            child: SpammableButton(
-              onTapDown: onDecrease,
-              enableRepeat: true,
-              shape: BoxShape.circle,
-              child: Container(
-                height: 90,
-                width: 90,
-                padding: const EdgeInsets.all(12),
-                child: Image.asset(
-                  'assets/hare.png',
-                  color: colorScheme.onSurface,
-                  colorBlendMode: BlendMode.srcIn,
+            child: Semantics(
+              button: true,
+              label: AppLocalizations.of(context).decreaseTime,
+              child: SpammableButton(
+                onTapDown: onDecrease,
+                enableRepeat: true,
+                shape: BoxShape.circle,
+                child: Container(
+                  height: 90,
+                  width: 90,
+                  padding: const EdgeInsets.all(12),
+                  child: Image.asset(
+                    'assets/hare.png',
+                    color: colorScheme.onSurface,
+                    colorBlendMode: BlendMode.srcIn,
+                  ),
                 ),
               ),
             ),
@@ -370,8 +382,14 @@ class _DurationCardsSection extends StatelessWidget {
         direction: direction,
         spacing: spacing,
         children: [
-          _DurationCard(title: '表示間隔', durationMs: showDuration),
-          _DurationCard(title: '消画間隔', durationMs: hideDuration),
+          _DurationCard(
+            title: AppLocalizations.of(context).displayInterval,
+            durationMs: showDuration,
+          ),
+          _DurationCard(
+            title: AppLocalizations.of(context).blankInterval,
+            durationMs: hideDuration,
+          ),
         ],
       ),
     );
@@ -391,7 +409,10 @@ class _DurationCard extends StatelessWidget {
 
     // Formats numbers with thousand separators and up to 1 decimal place
     // Examples: 12.3 -> "12.3", 1234.5 -> "1,234.5", 1000 -> "1,000"
-    final formatter = NumberFormat('#,##0.#');
+    final formatter = NumberFormat(
+      '#,##0.#',
+      Localizations.localeOf(context).toString(),
+    );
     final formattedDuration = formatter.format(durationMs);
 
     return Material(
@@ -408,7 +429,7 @@ class _DurationCard extends StatelessWidget {
               FittedBox(
                 fit: .scaleDown,
                 child: Text(
-                  '~$formattedDuration ms',
+                  '~$formattedDuration ${AppLocalizations.of(context).millisecondsShort}',
                   style: textTheme.headlineLarge!.copyWith(
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -616,7 +637,10 @@ class _CircularSliderState extends State<CircularSlider> {
                       fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
                     ),
                   ),
-                  Text('秒', style: Theme.of(context).textTheme.displaySmall),
+                  Text(
+                    AppLocalizations.of(context).secondsUnit,
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
                 ],
               ),
             ),

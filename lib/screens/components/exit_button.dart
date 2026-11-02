@@ -1,5 +1,8 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/main.dart';
 
 class ExitButton extends StatelessWidget {
@@ -16,6 +19,7 @@ class ExitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.arrow_back_ios_new_rounded),
+      tooltip: AppLocalizations.of(context).back,
       onPressed: () async {
         if (isSingleProblem) {
           context.pop();

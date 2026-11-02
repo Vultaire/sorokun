@@ -1,5 +1,8 @@
+// Modified by Vultaire on 2026-11-01.
+// Fork: https://github.com/Vultaire/sorokun
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({
@@ -84,6 +87,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   size: iconSize,
                   weight: 800,
                 ),
+                tooltip: AppLocalizations.of(context).back,
                 onPressed: onBackPressed ?? () => context.go('/home'),
               ),
             ),

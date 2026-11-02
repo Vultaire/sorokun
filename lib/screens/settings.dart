@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 
@@ -14,6 +15,7 @@ class SettingsGearButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.settings, size: 40),
+      tooltip: AppLocalizations.of(context).settingsTitle,
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -30,9 +32,10 @@ class ColorSchemeSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = InheritedAppController.of(context);
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('アプリ設定')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: AnimatedBuilder(
         animation: controller,
         builder: (context, _) {
@@ -42,7 +45,7 @@ class ColorSchemeSettingsPage extends StatelessWidget {
           final languageGroup = Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('言語 / Language', style: textTheme.headlineLarge),
+              Text(l10n.languageLabel, style: textTheme.headlineLarge),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -50,29 +53,19 @@ class ColorSchemeSettingsPage extends StatelessWidget {
                 ),
                 child: LabeledSlidingSegmentedControl<AppLanguage>(
                   groupValue: controller.language,
-                  options: const [
-                    (AppLanguage.japanese, '日本語'),
-                    (AppLanguage.english, 'English'),
+                  options: [
+                    (AppLanguage.japanese, l10n.japaneseLanguage),
+                    (AppLanguage.english, l10n.englishLanguage),
                   ],
                   onValueChanged: controller.setLanguage,
                 ),
               ),
-              if (controller.language == AppLanguage.english)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    '英語翻訳はまだ利用できません。 / '
-                    'English translation is not available yet.',
-                    textAlign: TextAlign.center,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
             ],
           );
 
           final keypadGroup = Column(
             children: [
-              Text('テンキーの配置', style: textTheme.headlineLarge),
+              Text(l10n.keypadPosition, style: textTheme.headlineLarge),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -82,16 +75,16 @@ class ColorSchemeSettingsPage extends StatelessWidget {
                   constraints: BoxConstraints(minWidth: 360),
                   child: LabeledSlidingSegmentedControl<Handedness>(
                     groupValue: controller.handedness,
-                    options: const [
-                      (Handedness.left, '左利き'),
-                      (Handedness.right, '右利き'),
+                    options: [
+                      (Handedness.left, l10n.leftHanded),
+                      (Handedness.right, l10n.rightHanded),
                     ],
                     onValueChanged: controller.setHandedness,
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Text('キーレイアウト', style: textTheme.headlineLarge),
+              Text(l10n.keypadLayout, style: textTheme.headlineLarge),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -108,24 +101,27 @@ class ColorSchemeSettingsPage extends StatelessWidget {
           final appearanceGroup = Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('画面の明るさ', style: textTheme.headlineLarge),
+              Text(l10n.screenBrightness, style: textTheme.headlineLarge),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: LabeledSlidingSegmentedControl<ThemeMode>(
                   groupValue: controller.themeMode,
-                  options: const [
+                  options: [
                     (ThemeMode.light, Icon(Icons.light_mode)),
                     (ThemeMode.dark, Icon(Icons.dark_mode)),
-                    (ThemeMode.system, '自動'),
+                    (ThemeMode.system, l10n.automatic),
                   ],
                   onValueChanged: controller.setThemeMode,
                 ),
               ),
               SizedBox(height: 24),
-              ColorWheel(
-                schemes: AppController.presetSchemes,
-                selected: controller.flexScheme,
-                onSelected: controller.setFlexScheme,
+              Semantics(
+                label: l10n.themeColorWheelSemantics,
+                child: ColorWheel(
+                  schemes: AppController.presetSchemes,
+                  selected: controller.flexScheme,
+                  onSelected: controller.setFlexScheme,
+                ),
               ),
             ],
           );
@@ -196,6 +192,7 @@ class ColorWheel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final radius = diameter / 2;
     return SizedBox(
       width: diameter + swatchSize,
@@ -208,8 +205,14 @@ class ColorWheel extends StatelessWidget {
             child: Column(
               mainAxisAlignment: .center,
               children: [
-                Text('テーマ', style: Theme.of(context).textTheme.headlineLarge),
-                Text('カラー', style: Theme.of(context).textTheme.displaySmall),
+                Text(
+                  l10n.theme,
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+                Text(
+                  l10n.color,
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
               ],
             ),
           ),
@@ -351,6 +354,9 @@ class KeypadOrderSelector extends StatelessWidget {
           _KeypadOption(
             rows: entry.value,
             isSelected: groupValue == entry.key,
+            label: entry.key == KeypadNumberOrder.standard
+                ? AppLocalizations.of(context).standardKeypadLayout
+                : AppLocalizations.of(context).telephoneKeypadLayout,
             onTap: () => onChanged(entry.key),
           ),
           if (entry.key != _rowsByOrder.keys.last) const SizedBox(width: 24),
@@ -364,41 +370,48 @@ class _KeypadOption extends StatelessWidget {
   const _KeypadOption({
     required this.rows,
     required this.isSelected,
+    required this.label,
     required this.onTap,
   });
   final List<List<String>> rows;
   final bool isSelected;
+  final String label;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryFixedDim
-              : colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? colorScheme.primary : Colors.transparent,
-            width: 2,
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: label,
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? colorScheme.primaryFixedDim
+                : colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? colorScheme.primary : Colors.transparent,
+              width: 2,
+            ),
           ),
-        ),
-        child: SizedBox(
-          width: 130,
-          height: 130,
-          child: CustomPaint(
-            painter: MiniKeypadPainter(
-              rows: rows,
-              fillColor: isSelected
-                  ? colorScheme.primary.withValues(alpha: 0.25)
-                  : colorScheme.surfaceContainer,
-              textColor: isSelected
-                  ? colorScheme.onPrimaryContainer
-                  : colorScheme.onSurfaceVariant,
+          child: SizedBox(
+            width: 130,
+            height: 130,
+            child: CustomPaint(
+              painter: MiniKeypadPainter(
+                rows: rows,
+                fillColor: isSelected
+                    ? colorScheme.primary.withValues(alpha: 0.25)
+                    : colorScheme.surfaceContainer,
+                textColor: isSelected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ),
@@ -408,6 +421,25 @@ class _KeypadOption extends StatelessWidget {
 }
 
 enum AppLanguage { japanese, english }
+
+Locale resolveAppLocale(Locale? locale) =>
+    locale?.languageCode.toLowerCase() == 'ja'
+    ? const Locale('ja')
+    : const Locale('en');
+
+AppLanguage resolveInitialLanguage(
+  List<Locale> preferredLocales, {
+  String? savedLanguage,
+}) {
+  for (final language in AppLanguage.values) {
+    if (language.name == savedLanguage) return language;
+  }
+
+  final firstLocale = preferredLocales.isEmpty ? null : preferredLocales.first;
+  return firstLocale?.languageCode.toLowerCase() == 'ja'
+      ? AppLanguage.japanese
+      : AppLanguage.english;
+}
 
 enum KeypadNumberOrder { standard, telephone }
 
@@ -438,10 +470,9 @@ class AppController extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   ThemeMode get themeMode => _themeMode;
 
-  // Prototype preference only; other app strings remain Japanese until full
-  // localization is added in a later change.
-  AppLanguage _language = AppLanguage.japanese;
+  AppLanguage _language = AppLanguage.english;
   AppLanguage get language => _language;
+  Locale get locale => Locale(language == AppLanguage.japanese ? 'ja' : 'en');
 
   KeypadNumberOrder _numberOrder = KeypadNumberOrder.standard;
   KeypadNumberOrder get numberOrder => _numberOrder;
@@ -451,9 +482,12 @@ class AppController extends ChangeNotifier {
 
   late final Future<void> ready;
 
-  AppController() {
+  AppController({List<Locale>? preferredLocales}) {
+    _preferredLocales = preferredLocales;
     ready = _load();
   }
+
+  List<Locale>? _preferredLocales;
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -475,12 +509,11 @@ class AppController extends ChangeNotifier {
     }
 
     final storedLanguage = prefs.getString(_languageKey);
-    if (storedLanguage != null) {
-      _language = AppLanguage.values.firstWhere(
-        (e) => e.name == storedLanguage,
-        orElse: () => AppLanguage.japanese,
-      );
-    }
+    _language = resolveInitialLanguage(
+      _preferredLocales ?? WidgetsBinding.instance.platformDispatcher.locales,
+      savedLanguage: storedLanguage,
+    );
+    _preferredLocales = null;
 
     final storedOrder = prefs.getString(_numberOrderKey);
     if (storedOrder != null) {
@@ -520,9 +553,10 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> setLanguage(AppLanguage language) async {
-    if (_language == language) return;
-    _language = language;
-    notifyListeners();
+    if (_language != language) {
+      _language = language;
+      notifyListeners();
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_languageKey, language.name);
   }

@@ -2,6 +2,7 @@
 // Fork: https://github.com/Vultaire/sorokun
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/divmult_display.dart';
 import 'package:soroban_app/screens/components/mitori_display.dart';
@@ -28,6 +29,7 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final List<ProblemScorer> incorrectProblemScorers = widget.problemScorerList
         .where((entry) {
           return !entry.isCorrect;
@@ -290,7 +292,7 @@ class _PaperReviewScreenState extends State<PaperReviewScreen> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(isPortrait ? kToolbarHeight : 40),
-        child: AppBar(title: const Text('不正解の問題'), centerTitle: true),
+        child: AppBar(title: Text(l10n.reviewIncorrect), centerTitle: true),
       ),
       body: SafeArea(child: body),
     );

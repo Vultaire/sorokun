@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/credits.dart';
@@ -528,6 +529,12 @@ class _AbacusAppState extends State<AbacusApp> {
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerConfig: _router,
+        onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+        locale: _appController.locale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localeResolutionCallback: (locale, supportedLocales) =>
+            resolveAppLocale(locale),
         themeMode: _appController.themeMode,
         theme: buildTheme(Brightness.light),
         darkTheme: buildTheme(Brightness.dark),
@@ -579,13 +586,13 @@ Future<void> showExitDialog(
   return showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('終了しますか？'),
-      content: const Text('提出するか、途中でやめるか選んでください。'),
+      title: Text(AppLocalizations.of(context).exitDialogTitle),
+      content: Text(AppLocalizations.of(context).exitDialogMessage),
       actionsAlignment: .center,
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('キャンセル'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         if (onSubmit != null)
           TextButton(
@@ -593,14 +600,14 @@ Future<void> showExitDialog(
               Navigator.of(context).pop();
               onSubmit();
             },
-            child: const Text('提出'),
+            child: Text(AppLocalizations.of(context).submit),
           ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
             GoRouter.of(context).pop();
           },
-          child: const Text('やめる'),
+          child: Text(AppLocalizations.of(context).quit),
         ),
       ],
     ),
