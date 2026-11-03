@@ -292,6 +292,17 @@
   },
   "handsFreeAnzanSetupOnlyNotice": "この画面では設定のみ行います。練習セッションは開始しません。",
   "handsFreeAnzanContinue": "この設定を次へ引き継ぐ",
+  "handsFreeAnzanAnswer": "答え：{answer}",
+  "@handsFreeAnzanAnswer": {
+    "description": "ハンズフリー暗算の問題を解いた後に表示する、書式付きの正答。",
+    "placeholders": { "answer": { "type": "String" } }
+  },
+  "handsFreeAnzanAttemptTime": "この問題の時間：{time}",
+  "@handsFreeAnzanAttemptTime": {
+    "description": "完了したハンズフリー暗算の1回分にかかった時間。",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "handsFreeAnzanGenerationError": "問題を作成できませんでした。このセッションを終了し、もう一度お試しください。",
   "handsFreeMode": "ハンズフリー練習モード",
   "handsFreeThinkTime": "答えが出るまで",
   "handsFreeAnswerDisplayTime": "答えの表示時間",

@@ -466,6 +466,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get handsFreeAnzanContinue => 'この設定を次へ引き継ぐ';
 
   @override
+  String handsFreeAnzanAnswer(String answer) {
+    return '答え：$answer';
+  }
+
+  @override
+  String handsFreeAnzanAttemptTime(String time) {
+    return 'この問題の時間：$time';
+  }
+
+  @override
+  String get handsFreeAnzanGenerationError =>
+      '問題を作成できませんでした。このセッションを終了し、もう一度お試しください。';
+
+  @override
   String get handsFreeMode => 'ハンズフリー練習モード';
 
   @override

@@ -337,13 +337,20 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
     alignment: Alignment.center,
     child: OutlinedButton.icon(
       key: const ValueKey('hands-free-anzan-menu-entry'),
-      onPressed: () => context.push<HandsFreeAnzanSetupConfig>(
-        '/hands-free-anzan-setup',
-        extra: HandsFreeAnzanSetupRequest(
-          kyuui: _kyuui,
-          denomination: _kyuuiDenomination,
-        ),
-      ),
+      onPressed: () async {
+        final configuration = await context.push<HandsFreeAnzanSetupConfig>(
+          '/hands-free-anzan-setup',
+          extra: HandsFreeAnzanSetupRequest(
+            kyuui: _kyuui,
+            denomination: _kyuuiDenomination,
+          ),
+        );
+        if (!context.mounted || configuration == null) return;
+        await context.push<void>(
+          '/hands-free-anzan-session',
+          extra: configuration,
+        );
+      },
       icon: const Icon(Icons.speed_rounded),
       label: Text(l10n.handsFreeAnzanEntry),
     ),

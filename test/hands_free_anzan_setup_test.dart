@@ -8,6 +8,7 @@ import 'package:soroban_app/models/hands_free_anzan.dart';
 import 'package:soroban_app/models/hands_free_anzan_setup.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/hands_free_anzan_setup.dart';
+import 'package:soroban_app/screens/hands_free_anzan_session.dart';
 import 'package:soroban_app/screens/home_page.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/settings.dart';
@@ -66,6 +67,13 @@ void main() {
             );
           },
         ),
+        GoRoute(
+          path: '/hands-free-anzan-session',
+          builder: (_, state) => HandsFreeAnzanSessionPage(
+            config: state.extra as HandsFreeAnzanSetupConfig,
+            durationForLevel: (_, _) => const Duration(seconds: 30),
+          ),
+        ),
       ],
     );
     await tester.pumpWidget(
@@ -99,6 +107,15 @@ void main() {
     expect(handedOffConfig!.denomination, KyuuiDenomination.zs);
     expect(handedOffConfig!.mode, HandsFreeAnzanMode.mitori);
     expect(handedOffConfig!.selectedSubjects, {HandsFreeAnzanSubject.mitori});
+    expect(find.byType(HandsFreeAnzanSessionPage), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('hands-free-current-subject')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('hands-free-stop')));
+    await tester.pumpAndSettle();
+    expect(find.byType(HandsFreeAnzanSessionPage), findsNothing);
+    expect(find.text('練習'), findsOneWidget);
     router.dispose();
     tester.view.resetPhysicalSize();
     tester.view.resetDevicePixelRatio();

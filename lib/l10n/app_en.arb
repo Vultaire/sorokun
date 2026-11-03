@@ -292,6 +292,17 @@
   },
   "handsFreeAnzanSetupOnlyNotice": "This step only prepares settings; it does not start a practice session.",
   "handsFreeAnzanContinue": "Continue with this setup",
+  "handsFreeAnzanAnswer": "Answer: {answer}",
+  "@handsFreeAnzanAnswer": {
+    "description": "The formatted correct answer revealed after a hands-free Anzan problem.",
+    "placeholders": { "answer": { "type": "String" } }
+  },
+  "handsFreeAnzanAttemptTime": "Attempt time: {time}",
+  "@handsFreeAnzanAttemptTime": {
+    "description": "Elapsed solve time for the just-completed hands-free Anzan attempt.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "handsFreeAnzanGenerationError": "A problem could not be generated. Stop this session and try again.",
   "handsFreeMode": "Hands-free practice mode",
   "handsFreeThinkTime": "Think time",
   "handsFreeAnswerDisplayTime": "Answer display time",

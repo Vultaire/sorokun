@@ -471,6 +471,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get handsFreeAnzanContinue => 'Continue with this setup';
 
   @override
+  String handsFreeAnzanAnswer(String answer) {
+    return 'Answer: $answer';
+  }
+
+  @override
+  String handsFreeAnzanAttemptTime(String time) {
+    return 'Attempt time: $time';
+  }
+
+  @override
+  String get handsFreeAnzanGenerationError =>
+      'A problem could not be generated. Stop this session and try again.';
+
+  @override
   String get handsFreeMode => 'Hands-free practice mode';
 
   @override

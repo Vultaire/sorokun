@@ -876,6 +876,24 @@ abstract class AppLocalizations {
   /// **'この設定を次へ引き継ぐ'**
   String get handsFreeAnzanContinue;
 
+  /// ハンズフリー暗算の問題を解いた後に表示する、書式付きの正答。
+  ///
+  /// In ja, this message translates to:
+  /// **'答え：{answer}'**
+  String handsFreeAnzanAnswer(String answer);
+
+  /// 完了したハンズフリー暗算の1回分にかかった時間。
+  ///
+  /// In ja, this message translates to:
+  /// **'この問題の時間：{time}'**
+  String handsFreeAnzanAttemptTime(String time);
+
+  /// No description provided for @handsFreeAnzanGenerationError.
+  ///
+  /// In ja, this message translates to:
+  /// **'問題を作成できませんでした。このセッションを終了し、もう一度お試しください。'**
+  String get handsFreeAnzanGenerationError;
+
   /// No description provided for @handsFreeMode.
   ///
   /// In ja, this message translates to:

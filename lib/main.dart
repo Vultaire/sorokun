@@ -17,6 +17,7 @@ import 'package:soroban_app/screens/flash_free_menu.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/hands_free_anzan_setup.dart';
+import 'package:soroban_app/screens/hands_free_anzan_session.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
@@ -231,6 +232,14 @@ class _AbacusAppState extends State<AbacusApp> {
             onContinue: (configuration) => context.pop(configuration),
           );
         },
+      ),
+      GoRoute(
+        path: '/hands-free-anzan-session',
+        redirect: (context, state) =>
+            state.extra is HandsFreeAnzanSetupConfig ? null : '/paper-menu',
+        builder: (context, state) => HandsFreeAnzanSessionPage(
+          config: state.extra as HandsFreeAnzanSetupConfig,
+        ),
       ),
       GoRoute(
         path: '/paper-review',
