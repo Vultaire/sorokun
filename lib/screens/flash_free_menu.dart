@@ -172,6 +172,9 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                     final isTallScreen =
                         constraints.maxHeight.isFinite &&
                         constraints.maxHeight > _tallScreenThreshold;
+                    final handsFreeOptionsWidth = constraints.maxWidth.isFinite
+                        ? constraints.maxWidth.clamp(0.0, 560.0).toDouble()
+                        : 560.0;
 
                     final incrementers = _IncrementerSection(
                       kuchi: _kuchi,
@@ -236,14 +239,14 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                                     incrementers,
                                     slider,
                                     durationCards,
+                                    SizedBox(
+                                      width: handsFreeOptionsWidth,
+                                      child: handsFreeOptions,
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
-                          ),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 560),
-                            child: handsFreeOptions,
                           ),
                           startButton,
                         ],
@@ -274,6 +277,18 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                             children: [incrementers, slider, durationCards],
                           );
 
+                    final responsiveContent = Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 12,
+                      children: [
+                        content,
+                        SizedBox(
+                          width: handsFreeOptionsWidth,
+                          child: handsFreeOptions,
+                        ),
+                      ],
+                    );
+
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -282,13 +297,9 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                             width: 800,
                             child: FittedBox(
                               fit: BoxFit.contain,
-                              child: content,
+                              child: responsiveContent,
                             ),
                           ),
-                        ),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 560),
-                          child: handsFreeOptions,
                         ),
                         startButton,
                       ],
@@ -339,21 +350,38 @@ class _HandsFreeOptionsSection extends StatelessWidget {
 
     return SizedBox(
       width: 245,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: Text(label, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          IconButton(
-            tooltip: l10n.decreaseValue,
-            onPressed: value > min ? () => onChanged(value - 1) : null,
-            icon: const Icon(Icons.remove_circle_outline),
-          ),
-          Text('$value${l10n.secondsUnit}'),
-          IconButton(
-            tooltip: l10n.increaseValue,
-            onPressed: value < max ? () => onChanged(value + 1) : null,
-            icon: const Icon(Icons.add_circle_outline),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                tooltip: l10n.decreaseValue,
+                onPressed: value > min ? () => onChanged(value - 1) : null,
+                icon: const Icon(Icons.remove_circle_outline),
+              ),
+              SizedBox(
+                width: 90,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '$value${l10n.secondsUnit}',
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                ),
+              ),
+              IconButton(
+                tooltip: l10n.increaseValue,
+                onPressed: value < max ? () => onChanged(value + 1) : null,
+                icon: const Icon(Icons.add_circle_outline),
+              ),
+            ],
           ),
         ],
       ),
@@ -368,42 +396,58 @@ class _HandsFreeOptionsSection extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CheckboxListTile(
-          value: enabled,
-          onChanged: (value) => onEnabledChanged(value ?? false),
-          title: Text(l10n.handsFreeMode),
-          controlAffinity: ListTileControlAffinity.leading,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-          dense: true,
+        Material(
+          elevation: 4,
+          color: colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(24),
+          child: CheckboxListTile(
+            value: enabled,
+            onChanged: (value) => onEnabledChanged(value ?? false),
+            title: Text(
+              l10n.handsFreeMode,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            dense: true,
+          ),
         ),
         if (enabled)
-          Material(
-            color: colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 12,
-                children: [
-                  _delayControl(
-                    context,
-                    label: l10n.handsFreeThinkTime,
-                    value: thinkTimeSeconds,
-                    min: minSeconds,
-                    max: maxThinkTimeSeconds,
-                    onChanged: onThinkTimeChanged,
-                  ),
-                  _delayControl(
-                    context,
-                    label: l10n.handsFreeAnswerDisplayTime,
-                    value: answerDisplaySeconds,
-                    min: minSeconds,
-                    max: maxAnswerDisplaySeconds,
-                    onChanged: onAnswerDisplayChanged,
-                  ),
-                ],
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Material(
+              elevation: 4,
+              color: colorScheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(24),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _delayControl(
+                      context,
+                      label: l10n.handsFreeThinkTime,
+                      value: thinkTimeSeconds,
+                      min: minSeconds,
+                      max: maxThinkTimeSeconds,
+                      onChanged: onThinkTimeChanged,
+                    ),
+                    _delayControl(
+                      context,
+                      label: l10n.handsFreeAnswerDisplayTime,
+                      value: answerDisplaySeconds,
+                      min: minSeconds,
+                      max: maxAnswerDisplaySeconds,
+                      onChanged: onAnswerDisplayChanged,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
