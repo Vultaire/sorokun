@@ -399,6 +399,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flashFreeTitle => 'Free Flash Anzan';
 
   @override
+  String get handsFreeAnzanEntry => 'Hands-free Anzan';
+
+  @override
+  String get handsFreeAnzanSetupTitle => 'Hands-free Anzan setup';
+
+  @override
+  String get handsFreeAnzanSetupSubtitle =>
+      'Choose which Anzan problems to prepare.';
+
+  @override
+  String handsFreeAnzanKyuuiContext(String grade, String organization) {
+    return '$grade · $organization';
+  }
+
+  @override
+  String get handsFreeAnzanSubjectsHeading => 'Subjects';
+
+  @override
+  String get handsFreeAnzanMitori => 'Mitorizan';
+
+  @override
+  String get handsFreeAnzanMixed => 'Mixed';
+
+  @override
+  String get handsFreeAnzanMixedSubjectsHint =>
+      'Choose the subjects to include in the mix.';
+
+  @override
+  String get handsFreeAnzanSpeedHeading => 'Problem display speed';
+
+  @override
+  String get handsFreeAnzanSpeedHint =>
+      '100% matches the exam-average pace. Higher percentages show each problem for less time.';
+
+  @override
+  String handsFreeAnzanCurrentSpeed(int percent) {
+    return 'Speed: $percent%';
+  }
+
+  @override
+  String get handsFreeAnzanDurationHeading => 'Problem display time';
+
+  @override
+  String handsFreeAnzanDurationPreview(String subject, String time) {
+    return '$subject: $time';
+  }
+
+  @override
+  String handsFreeAnzanSecondsValue(String seconds) {
+    return '$seconds sec';
+  }
+
+  @override
+  String get handsFreeAnzanAnswerDwellHeading => 'Answer display dwell';
+
+  @override
+  String get handsFreeAnzanAnswerDwellHint =>
+      'How long the answer stays visible after it is revealed. This is separate from problem display time.';
+
+  @override
+  String handsFreeAnzanAnswerDwellValue(int seconds) {
+    return 'Answer stays visible for $seconds sec';
+  }
+
+  @override
+  String get handsFreeAnzanSetupOnlyNotice =>
+      'This step only prepares settings; it does not start a practice session.';
+
+  @override
+  String get handsFreeAnzanContinue => 'Continue with this setup';
+
+  @override
   String get handsFreeMode => 'Hands-free practice mode';
 
   @override

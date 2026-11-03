@@ -247,6 +247,51 @@
     "description": "Menu title for Flash Anzan examination practice."
   },
   "flashFreeTitle": "Free Flash Anzan",
+  "handsFreeAnzanEntry": "Hands-free Anzan",
+  "handsFreeAnzanSetupTitle": "Hands-free Anzan setup",
+  "handsFreeAnzanSetupSubtitle": "Choose which Anzan problems to prepare.",
+  "handsFreeAnzanKyuuiContext": "{grade} · {organization}",
+  "@handsFreeAnzanKyuuiContext": {
+    "description": "The selected grade and organization shown on the hands-free Anzan setup page.",
+    "placeholders": {
+      "grade": { "type": "String" },
+      "organization": { "type": "String" }
+    }
+  },
+  "handsFreeAnzanSubjectsHeading": "Subjects",
+  "handsFreeAnzanMitori": "Mitorizan",
+  "handsFreeAnzanMixed": "Mixed",
+  "handsFreeAnzanMixedSubjectsHint": "Choose the subjects to include in the mix.",
+  "handsFreeAnzanSpeedHeading": "Problem display speed",
+  "handsFreeAnzanSpeedHint": "100% matches the exam-average pace. Higher percentages show each problem for less time.",
+  "handsFreeAnzanCurrentSpeed": "Speed: {percent}%",
+  "@handsFreeAnzanCurrentSpeed": {
+    "description": "Current hands-free Anzan speed relative to the exam-average default.",
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "handsFreeAnzanDurationHeading": "Problem display time",
+  "handsFreeAnzanDurationPreview": "{subject}: {time}",
+  "@handsFreeAnzanDurationPreview": {
+    "description": "Per-subject preview of how long each hands-free Anzan problem is displayed.",
+    "placeholders": {
+      "subject": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "handsFreeAnzanSecondsValue": "{seconds} sec",
+  "@handsFreeAnzanSecondsValue": {
+    "description": "A duration in seconds, shown as a hands-free Anzan problem preview or answer dwell value.",
+    "placeholders": { "seconds": { "type": "String" } }
+  },
+  "handsFreeAnzanAnswerDwellHeading": "Answer display dwell",
+  "handsFreeAnzanAnswerDwellHint": "How long the answer stays visible after it is revealed. This is separate from problem display time.",
+  "handsFreeAnzanAnswerDwellValue": "Answer stays visible for {seconds} sec",
+  "@handsFreeAnzanAnswerDwellValue": {
+    "description": "Duration for which the answer will remain visible after reveal.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeAnzanSetupOnlyNotice": "This step only prepares settings; it does not start a practice session.",
+  "handsFreeAnzanContinue": "Continue with this setup",
   "handsFreeMode": "Hands-free practice mode",
   "handsFreeThinkTime": "Think time",
   "handsFreeAnswerDisplayTime": "Answer display time",

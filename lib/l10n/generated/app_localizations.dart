@@ -762,6 +762,120 @@ abstract class AppLocalizations {
   /// **'フラッシュ暗算フリー'**
   String get flashFreeTitle;
 
+  /// No description provided for @handsFreeAnzanEntry.
+  ///
+  /// In ja, this message translates to:
+  /// **'ハンズフリー暗算'**
+  String get handsFreeAnzanEntry;
+
+  /// No description provided for @handsFreeAnzanSetupTitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'ハンズフリー暗算の設定'**
+  String get handsFreeAnzanSetupTitle;
+
+  /// No description provided for @handsFreeAnzanSetupSubtitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'暗算する種目と表示時間を設定します。'**
+  String get handsFreeAnzanSetupSubtitle;
+
+  /// ハンズフリー暗算の設定画面に表示する級位と団体。
+  ///
+  /// In ja, this message translates to:
+  /// **'{grade} · {organization}'**
+  String handsFreeAnzanKyuuiContext(String grade, String organization);
+
+  /// No description provided for @handsFreeAnzanSubjectsHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'種目'**
+  String get handsFreeAnzanSubjectsHeading;
+
+  /// No description provided for @handsFreeAnzanMitori.
+  ///
+  /// In ja, this message translates to:
+  /// **'みとり暗算'**
+  String get handsFreeAnzanMitori;
+
+  /// No description provided for @handsFreeAnzanMixed.
+  ///
+  /// In ja, this message translates to:
+  /// **'ミックス'**
+  String get handsFreeAnzanMixed;
+
+  /// No description provided for @handsFreeAnzanMixedSubjectsHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'ミックスに含める種目を選んでください。'**
+  String get handsFreeAnzanMixedSubjectsHint;
+
+  /// No description provided for @handsFreeAnzanSpeedHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'問題の表示速度'**
+  String get handsFreeAnzanSpeedHeading;
+
+  /// No description provided for @handsFreeAnzanSpeedHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'100%は検定の平均時間です。割合を上げると、問題の表示時間が短くなります。'**
+  String get handsFreeAnzanSpeedHint;
+
+  /// 検定の平均時間を基準としたハンズフリー暗算の速度。
+  ///
+  /// In ja, this message translates to:
+  /// **'速度：{percent}%'**
+  String handsFreeAnzanCurrentSpeed(int percent);
+
+  /// No description provided for @handsFreeAnzanDurationHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'問題の表示時間'**
+  String get handsFreeAnzanDurationHeading;
+
+  /// 選択した各種目について、1題を表示する時間の目安。
+  ///
+  /// In ja, this message translates to:
+  /// **'{subject}：{time}'**
+  String handsFreeAnzanDurationPreview(String subject, String time);
+
+  /// ハンズフリー暗算の問題表示時間または答え表示時間を秒で表す。
+  ///
+  /// In ja, this message translates to:
+  /// **'{seconds}秒'**
+  String handsFreeAnzanSecondsValue(String seconds);
+
+  /// No description provided for @handsFreeAnzanAnswerDwellHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'答えの表示時間'**
+  String get handsFreeAnzanAnswerDwellHeading;
+
+  /// No description provided for @handsFreeAnzanAnswerDwellHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'答えを表示してから消すまでの時間です。問題の表示時間とは別に設定します。'**
+  String get handsFreeAnzanAnswerDwellHint;
+
+  /// 答えを表示しておく時間。
+  ///
+  /// In ja, this message translates to:
+  /// **'答えを{seconds}秒表示'**
+  String handsFreeAnzanAnswerDwellValue(int seconds);
+
+  /// No description provided for @handsFreeAnzanSetupOnlyNotice.
+  ///
+  /// In ja, this message translates to:
+  /// **'この画面では設定のみ行います。練習セッションは開始しません。'**
+  String get handsFreeAnzanSetupOnlyNotice;
+
+  /// No description provided for @handsFreeAnzanContinue.
+  ///
+  /// In ja, this message translates to:
+  /// **'この設定を次へ引き継ぐ'**
+  String get handsFreeAnzanContinue;
+
   /// No description provided for @handsFreeMode.
   ///
   /// In ja, this message translates to:

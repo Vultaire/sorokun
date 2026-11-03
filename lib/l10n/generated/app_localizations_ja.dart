@@ -397,6 +397,75 @@ class AppLocalizationsJa extends AppLocalizations {
   String get flashFreeTitle => 'フラッシュ暗算フリー';
 
   @override
+  String get handsFreeAnzanEntry => 'ハンズフリー暗算';
+
+  @override
+  String get handsFreeAnzanSetupTitle => 'ハンズフリー暗算の設定';
+
+  @override
+  String get handsFreeAnzanSetupSubtitle => '暗算する種目と表示時間を設定します。';
+
+  @override
+  String handsFreeAnzanKyuuiContext(String grade, String organization) {
+    return '$grade · $organization';
+  }
+
+  @override
+  String get handsFreeAnzanSubjectsHeading => '種目';
+
+  @override
+  String get handsFreeAnzanMitori => 'みとり暗算';
+
+  @override
+  String get handsFreeAnzanMixed => 'ミックス';
+
+  @override
+  String get handsFreeAnzanMixedSubjectsHint => 'ミックスに含める種目を選んでください。';
+
+  @override
+  String get handsFreeAnzanSpeedHeading => '問題の表示速度';
+
+  @override
+  String get handsFreeAnzanSpeedHint =>
+      '100%は検定の平均時間です。割合を上げると、問題の表示時間が短くなります。';
+
+  @override
+  String handsFreeAnzanCurrentSpeed(int percent) {
+    return '速度：$percent%';
+  }
+
+  @override
+  String get handsFreeAnzanDurationHeading => '問題の表示時間';
+
+  @override
+  String handsFreeAnzanDurationPreview(String subject, String time) {
+    return '$subject：$time';
+  }
+
+  @override
+  String handsFreeAnzanSecondsValue(String seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get handsFreeAnzanAnswerDwellHeading => '答えの表示時間';
+
+  @override
+  String get handsFreeAnzanAnswerDwellHint =>
+      '答えを表示してから消すまでの時間です。問題の表示時間とは別に設定します。';
+
+  @override
+  String handsFreeAnzanAnswerDwellValue(int seconds) {
+    return '答えを$seconds秒表示';
+  }
+
+  @override
+  String get handsFreeAnzanSetupOnlyNotice => 'この画面では設定のみ行います。練習セッションは開始しません。';
+
+  @override
+  String get handsFreeAnzanContinue => 'この設定を次へ引き継ぐ';
+
+  @override
   String get handsFreeMode => 'ハンズフリー練習モード';
 
   @override

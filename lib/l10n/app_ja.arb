@@ -247,6 +247,51 @@
     "description": "Menu title for Flash Anzan examination practice."
   },
   "flashFreeTitle": "フラッシュ暗算フリー",
+  "handsFreeAnzanEntry": "ハンズフリー暗算",
+  "handsFreeAnzanSetupTitle": "ハンズフリー暗算の設定",
+  "handsFreeAnzanSetupSubtitle": "暗算する種目と表示時間を設定します。",
+  "handsFreeAnzanKyuuiContext": "{grade} · {organization}",
+  "@handsFreeAnzanKyuuiContext": {
+    "description": "ハンズフリー暗算の設定画面に表示する級位と団体。",
+    "placeholders": {
+      "grade": { "type": "String" },
+      "organization": { "type": "String" }
+    }
+  },
+  "handsFreeAnzanSubjectsHeading": "種目",
+  "handsFreeAnzanMitori": "みとり暗算",
+  "handsFreeAnzanMixed": "ミックス",
+  "handsFreeAnzanMixedSubjectsHint": "ミックスに含める種目を選んでください。",
+  "handsFreeAnzanSpeedHeading": "問題の表示速度",
+  "handsFreeAnzanSpeedHint": "100%は検定の平均時間です。割合を上げると、問題の表示時間が短くなります。",
+  "handsFreeAnzanCurrentSpeed": "速度：{percent}%",
+  "@handsFreeAnzanCurrentSpeed": {
+    "description": "検定の平均時間を基準としたハンズフリー暗算の速度。",
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "handsFreeAnzanDurationHeading": "問題の表示時間",
+  "handsFreeAnzanDurationPreview": "{subject}：{time}",
+  "@handsFreeAnzanDurationPreview": {
+    "description": "選択した各種目について、1題を表示する時間の目安。",
+    "placeholders": {
+      "subject": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "handsFreeAnzanSecondsValue": "{seconds}秒",
+  "@handsFreeAnzanSecondsValue": {
+    "description": "ハンズフリー暗算の問題表示時間または答え表示時間を秒で表す。",
+    "placeholders": { "seconds": { "type": "String" } }
+  },
+  "handsFreeAnzanAnswerDwellHeading": "答えの表示時間",
+  "handsFreeAnzanAnswerDwellHint": "答えを表示してから消すまでの時間です。問題の表示時間とは別に設定します。",
+  "handsFreeAnzanAnswerDwellValue": "答えを{seconds}秒表示",
+  "@handsFreeAnzanAnswerDwellValue": {
+    "description": "答えを表示しておく時間。",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeAnzanSetupOnlyNotice": "この画面では設定のみ行います。練習セッションは開始しません。",
+  "handsFreeAnzanContinue": "この設定を次へ引き継ぐ",
   "handsFreeMode": "ハンズフリー練習モード",
   "handsFreeThinkTime": "答えが出るまで",
   "handsFreeAnswerDisplayTime": "答えの表示時間",

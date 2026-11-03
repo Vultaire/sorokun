@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
+import 'package:soroban_app/models/hands_free_anzan_setup.dart';
 import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/grade_reference_info_button.dart';
@@ -26,7 +27,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   KyuuiDenomination _kyuuiDenomination = .zs;
   int _zsIndex = 0;
   int _nsIndex = 0;
-  late final SharedPreferencesWithCache _prefs;
+  SharedPreferencesWithCache? _prefs;
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   late final Future<void> _prefsFuture;
 
   Future<void> _loadPrefs() async {
-    _prefs = await SharedPreferencesWithCache.create(
+    final prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
         allowList: <String>{
           'paper_kyuui',
@@ -48,11 +49,12 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
         },
       ),
     );
-    final kyuuiIndex = _prefs.getInt('paper_kyuui');
-    final isExam = _prefs.getBool('paper_isExam');
-    final denominationIndex = _prefs.getInt('paper_kyuuiDenomination');
-    final zsIndex = _prefs.getInt('paper_zsIndex');
-    final nsIndex = _prefs.getInt('paper_nsIndex');
+    _prefs = prefs;
+    final kyuuiIndex = prefs.getInt('paper_kyuui');
+    final isExam = prefs.getBool('paper_isExam');
+    final denominationIndex = prefs.getInt('paper_kyuuiDenomination');
+    final zsIndex = prefs.getInt('paper_zsIndex');
+    final nsIndex = prefs.getInt('paper_nsIndex');
     if (zsIndex != null) {
       _zsIndex = zsIndex;
     }
@@ -71,11 +73,13 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
   }
 
   void _savePrefs() {
-    _prefs.setInt('paper_kyuui', _kyuui.index);
-    _prefs.setBool('paper_isExam', _isExam);
-    _prefs.setInt('paper_kyuuiDenomination', _kyuuiDenomination.index);
-    _prefs.setInt('paper_zsIndex', _zsIndex);
-    _prefs.setInt('paper_nsIndex', _nsIndex);
+    final prefs = _prefs;
+    if (prefs == null) return;
+    prefs.setInt('paper_kyuui', _kyuui.index);
+    prefs.setBool('paper_isExam', _isExam);
+    prefs.setInt('paper_kyuuiDenomination', _kyuuiDenomination.index);
+    prefs.setInt('paper_zsIndex', _zsIndex);
+    prefs.setInt('paper_nsIndex', _nsIndex);
   }
 
   bool _hasLevel(StartButtonType startButtonType) {
@@ -264,7 +268,7 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                         },
                       );
 
-                      final selectorHeight = isJapanese ? 64.0 : 88.0;
+                      final selectorHeight = isJapanese ? 68.0 : 88.0;
 
                       return isPortrait
                           ? Column(
@@ -276,6 +280,8 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                 ),
                                 SizedBox(height: 80, child: selectorStack),
                                 modeSelector,
+                                const SizedBox(height: 8),
+                                _handsFreeAnzanEntryButton(context, l10n),
                                 SizedBox(height: 6),
                                 Expanded(child: buttonGrid),
                                 const SizedBox(height: 12),
@@ -303,6 +309,8 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                         ],
                                       ),
                                       const SizedBox(height: 6),
+                                      _handsFreeAnzanEntryButton(context, l10n),
+                                      const SizedBox(height: 6),
                                       Expanded(
                                         child: Center(child: buttonGrid),
                                       ),
@@ -321,6 +329,25 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
       ),
     );
   }
+
+  Widget _handsFreeAnzanEntryButton(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) => Align(
+    alignment: Alignment.center,
+    child: OutlinedButton.icon(
+      key: const ValueKey('hands-free-anzan-menu-entry'),
+      onPressed: () => context.push<HandsFreeAnzanSetupConfig>(
+        '/hands-free-anzan-setup',
+        extra: HandsFreeAnzanSetupRequest(
+          kyuui: _kyuui,
+          denomination: _kyuuiDenomination,
+        ),
+      ),
+      icon: const Icon(Icons.speed_rounded),
+      label: Text(l10n.handsFreeAnzanEntry),
+    ),
+  );
 }
 
 class _GridButton extends StatelessWidget {

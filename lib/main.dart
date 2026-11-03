@@ -9,12 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
+import 'package:soroban_app/models/hands_free_anzan_setup.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/credits.dart';
 import 'package:soroban_app/screens/flash_free_menu.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
+import 'package:soroban_app/screens/hands_free_anzan_setup.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
@@ -216,6 +218,19 @@ class _AbacusAppState extends State<AbacusApp> {
       GoRoute(
         path: '/paper-menu',
         builder: (context, state) => PaperMenuPage(),
+      ),
+      GoRoute(
+        path: '/hands-free-anzan-setup',
+        redirect: (context, state) =>
+            state.extra is HandsFreeAnzanSetupRequest ? null : '/home',
+        builder: (context, state) {
+          final request = state.extra as HandsFreeAnzanSetupRequest;
+          return HandsFreeAnzanSetupPage(
+            kyuui: request.kyuui,
+            denomination: request.denomination,
+            onContinue: (configuration) => context.pop(configuration),
+          );
+        },
       ),
       GoRoute(
         path: '/paper-review',
