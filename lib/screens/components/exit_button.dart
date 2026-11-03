@@ -10,10 +10,12 @@ class ExitButton extends StatelessWidget {
     super.key,
     required this.onShowResults,
     required this.isSingleProblem,
+    this.onExit,
   });
 
   final VoidCallback onShowResults;
   final bool isSingleProblem;
+  final VoidCallback? onExit;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class ExitButton extends StatelessWidget {
       tooltip: AppLocalizations.of(context).back,
       onPressed: () async {
         if (isSingleProblem) {
+          onExit?.call();
           context.pop();
           return;
         }

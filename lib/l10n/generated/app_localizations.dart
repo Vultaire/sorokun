@@ -762,6 +762,60 @@ abstract class AppLocalizations {
   /// **'フラッシュ暗算フリー'**
   String get flashFreeTitle;
 
+  /// No description provided for @handsFreeMode.
+  ///
+  /// In ja, this message translates to:
+  /// **'ハンズフリー練習モード'**
+  String get handsFreeMode;
+
+  /// No description provided for @handsFreeThinkTime.
+  ///
+  /// In ja, this message translates to:
+  /// **'答えが出るまで'**
+  String get handsFreeThinkTime;
+
+  /// No description provided for @handsFreeAnswerDisplayTime.
+  ///
+  /// In ja, this message translates to:
+  /// **'答えの表示時間'**
+  String get handsFreeAnswerDisplayTime;
+
+  /// No description provided for @handsFreeAnswerPrompt.
+  ///
+  /// In ja, this message translates to:
+  /// **'答えは……'**
+  String get handsFreeAnswerPrompt;
+
+  /// Countdown until the answer is revealed in hands-free Flash Anzan.
+  ///
+  /// In ja, this message translates to:
+  /// **'{seconds}秒後に答えを表示'**
+  String handsFreeRevealCountdown(int seconds);
+
+  /// Countdown until the next hands-free Flash Anzan problem starts.
+  ///
+  /// In ja, this message translates to:
+  /// **'{seconds}秒後に次の問題'**
+  String handsFreeNextProblemCountdown(int seconds);
+
+  /// Number of problem attempts completed in the current hands-free practice session.
+  ///
+  /// In ja, this message translates to:
+  /// **'練習した問題数：{count}'**
+  String handsFreeQuestionsCompleted(int count);
+
+  /// Elapsed time in the current hands-free practice session.
+  ///
+  /// In ja, this message translates to:
+  /// **'練習時間：{time}'**
+  String handsFreePracticeTime(String time);
+
+  /// No description provided for @handsFreeStop.
+  ///
+  /// In ja, this message translates to:
+  /// **'ハンズフリーを終了'**
+  String get handsFreeStop;
+
   /// No description provided for @flashDigitsLabel.
   ///
   /// In ja, this message translates to:

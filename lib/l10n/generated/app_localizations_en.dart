@@ -399,6 +399,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flashFreeTitle => 'Free Flash Anzan';
 
   @override
+  String get handsFreeMode => 'Hands-free practice mode';
+
+  @override
+  String get handsFreeThinkTime => 'Think time';
+
+  @override
+  String get handsFreeAnswerDisplayTime => 'Answer display time';
+
+  @override
+  String get handsFreeAnswerPrompt => 'The answer is…';
+
+  @override
+  String handsFreeRevealCountdown(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Answer in $seconds seconds',
+      one: 'Answer in 1 second',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String handsFreeNextProblemCountdown(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Next problem in $seconds seconds',
+      one: 'Next problem in 1 second',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String handsFreeQuestionsCompleted(int count) {
+    return 'Questions completed: $count';
+  }
+
+  @override
+  String handsFreePracticeTime(String time) {
+    return 'Practice time: $time';
+  }
+
+  @override
+  String get handsFreeStop => 'Stop hands-free';
+
+  @override
   String get flashDigitsLabel => 'Digits';
 
   @override

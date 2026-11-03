@@ -397,6 +397,41 @@ class AppLocalizationsJa extends AppLocalizations {
   String get flashFreeTitle => 'フラッシュ暗算フリー';
 
   @override
+  String get handsFreeMode => 'ハンズフリー練習モード';
+
+  @override
+  String get handsFreeThinkTime => '答えが出るまで';
+
+  @override
+  String get handsFreeAnswerDisplayTime => '答えの表示時間';
+
+  @override
+  String get handsFreeAnswerPrompt => '答えは……';
+
+  @override
+  String handsFreeRevealCountdown(int seconds) {
+    return '$seconds秒後に答えを表示';
+  }
+
+  @override
+  String handsFreeNextProblemCountdown(int seconds) {
+    return '$seconds秒後に次の問題';
+  }
+
+  @override
+  String handsFreeQuestionsCompleted(int count) {
+    return '練習した問題数：$count';
+  }
+
+  @override
+  String handsFreePracticeTime(String time) {
+    return '練習時間：$time';
+  }
+
+  @override
+  String get handsFreeStop => 'ハンズフリーを終了';
+
+  @override
   String get flashDigitsLabel => '桁数';
 
   @override

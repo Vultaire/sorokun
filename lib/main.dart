@@ -204,6 +204,11 @@ class _AbacusAppState extends State<AbacusApp> {
               isSingleProblem: args?['isSingleProblem'],
               selectedLevel: args?['selectedLevel'],
               examDisplayString: args?['examDisplayString'],
+              isHandsFree: args?['isHandsFree'] as bool? ?? false,
+              handsFreeThinkTimeSeconds:
+                  args?['handsFreeThinkTimeSeconds'] as int? ?? 5,
+              handsFreeAnswerDisplaySeconds:
+                  args?['handsFreeAnswerDisplaySeconds'] as int? ?? 5,
             ),
           );
         },

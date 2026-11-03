@@ -247,6 +247,31 @@
     "description": "Menu title for Flash Anzan examination practice."
   },
   "flashFreeTitle": "フラッシュ暗算フリー",
+  "handsFreeMode": "ハンズフリー練習モード",
+  "handsFreeThinkTime": "答えが出るまで",
+  "handsFreeAnswerDisplayTime": "答えの表示時間",
+  "handsFreeAnswerPrompt": "答えは……",
+  "handsFreeRevealCountdown": "{seconds}秒後に答えを表示",
+  "@handsFreeRevealCountdown": {
+    "description": "Countdown until the answer is revealed in hands-free Flash Anzan.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeNextProblemCountdown": "{seconds}秒後に次の問題",
+  "@handsFreeNextProblemCountdown": {
+    "description": "Countdown until the next hands-free Flash Anzan problem starts.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeQuestionsCompleted": "練習した問題数：{count}",
+  "@handsFreeQuestionsCompleted": {
+    "description": "Number of problem attempts completed in the current hands-free practice session.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "handsFreePracticeTime": "練習時間：{time}",
+  "@handsFreePracticeTime": {
+    "description": "Elapsed time in the current hands-free practice session.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "handsFreeStop": "ハンズフリーを終了",
   "flashDigitsLabel": "桁数",
   "flashKuchiLabel": "口数",
   "@flashKuchiLabel": {

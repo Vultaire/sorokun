@@ -247,6 +247,31 @@
     "description": "Menu title for Flash Anzan examination practice."
   },
   "flashFreeTitle": "Free Flash Anzan",
+  "handsFreeMode": "Hands-free practice mode",
+  "handsFreeThinkTime": "Think time",
+  "handsFreeAnswerDisplayTime": "Answer display time",
+  "handsFreeAnswerPrompt": "The answer is…",
+  "handsFreeRevealCountdown": "{seconds, plural, =1{Answer in 1 second} other{Answer in {seconds} seconds}}",
+  "@handsFreeRevealCountdown": {
+    "description": "Countdown until the answer is revealed in hands-free Flash Anzan.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeNextProblemCountdown": "{seconds, plural, =1{Next problem in 1 second} other{Next problem in {seconds} seconds}}",
+  "@handsFreeNextProblemCountdown": {
+    "description": "Countdown until the next hands-free Flash Anzan problem starts.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeQuestionsCompleted": "Questions completed: {count}",
+  "@handsFreeQuestionsCompleted": {
+    "description": "Number of problem attempts completed in the current hands-free practice session.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "handsFreePracticeTime": "Practice time: {time}",
+  "@handsFreePracticeTime": {
+    "description": "Elapsed time in the current hands-free practice session.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "handsFreeStop": "Stop hands-free",
   "flashDigitsLabel": "Digits",
   "flashKuchiLabel": "Numbers",
   "@flashKuchiLabel": {
