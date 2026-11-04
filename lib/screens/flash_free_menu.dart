@@ -1,12 +1,13 @@
 // Modified by Vultaire on 2026-11-01.
 // Fork: https://github.com/Vultaire/sorokun
 import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
-import 'dart:math';
 
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,16 +29,10 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
   double _secondsPerProblem = 10.0;
   int _kuchi = 15;
   int _digits = 3;
-  bool _handsFree = false;
-  int _handsFreeThinkTimeSeconds = 5;
-  int _handsFreeAnswerDisplaySeconds = 5;
-  SharedPreferencesWithCache? _prefs;
+  late final SharedPreferencesWithCache _prefs;
   late final Future<void> _prefsReady;
 
   static const double _tallScreenThreshold = 700.0;
-  static const int _minHandsFreeDelaySeconds = 1;
-  static const int _maxHandsFreeThinkTimeSeconds = 30;
-  static const int _maxHandsFreeAnswerDisplaySeconds = 15;
 
   @override
   void initState() {
@@ -54,50 +49,39 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
   }
 
   Future<void> _loadPrefs() async {
-    final prefs = await SharedPreferencesWithCache.create(
+    _prefs = await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
-        allowList: <String>{
-          'secondsPerProblem',
-          'kuchi',
-          'digits',
-          'handsFree',
-          'handsFreeThinkTimeSeconds',
-          'handsFreeAnswerDisplaySeconds',
-        },
+        allowList: <String>{'secondsPerProblem', 'kuchi', 'digits'},
       ),
     );
-    if (!mounted) return;
-    _prefs = prefs;
+
+    final secondsPerProblem = _prefs.getDouble('secondsPerProblem') ?? 10.0;
+    final kuchi = _prefs.getInt('kuchi') ?? 15;
+    final digits = _prefs.getInt('digits') ?? 3;
+    if (!mounted) {
+      _secondsPerProblem = secondsPerProblem;
+      _kuchi = kuchi;
+      _digits = digits;
+      return;
+    }
 
     setState(() {
-      _secondsPerProblem = prefs.getDouble('secondsPerProblem') ?? 10.0;
-      _kuchi = prefs.getInt('kuchi') ?? 15;
-      _digits = prefs.getInt('digits') ?? 3;
-      _handsFree = prefs.getBool('handsFree') ?? false;
-      _handsFreeThinkTimeSeconds =
-          prefs.getInt('handsFreeThinkTimeSeconds') ?? 5;
-      _handsFreeAnswerDisplaySeconds =
-          prefs.getInt('handsFreeAnswerDisplaySeconds') ?? 5;
+      _secondsPerProblem = secondsPerProblem;
+      _kuchi = kuchi;
+      _digits = digits;
     });
   }
 
   void _savePrefs() {
-    final prefs = _prefs;
-    if (prefs == null) return;
-    prefs.setDouble('secondsPerProblem', _secondsPerProblem);
-    prefs.setInt('kuchi', _kuchi);
-    prefs.setInt('digits', _digits);
-    prefs.setBool('handsFree', _handsFree);
-    prefs.setInt('handsFreeThinkTimeSeconds', _handsFreeThinkTimeSeconds);
-    prefs.setInt(
-      'handsFreeAnswerDisplaySeconds',
-      _handsFreeAnswerDisplaySeconds,
-    );
+    _prefs.setDouble('secondsPerProblem', _secondsPerProblem);
+    _prefs.setInt('kuchi', _kuchi);
+    _prefs.setInt('digits', _digits);
   }
 
   Future<void> _startPractice() async {
     await _prefsReady;
     if (!mounted) return;
+
     _savePrefs();
     final spec = FlashSingleProblemSpec(
       digits: _digits,
@@ -107,13 +91,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
     );
     await context.push(
       '/flash-problem',
-      extra: {
-        'isSingleProblem': true,
-        'selectedLevel': spec,
-        'isHandsFree': _handsFree,
-        'handsFreeThinkTimeSeconds': _handsFreeThinkTimeSeconds,
-        'handsFreeAnswerDisplaySeconds': _handsFreeAnswerDisplaySeconds,
-      },
+      extra: {'isSingleProblem': true, 'selectedLevel': spec},
     );
   }
 
@@ -145,7 +123,9 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
 
   @override
   void dispose() {
-    _savePrefs();
+    unawaited(
+      _prefsReady.then<void>((_) => _savePrefs(), onError: (Object error) {}),
+    );
     super.dispose();
   }
 
@@ -172,9 +152,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                     final isTallScreen =
                         constraints.maxHeight.isFinite &&
                         constraints.maxHeight > _tallScreenThreshold;
-                    final handsFreeOptionsWidth = constraints.maxWidth.isFinite
-                        ? constraints.maxWidth.clamp(0.0, 560.0).toDouble()
-                        : 560.0;
 
                     final incrementers = _IncrementerSection(
                       kuchi: _kuchi,
@@ -200,23 +177,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                       spacing: isPortrait ? 10 : (isTallScreen ? 10 : 40),
                     );
 
-                    final handsFreeOptions = _HandsFreeOptionsSection(
-                      enabled: _handsFree,
-                      thinkTimeSeconds: _handsFreeThinkTimeSeconds,
-                      answerDisplaySeconds: _handsFreeAnswerDisplaySeconds,
-                      onEnabledChanged: (value) =>
-                          setState(() => _handsFree = value),
-                      onThinkTimeChanged: (value) =>
-                          setState(() => _handsFreeThinkTimeSeconds = value),
-                      onAnswerDisplayChanged: (value) => setState(
-                        () => _handsFreeAnswerDisplaySeconds = value,
-                      ),
-                      minSeconds: _minHandsFreeDelaySeconds,
-                      maxThinkTimeSeconds: _maxHandsFreeThinkTimeSeconds,
-                      maxAnswerDisplaySeconds:
-                          _maxHandsFreeAnswerDisplaySeconds,
-                    );
-
                     final startButton = StartButton(
                       onPressed: () => unawaited(_startPractice()),
                     );
@@ -239,10 +199,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                                     incrementers,
                                     slider,
                                     durationCards,
-                                    SizedBox(
-                                      width: handsFreeOptionsWidth,
-                                      child: handsFreeOptions,
-                                    ),
                                   ],
                                 ),
                               ),
@@ -277,18 +233,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                             children: [incrementers, slider, durationCards],
                           );
 
-                    final responsiveContent = Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 12,
-                      children: [
-                        content,
-                        SizedBox(
-                          width: handsFreeOptionsWidth,
-                          child: handsFreeOptions,
-                        ),
-                      ],
-                    );
-
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -297,7 +241,7 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
                             width: 800,
                             child: FittedBox(
                               fit: BoxFit.contain,
-                              child: responsiveContent,
+                              child: content,
                             ),
                           ),
                         ),
@@ -311,147 +255,6 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _HandsFreeOptionsSection extends StatelessWidget {
-  const _HandsFreeOptionsSection({
-    required this.enabled,
-    required this.thinkTimeSeconds,
-    required this.answerDisplaySeconds,
-    required this.onEnabledChanged,
-    required this.onThinkTimeChanged,
-    required this.onAnswerDisplayChanged,
-    required this.minSeconds,
-    required this.maxThinkTimeSeconds,
-    required this.maxAnswerDisplaySeconds,
-  });
-
-  final bool enabled;
-  final int thinkTimeSeconds;
-  final int answerDisplaySeconds;
-  final ValueChanged<bool> onEnabledChanged;
-  final ValueChanged<int> onThinkTimeChanged;
-  final ValueChanged<int> onAnswerDisplayChanged;
-  final int minSeconds;
-  final int maxThinkTimeSeconds;
-  final int maxAnswerDisplaySeconds;
-
-  Widget _delayControl(
-    BuildContext context, {
-    required String label,
-    required int value,
-    required int min,
-    required int max,
-    required ValueChanged<int> onChanged,
-  }) {
-    final l10n = AppLocalizations.of(context);
-
-    return SizedBox(
-      width: 245,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                tooltip: l10n.decreaseValue,
-                onPressed: value > min ? () => onChanged(value - 1) : null,
-                icon: const Icon(Icons.remove_circle_outline),
-              ),
-              SizedBox(
-                width: 90,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    '$value${l10n.secondsUnit}',
-                    style: Theme.of(context).textTheme.displaySmall,
-                  ),
-                ),
-              ),
-              IconButton(
-                tooltip: l10n.increaseValue,
-                onPressed: value < max ? () => onChanged(value + 1) : null,
-                icon: const Icon(Icons.add_circle_outline),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Material(
-          elevation: 4,
-          color: colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(24),
-          child: CheckboxListTile(
-            value: enabled,
-            onChanged: (value) => onEnabledChanged(value ?? false),
-            title: Text(
-              l10n.handsFreeMode,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            controlAffinity: ListTileControlAffinity.leading,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            dense: true,
-          ),
-        ),
-        if (enabled)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Material(
-              elevation: 4,
-              color: colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(24),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 12,
-                ),
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    _delayControl(
-                      context,
-                      label: l10n.handsFreeThinkTime,
-                      value: thinkTimeSeconds,
-                      min: minSeconds,
-                      max: maxThinkTimeSeconds,
-                      onChanged: onThinkTimeChanged,
-                    ),
-                    _delayControl(
-                      context,
-                      label: l10n.handsFreeAnswerDisplayTime,
-                      value: answerDisplaySeconds,
-                      min: minSeconds,
-                      max: maxAnswerDisplaySeconds,
-                      onChanged: onAnswerDisplayChanged,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

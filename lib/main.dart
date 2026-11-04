@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
-import 'package:soroban_app/models/hands_free_anzan_setup.dart';
 import 'package:soroban_app/models/holistic_hands_free_practice.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
@@ -17,8 +16,6 @@ import 'package:soroban_app/screens/credits.dart';
 import 'package:soroban_app/screens/flash_free_menu.dart';
 import 'package:soroban_app/screens/flash_level_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
-import 'package:soroban_app/screens/hands_free_anzan_setup.dart';
-import 'package:soroban_app/screens/hands_free_anzan_session.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_setup.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_session.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
@@ -210,11 +207,6 @@ class _AbacusAppState extends State<AbacusApp> {
               isSingleProblem: args?['isSingleProblem'],
               selectedLevel: args?['selectedLevel'],
               examDisplayString: args?['examDisplayString'],
-              isHandsFree: args?['isHandsFree'] as bool? ?? false,
-              handsFreeThinkTimeSeconds:
-                  args?['handsFreeThinkTimeSeconds'] as int? ?? 5,
-              handsFreeAnswerDisplaySeconds:
-                  args?['handsFreeAnswerDisplaySeconds'] as int? ?? 5,
             ),
           );
         },
@@ -222,27 +214,6 @@ class _AbacusAppState extends State<AbacusApp> {
       GoRoute(
         path: '/paper-menu',
         builder: (context, state) => PaperMenuPage(),
-      ),
-      GoRoute(
-        path: '/hands-free-anzan-setup',
-        redirect: (context, state) =>
-            state.extra is HandsFreeAnzanSetupRequest ? null : '/home',
-        builder: (context, state) {
-          final request = state.extra as HandsFreeAnzanSetupRequest;
-          return HandsFreeAnzanSetupPage(
-            kyuui: request.kyuui,
-            denomination: request.denomination,
-            onContinue: (configuration) => context.pop(configuration),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/hands-free-anzan-session',
-        redirect: (context, state) =>
-            state.extra is HandsFreeAnzanSetupConfig ? null : '/paper-menu',
-        builder: (context, state) => HandsFreeAnzanSessionPage(
-          config: state.extra as HandsFreeAnzanSetupConfig,
-        ),
       ),
       GoRoute(
         path: '/holistic-hands-free-setup',

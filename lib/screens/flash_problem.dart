@@ -21,16 +21,10 @@ class FlashProblemScreen extends StatefulWidget {
     required this.isSingleProblem,
     required this.selectedLevel,
     this.examDisplayString,
-    this.isHandsFree = false,
-    this.handsFreeThinkTimeSeconds = 5,
-    this.handsFreeAnswerDisplaySeconds = 5,
   });
   final bool isSingleProblem;
   final FlashSpec selectedLevel;
   final String? examDisplayString;
-  final bool isHandsFree;
-  final int handsFreeThinkTimeSeconds;
-  final int handsFreeAnswerDisplaySeconds;
   @override
   State<FlashProblemScreen> createState() => _FlashProblemScreenState();
 }
@@ -45,20 +39,9 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   late List<String> _allAnswers;
   late List<TextFieldData> _textFieldDataList;
   final Stopwatch _stopwatch = Stopwatch();
-  final Stopwatch _handsFreeStopwatch = Stopwatch();
-  final Stopwatch _handsFreePhaseStopwatch = Stopwatch();
-  Timer? _handsFreePhaseTimer;
-  Timer? _handsFreeTicker;
-  int _handsFreeSecondsRemaining = 0;
-  int _handsFreeCompletedQuestions = 0;
   late List<Segment> _schedule;
 
   void showInput() {
-    if (widget.isHandsFree) {
-      _showHandsFreeAnswerPrompt();
-      return;
-    }
-
     _stopwatch.start();
     setState(() {
       _delayOver = true;
@@ -93,7 +76,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   }
 
   void playProblem() {
-    _cancelHandsFreeTimers();
     setState(() {
       _currentPageIndex = 0;
       _delayOver = false;
@@ -104,69 +86,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
   void newProblem() {
     _initProblems();
     playProblem();
-  }
-
-  void _startHandsFreeSession() {
-    if (!_handsFreeStopwatch.isRunning) {
-      _handsFreeStopwatch.start();
-    }
-  }
-
-  void _cancelHandsFreeTimers() {
-    _handsFreePhaseTimer?.cancel();
-    _handsFreePhaseTimer = null;
-    _handsFreeTicker?.cancel();
-    _handsFreeTicker = null;
-    _handsFreePhaseStopwatch.stop();
-    _handsFreePhaseStopwatch.reset();
-  }
-
-  void _startHandsFreeCountdown(int seconds, VoidCallback onComplete) {
-    _cancelHandsFreeTimers();
-    final duration = Duration(seconds: seconds);
-    _handsFreePhaseStopwatch.start();
-    if (mounted) {
-      setState(() => _handsFreeSecondsRemaining = seconds);
-    }
-
-    _handsFreePhaseTimer = Timer(duration, () {
-      _cancelHandsFreeTimers();
-      if (mounted) onComplete();
-    });
-    _handsFreeTicker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      final remaining = duration - _handsFreePhaseStopwatch.elapsed;
-      final secondsRemaining = remaining.isNegative
-          ? 0
-          : (remaining.inMilliseconds / 1000).ceil();
-      setState(() => _handsFreeSecondsRemaining = secondsRemaining);
-    });
-  }
-
-  void _showHandsFreeAnswerPrompt() {
-    setState(() => _currentPageIndex = 1);
-    _startHandsFreeCountdown(
-      widget.handsFreeThinkTimeSeconds,
-      _revealHandsFreeAnswer,
-    );
-  }
-
-  void _revealHandsFreeAnswer() {
-    setState(() {
-      _currentPageIndex = 2;
-      _handsFreeCompletedQuestions++;
-    });
-    _startHandsFreeCountdown(widget.handsFreeAnswerDisplaySeconds, newProblem);
-  }
-
-  void _stopHandsFreeSession() {
-    _cancelHandsFreeTimers();
-    _handsFreeStopwatch.stop();
-  }
-
-  void _exitHandsFreeSession() {
-    _stopHandsFreeSession();
-    if (mounted) context.pop();
   }
 
   void showResultPage() {
@@ -191,13 +110,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
       _allAnswers.length,
       (_) => TextFieldData(),
     );
-  }
-
-  @override
-  void dispose() {
-    _cancelHandsFreeTimers();
-    _handsFreeStopwatch.stop();
-    super.dispose();
   }
 
   @override
@@ -255,7 +167,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
                   ExitButton(
                     onShowResults: showResultPage,
                     isSingleProblem: widget.isSingleProblem,
-                    onExit: widget.isHandsFree ? _stopHandsFreeSession : null,
                   ),
               ],
             ),
@@ -273,16 +184,8 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           schedule: _schedule,
           secondsPerProblem: widget.selectedLevel.secondsPerProblem,
           onEnd: showInput,
-          onStart: widget.isHandsFree ? _startHandsFreeSession : null,
         );
       case 1:
-        if (widget.isHandsFree) {
-          return FlashHandsFreePrompt(
-            key: ValueKey('hands_free_prompt_$_currentProblemIndex'),
-            secondsRemaining: _handsFreeSecondsRemaining,
-            totalSeconds: widget.handsFreeThinkTimeSeconds,
-          );
-        }
         return FlashProblemInput<String>(
           key: ValueKey('input_$_currentProblemIndex'),
           showAnswer: setInputAndShowResult,
@@ -292,18 +195,6 @@ class _FlashProblemScreenState extends State<FlashProblemScreen> {
           maxDigits: 7,
         );
       case 2:
-        if (widget.isHandsFree) {
-          return FlashHandsFreeResult(
-            key: ValueKey('hands_free_result_$_currentProblemIndex'),
-            answer: _allAnswers[_currentProblemIndex],
-            completedQuestions: _handsFreeCompletedQuestions,
-            elapsed: _handsFreeStopwatch.elapsed,
-            secondsRemaining: _handsFreeSecondsRemaining,
-            onRepeatProblem: playProblem,
-            onNextProblem: newProblem,
-            onStop: _exitHandsFreeSession,
-          );
-        }
         return FlashResult<String>(
           key: ValueKey('result_$_currentProblemIndex'),
           onNextProblem: startNextProblem,
@@ -761,265 +652,6 @@ class _FlashResultState<T> extends State<FlashResult<T>> {
   }
 }
 
-class FlashHandsFreePrompt extends StatelessWidget {
-  const FlashHandsFreePrompt({
-    super.key,
-    required this.secondsRemaining,
-    required this.totalSeconds,
-  });
-
-  final int secondsRemaining;
-  final int totalSeconds;
-
-  @override
-  Widget build(BuildContext context) {
-    final data = FlashProblemData.of<String>(context);
-    final l10n = AppLocalizations.of(context);
-    final progress = (1 - secondsRemaining / totalSeconds).clamp(0.0, 1.0);
-    final width = data.isPortrait
-        ? data.screenSize.width * 0.85
-        : data.screenSize.width * 0.65;
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Center(
-        child: SizedBox(
-          width: width,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                l10n.handsFreeAnswerPrompt,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  color: Colors.lightGreenAccent,
-                ),
-              ),
-              const SizedBox(height: 32),
-              LinearProgressIndicator(value: progress, minHeight: 8),
-              const SizedBox(height: 16),
-              Text(
-                l10n.handsFreeRevealCountdown(secondsRemaining),
-                textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class FlashHandsFreeResult extends StatelessWidget {
-  const FlashHandsFreeResult({
-    super.key,
-    required this.answer,
-    required this.completedQuestions,
-    required this.elapsed,
-    required this.secondsRemaining,
-    required this.onRepeatProblem,
-    required this.onNextProblem,
-    required this.onStop,
-  });
-
-  final String answer;
-  final int completedQuestions;
-  final Duration elapsed;
-  final int secondsRemaining;
-  final VoidCallback onRepeatProblem;
-  final VoidCallback onNextProblem;
-  final VoidCallback onStop;
-
-  @override
-  Widget build(BuildContext context) {
-    final data = FlashProblemData.of<String>(context);
-    final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
-    final elapsedText =
-        '${elapsed.inMinutes}:${elapsed.inSeconds.remainder(60).toString().padLeft(2, '0')}';
-    final width = data.isPortrait
-        ? data.screenSize.width * 0.92
-        : data.screenSize.width * 0.78;
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Padding(
-        padding: const EdgeInsets.all(18),
-        child: SizedBox.expand(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: SizedBox(
-              width: width,
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 16,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          l10n.answer,
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(color: colorScheme.onPrimary),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          answer,
-                          style: Theme.of(context).textTheme.displayLarge,
-                        ),
-                      ),
-                    ),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        _HandsFreeStatCard(
-                          label: l10n.handsFreeQuestionsCompleted(
-                            completedQuestions,
-                          ),
-                        ),
-                        _HandsFreeStatCard(
-                          label: l10n.handsFreePracticeTime(elapsedText),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      l10n.handsFreeNextProblemCountdown(secondsRemaining),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 16,
-                      runSpacing: 12,
-                      children: [
-                        _HandsFreeActionButton(
-                          color: colorScheme.primaryContainer,
-                          icon: Icons.replay_rounded,
-                          label: l10n.repeatProblem,
-                          onPressed: onRepeatProblem,
-                        ),
-                        _HandsFreeActionButton(
-                          color: colorScheme.primaryContainer,
-                          icon: Icons.arrow_forward_ios_rounded,
-                          label: l10n.nextProblem,
-                          onPressed: onNextProblem,
-                        ),
-                        FilledButton.icon(
-                          onPressed: onStop,
-                          icon: const Icon(Icons.stop_circle_outlined),
-                          label: Text(l10n.handsFreeStop),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: colorScheme.tertiaryContainer,
-                            foregroundColor: colorScheme.onTertiaryContainer,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HandsFreeStatCard extends StatelessWidget {
-  const _HandsFreeStatCard({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 3,
-      color: Theme.of(context).colorScheme.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        child: Text(label, style: Theme.of(context).textTheme.titleLarge),
-      ),
-    );
-  }
-}
-
-class _HandsFreeActionButton extends StatelessWidget {
-  const _HandsFreeActionButton({
-    required this.color,
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-  });
-
-  final Color color;
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return SizedBox(
-      width: 180,
-      child: NavigationButton(
-        color: color,
-        onPressed: onPressed,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: colorScheme.onPrimaryContainer, size: 26),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onPrimaryContainer,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class AnswerTracker extends StatelessWidget {
   const AnswerTracker({
     super.key,
@@ -1100,12 +732,10 @@ class FlashProblem extends StatefulWidget {
     required this.secondsPerProblem,
     required this.schedule,
     required this.onEnd,
-    this.onStart,
   });
   final double secondsPerProblem;
   final List<Segment> schedule;
   final VoidCallback onEnd;
-  final VoidCallback? onStart;
 
   @override
   State<FlashProblem> createState() => FlashProblemState();
@@ -1160,7 +790,6 @@ class FlashProblemState extends State<FlashProblem>
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-    widget.onStart?.call();
     _controller.forward();
   }
 

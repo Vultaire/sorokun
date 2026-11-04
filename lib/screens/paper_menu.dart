@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
-import 'package:soroban_app/models/hands_free_anzan_setup.dart';
 import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/screens/components/appbar.dart';
 import 'package:soroban_app/screens/components/grade_reference_info_button.dart';
@@ -280,8 +279,6 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                 ),
                                 SizedBox(height: 80, child: selectorStack),
                                 modeSelector,
-                                const SizedBox(height: 8),
-                                _handsFreeAnzanEntryButton(context, l10n),
                                 SizedBox(height: 6),
                                 Expanded(child: buttonGrid),
                                 const SizedBox(height: 12),
@@ -309,8 +306,6 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
                                         ],
                                       ),
                                       const SizedBox(height: 6),
-                                      _handsFreeAnzanEntryButton(context, l10n),
-                                      const SizedBox(height: 6),
                                       Expanded(
                                         child: Center(child: buttonGrid),
                                       ),
@@ -329,32 +324,6 @@ class _PaperMenuPageState extends State<PaperMenuPage> {
       ),
     );
   }
-
-  Widget _handsFreeAnzanEntryButton(
-    BuildContext context,
-    AppLocalizations l10n,
-  ) => Align(
-    alignment: Alignment.center,
-    child: OutlinedButton.icon(
-      key: const ValueKey('hands-free-anzan-menu-entry'),
-      onPressed: () async {
-        final configuration = await context.push<HandsFreeAnzanSetupConfig>(
-          '/hands-free-anzan-setup',
-          extra: HandsFreeAnzanSetupRequest(
-            kyuui: _kyuui,
-            denomination: _kyuuiDenomination,
-          ),
-        );
-        if (!context.mounted || configuration == null) return;
-        await context.push<void>(
-          '/hands-free-anzan-session',
-          extra: configuration,
-        );
-      },
-      icon: const Icon(Icons.speed_rounded),
-      label: Text(l10n.handsFreeAnzanEntry),
-    ),
-  );
 }
 
 class _GridButton extends StatelessWidget {
