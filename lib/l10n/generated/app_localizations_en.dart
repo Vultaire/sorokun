@@ -219,24 +219,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'This step only prepares settings. It does not generate problems or start a practice session.';
 
   @override
-  String get holisticContinue => 'Continue to setup handoff';
+  String get holisticContinue => 'Start hands-free practice';
 
   @override
-  String get holisticHandoffTitle => 'Practice setup handoff';
-
-  @override
-  String get holisticHandoffNotice =>
-      'Setup received. No practice session has started; the runner will be added in a later stage.';
-
-  @override
-  String holisticHandoffSummary(int count, int speed) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count playlist items at $speed% speed',
-      one: '$count playlist item at $speed% speed',
-    );
-    return '$_temp0';
+  String holisticProblemCountdown(int seconds) {
+    return 'Problem ends in $seconds seconds';
   }
 
   @override

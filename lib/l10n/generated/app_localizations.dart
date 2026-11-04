@@ -471,26 +471,14 @@ abstract class AppLocalizations {
   /// No description provided for @holisticContinue.
   ///
   /// In ja, this message translates to:
-  /// **'設定の引き継ぎ画面へ'**
+  /// **'ハンズフリー練習を開始'**
   String get holisticContinue;
 
-  /// No description provided for @holisticHandoffTitle.
+  /// 総合ハンズフリー練習で問題またはフラッシュ暗算の数字を表示している間のカウントダウン。
   ///
   /// In ja, this message translates to:
-  /// **'練習設定の引き継ぎ'**
-  String get holisticHandoffTitle;
-
-  /// No description provided for @holisticHandoffNotice.
-  ///
-  /// In ja, this message translates to:
-  /// **'設定を受け取りました。練習セッションはまだ始まりません。実行機能は後の段階で追加されます。'**
-  String get holisticHandoffNotice;
-
-  /// 練習セッションを開始せず、型付き設定を引き継いだことを示す概要。
-  ///
-  /// In ja, this message translates to:
-  /// **'{count}項目・速度{speed}%'**
-  String holisticHandoffSummary(int count, int speed);
+  /// **'問題終了まで{seconds}秒'**
+  String holisticProblemCountdown(int seconds);
 
   /// No description provided for @credits.
   ///

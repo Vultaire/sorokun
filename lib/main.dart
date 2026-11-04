@@ -20,6 +20,7 @@ import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/hands_free_anzan_setup.dart';
 import 'package:soroban_app/screens/hands_free_anzan_session.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_setup.dart';
+import 'package:soroban_app/screens/holistic_hands_free_practice_session.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
@@ -248,12 +249,11 @@ class _AbacusAppState extends State<AbacusApp> {
         builder: (context, state) => const HolisticHandsFreePracticeSetupPage(),
       ),
       GoRoute(
-        path: '/holistic-hands-free-handoff',
+        path: '/holistic-hands-free-session',
         redirect: (context, state) =>
             state.extra is HolisticHandsFreePracticeConfig ? null : '/home',
-        builder: (context, state) => HolisticHandsFreeHandoffPage(
+        builder: (context, state) => HolisticHandsFreePracticeSessionPage(
           config: state.extra as HolisticHandsFreePracticeConfig,
-          onBack: () => context.pop(),
         ),
       ),
       GoRoute(

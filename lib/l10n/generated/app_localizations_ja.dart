@@ -216,18 +216,11 @@ class AppLocalizationsJa extends AppLocalizations {
       'この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。';
 
   @override
-  String get holisticContinue => '設定の引き継ぎ画面へ';
+  String get holisticContinue => 'ハンズフリー練習を開始';
 
   @override
-  String get holisticHandoffTitle => '練習設定の引き継ぎ';
-
-  @override
-  String get holisticHandoffNotice =>
-      '設定を受け取りました。練習セッションはまだ始まりません。実行機能は後の段階で追加されます。';
-
-  @override
-  String holisticHandoffSummary(int count, int speed) {
-    return '$count項目・速度$speed%';
+  String holisticProblemCountdown(int seconds) {
+    return '問題終了まで$seconds秒';
   }
 
   @override

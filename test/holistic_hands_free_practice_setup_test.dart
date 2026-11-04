@@ -6,6 +6,7 @@ import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/models/holistic_hands_free_practice.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_setup.dart';
+import 'package:soroban_app/screens/holistic_hands_free_practice_session.dart';
 import 'package:soroban_app/screens/home_page.dart';
 
 Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) =>
@@ -119,11 +120,10 @@ void main() {
   );
 
   testWidgets(
-    'playlist entries resolve independently, preserve duplicates, and hand off typed settings',
+    'playlist entries resolve independently, preserve duplicates, and start the typed session',
     (tester) async {
       tester.view.physicalSize = const Size(430, 932);
       tester.view.devicePixelRatio = 1;
-      HolisticHandsFreePracticeConfig? handedOffConfig;
       final router = GoRouter(
         initialLocation: '/holistic-hands-free-setup',
         routes: [
@@ -132,13 +132,10 @@ void main() {
             builder: (_, _) => const HolisticHandsFreePracticeSetupPage(),
           ),
           GoRoute(
-            path: '/holistic-hands-free-handoff',
-            builder: (context, state) {
-              final config = state.extra as HolisticHandsFreePracticeConfig;
-              handedOffConfig = config;
-              return HolisticHandsFreeHandoffPage(
-                config: config,
-                onBack: () => context.pop(),
+            path: '/holistic-hands-free-session',
+            builder: (_, state) {
+              return HolisticHandsFreePracticeSessionPage(
+                config: state.extra as HolisticHandsFreePracticeConfig,
               );
             },
           ),
@@ -277,15 +274,15 @@ void main() {
       );
       await tester.ensureVisible(continueButton);
       await tester.tap(continueButton);
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
 
-      expect(find.byType(HolisticHandsFreeHandoffPage), findsOneWidget);
-      expect(
-        find.textContaining('No practice session has started'),
-        findsOneWidget,
-      );
-      expect(handedOffConfig, isNotNull);
-      final config = handedOffConfig!;
+      expect(find.byType(HolisticHandsFreePracticeSessionPage), findsOneWidget);
+      final config = tester
+          .widget<HolisticHandsFreePracticeSessionPage>(
+            find.byType(HolisticHandsFreePracticeSessionPage),
+          )
+          .config;
       expect(config.speedPercent, 200);
       expect(config.thinkingDelay, const Duration(seconds: 8));
       expect(config.answerDisplayDwell, const Duration(seconds: 3));
@@ -307,7 +304,18 @@ void main() {
       expect(config.playlist[5].denomination, Denomination.kyoukai);
       expect(config.playlist[5].kyuui, KyuuiDenomination.kkFlash.k6);
       expect(tester.takeException(), isNull);
+
+      await tester.tap(find.byKey(const ValueKey('holistic-session-stop')));
+      await tester.pumpAndSettle();
+      expect(find.text('Hands-free Practice setup'), findsOneWidget);
+      expect(
+        tester
+            .widget<Slider>(find.byKey(const ValueKey('holistic-speed-slider')))
+            .value,
+        200,
+      );
       router.dispose();
+      await tester.pumpWidget(const SizedBox.shrink());
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
     },

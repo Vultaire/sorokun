@@ -17,11 +17,11 @@ class MultiplicationProblem extends DivMultProblem {
     this.intRound,
   );
 
-  factory MultiplicationProblem({required DivMultSpec spec}) {
+  factory MultiplicationProblem({required DivMultSpec spec, Random? random}) {
     final split = spec.split;
     late final int multiplicandDigits = split[0];
     late final int multiplierDigits = split[1];
-    final rand = Random();
+    final rand = random ?? Random();
 
     switch (spec.problemType) {
       case .type1: //Integer multiplicand, integer multiplier

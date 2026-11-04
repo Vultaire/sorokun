@@ -193,7 +193,7 @@ class _HolisticHandsFreePracticeSetupPageState
       thinkingDelay: Duration(seconds: _thinkingDelaySeconds),
       answerDisplayDwell: Duration(seconds: _answerDisplayDwellSeconds),
     );
-    context.push('/holistic-hands-free-handoff', extra: config);
+    context.push('/holistic-hands-free-session', extra: config);
   }
 
   String _activityLabel(
@@ -542,67 +542,6 @@ class _HolisticHandsFreePracticeSetupPageState
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Temporary typed Stage 2 seam. Stage 3 can replace this page with a runner.
-class HolisticHandsFreeHandoffPage extends StatelessWidget {
-  const HolisticHandsFreeHandoffPage({
-    super.key,
-    required this.config,
-    required this.onBack,
-  });
-
-  final HolisticHandsFreePracticeConfig config;
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: l10n.holisticHandoffTitle,
-        context: context,
-        onBackPressed: onBack,
-      ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Icon(
-                    Icons.playlist_add_check_circle_outlined,
-                    size: 56,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.holisticHandoffNotice,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.holisticHandoffSummary(
-                      config.playlist.length,
-                      config.speedPercent,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton(onPressed: onBack, child: Text(l10n.back)),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

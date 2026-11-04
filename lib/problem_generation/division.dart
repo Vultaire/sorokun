@@ -11,8 +11,8 @@ class DivisionProblem extends DivMultProblem {
 
   DivisionProblem._(this.dividend, this.divisor, this.quotient, this.intRound);
 
-  factory DivisionProblem({required DivMultSpec spec}) {
-    late final rand = Random();
+  factory DivisionProblem({required DivMultSpec spec, Random? random}) {
+    final rand = random ?? Random();
     final split = spec.split;
     late final totalDigits = spec.digitCount;
     late final int divisorDigits = split[0];

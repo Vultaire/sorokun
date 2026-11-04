@@ -9,10 +9,10 @@ class FlashProblemSet {
   final FlashSpec spec;
   final List<MitoriProblem> mitoriProblemList;
 
-  FlashProblemSet(this.spec)
+  FlashProblemSet(this.spec, {Random? random})
     : mitoriProblemList = List.generate(
         spec.probCount,
-        (_) => MitoriProblem(spec.builder(spec, Random())),
+        (_) => MitoriProblem(spec.builder(spec, random ?? Random())),
       );
 
   List<List<String>> get formattedProblems =>

@@ -128,16 +128,11 @@
     "placeholders": { "seconds": { "type": "int" } }
   },
   "holisticSetupOnlyNotice": "この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。",
-  "holisticContinue": "設定の引き継ぎ画面へ",
-  "holisticHandoffTitle": "練習設定の引き継ぎ",
-  "holisticHandoffNotice": "設定を受け取りました。練習セッションはまだ始まりません。実行機能は後の段階で追加されます。",
-  "holisticHandoffSummary": "{count}項目・速度{speed}%",
-  "@holisticHandoffSummary": {
-    "description": "練習セッションを開始せず、型付き設定を引き継いだことを示す概要。",
-    "placeholders": {
-      "count": { "type": "int" },
-      "speed": { "type": "int" }
-    }
+  "holisticContinue": "ハンズフリー練習を開始",
+  "holisticProblemCountdown": "問題終了まで{seconds}秒",
+  "@holisticProblemCountdown": {
+    "description": "総合ハンズフリー練習で問題またはフラッシュ暗算の数字を表示している間のカウントダウン。",
+    "placeholders": { "seconds": { "type": "int" } }
   },
   "credits": "クレジット",
   "creditsDevelopment": "開発",

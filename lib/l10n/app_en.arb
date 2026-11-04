@@ -128,16 +128,11 @@
     "placeholders": { "seconds": { "type": "int" } }
   },
   "holisticSetupOnlyNotice": "This step only prepares settings. It does not generate problems or start a practice session.",
-  "holisticContinue": "Continue to setup handoff",
-  "holisticHandoffTitle": "Practice setup handoff",
-  "holisticHandoffNotice": "Setup received. No practice session has started; the runner will be added in a later stage.",
-  "holisticHandoffSummary": "{count, plural, =1{{count} playlist item at {speed}% speed} other{{count} playlist items at {speed}% speed}}",
-  "@holisticHandoffSummary": {
-    "description": "Summary confirming the typed practice setup was handed off without starting a session.",
-    "placeholders": {
-      "count": { "type": "int" },
-      "speed": { "type": "int" }
-    }
+  "holisticContinue": "Start hands-free practice",
+  "holisticProblemCountdown": "Problem ends in {seconds} seconds",
+  "@holisticProblemCountdown": {
+    "description": "Countdown while a holistic hands-free problem or Flash Anzan number stream is being displayed.",
+    "placeholders": { "seconds": { "type": "int" } }
   },
   "credits": "Credits",
   "creditsDevelopment": "Development",

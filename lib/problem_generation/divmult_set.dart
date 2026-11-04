@@ -24,8 +24,8 @@ class DivMultSpec {
 
 class DivMultProblemSet {
   final List<DivMultProblem> fullProblemSet = [];
-  DivMultProblemSet({required DivMultLevel level}) {
-    final rand = Random();
+  DivMultProblemSet({required DivMultLevel level, Random? random}) {
+    final rand = random ?? Random();
 
     for (Map batch in level.divMultSource.templates) {
       final int type2Count = batch['type2Count'] ?? 0;
@@ -76,10 +76,10 @@ class DivMultProblemSet {
             intRound: intRound,
           );
 
-          var fullProblem = level.builder(spec: spec);
+          var fullProblem = level.builder(spec: spec, random: rand);
 
           while (formattedAnswers.contains(fullProblem.formattedThird)) {
-            fullProblem = level.builder(spec: spec);
+            fullProblem = level.builder(spec: spec, random: rand);
           }
 
           problemsInBatch.add(fullProblem);

@@ -7,10 +7,16 @@ sealed class MitoriProblemSet {
   MitoriProblemSet._();
   late final List<MitoriProblem> unformattedProblems = [];
 
-  factory MitoriProblemSet({required MitoriLevel level}) {
+  factory MitoriProblemSet({required MitoriLevel level, Random? random}) {
     return switch (level) {
-      final SimpleMitoriLevel l => SimpleMitoriProblemSet(level: l),
-      final ComplexMitoriLevel l => ComplexMitoriProblemSet(level: l),
+      final SimpleMitoriLevel l => SimpleMitoriProblemSet(
+        level: l,
+        random: random,
+      ),
+      final ComplexMitoriLevel l => ComplexMitoriProblemSet(
+        level: l,
+        random: random,
+      ),
     };
   }
 
@@ -25,8 +31,8 @@ sealed class MitoriProblemSet {
 class ComplexMitoriProblemSet extends MitoriProblemSet {
   final ComplexMitoriLevel level;
 
-  ComplexMitoriProblemSet({required this.level}) : super._() {
-    final rand = Random();
+  ComplexMitoriProblemSet({required this.level, Random? random}) : super._() {
+    final rand = random ?? Random();
 
     for (int r = 0; r < level.repeat; r++) {
       unformattedProblems.addAll(
@@ -117,8 +123,8 @@ List<MitoriProblem> _generateTemplateProblems({
 class SimpleMitoriProblemSet extends MitoriProblemSet {
   final SimpleMitoriLevel level;
 
-  SimpleMitoriProblemSet({required this.level}) : super._() {
-    Random rand = Random();
+  SimpleMitoriProblemSet({required this.level, Random? random}) : super._() {
+    final rand = random ?? Random();
 
     switch (level) {
       case .zsak10: //全珠連10級みとり暗算AとBの形式の違いが正直わからん。知っている人はissueかPRで教えてください！
