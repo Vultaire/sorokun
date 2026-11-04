@@ -107,6 +107,7 @@
   },
   "holisticActivity": "種目",
   "holisticOrganization": "団体",
+  "holisticLevel": "級位",
   "holisticAddItem": "プレイリスト項目を追加",
   "holisticRemoveItem": "プレイリスト項目を削除",
   "holisticMoveItemUp": "プレイリスト項目 {number} を上へ移動",

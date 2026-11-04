@@ -183,6 +183,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get holisticOrganization => 'Organization';
 
   @override
+  String get holisticLevel => 'Level';
+
+  @override
   String get holisticAddItem => 'Add playlist item';
 
   @override

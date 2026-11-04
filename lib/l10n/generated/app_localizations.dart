@@ -414,6 +414,12 @@ abstract class AppLocalizations {
   /// **'団体'**
   String get holisticOrganization;
 
+  /// No description provided for @holisticLevel.
+  ///
+  /// In ja, this message translates to:
+  /// **'級位'**
+  String get holisticLevel;
+
   /// No description provided for @holisticAddItem.
   ///
   /// In ja, this message translates to:

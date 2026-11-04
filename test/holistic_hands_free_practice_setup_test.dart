@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/models/holistic_hands_free_practice.dart';
 import 'package:soroban_app/models/level_definitions.dart';
@@ -18,6 +21,12 @@ Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) =>
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: home,
     );
+
+void _setMockPreferences(Map<String, Object> values) {
+  SharedPreferences.setMockInitialValues(values);
+  SharedPreferencesAsyncPlatform.instance =
+      InMemorySharedPreferencesAsync.withData(values);
+}
 
 Future<void> _selectDropdown(
   WidgetTester tester, {
@@ -34,6 +43,8 @@ Future<void> _selectDropdown(
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() => _setMockPreferences({}));
 
   testWidgets('Home has a distinct hands-free choice and opens its setup', (
     tester,
@@ -120,6 +131,71 @@ void main() {
       tester.view.resetDevicePixelRatio();
     },
   );
+
+  testWidgets('activity changes adopt saved practice and exam levels', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 932);
+    tester.view.devicePixelRatio = 1;
+    _setMockPreferences({
+      'paper_kyuui': Kyuui.nsk6.index,
+      'paper_kyuuiDenomination': KyuuiDenomination.ns.index,
+      'flash_kyuui': Kyuui.kkk7.index,
+      'flash_kyuuiDenomination': KyuuiDenomination.kkFlash.index,
+    });
+    await tester.pumpWidget(
+      _localizedApp(const HolisticHandsFreePracticeSetupPage()),
+    );
+    await tester.pumpAndSettle();
+
+    await _selectDropdown(
+      tester,
+      key: 'holistic-activity-0',
+      label: 'Mental division',
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Denomination>>(
+            find.byKey(const ValueKey('holistic-organization-0')),
+          )
+          .initialValue,
+      Denomination.nisshou,
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Kyuui>>(
+            find.byKey(const ValueKey('holistic-grade-0')),
+          )
+          .initialValue,
+      Kyuui.nsk6,
+    );
+
+    await _selectDropdown(
+      tester,
+      key: 'holistic-activity-0',
+      label: 'Flash Anzan',
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Denomination>>(
+            find.byKey(const ValueKey('holistic-organization-0')),
+          )
+          .initialValue,
+      Denomination.kyoukai,
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Kyuui>>(
+            find.byKey(const ValueKey('holistic-grade-0')),
+          )
+          .initialValue,
+      Kyuui.kkk7,
+    );
+    expect(tester.takeException(), isNull);
+
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
 
   testWidgets(
     'playlist entries resolve independently, preserve duplicates, and start the typed session',
@@ -467,6 +543,145 @@ void main() {
     },
   );
 
+  testWidgets('setup restores the playlist and all practice settings', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 932);
+    tester.view.devicePixelRatio = 1;
+    await tester.pumpWidget(
+      _localizedApp(const HolisticHandsFreePracticeSetupPage()),
+    );
+    await tester.pumpAndSettle();
+
+    Future<void> addItem() async {
+      final button = find.byKey(const ValueKey('holistic-add-item'));
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> moveItemUp(int index) async {
+      final button = find.byKey(ValueKey('holistic-move-up-$index'));
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+    }
+
+    await _selectDropdown(tester, key: 'holistic-grade-0', label: '3 kyu');
+    await addItem();
+    await addItem();
+    await _selectDropdown(
+      tester,
+      key: 'holistic-activity-2',
+      label: 'Mental division',
+    );
+    await addItem();
+    await _selectDropdown(
+      tester,
+      key: 'holistic-activity-3',
+      label: 'Flash Anzan',
+    );
+    await _selectDropdown(
+      tester,
+      key: 'holistic-organization-3',
+      label: 'Japan Flash Anzan Association',
+    );
+    await _selectDropdown(tester, key: 'holistic-grade-3', label: '7 kyu');
+    await moveItemUp(3);
+    await moveItemUp(2);
+
+    final order = find.byKey(const ValueKey('holistic-selection-order'));
+    await tester.ensureVisible(order);
+    await tester.tap(order);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Playlist order').last);
+    await tester.pumpAndSettle();
+
+    for (final (key, value) in [
+      ('holistic-speed-slider', 175.0),
+      ('holistic-thinking-delay-slider', 8.0),
+      ('holistic-answer-dwell-slider', 12.0),
+    ]) {
+      final slider = find.byKey(ValueKey(key));
+      await tester.ensureVisible(slider);
+      tester.widget<Slider>(slider).onChanged!(value);
+      await tester.pumpAndSettle();
+    }
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      _localizedApp(const HolisticHandsFreePracticeSetupPage()),
+    );
+    await tester.pumpAndSettle();
+
+    final activities = [
+      for (var index = 0; index < 4; index++)
+        tester
+            .widget<DropdownButtonFormField<HolisticPracticeActivity>>(
+              find.byKey(ValueKey('holistic-activity-$index')),
+            )
+            .initialValue,
+    ];
+    expect(activities, [
+      HolisticPracticeActivity.mitoriAnzan,
+      HolisticPracticeActivity.flashAnzan,
+      HolisticPracticeActivity.mitoriAnzan,
+      HolisticPracticeActivity.divisionAnzan,
+    ]);
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Denomination>>(
+            find.byKey(const ValueKey('holistic-organization-1')),
+          )
+          .initialValue,
+      Denomination.kyoukai,
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Kyuui>>(
+            find.byKey(const ValueKey('holistic-grade-1')),
+          )
+          .initialValue,
+      Kyuui.kkk7,
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<HolisticHandsFreeSelectionOrder>>(
+            find.byKey(const ValueKey('holistic-selection-order')),
+          )
+          .initialValue,
+      HolisticHandsFreeSelectionOrder.playlistOrder,
+    );
+    expect(
+      tester
+          .widget<Slider>(find.byKey(const ValueKey('holistic-speed-slider')))
+          .value,
+      175,
+    );
+    expect(
+      tester
+          .widget<Slider>(
+            find.byKey(const ValueKey('holistic-thinking-delay-slider')),
+          )
+          .value,
+      8,
+    );
+    expect(
+      tester
+          .widget<Slider>(
+            find.byKey(const ValueKey('holistic-answer-dwell-slider')),
+          )
+          .value,
+      12,
+    );
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+
   testWidgets(
     'setup sliders expose names and human-readable current semantic values',
     (tester) async {
@@ -609,6 +824,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Hands-free Practice setup'), findsOneWidget);
+      expect(find.text('Level'), findsOneWidget);
       expect(find.byKey(const ValueKey('holistic-add-item')), findsOneWidget);
       expect(
         find.byKey(const ValueKey('holistic-setup-continue')),
@@ -633,6 +849,7 @@ void main() {
       isFalse,
     );
     expect(find.text('プレイリスト項目を追加'), findsOneWidget);
+    expect(find.text('級位'), findsOneWidget);
     expect(find.text('フラッシュ暗算の思考時間'), findsOneWidget);
     expect(find.text('問題の選択順'), findsNWidgets(2));
     expect(find.text('ランダム選択'), findsOneWidget);

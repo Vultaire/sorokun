@@ -107,6 +107,7 @@
   },
   "holisticActivity": "Activity",
   "holisticOrganization": "Organization",
+  "holisticLevel": "Level",
   "holisticAddItem": "Add playlist item",
   "holisticRemoveItem": "Remove playlist item",
   "holisticMoveItemUp": "Move playlist item {number} up",

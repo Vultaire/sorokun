@@ -182,6 +182,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get holisticOrganization => '団体';
 
   @override
+  String get holisticLevel => '級位';
+
+  @override
   String get holisticAddItem => 'プレイリスト項目を追加';
 
   @override
