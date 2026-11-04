@@ -286,6 +286,10 @@ void main() {
           )
           .config;
       expect(config.speedPercent, 200);
+      expect(
+        config.selectionOrder,
+        HolisticHandsFreeSelectionOrder.randomSelection,
+      );
       expect(config.thinkingDelay, const Duration(seconds: 8));
       expect(config.answerDisplayDwell, const Duration(seconds: 3));
       expect(config.playlist, hasLength(6));
@@ -316,6 +320,146 @@ void main() {
             .value,
         200,
       );
+      router.dispose();
+      await tester.pumpWidget(const SizedBox.shrink());
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    },
+  );
+
+  testWidgets(
+    'selection mode and accessible playlist reordering reach the session config',
+    (tester) async {
+      tester.view.physicalSize = const Size(430, 932);
+      tester.view.devicePixelRatio = 1;
+      final semantics = tester.ensureSemantics();
+      final router = GoRouter(
+        initialLocation: '/holistic-hands-free-setup',
+        routes: [
+          GoRoute(
+            path: '/holistic-hands-free-setup',
+            builder: (_, _) => const HolisticHandsFreePracticeSetupPage(),
+          ),
+          GoRoute(
+            path: '/holistic-hands-free-session',
+            builder: (_, state) => HolisticHandsFreePracticeSessionPage(
+              config: state.extra as HolisticHandsFreePracticeConfig,
+            ),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final orderField = find.byKey(const ValueKey('holistic-selection-order'));
+      expect(
+        tester
+            .widget<DropdownButtonFormField<HolisticHandsFreeSelectionOrder>>(
+              orderField,
+            )
+            .initialValue,
+        HolisticHandsFreeSelectionOrder.randomSelection,
+      );
+      expect(find.text('Problem selection order'), findsNWidgets(2));
+      expect(find.textContaining('with replacement'), findsOneWidget);
+
+      final addItem = find.byKey(const ValueKey('holistic-add-item'));
+      await tester.ensureVisible(addItem);
+      await tester.tap(addItem);
+      await tester.pumpAndSettle();
+      await _selectDropdown(
+        tester,
+        key: 'holistic-activity-1',
+        label: 'Mental division',
+      );
+
+      // The first row cannot move up; the second row's move-up action is both
+      // exposed to semantics and performs the same reorder as a pointer tap.
+      expect(
+        tester
+            .widget<IconButton>(
+              find.byKey(const ValueKey('holistic-move-up-0')),
+            )
+            .onPressed,
+        isNull,
+      );
+      expect(
+        tester
+            .widget<IconButton>(
+              find.byKey(const ValueKey('holistic-move-down-1')),
+            )
+            .onPressed,
+        isNull,
+      );
+      final firstMoveUpButton = find.byKey(
+        const ValueKey('holistic-move-up-0'),
+      );
+      await tester.ensureVisible(firstMoveUpButton);
+      await tester.pumpAndSettle();
+      final disabledMoveUp = find.semantics.byPredicate((node) {
+        final data = node.getSemanticsData();
+        return data.tooltip == 'Move playlist item 1 up' &&
+            data.flagsCollection.isEnabled == Tristate.isFalse &&
+            !data.hasAction(SemanticsAction.tap);
+      });
+      expect(disabledMoveUp, findsOneWidget);
+      final moveUpButton = find.byKey(const ValueKey('holistic-move-up-1'));
+      await tester.ensureVisible(moveUpButton);
+      await tester.pumpAndSettle();
+      final moveUp = find.semantics.byPredicate((node) {
+        final data = node.getSemanticsData();
+        return data.tooltip == 'Move playlist item 2 up' &&
+            data.flagsCollection.isEnabled == Tristate.isTrue &&
+            data.hasAction(SemanticsAction.tap);
+      });
+      expect(moveUp, findsOneWidget);
+      tester.semantics.performAction(moveUp, SemanticsAction.tap);
+      await tester.pumpAndSettle();
+
+      final moveDown = find.byKey(const ValueKey('holistic-move-down-0'));
+      expect(
+        tester.widget<IconButton>(moveDown).tooltip,
+        'Move playlist item 1 down',
+      );
+
+      await tester.ensureVisible(orderField);
+      await tester.tap(orderField);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Playlist order').last);
+      await tester.pumpAndSettle();
+
+      final continueButton = find.byKey(
+        const ValueKey('holistic-setup-continue'),
+      );
+      await tester.ensureVisible(continueButton);
+      await tester.tap(continueButton);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      final config = tester
+          .widget<HolisticHandsFreePracticeSessionPage>(
+            find.byType(HolisticHandsFreePracticeSessionPage),
+          )
+          .config;
+      expect(
+        config.selectionOrder,
+        HolisticHandsFreeSelectionOrder.playlistOrder,
+      );
+      expect(config.playlist.map((entry) => entry.activity), [
+        HolisticPracticeActivity.divisionAnzan,
+        HolisticPracticeActivity.mitoriAnzan,
+      ]);
+      expect(config.playlist[0].kyuui, Kyuui.zsk6);
+      expect(config.playlist[1].kyuui, Kyuui.zsk10);
+      expect(tester.takeException(), isNull);
+
+      semantics.dispose();
       router.dispose();
       await tester.pumpWidget(const SizedBox.shrink());
       tester.view.resetPhysicalSize();
@@ -490,6 +634,16 @@ void main() {
     );
     expect(find.text('プレイリスト項目を追加'), findsOneWidget);
     expect(find.text('フラッシュ暗算の思考時間'), findsOneWidget);
+    expect(find.text('問題の選択順'), findsNWidgets(2));
+    expect(find.text('ランダム選択'), findsOneWidget);
+    expect(
+      tester
+          .widget<IconButton>(
+            find.byKey(const ValueKey('holistic-move-down-0')),
+          )
+          .tooltip,
+      'プレイリスト項目 1 を下へ移動',
+    );
     expect(tester.takeException(), isNull);
 
     tester.view.resetPhysicalSize();

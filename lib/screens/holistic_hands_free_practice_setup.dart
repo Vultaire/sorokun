@@ -37,6 +37,8 @@ class _HolisticHandsFreePracticeSetupPageState
   int _speedPercent = 100;
   int _thinkingDelaySeconds = 5;
   int _answerDisplayDwellSeconds = 5;
+  HolisticHandsFreeSelectionOrder _selectionOrder =
+      HolisticHandsFreeSelectionOrder.randomSelection;
 
   @override
   void dispose() {
@@ -202,6 +204,7 @@ class _HolisticHandsFreePracticeSetupPageState
     if (_playlist.isEmpty) return;
     final config = HolisticHandsFreePracticeConfig(
       playlist: _playlist.map(_entryFor),
+      selectionOrder: _selectionOrder,
       speedPercent: _speedPercent,
       thinkingDelay: Duration(seconds: _thinkingDelaySeconds),
       answerDisplayDwell: Duration(seconds: _answerDisplayDwellSeconds),
@@ -272,6 +275,53 @@ class _HolisticHandsFreePracticeSetupPageState
                         onPressed: _addItem,
                         icon: const Icon(Icons.add_rounded),
                         label: Text(l10n.holisticAddItem),
+                      ),
+                      const SizedBox(height: 12),
+                      _SetupCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.holisticSelectionOrderHeading,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            Text(l10n.holisticSelectionOrderHint),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<
+                              HolisticHandsFreeSelectionOrder
+                            >(
+                              key: const ValueKey('holistic-selection-order'),
+                              initialValue: _selectionOrder,
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                labelText: l10n.holisticSelectionOrderHeading,
+                              ),
+                              items: [
+                                DropdownMenuItem(
+                                  value: HolisticHandsFreeSelectionOrder
+                                      .playlistOrder,
+                                  child: Text(
+                                    l10n.holisticSelectionOrderPlaylist,
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: HolisticHandsFreeSelectionOrder
+                                      .randomSelection,
+                                  child: Text(
+                                    l10n.holisticSelectionOrderRandom,
+                                  ),
+                                ),
+                              ],
+                              onChanged: (selectionOrder) {
+                                if (selectionOrder != null) {
+                                  setState(
+                                    () => _selectionOrder = selectionOrder,
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 12),
                       _SetupCard(
@@ -468,6 +518,20 @@ class _HolisticHandsFreePracticeSetupPageState
                 ),
               ),
               IconButton(
+                key: ValueKey('holistic-move-up-$index'),
+                tooltip: l10n.holisticMoveItemUp(index + 1),
+                onPressed: index == 0 ? null : () => _moveItem(index, -1),
+                icon: const Icon(Icons.arrow_upward_rounded),
+              ),
+              IconButton(
+                key: ValueKey('holistic-move-down-$index'),
+                tooltip: l10n.holisticMoveItemDown(index + 1),
+                onPressed: index == _playlist.length - 1
+                    ? null
+                    : () => _moveItem(index, 1),
+                icon: const Icon(Icons.arrow_downward_rounded),
+              ),
+              IconButton(
                 key: ValueKey('holistic-remove-item-$index'),
                 tooltip: l10n.holisticRemoveItem,
                 onPressed: () => setState(() => _playlist.removeAt(index)),
@@ -554,6 +618,15 @@ class _HolisticHandsFreePracticeSetupPageState
         ],
       ),
     );
+  }
+
+  void _moveItem(int index, int offset) {
+    final targetIndex = index + offset;
+    if (targetIndex < 0 || targetIndex >= _playlist.length) return;
+    setState(() {
+      final item = _playlist.removeAt(index);
+      _playlist.insert(targetIndex, item);
+    });
   }
 
   Widget _buildDelayCard(

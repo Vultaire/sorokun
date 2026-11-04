@@ -96,6 +96,10 @@
   "holisticHandsFreeSetupTitle": "Hands-free Practice setup",
   "holisticHandsFreeSetupSubtitle": "Build an ordered practice playlist. Configure each item independently.",
   "holisticDuplicateHint": "Repeated items are allowed and intentionally give that activity more weight in the playlist.",
+  "holisticSelectionOrderHeading": "Problem selection order",
+  "holisticSelectionOrderHint": "Choose whether to follow the playlist or randomly select an occurrence each time. Random selection is with replacement, so repeats can happen back-to-back; duplicate entries add weight.",
+  "holisticSelectionOrderPlaylist": "Playlist order",
+  "holisticSelectionOrderRandom": "Random selection",
   "holisticPlaylistItem": "Playlist item {number}",
   "@holisticPlaylistItem": {
     "description": "Heading for one independently configurable activity in the hands-free playlist.",
@@ -105,6 +109,16 @@
   "holisticOrganization": "Organization",
   "holisticAddItem": "Add playlist item",
   "holisticRemoveItem": "Remove playlist item",
+  "holisticMoveItemUp": "Move playlist item {number} up",
+  "@holisticMoveItemUp": {
+    "description": "Accessible label and tooltip for moving a playlist occurrence one position earlier.",
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "holisticMoveItemDown": "Move playlist item {number} down",
+  "@holisticMoveItemDown": {
+    "description": "Accessible label and tooltip for moving a playlist occurrence one position later.",
+    "placeholders": { "number": { "type": "int" } }
+  },
   "holisticSpeedHeading": "Problem display speed",
   "holisticSpeedHint": "100% is the baseline. Higher percentages shorten each displayed problem or Flash Anzan stream.",
   "holisticCurrentSpeed": "Speed: {percent}%",

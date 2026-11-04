@@ -159,6 +159,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Repeated items are allowed and intentionally give that activity more weight in the playlist.';
 
   @override
+  String get holisticSelectionOrderHeading => 'Problem selection order';
+
+  @override
+  String get holisticSelectionOrderHint =>
+      'Choose whether to follow the playlist or randomly select an occurrence each time. Random selection is with replacement, so repeats can happen back-to-back; duplicate entries add weight.';
+
+  @override
+  String get holisticSelectionOrderPlaylist => 'Playlist order';
+
+  @override
+  String get holisticSelectionOrderRandom => 'Random selection';
+
+  @override
   String holisticPlaylistItem(int number) {
     return 'Playlist item $number';
   }
@@ -174,6 +187,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get holisticRemoveItem => 'Remove playlist item';
+
+  @override
+  String holisticMoveItemUp(int number) {
+    return 'Move playlist item $number up';
+  }
+
+  @override
+  String holisticMoveItemDown(int number) {
+    return 'Move playlist item $number down';
+  }
 
   @override
   String get holisticSpeedHeading => 'Problem display speed';

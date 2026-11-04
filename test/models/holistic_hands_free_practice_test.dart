@@ -185,9 +185,25 @@ void main() {
     test('defaults both independent answer phases to five seconds', () {
       final config = HolisticHandsFreePracticeConfig(playlist: [paper]);
 
+      expect(
+        config.selectionOrder,
+        HolisticHandsFreeSelectionOrder.randomSelection,
+      );
       expect(config.speedPercent, 100);
       expect(config.thinkingDelay, const Duration(seconds: 5));
       expect(config.answerDisplayDwell, const Duration(seconds: 5));
+    });
+
+    test('retains an explicit immutable selection order', () {
+      final config = HolisticHandsFreePracticeConfig(
+        playlist: [paper],
+        selectionOrder: HolisticHandsFreeSelectionOrder.playlistOrder,
+      );
+
+      expect(
+        config.selectionOrder,
+        HolisticHandsFreeSelectionOrder.playlistOrder,
+      );
     });
 
     test('rejects invalid speed and nonpositive phase durations', () {

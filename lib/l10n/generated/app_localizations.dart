@@ -372,6 +372,30 @@ abstract class AppLocalizations {
   /// **'同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。'**
   String get holisticDuplicateHint;
 
+  /// No description provided for @holisticSelectionOrderHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'問題の選択順'**
+  String get holisticSelectionOrderHeading;
+
+  /// No description provided for @holisticSelectionOrderHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト順に進むか、項目を毎回ランダムに選ぶかを指定します。ランダム選択は毎回抽選するため、同じ項目が連続することがあります。重複項目は選ばれやすくなります。'**
+  String get holisticSelectionOrderHint;
+
+  /// No description provided for @holisticSelectionOrderPlaylist.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト順'**
+  String get holisticSelectionOrderPlaylist;
+
+  /// No description provided for @holisticSelectionOrderRandom.
+  ///
+  /// In ja, this message translates to:
+  /// **'ランダム選択'**
+  String get holisticSelectionOrderRandom;
+
   /// ハンズフリープレイリストの個別に設定できる種目の見出し。
   ///
   /// In ja, this message translates to:
@@ -401,6 +425,18 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'プレイリスト項目を削除'**
   String get holisticRemoveItem;
+
+  /// プレイリスト項目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト項目 {number} を上へ移動'**
+  String holisticMoveItemUp(int number);
+
+  /// プレイリスト項目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト項目 {number} を下へ移動'**
+  String holisticMoveItemDown(int number);
 
   /// No description provided for @holisticSpeedHeading.
   ///

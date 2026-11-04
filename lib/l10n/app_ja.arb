@@ -96,6 +96,10 @@
   "holisticHandsFreeSetupTitle": "ハンズフリー総合設定",
   "holisticHandsFreeSetupSubtitle": "練習する種目を順番に登録し、項目ごとに設定します。",
   "holisticDuplicateHint": "同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。",
+  "holisticSelectionOrderHeading": "問題の選択順",
+  "holisticSelectionOrderHint": "プレイリスト順に進むか、項目を毎回ランダムに選ぶかを指定します。ランダム選択は毎回抽選するため、同じ項目が連続することがあります。重複項目は選ばれやすくなります。",
+  "holisticSelectionOrderPlaylist": "プレイリスト順",
+  "holisticSelectionOrderRandom": "ランダム選択",
   "holisticPlaylistItem": "プレイリスト項目 {number}",
   "@holisticPlaylistItem": {
     "description": "ハンズフリープレイリストの個別に設定できる種目の見出し。",
@@ -105,6 +109,16 @@
   "holisticOrganization": "団体",
   "holisticAddItem": "プレイリスト項目を追加",
   "holisticRemoveItem": "プレイリスト項目を削除",
+  "holisticMoveItemUp": "プレイリスト項目 {number} を上へ移動",
+  "@holisticMoveItemUp": {
+    "description": "プレイリスト項目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。",
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "holisticMoveItemDown": "プレイリスト項目 {number} を下へ移動",
+  "@holisticMoveItemDown": {
+    "description": "プレイリスト項目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。",
+    "placeholders": { "number": { "type": "int" } }
+  },
   "holisticSpeedHeading": "問題の表示速度",
   "holisticSpeedHint": "100%を基準とします。割合を上げると問題またはフラッシュ暗算の表示時間が短くなります。",
   "holisticCurrentSpeed": "速度：{percent}%",

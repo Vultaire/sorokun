@@ -9,6 +9,19 @@ enum HolisticPracticeActivity {
   flashAnzan,
 }
 
+/// How the holistic practice runner chooses its next playlist occurrence.
+enum HolisticHandsFreeSelectionOrder {
+  /// Follow the configured playlist from first to last, then wrap to the start.
+  playlistOrder,
+
+  /// Select a playlist occurrence independently and uniformly each time.
+  ///
+  /// Selection is with replacement, so the same occurrence may be selected
+  /// repeatedly. Duplicate playlist entries are distinct occurrences and add
+  /// weight to their activity.
+  randomSelection,
+}
+
 /// A validated, typed item in a holistic hands-free practice playlist.
 ///
 /// The factories resolve the selected [Kyuui] for its organization and reject
@@ -145,10 +158,14 @@ final class FlashAnzanPlaylistEntry extends HolisticPracticePlaylistEntry {
 class HolisticHandsFreePracticeConfig {
   HolisticHandsFreePracticeConfig({
     required Iterable<HolisticPracticePlaylistEntry> playlist,
+    this.selectionOrder = HolisticHandsFreeSelectionOrder.randomSelection,
     this.speedPercent = 100,
     this.thinkingDelay = const Duration(seconds: 5),
     this.answerDisplayDwell = const Duration(seconds: 5),
   }) : playlist = List.unmodifiable(playlist) {
+    if (!HolisticHandsFreeSelectionOrder.values.contains(selectionOrder)) {
+      throw ArgumentError.value(selectionOrder, 'selectionOrder');
+    }
     _validateSpeedPercent(speedPercent);
     if (this.playlist.isEmpty) {
       throw ArgumentError.value(playlist, 'playlist', 'Must not be empty');
@@ -159,6 +176,9 @@ class HolisticHandsFreePracticeConfig {
 
   /// An immutable copy of the playlist. Duplicate entries remain in order.
   final List<HolisticPracticePlaylistEntry> playlist;
+
+  /// How the runner selects the next playlist occurrence.
+  final HolisticHandsFreeSelectionOrder selectionOrder;
   final int speedPercent;
 
   /// Pause after a flash number stream and before revealing its answer.

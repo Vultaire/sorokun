@@ -52,10 +52,13 @@ class HolisticHandsFreeProblem {
   bool get isFlash => entry is FlashAnzanPlaylistEntry;
 }
 
-/// Supplies an endless shuffled, balanced bag of playlist occurrences.
+/// Supplies an endless sequence of problems from configured playlist
+/// occurrences.
 ///
-/// Every cycle contains each playlist index exactly once. Each occurrence has
-/// its own generated set and gets a fresh set when that set is exhausted.
+/// Playlist-order mode follows each configured occurrence sequentially and
+/// wraps. Random-selection mode samples an occurrence with replacement on
+/// every call, so repeats are allowed. Each occurrence has its own generated
+/// set and gets a fresh set when that set is exhausted.
 class HolisticHandsFreeProblemQueue {
   HolisticHandsFreeProblemQueue(
     this.config, {
@@ -63,28 +66,22 @@ class HolisticHandsFreeProblemQueue {
     HolisticHandsFreeProblemSetGenerator? problemSetGenerator,
   }) : _random = random ?? Random(),
        _problemSetGenerator =
-           problemSetGenerator ?? generateHolisticHandsFreeProblemSet {
-    if (config.playlist.isEmpty) {
-      throw ArgumentError.value(
-        config.playlist,
-        'playlist',
-        'Must not be empty',
-      );
-    }
-    _shuffleBag();
-  }
+           problemSetGenerator ?? generateHolisticHandsFreeProblemSet;
 
   final HolisticHandsFreePracticeConfig config;
   final Random _random;
   final HolisticHandsFreeProblemSetGenerator _problemSetGenerator;
   final Map<int, List<HolisticHandsFreeGeneratedProblem>> _sets = {};
   final Map<int, int> _setIndices = {};
-  List<int> _bag = [];
-  int _bagIndex = 0;
+  int _playlistCursor = 0;
 
   HolisticHandsFreeProblem next() {
-    if (_bagIndex >= _bag.length) _shuffleBag();
-    final playlistIndex = _bag[_bagIndex++];
+    final playlistIndex = switch (config.selectionOrder) {
+      HolisticHandsFreeSelectionOrder.playlistOrder => _nextPlaylistIndex(),
+      HolisticHandsFreeSelectionOrder.randomSelection => _random.nextInt(
+        config.playlist.length,
+      ),
+    };
     final entry = config.playlist[playlistIndex];
     var problems = _sets[playlistIndex];
     var setIndex = _setIndices[playlistIndex] ?? 0;
@@ -113,10 +110,10 @@ class HolisticHandsFreeProblemQueue {
     );
   }
 
-  void _shuffleBag() {
-    _bag = List<int>.generate(config.playlist.length, (index) => index)
-      ..shuffle(_random);
-    _bagIndex = 0;
+  int _nextPlaylistIndex() {
+    final index = _playlistCursor;
+    _playlistCursor = (_playlistCursor + 1) % config.playlist.length;
+    return index;
   }
 }
 

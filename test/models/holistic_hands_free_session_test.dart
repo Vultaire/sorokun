@@ -90,40 +90,91 @@ void main() {
   });
 
   group('holistic endless queue', () {
-    test(
-      'each shuffled cycle contains every duplicate playlist occurrence',
-      () {
-        final config = HolisticHandsFreePracticeConfig(
-          playlist: [mitori, mitori, flash],
-        );
-        final queue = HolisticHandsFreeProblemQueue(
-          config,
-          random: Random(42),
-          problemSetGenerator: (_, random) => [
-            HolisticHandsFreeGeneratedProblem(
-              formattedPrompt: random.nextInt(1000).toString(),
-              formattedAnswer: 'answer',
-            ),
-            HolisticHandsFreeGeneratedProblem(
-              formattedPrompt: random.nextInt(1000).toString(),
-              formattedAnswer: 'answer',
-            ),
-          ],
-        );
+    test('playlist order follows configured occurrences and wraps', () {
+      final config = HolisticHandsFreePracticeConfig(
+        playlist: [mitori, multiplication, flash],
+        selectionOrder: HolisticHandsFreeSelectionOrder.playlistOrder,
+      );
+      final queue = HolisticHandsFreeProblemQueue(
+        config,
+        random: _SequenceRandom(const []),
+        problemSetGenerator: (_, _) => const [
+          HolisticHandsFreeGeneratedProblem(
+            formattedPrompt: 'prompt',
+            formattedAnswer: 'answer',
+          ),
+        ],
+      );
 
-        for (var cycle = 0; cycle < 5; cycle++) {
-          final indices = [
-            for (var index = 0; index < config.playlist.length; index++)
-              queue.next().playlistIndex,
-          ]..sort();
-          expect(indices, [0, 1, 2]);
-        }
-      },
-    );
+      expect(
+        [for (var index = 0; index < 8; index++) queue.next().playlistIndex],
+        [0, 1, 2, 0, 1, 2, 0, 1],
+      );
+    });
+
+    test('random selection samples with replacement and allows repeats', () {
+      final config = HolisticHandsFreePracticeConfig(
+        playlist: [mitori, multiplication],
+      );
+      final random = _SequenceRandom([1, 1, 0, 0]);
+      final queue = HolisticHandsFreeProblemQueue(
+        config,
+        random: random,
+        problemSetGenerator: (_, _) => const [
+          HolisticHandsFreeGeneratedProblem(
+            formattedPrompt: 'prompt',
+            formattedAnswer: 'answer',
+          ),
+        ],
+      );
+
+      expect(
+        [for (var index = 0; index < 4; index++) queue.next().playlistIndex],
+        [1, 1, 0, 0],
+      );
+      expect(random.bounds, [2, 2, 2, 2]);
+    });
+
+    test('duplicate occurrences independently add random selection weight', () {
+      final config = HolisticHandsFreePracticeConfig(
+        playlist: [mitori, mitori, flash],
+      );
+      final random = _SequenceRandom([0, 1, 2, 0, 1, 2]);
+      final queue = HolisticHandsFreeProblemQueue(
+        config,
+        random: random,
+        problemSetGenerator: (_, _) => const [
+          HolisticHandsFreeGeneratedProblem(
+            formattedPrompt: 'prompt',
+            formattedAnswer: 'answer',
+          ),
+        ],
+      );
+
+      final selected = [for (var index = 0; index < 6; index++) queue.next()];
+      expect(selected.map((problem) => problem.playlistIndex), [
+        0,
+        1,
+        2,
+        0,
+        1,
+        2,
+      ]);
+      expect(
+        selected.where((problem) => problem.entry.activity == mitori.activity),
+        hasLength(4),
+      );
+      expect(
+        selected.where((problem) => problem.entry.activity == flash.activity),
+        hasLength(2),
+      );
+      expect(random.bounds, [3, 3, 3, 3, 3, 3]);
+    });
 
     test('regenerates each occurrence set independently when exhausted', () {
       final config = HolisticHandsFreePracticeConfig(
         playlist: [mitori, mitori, flash],
+        selectionOrder: HolisticHandsFreeSelectionOrder.playlistOrder,
       );
       var generatedSets = 0;
       final queue = HolisticHandsFreeProblemQueue(
@@ -165,4 +216,24 @@ void main() {
       expect(queue.next, throwsStateError);
     });
   });
+}
+
+class _SequenceRandom implements Random {
+  _SequenceRandom(Iterable<int> values) : _values = values.iterator;
+
+  final Iterator<int> _values;
+  final List<int> bounds = [];
+
+  @override
+  int nextInt(int max) {
+    bounds.add(max);
+    if (!_values.moveNext()) throw StateError('No deterministic random value');
+    return _values.current;
+  }
+
+  @override
+  bool nextBool() => throw UnimplementedError();
+
+  @override
+  double nextDouble() => throw UnimplementedError();
 }

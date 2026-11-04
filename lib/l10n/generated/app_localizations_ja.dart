@@ -158,6 +158,19 @@ class AppLocalizationsJa extends AppLocalizations {
       '同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。';
 
   @override
+  String get holisticSelectionOrderHeading => '問題の選択順';
+
+  @override
+  String get holisticSelectionOrderHint =>
+      'プレイリスト順に進むか、項目を毎回ランダムに選ぶかを指定します。ランダム選択は毎回抽選するため、同じ項目が連続することがあります。重複項目は選ばれやすくなります。';
+
+  @override
+  String get holisticSelectionOrderPlaylist => 'プレイリスト順';
+
+  @override
+  String get holisticSelectionOrderRandom => 'ランダム選択';
+
+  @override
   String holisticPlaylistItem(int number) {
     return 'プレイリスト項目 $number';
   }
@@ -173,6 +186,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get holisticRemoveItem => 'プレイリスト項目を削除';
+
+  @override
+  String holisticMoveItemUp(int number) {
+    return 'プレイリスト項目 $number を上へ移動';
+  }
+
+  @override
+  String holisticMoveItemDown(int number) {
+    return 'プレイリスト項目 $number を下へ移動';
+  }
 
   @override
   String get holisticSpeedHeading => '問題の表示速度';
