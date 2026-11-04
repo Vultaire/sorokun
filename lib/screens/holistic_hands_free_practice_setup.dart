@@ -19,6 +19,8 @@ class _HolisticHandsFreePracticeSetupPageState
     extends State<HolisticHandsFreePracticeSetupPage> {
   static const _minimumSpeed = 50;
   static const _maximumSpeed = 200;
+  static const _speedDivisions = 30;
+  static const _speedStep = (_maximumSpeed - _minimumSpeed) ~/ _speedDivisions;
   static const _minimumDelaySeconds = 1;
   static const _maximumDelaySeconds = 15;
 
@@ -29,9 +31,20 @@ class _HolisticHandsFreePracticeSetupPageState
       kyuui: Kyuui.zsk10,
     ),
   ];
+  final FocusNode _speedSliderFocusNode = FocusNode();
+  final FocusNode _thinkingDelaySliderFocusNode = FocusNode();
+  final FocusNode _answerDwellSliderFocusNode = FocusNode();
   int _speedPercent = 100;
   int _thinkingDelaySeconds = 5;
   int _answerDisplayDwellSeconds = 5;
+
+  @override
+  void dispose() {
+    _speedSliderFocusNode.dispose();
+    _thinkingDelaySliderFocusNode.dispose();
+    _answerDwellSliderFocusNode.dispose();
+    super.dispose();
+  }
 
   List<Kyuui> _availableGrades(
     HolisticPracticeActivity activity,
@@ -274,19 +287,57 @@ class _HolisticHandsFreePracticeSetupPageState
                               children: [
                                 const Text('$_minimumSpeed%'),
                                 Expanded(
-                                  child: Slider(
-                                    key: const ValueKey(
-                                      'holistic-speed-slider',
+                                  child: _buildAccessibleSlider(
+                                    name: l10n.holisticSpeedHeading,
+                                    value: l10n.holisticCurrentSpeed(
+                                      _speedPercent,
                                     ),
-                                    min: _minimumSpeed.toDouble(),
-                                    max: _maximumSpeed.toDouble(),
-                                    divisions: 30,
-                                    label: l10n.holisticSpeedHeading,
-                                    value: _speedPercent.toDouble(),
-                                    semanticFormatterCallback: (value) => l10n
-                                        .holisticCurrentSpeed(value.round()),
-                                    onChanged: (value) => setState(
-                                      () => _speedPercent = value.round(),
+                                    increasedValue: l10n.holisticCurrentSpeed(
+                                      (_speedPercent + _speedStep)
+                                          .clamp(_minimumSpeed, _maximumSpeed)
+                                          .toInt(),
+                                    ),
+                                    decreasedValue: l10n.holisticCurrentSpeed(
+                                      (_speedPercent - _speedStep)
+                                          .clamp(_minimumSpeed, _maximumSpeed)
+                                          .toInt(),
+                                    ),
+                                    focusNode: _speedSliderFocusNode,
+                                    onIncrease: () => setState(
+                                      () => _speedPercent =
+                                          (_speedPercent + _speedStep)
+                                              .clamp(
+                                                _minimumSpeed,
+                                                _maximumSpeed,
+                                              )
+                                              .toInt(),
+                                    ),
+                                    onDecrease: () => setState(
+                                      () => _speedPercent =
+                                          (_speedPercent - _speedStep)
+                                              .clamp(
+                                                _minimumSpeed,
+                                                _maximumSpeed,
+                                              )
+                                              .toInt(),
+                                    ),
+                                    slider: Slider(
+                                      // Slider.label is the transient visible
+                                      // thumb indicator, so keep it value-based.
+                                      key: const ValueKey(
+                                        'holistic-speed-slider',
+                                      ),
+                                      min: _minimumSpeed.toDouble(),
+                                      max: _maximumSpeed.toDouble(),
+                                      divisions: _speedDivisions,
+                                      label: l10n.holisticCurrentSpeed(
+                                        _speedPercent,
+                                      ),
+                                      value: _speedPercent.toDouble(),
+                                      focusNode: _speedSliderFocusNode,
+                                      onChanged: (value) => setState(
+                                        () => _speedPercent = value.round(),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -310,6 +361,7 @@ class _HolisticHandsFreePracticeSetupPageState
                         hint: l10n.holisticThinkingDelayHint,
                         keyName: 'holistic-thinking-delay-slider',
                         valueKeyName: 'holistic-thinking-delay-value',
+                        focusNode: _thinkingDelaySliderFocusNode,
                         seconds: _thinkingDelaySeconds,
                         onChanged: (value) =>
                             setState(() => _thinkingDelaySeconds = value),
@@ -321,6 +373,7 @@ class _HolisticHandsFreePracticeSetupPageState
                         hint: l10n.holisticAnswerDwellHint,
                         keyName: 'holistic-answer-dwell-slider',
                         valueKeyName: 'holistic-answer-dwell-value',
+                        focusNode: _answerDwellSliderFocusNode,
                         seconds: _answerDisplayDwellSeconds,
                         onChanged: (value) =>
                             setState(() => _answerDisplayDwellSeconds = value),
@@ -509,6 +562,7 @@ class _HolisticHandsFreePracticeSetupPageState
     required String hint,
     required String keyName,
     required String valueKeyName,
+    required FocusNode focusNode,
     required int seconds,
     required ValueChanged<int> onChanged,
   }) {
@@ -523,16 +577,40 @@ class _HolisticHandsFreePracticeSetupPageState
             children: [
               Text(l10n.holisticSecondsValue('$_minimumDelaySeconds')),
               Expanded(
-                child: Slider(
-                  key: ValueKey(keyName),
-                  min: _minimumDelaySeconds.toDouble(),
-                  max: _maximumDelaySeconds.toDouble(),
-                  divisions: _maximumDelaySeconds - _minimumDelaySeconds,
-                  label: heading,
-                  value: seconds.toDouble(),
-                  semanticFormatterCallback: (value) =>
-                      l10n.holisticDelayValue(value.round()),
-                  onChanged: (value) => onChanged(value.round()),
+                child: _buildAccessibleSlider(
+                  name: heading,
+                  value: l10n.holisticDelayValue(seconds),
+                  increasedValue: l10n.holisticDelayValue(
+                    (seconds + 1)
+                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                        .toInt(),
+                  ),
+                  decreasedValue: l10n.holisticDelayValue(
+                    (seconds - 1)
+                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                        .toInt(),
+                  ),
+                  focusNode: focusNode,
+                  onIncrease: () => onChanged(
+                    (seconds + 1)
+                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                        .toInt(),
+                  ),
+                  onDecrease: () => onChanged(
+                    (seconds - 1)
+                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                        .toInt(),
+                  ),
+                  slider: Slider(
+                    key: ValueKey(keyName),
+                    min: _minimumDelaySeconds.toDouble(),
+                    max: _maximumDelaySeconds.toDouble(),
+                    divisions: _maximumDelaySeconds - _minimumDelaySeconds,
+                    label: l10n.holisticDelayValue(seconds),
+                    value: seconds.toDouble(),
+                    focusNode: focusNode,
+                    onChanged: (value) => onChanged(value.round()),
+                  ),
                 ),
               ),
               Text(l10n.holisticSecondsValue('$_maximumDelaySeconds')),
@@ -549,6 +627,38 @@ class _HolisticHandsFreePracticeSetupPageState
       ),
     );
   }
+
+  Widget _buildAccessibleSlider({
+    required String name,
+    required String value,
+    required String increasedValue,
+    required String decreasedValue,
+    required FocusNode focusNode,
+    required VoidCallback onIncrease,
+    required VoidCallback onDecrease,
+    required Slider slider,
+  }) => AnimatedBuilder(
+    animation: focusNode,
+    builder: (context, _) => Semantics(
+      // Slider.label drives both the painted value indicator and the native
+      // slider's semantic label. Keep the display value on the Slider itself
+      // and expose its focused semantics as a separate proxy node here.
+      container: true,
+      label: name,
+      value: value,
+      increasedValue: increasedValue,
+      decreasedValue: decreasedValue,
+      enabled: slider.onChanged != null && slider.max > slider.min,
+      slider: true,
+      focusable: true,
+      focused: focusNode.hasFocus,
+      onFocus: focusNode.requestFocus,
+      onDidGainAccessibilityFocus: focusNode.requestFocus,
+      onIncrease: onIncrease,
+      onDecrease: onDecrease,
+      child: ExcludeSemantics(child: slider),
+    ),
+  );
 }
 
 class _PlaylistDraft {

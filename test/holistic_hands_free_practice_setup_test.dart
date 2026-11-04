@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -342,6 +344,7 @@ void main() {
         final slider = find.byKey(ValueKey(key));
         await tester.ensureVisible(slider);
         await tester.pumpAndSettle();
+        expect(tester.widget<Slider>(slider).label, value);
         expect(
           find.semantics.byPredicate((node) {
             final data = node.getSemanticsData();
@@ -349,7 +352,10 @@ void main() {
                 node.value == value &&
                 node.increasedValue == increasedValue &&
                 node.decreasedValue == decreasedValue &&
+                data.flagsCollection.isEnabled != Tristate.none &&
+                data.flagsCollection.isEnabled == Tristate.isTrue &&
                 data.flagsCollection.isSlider &&
+                data.hasAction(SemanticsAction.focus) &&
                 data.hasAction(SemanticsAction.increase) &&
                 data.hasAction(SemanticsAction.decrease);
           }),
@@ -377,6 +383,27 @@ void main() {
         '5 sec',
         '6 sec',
         '4 sec',
+      );
+
+      final speedSlider = find.byKey(const ValueKey('holistic-speed-slider'));
+      await tester.ensureVisible(speedSlider);
+      await tester.pumpAndSettle();
+      final speedSemantics = find.semantics.byPredicate(
+        (node) =>
+            node.label == 'Problem display speed' &&
+            node.getSemanticsData().flagsCollection.isSlider,
+      );
+      tester.semantics.performAction(speedSemantics, SemanticsAction.focus);
+      await tester.pumpAndSettle();
+      expect(tester.widget<Slider>(speedSlider).focusNode!.hasFocus, isTrue);
+      tester.semantics.performAction(speedSemantics, SemanticsAction.increase);
+      await tester.pumpAndSettle();
+      await expectSliderSemantics(
+        'holistic-speed-slider',
+        'Problem display speed',
+        'Speed: 105%',
+        'Speed: 110%',
+        'Speed: 100%',
       );
 
       tester
