@@ -139,6 +139,98 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeFree => 'フリー';
 
   @override
+  String get homeHandsFreeLine1 => 'ハンズフリー';
+
+  @override
+  String get homeHandsFreeLine2 => '練習';
+
+  @override
+  String get holisticHandsFreePractice => 'ハンズフリー総合練習';
+
+  @override
+  String get holisticHandsFreeSetupTitle => 'ハンズフリー総合設定';
+
+  @override
+  String get holisticHandsFreeSetupSubtitle => '練習する種目を順番に登録し、項目ごとに設定します。';
+
+  @override
+  String get holisticDuplicateHint =>
+      '同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。';
+
+  @override
+  String holisticPlaylistItem(int number) {
+    return 'プレイリスト項目 $number';
+  }
+
+  @override
+  String get holisticActivity => '種目';
+
+  @override
+  String get holisticOrganization => '団体';
+
+  @override
+  String get holisticAddItem => 'プレイリスト項目を追加';
+
+  @override
+  String get holisticRemoveItem => 'プレイリスト項目を削除';
+
+  @override
+  String get holisticSpeedHeading => '問題の表示速度';
+
+  @override
+  String get holisticSpeedHint =>
+      '100%を基準とします。割合を上げると問題またはフラッシュ暗算の表示時間が短くなります。';
+
+  @override
+  String holisticCurrentSpeed(int percent) {
+    return '速度：$percent%';
+  }
+
+  @override
+  String get holisticDurationHeading => '問題の表示時間（目安）';
+
+  @override
+  String holisticSecondsValue(String seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get holisticThinkingDelayHeading => 'フラッシュ暗算の思考時間';
+
+  @override
+  String get holisticThinkingDelayHint => '数字の表示が終わってから答えを表示するまでの待ち時間です。';
+
+  @override
+  String get holisticAnswerDwellHeading => '答えの表示時間';
+
+  @override
+  String get holisticAnswerDwellHint => '答えを表示しておく時間です。思考時間とは別に設定します。';
+
+  @override
+  String holisticDelayValue(int seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get holisticSetupOnlyNotice =>
+      'この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。';
+
+  @override
+  String get holisticContinue => '設定の引き継ぎ画面へ';
+
+  @override
+  String get holisticHandoffTitle => '練習設定の引き継ぎ';
+
+  @override
+  String get holisticHandoffNotice =>
+      '設定を受け取りました。練習セッションはまだ始まりません。実行機能は後の段階で追加されます。';
+
+  @override
+  String holisticHandoffSummary(int count, int speed) {
+    return '$count項目・速度$speed%';
+  }
+
+  @override
   String get credits => 'クレジット';
 
   @override

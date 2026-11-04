@@ -90,6 +90,55 @@
   "homeFlashLine2": "Anzan",
   "homeExam": "Exam",
   "homeFree": "Free",
+  "homeHandsFreeLine1": "Hands-free",
+  "homeHandsFreeLine2": "Practice",
+  "holisticHandsFreePractice": "Hands-free Practice",
+  "holisticHandsFreeSetupTitle": "Hands-free Practice setup",
+  "holisticHandsFreeSetupSubtitle": "Build an ordered practice playlist. Configure each item independently.",
+  "holisticDuplicateHint": "Repeated items are allowed and intentionally give that activity more weight in the playlist.",
+  "holisticPlaylistItem": "Playlist item {number}",
+  "@holisticPlaylistItem": {
+    "description": "Heading for one independently configurable activity in the hands-free playlist.",
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "holisticActivity": "Activity",
+  "holisticOrganization": "Organization",
+  "holisticAddItem": "Add playlist item",
+  "holisticRemoveItem": "Remove playlist item",
+  "holisticSpeedHeading": "Problem display speed",
+  "holisticSpeedHint": "100% is the baseline. Higher percentages shorten each displayed problem or Flash Anzan stream.",
+  "holisticCurrentSpeed": "Speed: {percent}%",
+  "@holisticCurrentSpeed": {
+    "description": "The current shared problem display speed for holistic hands-free practice.",
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "holisticDurationHeading": "Displayed problem duration preview",
+  "holisticSecondsValue": "{seconds} sec",
+  "@holisticSecondsValue": {
+    "description": "A duration in seconds for a hands-free practice problem or phase.",
+    "placeholders": { "seconds": { "type": "String" } }
+  },
+  "holisticThinkingDelayHeading": "Flash Anzan thinking delay",
+  "holisticThinkingDelayHint": "Pause after the number stream ends and before revealing its answer.",
+  "holisticAnswerDwellHeading": "Answer display dwell",
+  "holisticAnswerDwellHint": "How long a revealed answer stays visible. This is independent of the thinking delay.",
+  "holisticDelayValue": "{seconds} sec",
+  "@holisticDelayValue": {
+    "description": "Current value for the independent flash thinking delay or answer display dwell.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "holisticSetupOnlyNotice": "This step only prepares settings. It does not generate problems or start a practice session.",
+  "holisticContinue": "Continue to setup handoff",
+  "holisticHandoffTitle": "Practice setup handoff",
+  "holisticHandoffNotice": "Setup received. No practice session has started; the runner will be added in a later stage.",
+  "holisticHandoffSummary": "{count, plural, =1{{count} playlist item at {speed}% speed} other{{count} playlist items at {speed}% speed}}",
+  "@holisticHandoffSummary": {
+    "description": "Summary confirming the typed practice setup was handed off without starting a session.",
+    "placeholders": {
+      "count": { "type": "int" },
+      "speed": { "type": "int" }
+    }
+  },
   "credits": "Credits",
   "creditsDevelopment": "Development",
   "developerRole": "Developer",

@@ -336,6 +336,162 @@ abstract class AppLocalizations {
   /// **'フリー'**
   String get homeFree;
 
+  /// No description provided for @homeHandsFreeLine1.
+  ///
+  /// In ja, this message translates to:
+  /// **'ハンズフリー'**
+  String get homeHandsFreeLine1;
+
+  /// No description provided for @homeHandsFreeLine2.
+  ///
+  /// In ja, this message translates to:
+  /// **'練習'**
+  String get homeHandsFreeLine2;
+
+  /// No description provided for @holisticHandsFreePractice.
+  ///
+  /// In ja, this message translates to:
+  /// **'ハンズフリー総合練習'**
+  String get holisticHandsFreePractice;
+
+  /// No description provided for @holisticHandsFreeSetupTitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'ハンズフリー総合設定'**
+  String get holisticHandsFreeSetupTitle;
+
+  /// No description provided for @holisticHandsFreeSetupSubtitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'練習する種目を順番に登録し、項目ごとに設定します。'**
+  String get holisticHandsFreeSetupSubtitle;
+
+  /// No description provided for @holisticDuplicateHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。'**
+  String get holisticDuplicateHint;
+
+  /// ハンズフリープレイリストの個別に設定できる種目の見出し。
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト項目 {number}'**
+  String holisticPlaylistItem(int number);
+
+  /// No description provided for @holisticActivity.
+  ///
+  /// In ja, this message translates to:
+  /// **'種目'**
+  String get holisticActivity;
+
+  /// No description provided for @holisticOrganization.
+  ///
+  /// In ja, this message translates to:
+  /// **'団体'**
+  String get holisticOrganization;
+
+  /// No description provided for @holisticAddItem.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト項目を追加'**
+  String get holisticAddItem;
+
+  /// No description provided for @holisticRemoveItem.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト項目を削除'**
+  String get holisticRemoveItem;
+
+  /// No description provided for @holisticSpeedHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'問題の表示速度'**
+  String get holisticSpeedHeading;
+
+  /// No description provided for @holisticSpeedHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'100%を基準とします。割合を上げると問題またはフラッシュ暗算の表示時間が短くなります。'**
+  String get holisticSpeedHint;
+
+  /// 総合ハンズフリー練習の共通表示速度。
+  ///
+  /// In ja, this message translates to:
+  /// **'速度：{percent}%'**
+  String holisticCurrentSpeed(int percent);
+
+  /// No description provided for @holisticDurationHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'問題の表示時間（目安）'**
+  String get holisticDurationHeading;
+
+  /// ハンズフリー練習の問題表示時間または各フェーズの秒数。
+  ///
+  /// In ja, this message translates to:
+  /// **'{seconds}秒'**
+  String holisticSecondsValue(String seconds);
+
+  /// No description provided for @holisticThinkingDelayHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'フラッシュ暗算の思考時間'**
+  String get holisticThinkingDelayHeading;
+
+  /// No description provided for @holisticThinkingDelayHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'数字の表示が終わってから答えを表示するまでの待ち時間です。'**
+  String get holisticThinkingDelayHint;
+
+  /// No description provided for @holisticAnswerDwellHeading.
+  ///
+  /// In ja, this message translates to:
+  /// **'答えの表示時間'**
+  String get holisticAnswerDwellHeading;
+
+  /// No description provided for @holisticAnswerDwellHint.
+  ///
+  /// In ja, this message translates to:
+  /// **'答えを表示しておく時間です。思考時間とは別に設定します。'**
+  String get holisticAnswerDwellHint;
+
+  /// フラッシュ暗算の思考時間または答えの表示時間。
+  ///
+  /// In ja, this message translates to:
+  /// **'{seconds}秒'**
+  String holisticDelayValue(int seconds);
+
+  /// No description provided for @holisticSetupOnlyNotice.
+  ///
+  /// In ja, this message translates to:
+  /// **'この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。'**
+  String get holisticSetupOnlyNotice;
+
+  /// No description provided for @holisticContinue.
+  ///
+  /// In ja, this message translates to:
+  /// **'設定の引き継ぎ画面へ'**
+  String get holisticContinue;
+
+  /// No description provided for @holisticHandoffTitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'練習設定の引き継ぎ'**
+  String get holisticHandoffTitle;
+
+  /// No description provided for @holisticHandoffNotice.
+  ///
+  /// In ja, this message translates to:
+  /// **'設定を受け取りました。練習セッションはまだ始まりません。実行機能は後の段階で追加されます。'**
+  String get holisticHandoffNotice;
+
+  /// 練習セッションを開始せず、型付き設定を引き継いだことを示す概要。
+  ///
+  /// In ja, this message translates to:
+  /// **'{count}項目・速度{speed}%'**
+  String holisticHandoffSummary(int count, int speed);
+
   /// No description provided for @credits.
   ///
   /// In ja, this message translates to:

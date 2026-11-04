@@ -139,6 +139,107 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeFree => 'Free';
 
   @override
+  String get homeHandsFreeLine1 => 'Hands-free';
+
+  @override
+  String get homeHandsFreeLine2 => 'Practice';
+
+  @override
+  String get holisticHandsFreePractice => 'Hands-free Practice';
+
+  @override
+  String get holisticHandsFreeSetupTitle => 'Hands-free Practice setup';
+
+  @override
+  String get holisticHandsFreeSetupSubtitle =>
+      'Build an ordered practice playlist. Configure each item independently.';
+
+  @override
+  String get holisticDuplicateHint =>
+      'Repeated items are allowed and intentionally give that activity more weight in the playlist.';
+
+  @override
+  String holisticPlaylistItem(int number) {
+    return 'Playlist item $number';
+  }
+
+  @override
+  String get holisticActivity => 'Activity';
+
+  @override
+  String get holisticOrganization => 'Organization';
+
+  @override
+  String get holisticAddItem => 'Add playlist item';
+
+  @override
+  String get holisticRemoveItem => 'Remove playlist item';
+
+  @override
+  String get holisticSpeedHeading => 'Problem display speed';
+
+  @override
+  String get holisticSpeedHint =>
+      '100% is the baseline. Higher percentages shorten each displayed problem or Flash Anzan stream.';
+
+  @override
+  String holisticCurrentSpeed(int percent) {
+    return 'Speed: $percent%';
+  }
+
+  @override
+  String get holisticDurationHeading => 'Displayed problem duration preview';
+
+  @override
+  String holisticSecondsValue(String seconds) {
+    return '$seconds sec';
+  }
+
+  @override
+  String get holisticThinkingDelayHeading => 'Flash Anzan thinking delay';
+
+  @override
+  String get holisticThinkingDelayHint =>
+      'Pause after the number stream ends and before revealing its answer.';
+
+  @override
+  String get holisticAnswerDwellHeading => 'Answer display dwell';
+
+  @override
+  String get holisticAnswerDwellHint =>
+      'How long a revealed answer stays visible. This is independent of the thinking delay.';
+
+  @override
+  String holisticDelayValue(int seconds) {
+    return '$seconds sec';
+  }
+
+  @override
+  String get holisticSetupOnlyNotice =>
+      'This step only prepares settings. It does not generate problems or start a practice session.';
+
+  @override
+  String get holisticContinue => 'Continue to setup handoff';
+
+  @override
+  String get holisticHandoffTitle => 'Practice setup handoff';
+
+  @override
+  String get holisticHandoffNotice =>
+      'Setup received. No practice session has started; the runner will be added in a later stage.';
+
+  @override
+  String holisticHandoffSummary(int count, int speed) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count playlist items at $speed% speed',
+      one: '$count playlist item at $speed% speed',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get credits => 'Credits';
 
   @override

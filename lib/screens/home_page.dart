@@ -116,8 +116,8 @@ class HomePage extends StatelessWidget {
                       builder: (context, constraints) {
                         const desiredHeight = 86.0;
                         const minHeight = 72.0;
-                        const spacing = 24.0;
-                        const rows = 2;
+                        const spacing = 12.0;
+                        const rows = 3;
                         double rowHeight = desiredHeight;
                         if (constraints.maxHeight.isFinite) {
                           final maxAllowed =
@@ -129,9 +129,15 @@ class HomePage extends StatelessWidget {
                           );
                         }
                         final scheme = Theme.of(context).colorScheme;
+                        final menuWidth = constraints.maxWidth.clamp(
+                          0.0,
+                          600.0,
+                        );
 
                         return ConstrainedBox(
-                          constraints: BoxConstraints.tightFor(width: 600),
+                          constraints: BoxConstraints.tightFor(
+                            width: menuWidth,
+                          ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -175,6 +181,25 @@ class HomePage extends StatelessWidget {
                                     onColor: scheme.onPrimary,
                                     onPressed: () =>
                                         context.push('/flash-free-menu'),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: spacing),
+                              _MenuRow(
+                                height: rowHeight,
+                                background: scheme.primaryFixedDim,
+                                titleColor: scheme.onPrimaryFixedVariant,
+                                titleLine1: l10n.homeHandsFreeLine1,
+                                titleLine2: l10n.homeHandsFreeLine2,
+                                rotation: -0.2,
+                                buttons: [
+                                  _MenuButtonData(
+                                    label: l10n.holisticHandsFreePractice,
+                                    color: scheme.primary,
+                                    onColor: scheme.onPrimary,
+                                    onPressed: () => context.push(
+                                      '/holistic-hands-free-setup',
+                                    ),
                                   ),
                                 ],
                               ),
@@ -332,13 +357,16 @@ class _MenuButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(80),
       onPressed: data.onPressed,
       child: Center(
-        child: Text(
-          data.label,
-          textAlign: .center,
-          style: TextStyle(
-            fontSize: 32,
-            color: data.onColor,
-            fontFamily: 'mPlus',
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            data.label,
+            textAlign: .center,
+            style: TextStyle(
+              fontSize: 32,
+              color: data.onColor,
+              fontFamily: 'mPlus',
+            ),
           ),
         ),
       ),

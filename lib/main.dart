@@ -10,6 +10,7 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
 import 'package:soroban_app/models/hands_free_anzan_setup.dart';
+import 'package:soroban_app/models/holistic_hands_free_practice.dart';
 import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/components/keypad.dart';
 import 'package:soroban_app/screens/credits.dart';
@@ -18,6 +19,7 @@ import 'package:soroban_app/screens/flash_level_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/hands_free_anzan_setup.dart';
 import 'package:soroban_app/screens/hands_free_anzan_session.dart';
+import 'package:soroban_app/screens/holistic_hands_free_practice_setup.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
@@ -239,6 +241,19 @@ class _AbacusAppState extends State<AbacusApp> {
             state.extra is HandsFreeAnzanSetupConfig ? null : '/paper-menu',
         builder: (context, state) => HandsFreeAnzanSessionPage(
           config: state.extra as HandsFreeAnzanSetupConfig,
+        ),
+      ),
+      GoRoute(
+        path: '/holistic-hands-free-setup',
+        builder: (context, state) => const HolisticHandsFreePracticeSetupPage(),
+      ),
+      GoRoute(
+        path: '/holistic-hands-free-handoff',
+        redirect: (context, state) =>
+            state.extra is HolisticHandsFreePracticeConfig ? null : '/home',
+        builder: (context, state) => HolisticHandsFreeHandoffPage(
+          config: state.extra as HolisticHandsFreePracticeConfig,
+          onBack: () => context.pop(),
         ),
       ),
       GoRoute(
@@ -619,6 +634,7 @@ String _safeWelcomeDestination(String? destination) {
     '/paper-menu',
     '/flash-level-menu',
     '/flash-free-menu',
+    '/holistic-hands-free-setup',
   };
   if (uri == null ||
       uri.hasScheme ||

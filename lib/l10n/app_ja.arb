@@ -90,6 +90,55 @@
   "homeFlashLine2": "暗算",
   "homeExam": "検定",
   "homeFree": "フリー",
+  "homeHandsFreeLine1": "ハンズフリー",
+  "homeHandsFreeLine2": "練習",
+  "holisticHandsFreePractice": "ハンズフリー総合練習",
+  "holisticHandsFreeSetupTitle": "ハンズフリー総合設定",
+  "holisticHandsFreeSetupSubtitle": "練習する種目を順番に登録し、項目ごとに設定します。",
+  "holisticDuplicateHint": "同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。",
+  "holisticPlaylistItem": "プレイリスト項目 {number}",
+  "@holisticPlaylistItem": {
+    "description": "ハンズフリープレイリストの個別に設定できる種目の見出し。",
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "holisticActivity": "種目",
+  "holisticOrganization": "団体",
+  "holisticAddItem": "プレイリスト項目を追加",
+  "holisticRemoveItem": "プレイリスト項目を削除",
+  "holisticSpeedHeading": "問題の表示速度",
+  "holisticSpeedHint": "100%を基準とします。割合を上げると問題またはフラッシュ暗算の表示時間が短くなります。",
+  "holisticCurrentSpeed": "速度：{percent}%",
+  "@holisticCurrentSpeed": {
+    "description": "総合ハンズフリー練習の共通表示速度。",
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "holisticDurationHeading": "問題の表示時間（目安）",
+  "holisticSecondsValue": "{seconds}秒",
+  "@holisticSecondsValue": {
+    "description": "ハンズフリー練習の問題表示時間または各フェーズの秒数。",
+    "placeholders": { "seconds": { "type": "String" } }
+  },
+  "holisticThinkingDelayHeading": "フラッシュ暗算の思考時間",
+  "holisticThinkingDelayHint": "数字の表示が終わってから答えを表示するまでの待ち時間です。",
+  "holisticAnswerDwellHeading": "答えの表示時間",
+  "holisticAnswerDwellHint": "答えを表示しておく時間です。思考時間とは別に設定します。",
+  "holisticDelayValue": "{seconds}秒",
+  "@holisticDelayValue": {
+    "description": "フラッシュ暗算の思考時間または答えの表示時間。",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "holisticSetupOnlyNotice": "この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。",
+  "holisticContinue": "設定の引き継ぎ画面へ",
+  "holisticHandoffTitle": "練習設定の引き継ぎ",
+  "holisticHandoffNotice": "設定を受け取りました。練習セッションはまだ始まりません。実行機能は後の段階で追加されます。",
+  "holisticHandoffSummary": "{count}項目・速度{speed}%",
+  "@holisticHandoffSummary": {
+    "description": "練習セッションを開始せず、型付き設定を引き継いだことを示す概要。",
+    "placeholders": {
+      "count": { "type": "int" },
+      "speed": { "type": "int" }
+    }
+  },
   "credits": "クレジット",
   "creditsDevelopment": "開発",
   "developerRole": "開発者",
