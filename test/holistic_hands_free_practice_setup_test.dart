@@ -321,6 +321,108 @@ void main() {
     },
   );
 
+  testWidgets(
+    'setup sliders expose names and human-readable current semantic values',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      final semantics = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _localizedApp(const HolisticHandsFreePracticeSetupPage()),
+      );
+      await tester.pumpAndSettle();
+
+      Future<void> expectSliderSemantics(
+        String key,
+        String label,
+        String value,
+        String increasedValue,
+        String decreasedValue,
+      ) async {
+        final slider = find.byKey(ValueKey(key));
+        await tester.ensureVisible(slider);
+        await tester.pumpAndSettle();
+        expect(
+          find.semantics.byPredicate((node) {
+            final data = node.getSemanticsData();
+            return node.label == label &&
+                node.value == value &&
+                node.increasedValue == increasedValue &&
+                node.decreasedValue == decreasedValue &&
+                data.flagsCollection.isSlider &&
+                data.hasAction(SemanticsAction.increase) &&
+                data.hasAction(SemanticsAction.decrease);
+          }),
+          findsOneWidget,
+        );
+      }
+
+      await expectSliderSemantics(
+        'holistic-speed-slider',
+        'Problem display speed',
+        'Speed: 100%',
+        'Speed: 105%',
+        'Speed: 95%',
+      );
+      await expectSliderSemantics(
+        'holistic-thinking-delay-slider',
+        'Flash Anzan thinking delay',
+        '5 sec',
+        '6 sec',
+        '4 sec',
+      );
+      await expectSliderSemantics(
+        'holistic-answer-dwell-slider',
+        'Answer display dwell',
+        '5 sec',
+        '6 sec',
+        '4 sec',
+      );
+
+      tester
+          .widget<Slider>(find.byKey(const ValueKey('holistic-speed-slider')))
+          .onChanged!(175);
+      tester
+          .widget<Slider>(
+            find.byKey(const ValueKey('holistic-thinking-delay-slider')),
+          )
+          .onChanged!(8);
+      tester
+          .widget<Slider>(
+            find.byKey(const ValueKey('holistic-answer-dwell-slider')),
+          )
+          .onChanged!(12);
+      await tester.pumpAndSettle();
+
+      await expectSliderSemantics(
+        'holistic-speed-slider',
+        'Problem display speed',
+        'Speed: 175%',
+        'Speed: 180%',
+        'Speed: 170%',
+      );
+      await expectSliderSemantics(
+        'holistic-thinking-delay-slider',
+        'Flash Anzan thinking delay',
+        '8 sec',
+        '9 sec',
+        '7 sec',
+      );
+      await expectSliderSemantics(
+        'holistic-answer-dwell-slider',
+        'Answer display dwell',
+        '12 sec',
+        '13 sec',
+        '11 sec',
+      );
+
+      semantics.dispose();
+      await tester.pumpWidget(const SizedBox.shrink());
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    },
+  );
+
   testWidgets('setup is localized and fits phone, tablet, and desktop widths', (
     tester,
   ) async {

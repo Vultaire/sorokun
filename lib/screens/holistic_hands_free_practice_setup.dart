@@ -281,8 +281,10 @@ class _HolisticHandsFreePracticeSetupPageState
                                     min: _minimumSpeed.toDouble(),
                                     max: _maximumSpeed.toDouble(),
                                     divisions: 30,
-                                    label: '$_speedPercent%',
+                                    label: l10n.holisticSpeedHeading,
                                     value: _speedPercent.toDouble(),
+                                    semanticFormatterCallback: (value) => l10n
+                                        .holisticCurrentSpeed(value.round()),
                                     onChanged: (value) => setState(
                                       () => _speedPercent = value.round(),
                                     ),
@@ -526,8 +528,10 @@ class _HolisticHandsFreePracticeSetupPageState
                   min: _minimumDelaySeconds.toDouble(),
                   max: _maximumDelaySeconds.toDouble(),
                   divisions: _maximumDelaySeconds - _minimumDelaySeconds,
-                  label: l10n.holisticSecondsValue('$seconds'),
+                  label: heading,
                   value: seconds.toDouble(),
+                  semanticFormatterCallback: (value) =>
+                      l10n.holisticDelayValue(value.round()),
                   onChanged: (value) => onChanged(value.round()),
                 ),
               ),
