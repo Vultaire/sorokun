@@ -78,7 +78,12 @@ class _HolisticHandsFreePracticeSetupPageState
         ),
       );
       _prefs = prefs;
-      _restoreSettings(prefs.getString(_settingsKey));
+      final savedSettings = prefs.getString(_settingsKey);
+      if (savedSettings == null) {
+        _initializePlaylistFromSavedPractice();
+      } else {
+        _restoreSettings(savedSettings);
+      }
     } catch (error) {
       // Keep the default setup usable if preferences are unavailable.
       debugPrint('Unable to load hands-free practice settings: $error');
@@ -159,6 +164,23 @@ class _HolisticHandsFreePracticeSetupPageState
     } on FormatException catch (error) {
       debugPrint('Ignoring invalid hands-free practice settings: $error');
     }
+  }
+
+  void _initializePlaylistFromSavedPractice() {
+    final draft = _playlist.first;
+    final savedPreference = _savedFlowPreference(draft.activity);
+    final denomination = savedPreference.denomination;
+    if (denomination == null ||
+        !_availableOrganizations(draft.activity).contains(denomination)) {
+      return;
+    }
+
+    final grades = _availableGrades(draft.activity, denomination);
+    draft
+      ..denomination = denomination
+      ..kyuui = grades.contains(savedPreference.kyuui)
+          ? savedPreference.kyuui!
+          : grades.first;
   }
 
   int _storedInt(

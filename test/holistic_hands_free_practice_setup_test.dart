@@ -98,6 +98,23 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(
+        tester
+            .widget<DropdownButtonFormField<Denomination>>(
+              find.byKey(const ValueKey('holistic-organization-0')),
+            )
+            .initialValue,
+        Denomination.zenshuren,
+      );
+      expect(
+        tester
+            .widget<DropdownButtonFormField<Kyuui>>(
+              find.byKey(const ValueKey('holistic-grade-0')),
+            )
+            .initialValue,
+        Kyuui.zsk10,
+      );
+
       final organization = find.byKey(
         const ValueKey('holistic-organization-0'),
       );
@@ -193,6 +210,43 @@ void main() {
     );
     expect(tester.takeException(), isNull);
 
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+
+  testWidgets('first hands-free item uses saved Soroban Practice level', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 932);
+    tester.view.devicePixelRatio = 1;
+    _setMockPreferences({
+      'paper_kyuui': Kyuui.nsk6.index,
+      'paper_kyuuiDenomination': KyuuiDenomination.ns.index,
+    });
+    await tester.pumpWidget(
+      _localizedApp(const HolisticHandsFreePracticeSetupPage()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Denomination>>(
+            find.byKey(const ValueKey('holistic-organization-0')),
+          )
+          .initialValue,
+      Denomination.nisshou,
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<Kyuui>>(
+            find.byKey(const ValueKey('holistic-grade-0')),
+          )
+          .initialValue,
+      Kyuui.nsk6,
+    );
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
     tester.view.resetPhysicalSize();
     tester.view.resetDevicePixelRatio();
   });
