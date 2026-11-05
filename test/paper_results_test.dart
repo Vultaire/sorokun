@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
+import 'package:soroban_app/screens/components/navigation_button.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 
 Widget _localizedCountUpCircle(Locale locale) => MaterialApp(
@@ -24,6 +25,33 @@ Widget _localizedCountUpCircle(Locale locale) => MaterialApp(
     ),
   ),
 );
+
+Widget _localizedReviewButton(Locale locale, {required double width}) =>
+    MaterialApp(
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: width,
+            child: Builder(
+              builder: (context) => NavigationButton(
+                color: Colors.amber,
+                onPressed: () {},
+                child: Center(
+                  child: iconHelper(
+                    context,
+                    Icons.error_outline_rounded,
+                    AppLocalizations.of(context).reviewIncorrect,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -65,5 +93,30 @@ void main() {
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('review action label stays inside its button in both languages', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+
+    for (final (locale, label) in [
+      (const Locale('en'), 'Review incorrect answers'),
+      (const Locale('ja'), '間違えた問題を見る'),
+    ]) {
+      await tester.pumpWidget(_localizedReviewButton(locale, width: 310));
+      await tester.pumpAndSettle();
+
+      expect(find.text(label), findsOneWidget);
+      final text = tester.widget<Text>(find.text(label));
+      expect(text.maxLines, 2);
+      expect(text.overflow, TextOverflow.ellipsis);
+      expect(tester.takeException(), isNull);
+    }
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
   });
 }
