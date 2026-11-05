@@ -142,7 +142,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeHandsFreeLine1 => 'Hands-free';
 
   @override
-  String get homeHandsFreeLine2 => 'Practice';
+  String get homeHandsFreeLine2 => '';
+
+  @override
+  String get homeHandsFreeButtonLabel => 'Practice';
 
   @override
   String get holisticHandsFreePractice => 'Hands-free Practice';

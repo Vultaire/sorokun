@@ -13,6 +13,7 @@ import 'package:soroban_app/models/level_definitions.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_setup.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_session.dart';
 import 'package:soroban_app/screens/home_page.dart';
+import 'package:stroke_text/stroke_text.dart';
 
 Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) =>
     MaterialApp(
@@ -73,17 +74,43 @@ void main() {
     expect(find.text('Choose a subject'), findsOneWidget);
     expect(find.text('Exam'), findsOneWidget);
     expect(find.text('Free'), findsOneWidget);
-    expect(find.text('Hands-free Practice'), findsOneWidget);
+    expect(find.text('Practice'), findsOneWidget);
+    expect(
+      tester.widgetList<StrokeText>(find.byType(StrokeText)).map((e) => e.text),
+      contains('Hands-free'),
+    );
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('Hands-free Practice'));
+    await tester.tap(find.text('Practice'));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Hands-free Practice setup'), findsOneWidget);
-    expect(find.text('Hands-free Practice'), findsNothing);
+    expect(find.text('Practice'), findsNothing);
     expect(tester.takeException(), isNull);
     router.dispose();
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+
+  testWidgets('Japanese home hands-free labels use short katakana forms', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 932);
+    tester.view.devicePixelRatio = 1;
+    await tester.pumpWidget(
+      _localizedApp(const HomePage(), locale: const Locale('ja')),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('練習'), findsOneWidget);
+    expect(
+      tester.widgetList<StrokeText>(find.byType(StrokeText)).map((e) => e.text),
+      contains('ﾊﾝｽﾞ\nﾌﾘｰ'),
+    );
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
     tester.view.resetPhysicalSize();
     tester.view.resetDevicePixelRatio();
   });

@@ -194,7 +194,7 @@ class HomePage extends StatelessWidget {
                                 rotation: -0.2,
                                 buttons: [
                                   _MenuButtonData(
-                                    label: l10n.holisticHandsFreePractice,
+                                    label: l10n.homeHandsFreeButtonLabel,
                                     color: scheme.primary,
                                     onColor: scheme.onPrimary,
                                     onPressed: () => context.push(
@@ -283,6 +283,10 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isJapanese = Localizations.localeOf(context).languageCode == 'ja';
+    final title = [
+      titleLine1,
+      titleLine2,
+    ].where((line) => line.isNotEmpty).join('\n');
     return SizedBox(
       height: height,
       child: Stack(
@@ -324,7 +328,7 @@ class _MenuRow extends StatelessWidget {
                     width: 120,
                     height: 90,
                     child: StrokeText(
-                      text: '$titleLine1\n$titleLine2',
+                      text: title,
                       textAlign: TextAlign.center,
                       textStyle: TextStyle(
                         fontSize: isJapanese ? 42 : 24,

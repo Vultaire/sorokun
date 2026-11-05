@@ -339,14 +339,20 @@ abstract class AppLocalizations {
   /// No description provided for @homeHandsFreeLine1.
   ///
   /// In ja, this message translates to:
-  /// **'ハンズフリー'**
+  /// **'ﾊﾝｽﾞ'**
   String get homeHandsFreeLine1;
 
   /// No description provided for @homeHandsFreeLine2.
   ///
   /// In ja, this message translates to:
-  /// **'練習'**
+  /// **'ﾌﾘｰ'**
   String get homeHandsFreeLine2;
+
+  /// No description provided for @homeHandsFreeButtonLabel.
+  ///
+  /// In ja, this message translates to:
+  /// **'練習'**
+  String get homeHandsFreeButtonLabel;
 
   /// No description provided for @holisticHandsFreePractice.
   ///

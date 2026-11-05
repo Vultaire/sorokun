@@ -139,10 +139,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeFree => 'フリー';
 
   @override
-  String get homeHandsFreeLine1 => 'ハンズフリー';
+  String get homeHandsFreeLine1 => 'ﾊﾝｽﾞ';
 
   @override
-  String get homeHandsFreeLine2 => '練習';
+  String get homeHandsFreeLine2 => 'ﾌﾘｰ';
+
+  @override
+  String get homeHandsFreeButtonLabel => '練習';
 
   @override
   String get holisticHandsFreePractice => 'ハンズフリー総合練習';
