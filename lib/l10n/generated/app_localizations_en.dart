@@ -664,6 +664,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewIncorrect => 'Review incorrect answers';
 
   @override
+  String get reviewMistakesButton => 'Review mistakes';
+
+  @override
   String get tryAgain => 'Try again';
 
   @override

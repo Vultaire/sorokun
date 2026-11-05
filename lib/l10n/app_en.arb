@@ -395,6 +395,10 @@
   },
   "time": "Time",
   "reviewIncorrect": "Review incorrect answers",
+  "reviewMistakesButton": "Review mistakes",
+  "@reviewMistakesButton": {
+    "description": "Short label for the results-page button that opens incorrect answers."
+  },
   "tryAgain": "Try again",
   "returnHome": "Return to main menu",
   "returnToSettings": "Return to settings",

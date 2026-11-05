@@ -639,6 +639,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reviewIncorrect => '間違えた問題を見る';
 
   @override
+  String get reviewMistakesButton => '間違えた問題を見る';
+
+  @override
   String get tryAgain => 'もう一回挑戦する';
 
   @override

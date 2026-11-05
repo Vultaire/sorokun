@@ -43,7 +43,7 @@ Widget _localizedReviewButton(Locale locale, {required double width}) =>
                   child: iconHelper(
                     context,
                     Icons.error_outline_rounded,
-                    AppLocalizations.of(context).reviewIncorrect,
+                    AppLocalizations.of(context).reviewMistakesButton,
                   ),
                 ),
               ),
@@ -102,7 +102,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
 
     for (final (locale, label) in [
-      (const Locale('en'), 'Review incorrect answers'),
+      (const Locale('en'), 'Review mistakes'),
       (const Locale('ja'), '間違えた問題を見る'),
     ]) {
       await tester.pumpWidget(_localizedReviewButton(locale, width: 310));

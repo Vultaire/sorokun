@@ -1140,6 +1140,12 @@ abstract class AppLocalizations {
   /// **'間違えた問題を見る'**
   String get reviewIncorrect;
 
+  /// No description provided for @reviewMistakesButton.
+  ///
+  /// In ja, this message translates to:
+  /// **'間違えた問題を見る'**
+  String get reviewMistakesButton;
+
   /// No description provided for @tryAgain.
   ///
   /// In ja, this message translates to:

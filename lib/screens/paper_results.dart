@@ -132,7 +132,7 @@ class ResultsScreen extends StatelessWidget {
                         child: iconHelper(
                           context,
                           Icons.error_outline_rounded,
-                          l10n.reviewIncorrect,
+                          l10n.reviewMistakesButton,
                         ),
                       ),
                     ),

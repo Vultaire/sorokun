@@ -395,6 +395,7 @@
   },
   "time": "タイム",
   "reviewIncorrect": "間違えた問題を見る",
+  "reviewMistakesButton": "間違えた問題を見る",
   "tryAgain": "もう一回挑戦する",
   "returnHome": "メインメニューに戻る",
   "returnToSettings": "設定画面に戻る",
