@@ -398,14 +398,17 @@
   "tryAgain": "Try again",
   "returnHome": "Return to main menu",
   "returnToSettings": "Return to settings",
-  "pointsOutOf": "out of {maximum} points",
+  "pointsOutOf": "Out of {maximum} points",
   "@pointsOutOf": {
     "description": "Maximum possible points in a result score.",
     "placeholders": { "maximum": { "type": "int" } }
   },
-  "pointsUnit": "points",
+  "pointsUnit": " points",
+  "@pointsUnit": {
+    "description": "Score unit suffix; English includes a separating space."
+  },
   "passed": "Passed",
-  "failed": "Not passed",
+  "failed": "Failed",
   "unknownLevelType": "Unknown level type",
   "timeUp": "Time's up!",
   "practiceComplete": "Complete!",

@@ -494,40 +494,15 @@ class _CountUpCircleState extends State<CountUpCircle>
                   SizedBox(
                     width: 250,
                     child: Stack(
-                      alignment: Alignment.centerRight,
+                      alignment: Alignment.center,
                       children: [
                         Opacity(
                           opacity: 0,
-                          child: Row(
-                            children: [
-                              Text('${widget.score.$1}', style: widget.style),
-                              Text(
-                                l10n.pointsUnit,
-                                style: widget.style.copyWith(
-                                  fontSize: widget.style.fontSize! * 0.75,
-                                ),
-                              ),
-                            ],
-                          ),
+                          child: _scoreDisplay(widget.score.$1, l10n),
                         ),
-                        Row(
-                          crossAxisAlignment: .end,
-                          mainAxisAlignment: .center,
-                          children: [
-                            Transform.translate(
-                              offset: Offset(0, 10),
-                              child: Text(
-                                '${_countAnimation.value}',
-                                style: widget.style,
-                              ),
-                            ),
-                            Text(
-                              l10n.pointsUnit,
-                              style: widget.style.copyWith(
-                                fontSize: widget.style.fontSize! * 0.75,
-                              ),
-                            ),
-                          ],
+                        Transform.translate(
+                          offset: const Offset(0, 10),
+                          child: _scoreDisplay(_countAnimation.value, l10n),
                         ),
                       ],
                     ),
@@ -546,6 +521,25 @@ class _CountUpCircleState extends State<CountUpCircle>
       },
     );
   }
+
+  Widget _scoreDisplay(int score, AppLocalizations l10n) => Center(
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(text: '$score', style: widget.style),
+            TextSpan(
+              text: l10n.pointsUnit,
+              style: widget.style.copyWith(
+                fontSize: widget.style.fontSize! * 0.75,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 class CircularProgressPainter extends CustomPainter {

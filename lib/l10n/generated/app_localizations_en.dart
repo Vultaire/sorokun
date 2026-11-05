@@ -674,17 +674,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String pointsOutOf(int maximum) {
-    return 'out of $maximum points';
+    return 'Out of $maximum points';
   }
 
   @override
-  String get pointsUnit => 'points';
+  String get pointsUnit => ' points';
 
   @override
   String get passed => 'Passed';
 
   @override
-  String get failed => 'Not passed';
+  String get failed => 'Failed';
 
   @override
   String get unknownLevelType => 'Unknown level type';
