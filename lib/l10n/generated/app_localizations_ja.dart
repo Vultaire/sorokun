@@ -956,22 +956,22 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
       'このソフトウェアには、どんなほしょうもありません。GPL v3.0 のルールにしたがえば、くばったり、かえたりできます。ライセンスのすべては、うえのリンクでよめます。';
 
   @override
-  String get exitDialogTitle => '終了しますか？';
+  String get exitDialogTitle => 'おわる？';
 
   @override
-  String get exitDialogMessage => '提出するか、途中でやめるか選んでください。';
+  String get exitDialogMessage => 'こたえをおくるか、とちゅうでやめるかえらんでね。';
 
   @override
   String get cancel => 'キャンセル';
 
   @override
-  String get submit => '提出';
+  String get submit => 'おくる';
 
   @override
   String get quit => 'やめる';
 
   @override
-  String get back => '戻る';
+  String get back => 'もどる';
 
   @override
   String get combinedSubjectsTitle => 'そうごうれんしゅう';
@@ -1172,7 +1172,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String handsFreeAnzanKyuuiContext(String grade, String organization) {
-    return '$grade · $organization';
+    return '$grade・$organization';
   }
 
   @override
@@ -1182,48 +1182,48 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String handsFreeAnzanAnswer(String answer) {
-    return '答え：$answer';
+    return 'こたえ：$answer';
   }
 
   @override
   String get handsFreeAnzanGenerationError =>
-      '問題を作成できませんでした。このセッションを終了し、もう一度お試しください。';
+      'もんだいをつくれなかったよ。このれんしゅうをおわって、もういちどためしてね。';
 
   @override
   String handsFreeRevealCountdown(int seconds) {
-    return '$seconds秒後に答えを表示';
+    return 'あと$secondsびょうでこたえをみせる';
   }
 
   @override
   String handsFreeNextProblemCountdown(int seconds) {
-    return '$seconds秒後に次の問題';
+    return 'あと$secondsびょうでつぎのもんだい';
   }
 
   @override
   String handsFreeQuestionsCompleted(int count) {
-    return '練習した問題数：$count';
+    return 'れんしゅうしたもんだい：$count';
   }
 
   @override
   String handsFreePracticeTime(String time) {
-    return '練習時間：$time';
+    return 'れんしゅうじかん：$time';
   }
 
   @override
-  String get handsFreeStop => 'ハンズフリーを終了';
+  String get handsFreeStop => 'れんしゅうをおわる';
 
   @override
-  String get flashDigitsLabel => '桁数';
+  String get flashDigitsLabel => 'けたすう';
 
   @override
-  String get flashKuchiLabel => '口数';
+  String get flashKuchiLabel => 'くちすう';
 
   @override
   String digitsUnit(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '桁',
+      other: 'けた',
     );
     return '$_temp0';
   }
@@ -1233,44 +1233,44 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '口',
+      other: 'くち',
     );
     return '$_temp0';
   }
 
   @override
-  String get secondsUnit => '秒';
+  String get secondsUnit => 'びょう';
 
   @override
   String flashAllProblems(int count) {
-    return '全$count問 各10点';
+    return 'ぜんぶで$countもん・1もん10てん';
   }
 
   @override
   String flashPassingScore(int score) {
-    return '$score点で合格';
+    return '$scoreてんでごうかく';
   }
 
   @override
   String get noCarry => 'くりあがりなし';
 
   @override
-  String get displayInterval => '表示間隔';
+  String get displayInterval => 'すうじをみせるじかん';
 
   @override
-  String get blankInterval => '消画間隔';
+  String get blankInterval => 'すうじをかくすじかん';
 
   @override
   String get millisecondsShort => 'ms';
 
   @override
-  String get flashAnswerPrompt => '答えを記入してください。';
+  String get flashAnswerPrompt => 'こたえをいれてね。';
 
   @override
-  String get repeatProblem => 'もう一回';
+  String get repeatProblem => 'もういっかい';
 
   @override
-  String get nextProblem => '次の問題';
+  String get nextProblem => 'つぎのもんだい';
 
   @override
   String get grade => '採点';

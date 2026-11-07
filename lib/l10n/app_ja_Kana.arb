@@ -158,12 +158,12 @@
   "sorobanNumeralFont": "そろばんのすうじのフォント",
   "license": "ライセンス",
   "noWarrantyLicenseNotice": "このソフトウェアには、どんなほしょうもありません。GPL v3.0 のルールにしたがえば、くばったり、かえたりできます。ライセンスのすべては、うえのリンクでよめます。",
-  "exitDialogTitle": "終了しますか？",
-  "exitDialogMessage": "提出するか、途中でやめるか選んでください。",
+  "exitDialogTitle": "おわる？",
+  "exitDialogMessage": "こたえをおくるか、とちゅうでやめるかえらんでね。",
   "cancel": "キャンセル",
-  "submit": "提出",
+  "submit": "おくる",
   "quit": "やめる",
-  "back": "戻る",
+  "back": "もどる",
   "combinedSubjectsTitle": "そうごうれんしゅう",
   "organizationZenshuren": "ぜんしゅれん",
   "@organizationZenshuren": {
@@ -302,7 +302,7 @@
     "description": "Menu title for Flash Anzan examination practice."
   },
   "flashFreeTitle": "フラッシュあんざん フリー",
-  "handsFreeAnzanKyuuiContext": "{grade} · {organization}",
+  "handsFreeAnzanKyuuiContext": "{grade}・{organization}",
   "@handsFreeAnzanKyuuiContext": {
     "description": "ハンズフリー暗算の設定画面に表示する級位と団体。",
     "placeholders": {
@@ -318,66 +318,66 @@
       "time": { "type": "String" }
     }
   },
-  "handsFreeAnzanAnswer": "答え：{answer}",
+  "handsFreeAnzanAnswer": "こたえ：{answer}",
   "@handsFreeAnzanAnswer": {
     "description": "ハンズフリー暗算の問題を解いた後に表示する、書式付きの正答。",
     "placeholders": { "answer": { "type": "String" } }
   },
-  "handsFreeAnzanGenerationError": "問題を作成できませんでした。このセッションを終了し、もう一度お試しください。",
-  "handsFreeRevealCountdown": "{seconds}秒後に答えを表示",
+  "handsFreeAnzanGenerationError": "もんだいをつくれなかったよ。このれんしゅうをおわって、もういちどためしてね。",
+  "handsFreeRevealCountdown": "あと{seconds}びょうでこたえをみせる",
   "@handsFreeRevealCountdown": {
     "description": "Countdown until the answer is revealed in hands-free Flash Anzan.",
     "placeholders": { "seconds": { "type": "int" } }
   },
-  "handsFreeNextProblemCountdown": "{seconds}秒後に次の問題",
+  "handsFreeNextProblemCountdown": "あと{seconds}びょうでつぎのもんだい",
   "@handsFreeNextProblemCountdown": {
     "description": "Countdown until the next hands-free Flash Anzan problem starts.",
     "placeholders": { "seconds": { "type": "int" } }
   },
-  "handsFreeQuestionsCompleted": "練習した問題数：{count}",
+  "handsFreeQuestionsCompleted": "れんしゅうしたもんだい：{count}",
   "@handsFreeQuestionsCompleted": {
     "description": "Number of problem attempts completed in the current hands-free practice session.",
     "placeholders": { "count": { "type": "int" } }
   },
-  "handsFreePracticeTime": "練習時間：{time}",
+  "handsFreePracticeTime": "れんしゅうじかん：{time}",
   "@handsFreePracticeTime": {
     "description": "Elapsed time in the current hands-free practice session.",
     "placeholders": { "time": { "type": "String" } }
   },
-  "handsFreeStop": "ハンズフリーを終了",
-  "flashDigitsLabel": "桁数",
-  "flashKuchiLabel": "口数",
+  "handsFreeStop": "れんしゅうをおわる",
+  "flashDigitsLabel": "けたすう",
+  "flashKuchiLabel": "くちすう",
   "@flashKuchiLabel": {
     "description": "Number of sequential numbers shown in one Flash Anzan problem."
   },
-  "digitsUnit": "{count, plural, other{桁}}",
+  "digitsUnit": "{count, plural, other{けた}}",
   "@digitsUnit": {
     "description": "Unit for the number of digits in one Flash Anzan problem.",
     "placeholders": { "count": { "type": "int" } }
   },
-  "kuchiUnit": "{count, plural, other{口}}",
+  "kuchiUnit": "{count, plural, other{くち}}",
   "@kuchiUnit": {
     "description": "Unit for the number of values shown in one Flash Anzan problem.",
     "placeholders": { "count": { "type": "int" } }
   },
-  "secondsUnit": "秒",
-  "flashAllProblems": "全{count}問 各10点",
+  "secondsUnit": "びょう",
+  "flashAllProblems": "ぜんぶで{count}もん・1もん10てん",
   "@flashAllProblems": {
     "description": "Flash Anzan question count and points per question.",
     "placeholders": { "count": { "type": "int" } }
   },
-  "flashPassingScore": "{score}点で合格",
+  "flashPassingScore": "{score}てんでごうかく",
   "@flashPassingScore": {
     "description": "Passing score for Flash Anzan.",
     "placeholders": { "score": { "type": "int" } }
   },
   "noCarry": "くりあがりなし",
-  "displayInterval": "表示間隔",
-  "blankInterval": "消画間隔",
+  "displayInterval": "すうじをみせるじかん",
+  "blankInterval": "すうじをかくすじかん",
   "millisecondsShort": "ms",
-  "flashAnswerPrompt": "答えを記入してください。",
-  "repeatProblem": "もう一回",
-  "nextProblem": "次の問題",
+  "flashAnswerPrompt": "こたえをいれてね。",
+  "repeatProblem": "もういっかい",
+  "nextProblem": "つぎのもんだい",
   "grade": "採点",
   "correct": "正解",
   "incorrect": "不正解",
