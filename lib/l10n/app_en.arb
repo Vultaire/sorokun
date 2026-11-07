@@ -95,55 +95,50 @@
   "homeHandsFreeButtonLabel": "Practice",
   "holisticHandsFreePractice": "Hands-free Practice",
   "holisticHandsFreeSetupTitle": "Hands-free Practice setup",
-  "holisticHandsFreeSetupSubtitle": "Build an ordered practice playlist. Configure each item independently.",
-  "holisticDuplicateHint": "Repeated items are allowed and intentionally give that activity more weight in the playlist.",
-  "holisticSelectionOrderHeading": "Problem selection order",
-  "holisticSelectionOrderHint": "Choose whether to follow the playlist or randomly select an occurrence each time. Random selection is with replacement, so repeats can happen back-to-back; duplicate entries add weight.",
-  "holisticSelectionOrderPlaylist": "Playlist order",
-  "holisticSelectionOrderRandom": "Random selection",
-  "holisticPlaylistItem": "Playlist item {number}",
+  "holisticHandsFreeSetupSubtitle": "Choose the activities you want to practice. Set each one up below.",
+  "holisticDuplicateHint": "Add an activity more than once to practice it more often.",
+  "holisticSelectionOrderHeading": "Activity selection",
+  "holisticSelectionOrderPlaylist": "List order",
+  "holisticSelectionOrderRandom": "Random",
+  "holisticPlaylistItem": "Activity {number}",
   "@holisticPlaylistItem": {
-    "description": "Heading for one independently configurable activity in the hands-free playlist.",
+    "description": "Accessible label for the numbered activity in the hands-free practice list.",
     "placeholders": { "number": { "type": "int" } }
   },
   "holisticActivity": "Activity",
   "holisticOrganization": "Organization",
   "holisticLevel": "Level",
-  "holisticAddItem": "Add playlist item",
-  "holisticRemoveItem": "Remove playlist item",
-  "holisticMoveItemUp": "Move playlist item {number} up",
+  "holisticAddItem": "Add activity",
+  "holisticRemoveItem": "Remove activity",
+  "holisticMoveItemUp": "Move activity {number} up",
   "@holisticMoveItemUp": {
-    "description": "Accessible label and tooltip for moving a playlist occurrence one position earlier.",
+    "description": "Accessible label and tooltip for moving an activity one position earlier.",
     "placeholders": { "number": { "type": "int" } }
   },
-  "holisticMoveItemDown": "Move playlist item {number} down",
+  "holisticMoveItemDown": "Move activity {number} down",
   "@holisticMoveItemDown": {
-    "description": "Accessible label and tooltip for moving a playlist occurrence one position later.",
+    "description": "Accessible label and tooltip for moving an activity one position later.",
     "placeholders": { "number": { "type": "int" } }
   },
   "holisticSpeedHeading": "Problem display speed",
-  "holisticSpeedHint": "100% is the baseline. Higher percentages shorten each displayed problem or Flash Anzan stream.",
   "holisticCurrentSpeed": "Speed: {percent}%",
   "@holisticCurrentSpeed": {
     "description": "The current shared problem display speed for holistic hands-free practice.",
     "placeholders": { "percent": { "type": "int" } }
   },
-  "holisticDurationHeading": "Displayed problem duration preview",
+  "holisticDurationHeading": "Display times",
   "holisticSecondsValue": "{seconds} sec",
   "@holisticSecondsValue": {
     "description": "A duration in seconds for a hands-free practice problem or phase.",
     "placeholders": { "seconds": { "type": "String" } }
   },
   "holisticThinkingDelayHeading": "Flash Anzan thinking delay",
-  "holisticThinkingDelayHint": "Pause after the number stream ends and before revealing its answer.",
-  "holisticAnswerDwellHeading": "Answer display dwell",
-  "holisticAnswerDwellHint": "How long a revealed answer stays visible. This is independent of the thinking delay.",
+  "holisticAnswerDwellHeading": "Answer display time",
   "holisticDelayValue": "{seconds} sec",
   "@holisticDelayValue": {
     "description": "Current value for the independent flash thinking delay or answer display dwell.",
     "placeholders": { "seconds": { "type": "int" } }
   },
-  "holisticSetupOnlyNotice": "This step only prepares settings. It does not generate problems or start a practice session.",
   "holisticContinue": "Start hands-free practice",
   "holisticProblemCountdown": "Problem ends in {seconds} seconds",
   "@holisticProblemCountdown": {

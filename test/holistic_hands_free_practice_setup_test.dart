@@ -115,6 +115,31 @@ void main() {
     tester.view.resetDevicePixelRatio();
   });
 
+  testWidgets('Japanese setup uses the concise activity labels', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 932);
+    tester.view.devicePixelRatio = 1;
+    await tester.pumpWidget(
+      _localizedApp(
+        const HolisticHandsFreePracticeSetupPage(),
+        locale: const Locale('ja'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('ハンズフリー練習設定'), findsOneWidget);
+    expect(find.text('種目の選び方'), findsOneWidget);
+    expect(find.text('ランダム'), findsOneWidget);
+    expect(find.text('1.'), findsOneWidget);
+    expect(find.textContaining('プレイリスト'), findsNothing);
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+
   testWidgets(
     'activity and organization changes filter invalid grade options',
     (tester) async {
@@ -523,8 +548,9 @@ void main() {
             .initialValue,
         HolisticHandsFreeSelectionOrder.randomSelection,
       );
-      expect(find.text('Problem selection order'), findsNWidgets(2));
-      expect(find.textContaining('with replacement'), findsOneWidget);
+      expect(find.text('Activity selection'), findsOneWidget);
+      expect(find.textContaining('with replacement'), findsNothing);
+      expect(find.text('1.'), findsOneWidget);
 
       final addItem = find.byKey(const ValueKey('holistic-add-item'));
       await tester.ensureVisible(addItem);
@@ -561,7 +587,7 @@ void main() {
       await tester.pumpAndSettle();
       final disabledMoveUp = find.semantics.byPredicate((node) {
         final data = node.getSemanticsData();
-        return data.tooltip == 'Move playlist item 1 up' &&
+        return data.tooltip == 'Move activity 1 up' &&
             data.flagsCollection.isEnabled == Tristate.isFalse &&
             !data.hasAction(SemanticsAction.tap);
       });
@@ -571,7 +597,7 @@ void main() {
       await tester.pumpAndSettle();
       final moveUp = find.semantics.byPredicate((node) {
         final data = node.getSemanticsData();
-        return data.tooltip == 'Move playlist item 2 up' &&
+        return data.tooltip == 'Move activity 2 up' &&
             data.flagsCollection.isEnabled == Tristate.isTrue &&
             data.hasAction(SemanticsAction.tap);
       });
@@ -582,13 +608,13 @@ void main() {
       final moveDown = find.byKey(const ValueKey('holistic-move-down-0'));
       expect(
         tester.widget<IconButton>(moveDown).tooltip,
-        'Move playlist item 1 down',
+        'Move activity 1 down',
       );
 
       await tester.ensureVisible(orderField);
       await tester.tap(orderField);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Playlist order').last);
+      await tester.tap(find.text('List order').last);
       await tester.pumpAndSettle();
 
       final continueButton = find.byKey(
@@ -675,7 +701,7 @@ void main() {
     await tester.ensureVisible(order);
     await tester.tap(order);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Playlist order').last);
+    await tester.tap(find.text('List order').last);
     await tester.pumpAndSettle();
 
     for (final (key, value) in [
@@ -763,6 +789,39 @@ void main() {
     tester.view.resetDevicePixelRatio();
   });
 
+  testWidgets('wide activity rows keep fields and controls on one line', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
+    await tester.pumpWidget(
+      _localizedApp(const HolisticHandsFreePracticeSetupPage()),
+    );
+    await tester.pumpAndSettle();
+
+    final rowNumber = find.byKey(const ValueKey('holistic-playlist-item-0'));
+    final rowCenterY = tester.getCenter(rowNumber).dy;
+    for (final key in [
+      'holistic-activity-0',
+      'holistic-organization-0',
+      'holistic-grade-0',
+      'holistic-move-up-0',
+      'holistic-move-down-0',
+      'holistic-remove-item-0',
+    ]) {
+      expect(
+        (tester.getCenter(find.byKey(ValueKey(key))).dy - rowCenterY).abs(),
+        lessThan(12),
+        reason: '$key should align with the activity number on wide screens',
+      );
+    }
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+
   testWidgets(
     'setup sliders expose names and human-readable current semantic values',
     (tester) async {
@@ -819,7 +878,7 @@ void main() {
       );
       await expectSliderSemantics(
         'holistic-answer-dwell-slider',
-        'Answer display dwell',
+        'Answer display time',
         '5 sec',
         '6 sec',
         '4 sec',
@@ -877,7 +936,7 @@ void main() {
       );
       await expectSliderSemantics(
         'holistic-answer-dwell-slider',
-        'Answer display dwell',
+        'Answer display time',
         '12 sec',
         '13 sec',
         '11 sec',
@@ -923,24 +982,24 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final japaneseTitle = find.text('ハンズフリー総合設定');
+    final japaneseTitle = find.text('ハンズフリー練習設定');
     expect(japaneseTitle, findsOneWidget);
     expect(
       tester.renderObject<RenderParagraph>(japaneseTitle).didExceedMaxLines,
       isFalse,
     );
-    expect(find.text('プレイリスト項目を追加'), findsOneWidget);
+    expect(find.text('種目を追加'), findsOneWidget);
     expect(find.text('級位'), findsOneWidget);
     expect(find.text('フラッシュ暗算の思考時間'), findsOneWidget);
-    expect(find.text('問題の選択順'), findsNWidgets(2));
-    expect(find.text('ランダム選択'), findsOneWidget);
+    expect(find.text('種目の選び方'), findsOneWidget);
+    expect(find.text('ランダム'), findsOneWidget);
     expect(
       tester
           .widget<IconButton>(
             find.byKey(const ValueKey('holistic-move-down-0')),
           )
           .tooltip,
-      'プレイリスト項目 1 を下へ移動',
+      '種目 1 を下へ移動',
     );
     expect(tester.takeException(), isNull);
 

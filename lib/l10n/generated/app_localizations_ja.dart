@@ -151,31 +151,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get holisticHandsFreePractice => 'ハンズフリー総合練習';
 
   @override
-  String get holisticHandsFreeSetupTitle => 'ハンズフリー総合設定';
+  String get holisticHandsFreeSetupTitle => 'ハンズフリー練習設定';
 
   @override
-  String get holisticHandsFreeSetupSubtitle => '練習する種目を順番に登録し、項目ごとに設定します。';
+  String get holisticHandsFreeSetupSubtitle => '練習する種目を選び、それぞれの設定を行ってください。';
 
   @override
-  String get holisticDuplicateHint =>
-      '同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。';
+  String get holisticDuplicateHint => '同じ種目を複数登録すると、その種目をより多く練習できます。';
 
   @override
-  String get holisticSelectionOrderHeading => '問題の選択順';
+  String get holisticSelectionOrderHeading => '種目の選び方';
 
   @override
-  String get holisticSelectionOrderHint =>
-      'プレイリスト順に進むか、項目を毎回ランダムに選ぶかを指定します。ランダム選択は毎回抽選するため、同じ項目が連続することがあります。重複項目は選ばれやすくなります。';
+  String get holisticSelectionOrderPlaylist => 'リスト順';
 
   @override
-  String get holisticSelectionOrderPlaylist => 'プレイリスト順';
-
-  @override
-  String get holisticSelectionOrderRandom => 'ランダム選択';
+  String get holisticSelectionOrderRandom => 'ランダム';
 
   @override
   String holisticPlaylistItem(int number) {
-    return 'プレイリスト項目 $number';
+    return '種目 $number';
   }
 
   @override
@@ -188,27 +183,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get holisticLevel => '級位';
 
   @override
-  String get holisticAddItem => 'プレイリスト項目を追加';
+  String get holisticAddItem => '種目を追加';
 
   @override
-  String get holisticRemoveItem => 'プレイリスト項目を削除';
+  String get holisticRemoveItem => '種目を削除';
 
   @override
   String holisticMoveItemUp(int number) {
-    return 'プレイリスト項目 $number を上へ移動';
+    return '種目 $number を上へ移動';
   }
 
   @override
   String holisticMoveItemDown(int number) {
-    return 'プレイリスト項目 $number を下へ移動';
+    return '種目 $number を下へ移動';
   }
 
   @override
   String get holisticSpeedHeading => '問題の表示速度';
-
-  @override
-  String get holisticSpeedHint =>
-      '100%を基準とします。割合を上げると問題またはフラッシュ暗算の表示時間が短くなります。';
 
   @override
   String holisticCurrentSpeed(int percent) {
@@ -216,7 +207,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get holisticDurationHeading => '問題の表示時間（目安）';
+  String get holisticDurationHeading => '表示時間';
 
   @override
   String holisticSecondsValue(String seconds) {
@@ -227,22 +218,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get holisticThinkingDelayHeading => 'フラッシュ暗算の思考時間';
 
   @override
-  String get holisticThinkingDelayHint => '数字の表示が終わってから答えを表示するまでの待ち時間です。';
-
-  @override
   String get holisticAnswerDwellHeading => '答えの表示時間';
-
-  @override
-  String get holisticAnswerDwellHint => '答えを表示しておく時間です。思考時間とは別に設定します。';
 
   @override
   String holisticDelayValue(int seconds) {
     return '$seconds秒';
   }
-
-  @override
-  String get holisticSetupOnlyNotice =>
-      'この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。';
 
   @override
   String get holisticContinue => 'ハンズフリー練習を開始';

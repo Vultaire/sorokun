@@ -94,56 +94,51 @@
   "homeHandsFreeLine2": "ﾌﾘｰ",
   "homeHandsFreeButtonLabel": "練習",
   "holisticHandsFreePractice": "ハンズフリー総合練習",
-  "holisticHandsFreeSetupTitle": "ハンズフリー総合設定",
-  "holisticHandsFreeSetupSubtitle": "練習する種目を順番に登録し、項目ごとに設定します。",
-  "holisticDuplicateHint": "同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。",
-  "holisticSelectionOrderHeading": "問題の選択順",
-  "holisticSelectionOrderHint": "プレイリスト順に進むか、項目を毎回ランダムに選ぶかを指定します。ランダム選択は毎回抽選するため、同じ項目が連続することがあります。重複項目は選ばれやすくなります。",
-  "holisticSelectionOrderPlaylist": "プレイリスト順",
-  "holisticSelectionOrderRandom": "ランダム選択",
-  "holisticPlaylistItem": "プレイリスト項目 {number}",
+  "holisticHandsFreeSetupTitle": "ハンズフリー練習設定",
+  "holisticHandsFreeSetupSubtitle": "練習する種目を選び、それぞれの設定を行ってください。",
+  "holisticDuplicateHint": "同じ種目を複数登録すると、その種目をより多く練習できます。",
+  "holisticSelectionOrderHeading": "種目の選び方",
+  "holisticSelectionOrderPlaylist": "リスト順",
+  "holisticSelectionOrderRandom": "ランダム",
+  "holisticPlaylistItem": "種目 {number}",
   "@holisticPlaylistItem": {
-    "description": "ハンズフリープレイリストの個別に設定できる種目の見出し。",
+    "description": "ハンズフリー練習リストの番号付き種目を読み上げるためのラベル。",
     "placeholders": { "number": { "type": "int" } }
   },
   "holisticActivity": "種目",
   "holisticOrganization": "団体",
   "holisticLevel": "級位",
-  "holisticAddItem": "プレイリスト項目を追加",
-  "holisticRemoveItem": "プレイリスト項目を削除",
-  "holisticMoveItemUp": "プレイリスト項目 {number} を上へ移動",
+  "holisticAddItem": "種目を追加",
+  "holisticRemoveItem": "種目を削除",
+  "holisticMoveItemUp": "種目 {number} を上へ移動",
   "@holisticMoveItemUp": {
-    "description": "プレイリスト項目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。",
+    "description": "種目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。",
     "placeholders": { "number": { "type": "int" } }
   },
-  "holisticMoveItemDown": "プレイリスト項目 {number} を下へ移動",
+  "holisticMoveItemDown": "種目 {number} を下へ移動",
   "@holisticMoveItemDown": {
-    "description": "プレイリスト項目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。",
+    "description": "種目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。",
     "placeholders": { "number": { "type": "int" } }
   },
   "holisticSpeedHeading": "問題の表示速度",
-  "holisticSpeedHint": "100%を基準とします。割合を上げると問題またはフラッシュ暗算の表示時間が短くなります。",
   "holisticCurrentSpeed": "速度：{percent}%",
   "@holisticCurrentSpeed": {
     "description": "総合ハンズフリー練習の共通表示速度。",
     "placeholders": { "percent": { "type": "int" } }
   },
-  "holisticDurationHeading": "問題の表示時間（目安）",
+  "holisticDurationHeading": "表示時間",
   "holisticSecondsValue": "{seconds}秒",
   "@holisticSecondsValue": {
     "description": "ハンズフリー練習の問題表示時間または各フェーズの秒数。",
     "placeholders": { "seconds": { "type": "String" } }
   },
   "holisticThinkingDelayHeading": "フラッシュ暗算の思考時間",
-  "holisticThinkingDelayHint": "数字の表示が終わってから答えを表示するまでの待ち時間です。",
   "holisticAnswerDwellHeading": "答えの表示時間",
-  "holisticAnswerDwellHint": "答えを表示しておく時間です。思考時間とは別に設定します。",
   "holisticDelayValue": "{seconds}秒",
   "@holisticDelayValue": {
     "description": "フラッシュ暗算の思考時間または答えの表示時間。",
     "placeholders": { "seconds": { "type": "int" } }
   },
-  "holisticSetupOnlyNotice": "この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。",
   "holisticContinue": "ハンズフリー練習を開始",
   "holisticProblemCountdown": "問題終了まで{seconds}秒",
   "@holisticProblemCountdown": {

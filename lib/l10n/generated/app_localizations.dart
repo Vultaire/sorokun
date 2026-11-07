@@ -363,49 +363,43 @@ abstract class AppLocalizations {
   /// No description provided for @holisticHandsFreeSetupTitle.
   ///
   /// In ja, this message translates to:
-  /// **'ハンズフリー総合設定'**
+  /// **'ハンズフリー練習設定'**
   String get holisticHandsFreeSetupTitle;
 
   /// No description provided for @holisticHandsFreeSetupSubtitle.
   ///
   /// In ja, this message translates to:
-  /// **'練習する種目を順番に登録し、項目ごとに設定します。'**
+  /// **'練習する種目を選び、それぞれの設定を行ってください。'**
   String get holisticHandsFreeSetupSubtitle;
 
   /// No description provided for @holisticDuplicateHint.
   ///
   /// In ja, this message translates to:
-  /// **'同じ項目を複数回登録できます。重複した項目はプレイリスト内で出題の重みが増します。'**
+  /// **'同じ種目を複数登録すると、その種目をより多く練習できます。'**
   String get holisticDuplicateHint;
 
   /// No description provided for @holisticSelectionOrderHeading.
   ///
   /// In ja, this message translates to:
-  /// **'問題の選択順'**
+  /// **'種目の選び方'**
   String get holisticSelectionOrderHeading;
-
-  /// No description provided for @holisticSelectionOrderHint.
-  ///
-  /// In ja, this message translates to:
-  /// **'プレイリスト順に進むか、項目を毎回ランダムに選ぶかを指定します。ランダム選択は毎回抽選するため、同じ項目が連続することがあります。重複項目は選ばれやすくなります。'**
-  String get holisticSelectionOrderHint;
 
   /// No description provided for @holisticSelectionOrderPlaylist.
   ///
   /// In ja, this message translates to:
-  /// **'プレイリスト順'**
+  /// **'リスト順'**
   String get holisticSelectionOrderPlaylist;
 
   /// No description provided for @holisticSelectionOrderRandom.
   ///
   /// In ja, this message translates to:
-  /// **'ランダム選択'**
+  /// **'ランダム'**
   String get holisticSelectionOrderRandom;
 
-  /// ハンズフリープレイリストの個別に設定できる種目の見出し。
+  /// ハンズフリー練習リストの番号付き種目を読み上げるためのラベル。
   ///
   /// In ja, this message translates to:
-  /// **'プレイリスト項目 {number}'**
+  /// **'種目 {number}'**
   String holisticPlaylistItem(int number);
 
   /// No description provided for @holisticActivity.
@@ -429,25 +423,25 @@ abstract class AppLocalizations {
   /// No description provided for @holisticAddItem.
   ///
   /// In ja, this message translates to:
-  /// **'プレイリスト項目を追加'**
+  /// **'種目を追加'**
   String get holisticAddItem;
 
   /// No description provided for @holisticRemoveItem.
   ///
   /// In ja, this message translates to:
-  /// **'プレイリスト項目を削除'**
+  /// **'種目を削除'**
   String get holisticRemoveItem;
 
-  /// プレイリスト項目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。
+  /// 種目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。
   ///
   /// In ja, this message translates to:
-  /// **'プレイリスト項目 {number} を上へ移動'**
+  /// **'種目 {number} を上へ移動'**
   String holisticMoveItemUp(int number);
 
-  /// プレイリスト項目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。
+  /// 種目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。
   ///
   /// In ja, this message translates to:
-  /// **'プレイリスト項目 {number} を下へ移動'**
+  /// **'種目 {number} を下へ移動'**
   String holisticMoveItemDown(int number);
 
   /// No description provided for @holisticSpeedHeading.
@@ -455,12 +449,6 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'問題の表示速度'**
   String get holisticSpeedHeading;
-
-  /// No description provided for @holisticSpeedHint.
-  ///
-  /// In ja, this message translates to:
-  /// **'100%を基準とします。割合を上げると問題またはフラッシュ暗算の表示時間が短くなります。'**
-  String get holisticSpeedHint;
 
   /// 総合ハンズフリー練習の共通表示速度。
   ///
@@ -471,7 +459,7 @@ abstract class AppLocalizations {
   /// No description provided for @holisticDurationHeading.
   ///
   /// In ja, this message translates to:
-  /// **'問題の表示時間（目安）'**
+  /// **'表示時間'**
   String get holisticDurationHeading;
 
   /// ハンズフリー練習の問題表示時間または各フェーズの秒数。
@@ -486,35 +474,17 @@ abstract class AppLocalizations {
   /// **'フラッシュ暗算の思考時間'**
   String get holisticThinkingDelayHeading;
 
-  /// No description provided for @holisticThinkingDelayHint.
-  ///
-  /// In ja, this message translates to:
-  /// **'数字の表示が終わってから答えを表示するまでの待ち時間です。'**
-  String get holisticThinkingDelayHint;
-
   /// No description provided for @holisticAnswerDwellHeading.
   ///
   /// In ja, this message translates to:
   /// **'答えの表示時間'**
   String get holisticAnswerDwellHeading;
 
-  /// No description provided for @holisticAnswerDwellHint.
-  ///
-  /// In ja, this message translates to:
-  /// **'答えを表示しておく時間です。思考時間とは別に設定します。'**
-  String get holisticAnswerDwellHint;
-
   /// フラッシュ暗算の思考時間または答えの表示時間。
   ///
   /// In ja, this message translates to:
   /// **'{seconds}秒'**
   String holisticDelayValue(int seconds);
-
-  /// No description provided for @holisticSetupOnlyNotice.
-  ///
-  /// In ja, this message translates to:
-  /// **'この画面では設定のみ行います。問題の生成や練習セッションの開始は行いません。'**
-  String get holisticSetupOnlyNotice;
 
   /// No description provided for @holisticContinue.
   ///

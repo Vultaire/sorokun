@@ -516,15 +516,7 @@ class _HolisticHandsFreePracticeSetupPageState
                           ),
                           const SizedBox(height: 12),
                           _SetupCard(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.holisticSelectionOrderHeading,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                                Text(l10n.holisticSelectionOrderHint),
-                                const SizedBox(height: 8),
+                            child:
                                 DropdownButtonFormField<
                                   HolisticHandsFreeSelectionOrder
                                 >(
@@ -562,8 +554,6 @@ class _HolisticHandsFreePracticeSetupPageState
                                     }
                                   },
                                 ),
-                              ],
-                            ),
                           ),
                           const SizedBox(height: 12),
                           _SetupCard(
@@ -574,7 +564,7 @@ class _HolisticHandsFreePracticeSetupPageState
                                   l10n.holisticSpeedHeading,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
-                                Text(l10n.holisticSpeedHint),
+                                const SizedBox(height: 8),
                                 Row(
                                   children: [
                                     const Text('$_minimumSpeed%'),
@@ -659,7 +649,6 @@ class _HolisticHandsFreePracticeSetupPageState
                           _buildDelayCard(
                             context,
                             heading: l10n.holisticThinkingDelayHeading,
-                            hint: l10n.holisticThinkingDelayHint,
                             keyName: 'holistic-thinking-delay-slider',
                             valueKeyName: 'holistic-thinking-delay-value',
                             focusNode: _thinkingDelaySliderFocusNode,
@@ -670,7 +659,6 @@ class _HolisticHandsFreePracticeSetupPageState
                           _buildDelayCard(
                             context,
                             heading: l10n.holisticAnswerDwellHeading,
-                            hint: l10n.holisticAnswerDwellHint,
                             keyName: 'holistic-answer-dwell-slider',
                             valueKeyName: 'holistic-answer-dwell-value',
                             focusNode: _answerDwellSliderFocusNode,
@@ -712,11 +700,6 @@ class _HolisticHandsFreePracticeSetupPageState
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Text(
-                            l10n.holisticSetupOnlyNotice,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
                           FilledButton.icon(
                             key: const ValueKey('holistic-setup-continue'),
                             onPressed: _playlist.isEmpty
@@ -769,124 +752,141 @@ class _HolisticHandsFreePracticeSetupPageState
     final organizationOptions = _availableOrganizations(draft.activity);
     final gradeOptions = _availableGrades(draft.activity, draft.denomination);
     final availableWidth = (viewportWidth - 64).clamp(220.0, 896.0);
-    final fieldWidth = availableWidth >= 760
-        ? (availableWidth - 24) / 3
-        : availableWidth >= 480
+    final fieldWidth = availableWidth >= 480
         ? (availableWidth - 12) / 2
         : availableWidth;
+    final rowNumber = SizedBox(
+      width: 28,
+      child: Text(
+        '${index + 1}.',
+        key: ValueKey('holistic-playlist-item-$index'),
+        semanticsLabel: l10n.holisticPlaylistItem(index + 1),
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    );
+    final fields = <Widget>[
+      DropdownButtonFormField<HolisticPracticeActivity>(
+        key: ValueKey('holistic-activity-$index'),
+        initialValue: draft.activity,
+        isExpanded: true,
+        decoration: InputDecoration(labelText: l10n.holisticActivity),
+        items: [
+          for (final activity in activityOptions)
+            DropdownMenuItem(
+              value: activity,
+              child: Text(
+                _activityLabel(l10n, activity),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+        onChanged: (activity) {
+          if (activity != null) _updateActivity(draft, activity);
+        },
+      ),
+      DropdownButtonFormField<Denomination>(
+        key: ValueKey('holistic-organization-$index'),
+        initialValue: draft.denomination,
+        isExpanded: true,
+        decoration: InputDecoration(labelText: l10n.holisticOrganization),
+        items: [
+          for (final denomination in organizationOptions)
+            DropdownMenuItem(
+              value: denomination,
+              child: Text(
+                denomination.localizedName(l10n),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+        onChanged: (denomination) {
+          if (denomination != null) {
+            _updateOrganization(draft, denomination);
+          }
+        },
+      ),
+      DropdownButtonFormField<Kyuui>(
+        key: ValueKey('holistic-grade-$index'),
+        initialValue: draft.kyuui,
+        isExpanded: true,
+        decoration: InputDecoration(labelText: l10n.holisticLevel),
+        items: [
+          for (final kyuui in gradeOptions)
+            DropdownMenuItem(
+              value: kyuui,
+              child: Text(kyuui.localizedLabel(l10n)),
+            ),
+        ],
+        onChanged: (kyuui) {
+          if (kyuui != null) {
+            setState(() => draft.kyuui = kyuui);
+            _saveSettings();
+          }
+        },
+      ),
+    ];
+    final actions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          key: ValueKey('holistic-move-up-$index'),
+          tooltip: l10n.holisticMoveItemUp(index + 1),
+          onPressed: index == 0 ? null : () => _moveItem(index, -1),
+          icon: const Icon(Icons.arrow_upward_rounded),
+        ),
+        IconButton(
+          key: ValueKey('holistic-move-down-$index'),
+          tooltip: l10n.holisticMoveItemDown(index + 1),
+          onPressed: index == _playlist.length - 1
+              ? null
+              : () => _moveItem(index, 1),
+          icon: const Icon(Icons.arrow_downward_rounded),
+        ),
+        IconButton(
+          key: ValueKey('holistic-remove-item-$index'),
+          tooltip: l10n.holisticRemoveItem,
+          onPressed: () => _removeItem(index),
+          icon: const Icon(Icons.delete_outline_rounded),
+        ),
+      ],
+    );
 
     return _SetupCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.holisticPlaylistItem(index + 1),
-                  key: ValueKey('holistic-playlist-item-$index'),
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-              IconButton(
-                key: ValueKey('holistic-move-up-$index'),
-                tooltip: l10n.holisticMoveItemUp(index + 1),
-                onPressed: index == 0 ? null : () => _moveItem(index, -1),
-                icon: const Icon(Icons.arrow_upward_rounded),
-              ),
-              IconButton(
-                key: ValueKey('holistic-move-down-$index'),
-                tooltip: l10n.holisticMoveItemDown(index + 1),
-                onPressed: index == _playlist.length - 1
-                    ? null
-                    : () => _moveItem(index, 1),
-                icon: const Icon(Icons.arrow_downward_rounded),
-              ),
-              IconButton(
-                key: ValueKey('holistic-remove-item-$index'),
-                tooltip: l10n.holisticRemoveItem,
-                onPressed: () => _removeItem(index),
-                icon: const Icon(Icons.delete_outline_rounded),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              SizedBox(
-                width: fieldWidth,
-                child: DropdownButtonFormField<HolisticPracticeActivity>(
-                  key: ValueKey('holistic-activity-$index'),
-                  initialValue: draft.activity,
-                  isExpanded: true,
-                  decoration: InputDecoration(labelText: l10n.holisticActivity),
-                  items: [
-                    for (final activity in activityOptions)
-                      DropdownMenuItem(
-                        value: activity,
-                        child: Text(
-                          _activityLabel(l10n, activity),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                  ],
-                  onChanged: (activity) {
-                    if (activity != null) _updateActivity(draft, activity);
-                  },
-                ),
-              ),
-              SizedBox(
-                width: fieldWidth,
-                child: DropdownButtonFormField<Denomination>(
-                  key: ValueKey('holistic-organization-$index'),
-                  initialValue: draft.denomination,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: l10n.holisticOrganization,
+          if (availableWidth >= 820)
+            Row(
+              children: [
+                rowNumber,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(child: fields[0]),
+                      const SizedBox(width: 8),
+                      Expanded(child: fields[1]),
+                      const SizedBox(width: 8),
+                      Expanded(child: fields[2]),
+                    ],
                   ),
-                  items: [
-                    for (final denomination in organizationOptions)
-                      DropdownMenuItem(
-                        value: denomination,
-                        child: Text(
-                          denomination.localizedName(l10n),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                  ],
-                  onChanged: (denomination) {
-                    if (denomination != null) {
-                      _updateOrganization(draft, denomination);
-                    }
-                  },
                 ),
-              ),
-              SizedBox(
-                width: fieldWidth,
-                child: DropdownButtonFormField<Kyuui>(
-                  key: ValueKey('holistic-grade-$index'),
-                  initialValue: draft.kyuui,
-                  isExpanded: true,
-                  decoration: InputDecoration(labelText: l10n.holisticLevel),
-                  items: [
-                    for (final kyuui in gradeOptions)
-                      DropdownMenuItem(
-                        value: kyuui,
-                        child: Text(kyuui.localizedLabel(l10n)),
-                      ),
-                  ],
-                  onChanged: (kyuui) {
-                    if (kyuui != null) {
-                      setState(() => draft.kyuui = kyuui);
-                      _saveSettings();
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 8),
+                actions,
+              ],
+            )
+          else ...[
+            Row(children: [rowNumber, const Spacer(), actions]),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                for (final field in fields)
+                  SizedBox(width: fieldWidth, child: field),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -905,7 +905,6 @@ class _HolisticHandsFreePracticeSetupPageState
   Widget _buildDelayCard(
     BuildContext context, {
     required String heading,
-    required String hint,
     required String keyName,
     required String valueKeyName,
     required FocusNode focusNode,
@@ -918,7 +917,7 @@ class _HolisticHandsFreePracticeSetupPageState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(heading, style: Theme.of(context).textTheme.titleLarge),
-          Text(hint),
+          const SizedBox(height: 8),
           Row(
             children: [
               Text(l10n.holisticSecondsValue('$_minimumDelaySeconds')),

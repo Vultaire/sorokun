@@ -155,28 +155,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get holisticHandsFreeSetupSubtitle =>
-      'Build an ordered practice playlist. Configure each item independently.';
+      'Choose the activities you want to practice. Set each one up below.';
 
   @override
   String get holisticDuplicateHint =>
-      'Repeated items are allowed and intentionally give that activity more weight in the playlist.';
+      'Add an activity more than once to practice it more often.';
 
   @override
-  String get holisticSelectionOrderHeading => 'Problem selection order';
+  String get holisticSelectionOrderHeading => 'Activity selection';
 
   @override
-  String get holisticSelectionOrderHint =>
-      'Choose whether to follow the playlist or randomly select an occurrence each time. Random selection is with replacement, so repeats can happen back-to-back; duplicate entries add weight.';
+  String get holisticSelectionOrderPlaylist => 'List order';
 
   @override
-  String get holisticSelectionOrderPlaylist => 'Playlist order';
-
-  @override
-  String get holisticSelectionOrderRandom => 'Random selection';
+  String get holisticSelectionOrderRandom => 'Random';
 
   @override
   String holisticPlaylistItem(int number) {
-    return 'Playlist item $number';
+    return 'Activity $number';
   }
 
   @override
@@ -189,27 +185,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get holisticLevel => 'Level';
 
   @override
-  String get holisticAddItem => 'Add playlist item';
+  String get holisticAddItem => 'Add activity';
 
   @override
-  String get holisticRemoveItem => 'Remove playlist item';
+  String get holisticRemoveItem => 'Remove activity';
 
   @override
   String holisticMoveItemUp(int number) {
-    return 'Move playlist item $number up';
+    return 'Move activity $number up';
   }
 
   @override
   String holisticMoveItemDown(int number) {
-    return 'Move playlist item $number down';
+    return 'Move activity $number down';
   }
 
   @override
   String get holisticSpeedHeading => 'Problem display speed';
-
-  @override
-  String get holisticSpeedHint =>
-      '100% is the baseline. Higher percentages shorten each displayed problem or Flash Anzan stream.';
 
   @override
   String holisticCurrentSpeed(int percent) {
@@ -217,7 +209,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get holisticDurationHeading => 'Displayed problem duration preview';
+  String get holisticDurationHeading => 'Display times';
 
   @override
   String holisticSecondsValue(String seconds) {
@@ -228,24 +220,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get holisticThinkingDelayHeading => 'Flash Anzan thinking delay';
 
   @override
-  String get holisticThinkingDelayHint =>
-      'Pause after the number stream ends and before revealing its answer.';
-
-  @override
-  String get holisticAnswerDwellHeading => 'Answer display dwell';
-
-  @override
-  String get holisticAnswerDwellHint =>
-      'How long a revealed answer stays visible. This is independent of the thinking delay.';
+  String get holisticAnswerDwellHeading => 'Answer display time';
 
   @override
   String holisticDelayValue(int seconds) {
     return '$seconds sec';
   }
-
-  @override
-  String get holisticSetupOnlyNotice =>
-      'This step only prepares settings. It does not generate problems or start a practice session.';
 
   @override
   String get holisticContinue => 'Start hands-free practice';
