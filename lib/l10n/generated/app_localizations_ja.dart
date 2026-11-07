@@ -798,119 +798,119 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get color => 'カラー';
 
   @override
-  String get homeCombinedLine1 => '総合';
+  String get homeCombinedLine1 => 'そうごう';
 
   @override
-  String get homeCombinedLine2 => '種目';
+  String get homeCombinedLine2 => 'れんしゅう';
 
   @override
-  String get homeSelectSubject => '種目を選ぶ';
+  String get homeSelectSubject => 'しゅもくをえらぶ';
 
   @override
-  String get homeFlashLine1 => 'ﾌﾗｯｼｭ';
+  String get homeFlashLine1 => 'フラッシュ';
 
   @override
-  String get homeFlashLine2 => '暗算';
+  String get homeFlashLine2 => 'あんざん';
 
   @override
-  String get homeExam => '検定';
+  String get homeExam => 'けんてい';
 
   @override
   String get homeFree => 'フリー';
 
   @override
-  String get homeHandsFreeLine1 => 'ﾊﾝｽﾞ';
+  String get homeHandsFreeLine1 => 'ハンズ';
 
   @override
-  String get homeHandsFreeLine2 => 'ﾌﾘｰ';
+  String get homeHandsFreeLine2 => 'フリー';
 
   @override
-  String get homeHandsFreeButtonLabel => '練習';
+  String get homeHandsFreeButtonLabel => 'れんしゅう';
 
   @override
-  String get holisticHandsFreePractice => 'ハンズフリー総合練習';
+  String get holisticHandsFreePractice => 'ハンズフリーれんしゅう';
 
   @override
-  String get holisticHandsFreeSetupTitle => 'ハンズフリー練習設定';
+  String get holisticHandsFreeSetupTitle => 'ハンズフリーせってい';
 
   @override
-  String get holisticHandsFreeSetupSubtitle => '練習する種目を選び、それぞれの設定を行ってください。';
+  String get holisticHandsFreeSetupSubtitle => 'れんしゅうするしゅもくをえらんで、それぞれせっていしてね。';
 
   @override
-  String get holisticDuplicateHint => '同じ種目を複数登録すると、その種目をより多く練習できます。';
+  String get holisticDuplicateHint => 'おなじしゅもくをふやすと、そのしゅもくがでやすくなるよ。';
 
   @override
-  String get holisticSelectionOrderHeading => '種目の選び方';
+  String get holisticSelectionOrderHeading => 'しゅもくのじゅんばん';
 
   @override
-  String get holisticSelectionOrderPlaylist => 'リスト順';
+  String get holisticSelectionOrderPlaylist => 'リストじゅん';
 
   @override
   String get holisticSelectionOrderRandom => 'ランダム';
 
   @override
   String holisticPlaylistItem(int number) {
-    return '種目 $number';
+    return 'しゅもく $number';
   }
 
   @override
-  String get holisticActivity => '種目';
+  String get holisticActivity => 'しゅもく';
 
   @override
-  String get holisticOrganization => '団体';
+  String get holisticOrganization => 'だんたい';
 
   @override
-  String get holisticLevel => '級位';
+  String get holisticLevel => 'きゅう';
 
   @override
-  String get holisticAddItem => '種目を追加';
+  String get holisticAddItem => 'ついか';
 
   @override
-  String get holisticRemoveItem => '種目を削除';
+  String get holisticRemoveItem => 'けす';
 
   @override
   String holisticMoveItemUp(int number) {
-    return '種目 $number を上へ移動';
+    return 'しゅもく $numberをうえにうごかす';
   }
 
   @override
   String holisticMoveItemDown(int number) {
-    return '種目 $number を下へ移動';
+    return 'しゅもく $numberをしたにうごかす';
   }
 
   @override
-  String get holisticSpeedHeading => '問題の表示速度';
+  String get holisticSpeedHeading => 'もんだいのひょうじそくど';
 
   @override
   String holisticCurrentSpeed(int percent) {
-    return '速度：$percent%';
+    return 'そくど：$percent%';
   }
 
   @override
-  String get holisticDurationHeading => '表示時間';
+  String get holisticDurationHeading => 'ひょうじじかん';
 
   @override
   String holisticSecondsValue(String seconds) {
-    return '$seconds秒';
+    return '$secondsびょう';
   }
 
   @override
-  String get holisticThinkingDelayHeading => 'フラッシュ暗算の思考時間';
+  String get holisticThinkingDelayHeading => 'フラッシュあんざんのかんがえるじかん';
 
   @override
-  String get holisticAnswerDwellHeading => '答えの表示時間';
+  String get holisticAnswerDwellHeading => 'こたえのひょうじじかん';
 
   @override
   String holisticDelayValue(int seconds) {
-    return '$seconds秒';
+    return '$secondsびょう';
   }
 
   @override
-  String get holisticContinue => 'ハンズフリー練習を開始';
+  String get holisticContinue => 'れんしゅうをはじめる';
 
   @override
   String holisticProblemCountdown(int seconds) {
-    return '問題終了まで$seconds秒';
+    return 'もんだいがおわるまで$secondsびょう';
   }
 
   @override
@@ -974,7 +974,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get back => '戻る';
 
   @override
-  String get combinedSubjectsTitle => '総合種目';
+  String get combinedSubjectsTitle => 'そうごうれんしゅう';
 
   @override
   String get organizationZenshuren => '全国珠算教育連盟';
@@ -1165,10 +1165,10 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
       'Mitorizan (+/−)：縦に並んだ数を、足し算・引き算を交互に使って計算します。';
 
   @override
-  String get flashExamTitle => 'フラッシュ暗算もぎ検定';
+  String get flashExamTitle => 'フラッシュあんざんもぎテスト';
 
   @override
-  String get flashFreeTitle => 'フラッシュ暗算フリー';
+  String get flashFreeTitle => 'フラッシュあんざん フリー';
 
   @override
   String handsFreeAnzanKyuuiContext(String grade, String organization) {

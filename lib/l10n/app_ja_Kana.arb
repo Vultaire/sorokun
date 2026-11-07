@@ -83,64 +83,64 @@
   "automatic": "じどう",
   "theme": "テーマ",
   "color": "カラー",
-  "homeCombinedLine1": "総合",
-  "homeCombinedLine2": "種目",
-  "homeSelectSubject": "種目を選ぶ",
-  "homeFlashLine1": "ﾌﾗｯｼｭ",
-  "homeFlashLine2": "暗算",
-  "homeExam": "検定",
+  "homeCombinedLine1": "そうごう",
+  "homeCombinedLine2": "れんしゅう",
+  "homeSelectSubject": "しゅもくをえらぶ",
+  "homeFlashLine1": "フラッシュ",
+  "homeFlashLine2": "あんざん",
+  "homeExam": "けんてい",
   "homeFree": "フリー",
-  "homeHandsFreeLine1": "ﾊﾝｽﾞ",
-  "homeHandsFreeLine2": "ﾌﾘｰ",
-  "homeHandsFreeButtonLabel": "練習",
-  "holisticHandsFreePractice": "ハンズフリー総合練習",
-  "holisticHandsFreeSetupTitle": "ハンズフリー練習設定",
-  "holisticHandsFreeSetupSubtitle": "練習する種目を選び、それぞれの設定を行ってください。",
-  "holisticDuplicateHint": "同じ種目を複数登録すると、その種目をより多く練習できます。",
-  "holisticSelectionOrderHeading": "種目の選び方",
-  "holisticSelectionOrderPlaylist": "リスト順",
+  "homeHandsFreeLine1": "ハンズ",
+  "homeHandsFreeLine2": "フリー",
+  "homeHandsFreeButtonLabel": "れんしゅう",
+  "holisticHandsFreePractice": "ハンズフリーれんしゅう",
+  "holisticHandsFreeSetupTitle": "ハンズフリーせってい",
+  "holisticHandsFreeSetupSubtitle": "れんしゅうするしゅもくをえらんで、それぞれせっていしてね。",
+  "holisticDuplicateHint": "おなじしゅもくをふやすと、そのしゅもくがでやすくなるよ。",
+  "holisticSelectionOrderHeading": "しゅもくのじゅんばん",
+  "holisticSelectionOrderPlaylist": "リストじゅん",
   "holisticSelectionOrderRandom": "ランダム",
-  "holisticPlaylistItem": "種目 {number}",
+  "holisticPlaylistItem": "しゅもく {number}",
   "@holisticPlaylistItem": {
     "description": "ハンズフリー練習リストの番号付き種目を読み上げるためのラベル。",
     "placeholders": { "number": { "type": "int" } }
   },
-  "holisticActivity": "種目",
-  "holisticOrganization": "団体",
-  "holisticLevel": "級位",
-  "holisticAddItem": "種目を追加",
-  "holisticRemoveItem": "種目を削除",
-  "holisticMoveItemUp": "種目 {number} を上へ移動",
+  "holisticActivity": "しゅもく",
+  "holisticOrganization": "だんたい",
+  "holisticLevel": "きゅう",
+  "holisticAddItem": "ついか",
+  "holisticRemoveItem": "けす",
+  "holisticMoveItemUp": "しゅもく {number}をうえにうごかす",
   "@holisticMoveItemUp": {
     "description": "種目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。",
     "placeholders": { "number": { "type": "int" } }
   },
-  "holisticMoveItemDown": "種目 {number} を下へ移動",
+  "holisticMoveItemDown": "しゅもく {number}をしたにうごかす",
   "@holisticMoveItemDown": {
     "description": "種目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。",
     "placeholders": { "number": { "type": "int" } }
   },
-  "holisticSpeedHeading": "問題の表示速度",
-  "holisticCurrentSpeed": "速度：{percent}%",
+  "holisticSpeedHeading": "もんだいのひょうじそくど",
+  "holisticCurrentSpeed": "そくど：{percent}%",
   "@holisticCurrentSpeed": {
     "description": "総合ハンズフリー練習の共通表示速度。",
     "placeholders": { "percent": { "type": "int" } }
   },
-  "holisticDurationHeading": "表示時間",
-  "holisticSecondsValue": "{seconds}秒",
+  "holisticDurationHeading": "ひょうじじかん",
+  "holisticSecondsValue": "{seconds}びょう",
   "@holisticSecondsValue": {
     "description": "ハンズフリー練習の問題表示時間または各フェーズの秒数。",
     "placeholders": { "seconds": { "type": "String" } }
   },
-  "holisticThinkingDelayHeading": "フラッシュ暗算の思考時間",
-  "holisticAnswerDwellHeading": "答えの表示時間",
-  "holisticDelayValue": "{seconds}秒",
+  "holisticThinkingDelayHeading": "フラッシュあんざんのかんがえるじかん",
+  "holisticAnswerDwellHeading": "こたえのひょうじじかん",
+  "holisticDelayValue": "{seconds}びょう",
   "@holisticDelayValue": {
     "description": "フラッシュ暗算の思考時間または答えの表示時間。",
     "placeholders": { "seconds": { "type": "int" } }
   },
-  "holisticContinue": "ハンズフリー練習を開始",
-  "holisticProblemCountdown": "問題終了まで{seconds}秒",
+  "holisticContinue": "れんしゅうをはじめる",
+  "holisticProblemCountdown": "もんだいがおわるまで{seconds}びょう",
   "@holisticProblemCountdown": {
     "description": "総合ハンズフリー練習で問題またはフラッシュ暗算の数字を表示している間のカウントダウン。",
     "placeholders": { "seconds": { "type": "int" } }
@@ -164,7 +164,7 @@
   "submit": "提出",
   "quit": "やめる",
   "back": "戻る",
-  "combinedSubjectsTitle": "総合種目",
+  "combinedSubjectsTitle": "そうごうれんしゅう",
   "organizationZenshuren": "全国珠算教育連盟",
   "@organizationZenshuren": {
     "description": "Use the original Japanese organization name in Japanese; use its romanized name in English, without claiming an official English title."
@@ -297,11 +297,11 @@
   "@mitorizanExplanation": {
     "description": "Inline help gloss: explain that Mitorizan is a vertical sequence of addition and subtraction; this appears in an existing details dialog."
   },
-  "flashExamTitle": "フラッシュ暗算もぎ検定",
+  "flashExamTitle": "フラッシュあんざんもぎテスト",
   "@flashExamTitle": {
     "description": "Menu title for Flash Anzan examination practice."
   },
-  "flashFreeTitle": "フラッシュ暗算フリー",
+  "flashFreeTitle": "フラッシュあんざん フリー",
   "handsFreeAnzanKyuuiContext": "{grade} · {organization}",
   "@handsFreeAnzanKyuuiContext": {
     "description": "ハンズフリー暗算の設定画面に表示する級位と団体。",
