@@ -495,28 +495,37 @@ class _HolisticHandsFreePracticeSetupPageState
                           const SizedBox(height: 8),
                           Text(l10n.holisticDuplicateHint),
                           const SizedBox(height: 16),
-                          for (
-                            var index = 0;
-                            index < _playlist.length;
-                            index++
-                          ) ...[
-                            _buildPlaylistItem(
-                              context,
-                              l10n,
-                              index,
-                              constraints.maxWidth,
-                            ),
-                            const SizedBox(height: 12),
-                          ],
-                          OutlinedButton.icon(
-                            key: const ValueKey('holistic-add-item'),
-                            onPressed: _addItem,
-                            icon: const Icon(Icons.add_rounded),
-                            label: Text(l10n.holisticAddItem),
-                          ),
-                          const SizedBox(height: 12),
                           _SetupCard(
-                            child:
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                for (
+                                  var index = 0;
+                                  index < _playlist.length;
+                                  index++
+                                ) ...[
+                                  if (index > 0) const Divider(height: 24),
+                                  _buildPlaylistItem(
+                                    context,
+                                    l10n,
+                                    index,
+                                    constraints.maxWidth,
+                                  ),
+                                ],
+                                const SizedBox(height: 12),
+                                OutlinedButton.icon(
+                                  key: const ValueKey('holistic-add-item'),
+                                  onPressed: _addItem,
+                                  icon: const Icon(Icons.add_rounded),
+                                  label: Text(l10n.holisticAddItem),
+                                  style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                const Divider(height: 24),
                                 DropdownButtonFormField<
                                   HolisticHandsFreeSelectionOrder
                                 >(
@@ -554,6 +563,8 @@ class _HolisticHandsFreePracticeSetupPageState
                                     }
                                   },
                                 ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 12),
                           _SetupCard(
@@ -642,34 +653,7 @@ class _HolisticHandsFreePracticeSetupPageState
                                     ).textTheme.titleMedium,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          _buildDelayCard(
-                            context,
-                            heading: l10n.holisticThinkingDelayHeading,
-                            keyName: 'holistic-thinking-delay-slider',
-                            valueKeyName: 'holistic-thinking-delay-value',
-                            focusNode: _thinkingDelaySliderFocusNode,
-                            seconds: _thinkingDelaySeconds,
-                            onChanged: _updateThinkingDelay,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildDelayCard(
-                            context,
-                            heading: l10n.holisticAnswerDwellHeading,
-                            keyName: 'holistic-answer-dwell-slider',
-                            valueKeyName: 'holistic-answer-dwell-value',
-                            focusNode: _answerDwellSliderFocusNode,
-                            seconds: _answerDisplayDwellSeconds,
-                            onChanged: _updateAnswerDisplayDwell,
-                          ),
-                          const SizedBox(height: 12),
-                          _SetupCard(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                                const Divider(height: 32),
                                 Text(
                                   l10n.holisticDurationHeading,
                                   style: Theme.of(context).textTheme.titleLarge,
@@ -700,13 +684,58 @@ class _HolisticHandsFreePracticeSetupPageState
                             ),
                           ),
                           const SizedBox(height: 12),
-                          FilledButton.icon(
-                            key: const ValueKey('holistic-setup-continue'),
-                            onPressed: _playlist.isEmpty
-                                ? null
-                                : () => _continue(context),
-                            icon: const Icon(Icons.arrow_forward_rounded),
-                            label: Text(l10n.holisticContinue),
+                          _SetupCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _buildDelayCard(
+                                  context,
+                                  heading: l10n.holisticThinkingDelayHeading,
+                                  keyName: 'holistic-thinking-delay-slider',
+                                  valueKeyName: 'holistic-thinking-delay-value',
+                                  focusNode: _thinkingDelaySliderFocusNode,
+                                  seconds: _thinkingDelaySeconds,
+                                  onChanged: _updateThinkingDelay,
+                                ),
+                                const Divider(height: 32),
+                                _buildDelayCard(
+                                  context,
+                                  heading: l10n.holisticAnswerDwellHeading,
+                                  keyName: 'holistic-answer-dwell-slider',
+                                  valueKeyName: 'holistic-answer-dwell-value',
+                                  focusNode: _answerDwellSliderFocusNode,
+                                  seconds: _answerDisplayDwellSeconds,
+                                  onChanged: _updateAnswerDisplayDwell,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: FractionallySizedBox(
+                              widthFactor: 0.8,
+                              child: FilledButton.icon(
+                                key: const ValueKey('holistic-setup-continue'),
+                                onPressed: _playlist.isEmpty
+                                    ? null
+                                    : () => _continue(context),
+                                icon: const Icon(Icons.arrow_forward_rounded),
+                                label: Text(l10n.holisticContinue),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
+                                  minimumSize: const Size.fromHeight(64),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -851,44 +880,42 @@ class _HolisticHandsFreePracticeSetupPageState
       ],
     );
 
-    return _SetupCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (availableWidth >= 820)
-            Row(
-              children: [
-                rowNumber,
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(child: fields[0]),
-                      const SizedBox(width: 8),
-                      Expanded(child: fields[1]),
-                      const SizedBox(width: 8),
-                      Expanded(child: fields[2]),
-                    ],
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (availableWidth >= 820)
+          Row(
+            children: [
+              rowNumber,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(child: fields[0]),
+                    const SizedBox(width: 8),
+                    Expanded(child: fields[1]),
+                    const SizedBox(width: 8),
+                    Expanded(child: fields[2]),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                actions,
-              ],
-            )
-          else ...[
-            Row(children: [rowNumber, const Spacer(), actions]),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                for (final field in fields)
-                  SizedBox(width: fieldWidth, child: field),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(width: 8),
+              actions,
+            ],
+          )
+        else ...[
+          Row(children: [rowNumber, const Spacer(), actions]),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              for (final field in fields)
+                SizedBox(width: fieldWidth, child: field),
+            ],
+          ),
         ],
-      ),
+      ],
     );
   }
 
@@ -912,64 +939,62 @@ class _HolisticHandsFreePracticeSetupPageState
     required ValueChanged<int> onChanged,
   }) {
     final l10n = AppLocalizations.of(context);
-    return _SetupCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(heading, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(l10n.holisticSecondsValue('$_minimumDelaySeconds')),
-              Expanded(
-                child: _buildAccessibleSlider(
-                  name: heading,
-                  value: l10n.holisticDelayValue(seconds),
-                  increasedValue: l10n.holisticDelayValue(
-                    (seconds + 1)
-                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
-                        .toInt(),
-                  ),
-                  decreasedValue: l10n.holisticDelayValue(
-                    (seconds - 1)
-                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
-                        .toInt(),
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(heading, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Text(l10n.holisticSecondsValue('$_minimumDelaySeconds')),
+            Expanded(
+              child: _buildAccessibleSlider(
+                name: heading,
+                value: l10n.holisticDelayValue(seconds),
+                increasedValue: l10n.holisticDelayValue(
+                  (seconds + 1)
+                      .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                      .toInt(),
+                ),
+                decreasedValue: l10n.holisticDelayValue(
+                  (seconds - 1)
+                      .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                      .toInt(),
+                ),
+                focusNode: focusNode,
+                onIncrease: () => onChanged(
+                  (seconds + 1)
+                      .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                      .toInt(),
+                ),
+                onDecrease: () => onChanged(
+                  (seconds - 1)
+                      .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
+                      .toInt(),
+                ),
+                slider: Slider(
+                  key: ValueKey(keyName),
+                  min: _minimumDelaySeconds.toDouble(),
+                  max: _maximumDelaySeconds.toDouble(),
+                  divisions: _maximumDelaySeconds - _minimumDelaySeconds,
+                  label: l10n.holisticDelayValue(seconds),
+                  value: seconds.toDouble(),
                   focusNode: focusNode,
-                  onIncrease: () => onChanged(
-                    (seconds + 1)
-                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
-                        .toInt(),
-                  ),
-                  onDecrease: () => onChanged(
-                    (seconds - 1)
-                        .clamp(_minimumDelaySeconds, _maximumDelaySeconds)
-                        .toInt(),
-                  ),
-                  slider: Slider(
-                    key: ValueKey(keyName),
-                    min: _minimumDelaySeconds.toDouble(),
-                    max: _maximumDelaySeconds.toDouble(),
-                    divisions: _maximumDelaySeconds - _minimumDelaySeconds,
-                    label: l10n.holisticDelayValue(seconds),
-                    value: seconds.toDouble(),
-                    focusNode: focusNode,
-                    onChanged: (value) => onChanged(value.round()),
-                  ),
+                  onChanged: (value) => onChanged(value.round()),
                 ),
               ),
-              Text(l10n.holisticSecondsValue('$_maximumDelaySeconds')),
-            ],
-          ),
-          Center(
-            child: Text(
-              l10n.holisticDelayValue(seconds),
-              key: ValueKey(valueKeyName),
-              style: Theme.of(context).textTheme.titleMedium,
             ),
+            Text(l10n.holisticSecondsValue('$_maximumDelaySeconds')),
+          ],
+        ),
+        Center(
+          child: Text(
+            l10n.holisticDelayValue(seconds),
+            key: ValueKey(valueKeyName),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -1024,8 +1049,15 @@ class _SetupCard extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Card(
-    margin: EdgeInsets.zero,
-    child: Padding(padding: const EdgeInsets.all(16), child: child),
-  );
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      color: colorScheme.surfaceContainerLowest,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      margin: EdgeInsets.zero,
+      child: Padding(padding: const EdgeInsets.all(16), child: child),
+    );
+  }
 }
