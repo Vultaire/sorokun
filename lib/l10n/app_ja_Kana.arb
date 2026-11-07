@@ -1,0 +1,419 @@
+{
+  "@@locale": "ja_Kana",
+  "appTitle": "そろくん！",
+  "languageLabel": "言語 / Language",
+  "settingsTitle": "アプリ設定",
+  "japaneseLanguage": "日本語",
+  "englishLanguage": "English",
+  "englishTranslationDisclosure": "英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。",
+  "gradeReferenceTitle": "級位・段位の表示について",
+  "@gradeReferenceTitle": {
+    "description": "Heading and accessible tooltip for the independent-practice grade disclaimer."
+  },
+  "gradeReferenceDisclosure": "本フォークのそろくん！は独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携関係はなく、各団体から公認・推奨を受けたものでもありません。アプリ内の級位・段位等は練習用の目安であり、各団体の最新の基準や検定要件と異なる場合があります。最新の要件は各団体にご確認ください。",
+  "@gradeReferenceDisclosure": {
+    "description": "Clarify that this fork is independent and unofficial, and that its grade and level labels may not match current organizational standards."
+  },
+  "close": "閉じる",
+  "welcomeJapaneseLanguageHeading": "日本語",
+  "@welcomeJapaneseLanguageHeading": {
+    "description": "Language heading for the Japanese block of the bilingual welcome screen."
+  },
+  "welcomeJapaneseTitle": "そろくん！のフォークをお試しいただき、ありがとうございます。",
+  "@welcomeJapaneseTitle": {
+    "description": "Title shown above the Japanese welcome copy."
+  },
+  "welcomeJapaneseIntro": "Chet Linさんが作ったオリジナル版は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加することを試みました。このフォークはその成果です。",
+  "@welcomeJapaneseIntro": {
+    "description": "Japanese introduction for the first-run bilingual welcome screen, shown before the English block."
+  },
+  "welcomeJapaneseDisclaimerHeading": "団体との関係と級位について",
+  "@welcomeJapaneseDisclaimerHeading": {
+    "description": "Japanese heading for the welcome screen's affiliation and grade-level caveat."
+  },
+  "welcomeJapaneseDisclaimer": "このフォークは独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携・協力関係もありません。また、公認・推奨も受けていません。オリジナル版もこれらの団体とは公式な関係ではなかったと認識していますが、作者に代わって断言することはできません。\n\n総合種目とフラッシュ暗算の検定モードで選べる級位は、該当する団体の制度をもとにしているようです。フラッシュ暗算のフリーモードは例外で、口数や桁数などを自由に設定して練習できます。これらの級位は、私自身のそろばん学習経験からはおおむね妥当と思われますが、各団体の最新の基準と一つひとつ照合したわけではありません。内容が不完全であったり、現在の検定要件と異なったりする可能性があり、一致を保証するものではありません。現在そろばん教室に通っている方は、ご自身のレベルに適した練習内容について先生にご相談ください。最新の検定要件は各団体にご確認ください。",
+  "@welcomeJapaneseDisclaimer": {
+    "description": "Japanese statement about this fork's independence, the original app's uncertain affiliation, and the limits of its grade-level references."
+  },
+  "welcomeJapaneseClosing": "このフォークでは、オリジナル版の読み上げ算を削除し、Web対応や英語インターフェースなどを追加しました。無料の練習用アプリとして提供しており、資格の認定や検定の合格を保証するものではありません。\n\nお楽しみいただければ幸いです。原作者のChet Linさん、素晴らしいアプリをありがとうございます。\n\n— Paul Goins (Vultaire)",
+  "@welcomeJapaneseClosing": {
+    "description": "Japanese closing note and attribution for the bilingual welcome screen."
+  },
+  "welcomeEnglishLanguageHeading": "English",
+  "@welcomeEnglishLanguageHeading": {
+    "description": "Language heading for the English block of the bilingual welcome screen."
+  },
+  "welcomeEnglishTitle": "Thank you for trying my fork of Sorokun!",
+  "@welcomeEnglishTitle": {
+    "description": "Title shown above the English welcome copy."
+  },
+  "welcomeEnglishIntro": "I found Chet Lin's original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This fork is the result of that experiment.",
+  "@welcomeEnglishIntro": {
+    "description": "English introduction for the first-run bilingual welcome screen."
+  },
+  "welcomeEnglishDisclaimerHeading": "About affiliations and grade levels",
+  "@welcomeEnglishDisclaimerHeading": {
+    "description": "English heading for the welcome screen's affiliation and grade-level caveat."
+  },
+  "welcomeEnglishDisclaimer": "This fork is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it is not affiliated with or endorsed by any of them. To the best of my knowledge, the original Sorokun! was not officially affiliated with these organizations either, though I cannot speak for its author.\n\nThe selectable grade levels in Soroban Practice and Flash Anzan Exam appear to be modeled on the relevant organizations' systems. Based on my experience studying soroban, they seem broadly accurate, but I have not checked each one against the organizations' current standards. They may be incomplete or out of date, and I cannot guarantee that they match current exam requirements. If you are currently taking soroban classes, please ask your teacher which practice materials are appropriate for your level. For current exam requirements, check with the relevant organization.",
+  "@welcomeEnglishDisclaimer": {
+    "description": "English statement about this fork's independence and the limits of its grade-level references."
+  },
+  "welcomeEnglishClosing": "This fork removes the original read-aloud exercises and adds web support, a basic English interface, and other features. It is offered as a free study aid, not as a certification tool or a guarantee of exam readiness.\n\nI hope you enjoy it. To Chet Lin, the original author: thank you for an excellent program.\n\n— Paul Goins (Vultaire)",
+  "@welcomeEnglishClosing": {
+    "description": "English closing note and attribution for the bilingual welcome screen."
+  },
+  "welcomeDoNotShowAgain": "次回から表示しない / Do not show this again",
+  "@welcomeDoNotShowAgain": {
+    "description": "Intentionally bilingual checkbox label on the welcome screen."
+  },
+  "welcomeOk": "OK",
+  "@welcomeOk": {
+    "description": "Dismiss the welcome screen and continue; this is not a consent or waiver action."
+  },
+  "welcomeReplayButton": "Show welcome screen again",
+  "@welcomeReplayButton": {
+    "description": "Credits button that reopens the bilingual welcome screen."
+  },
+  "keypadPosition": "テンキーの配置",
+  "leftHanded": "左利き",
+  "rightHanded": "右利き",
+  "keypadLayout": "キーレイアウト",
+  "screenBrightness": "画面の明るさ",
+  "automatic": "自動",
+  "theme": "テーマ",
+  "color": "カラー",
+  "homeCombinedLine1": "総合",
+  "homeCombinedLine2": "種目",
+  "homeSelectSubject": "種目を選ぶ",
+  "homeFlashLine1": "ﾌﾗｯｼｭ",
+  "homeFlashLine2": "暗算",
+  "homeExam": "検定",
+  "homeFree": "フリー",
+  "homeHandsFreeLine1": "ﾊﾝｽﾞ",
+  "homeHandsFreeLine2": "ﾌﾘｰ",
+  "homeHandsFreeButtonLabel": "練習",
+  "holisticHandsFreePractice": "ハンズフリー総合練習",
+  "holisticHandsFreeSetupTitle": "ハンズフリー練習設定",
+  "holisticHandsFreeSetupSubtitle": "練習する種目を選び、それぞれの設定を行ってください。",
+  "holisticDuplicateHint": "同じ種目を複数登録すると、その種目をより多く練習できます。",
+  "holisticSelectionOrderHeading": "種目の選び方",
+  "holisticSelectionOrderPlaylist": "リスト順",
+  "holisticSelectionOrderRandom": "ランダム",
+  "holisticPlaylistItem": "種目 {number}",
+  "@holisticPlaylistItem": {
+    "description": "ハンズフリー練習リストの番号付き種目を読み上げるためのラベル。",
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "holisticActivity": "種目",
+  "holisticOrganization": "団体",
+  "holisticLevel": "級位",
+  "holisticAddItem": "種目を追加",
+  "holisticRemoveItem": "種目を削除",
+  "holisticMoveItemUp": "種目 {number} を上へ移動",
+  "@holisticMoveItemUp": {
+    "description": "種目を一つ前へ移動するためのアクセシブルなラベルとツールチップ。",
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "holisticMoveItemDown": "種目 {number} を下へ移動",
+  "@holisticMoveItemDown": {
+    "description": "種目を一つ後ろへ移動するためのアクセシブルなラベルとツールチップ。",
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "holisticSpeedHeading": "問題の表示速度",
+  "holisticCurrentSpeed": "速度：{percent}%",
+  "@holisticCurrentSpeed": {
+    "description": "総合ハンズフリー練習の共通表示速度。",
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "holisticDurationHeading": "表示時間",
+  "holisticSecondsValue": "{seconds}秒",
+  "@holisticSecondsValue": {
+    "description": "ハンズフリー練習の問題表示時間または各フェーズの秒数。",
+    "placeholders": { "seconds": { "type": "String" } }
+  },
+  "holisticThinkingDelayHeading": "フラッシュ暗算の思考時間",
+  "holisticAnswerDwellHeading": "答えの表示時間",
+  "holisticDelayValue": "{seconds}秒",
+  "@holisticDelayValue": {
+    "description": "フラッシュ暗算の思考時間または答えの表示時間。",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "holisticContinue": "ハンズフリー練習を開始",
+  "holisticProblemCountdown": "問題終了まで{seconds}秒",
+  "@holisticProblemCountdown": {
+    "description": "総合ハンズフリー練習で問題またはフラッシュ暗算の数字を表示している間のカウントダウン。",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "credits": "クレジット",
+  "creditsDevelopment": "開発",
+  "developerRole": "開発者",
+  "originalSourceIntro": "元のそろくんのソースコードはこちらで公開されています：",
+  "forkSourceIntro": "このフォークのソースコード：",
+  "forkModificationNotice": "原作: Chet Lin。Vultaire による改変版です（2026-11-01）。読み上げ算と VOICEVOX を削除し、Web ビルド対応を行いました。",
+  "forkDevelopmentDisclosure": "このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。",
+  "localizationUpdateNotice": "日本語・English インターフェースのローカライズを2026-11-02に追加しました。",
+  "fontCredits": "フォント",
+  "abacusBeadFont": "そろばん玉のフォント",
+  "sorobanNumeralFont": "珠算の数字のフォント",
+  "license": "ライセンス",
+  "noWarrantyLicenseNotice": "本ソフトウェアは無保証です。GPL v3.0 の条件に従って再配布・改変できます。ライセンス全文は上記リンクから確認できます。",
+  "exitDialogTitle": "終了しますか？",
+  "exitDialogMessage": "提出するか、途中でやめるか選んでください。",
+  "cancel": "キャンセル",
+  "submit": "提出",
+  "quit": "やめる",
+  "back": "戻る",
+  "combinedSubjectsTitle": "総合種目",
+  "organizationZenshuren": "全国珠算教育連盟",
+  "@organizationZenshuren": {
+    "description": "Use the original Japanese organization name in Japanese; use its romanized name in English, without claiming an official English title."
+  },
+  "organizationNisshuren": "日本珠算連盟",
+  "@organizationNisshuren": {
+    "description": "Use the original Japanese organization name in Japanese; use its romanized name in English, without claiming an official English title."
+  },
+  "organizationFlashAnzan": "日本ﾌﾗｯｼｭ暗算協会",
+  "@organizationFlashAnzan": {
+    "description": "Use the original Japanese organization name in Japanese; its official English name is used in the English locale."
+  },
+  "selectorZenshuren": "全珠連",
+  "selectorNisshuren": "日珠連",
+  "selectorFlashAnzan": "協会",
+  "zenshurenOrganizationSubtitle": "全国珠算教育連盟",
+  "@zenshurenOrganizationSubtitle": {
+    "description": "Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle."
+  },
+  "nisshurenOrganizationSubtitle": "日本珠算連盟",
+  "@nisshurenOrganizationSubtitle": {
+    "description": "Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle."
+  },
+  "organizationSubtitleLine": "（{subtitle}）",
+  "@organizationSubtitleLine": {
+    "description": "Format an organization subtitle in parentheses beneath its primary selector label.",
+    "placeholders": { "subtitle": { "type": "String" } }
+  },
+  "kyuGrade": "{grade, plural, other{{grade}級}}",
+  "@kyuGrade": {
+    "description": "Standard kyu grade label.",
+    "placeholders": { "grade": { "type": "int" } }
+  },
+  "preKyuGrade": "準{grade}級",
+  "@preKyuGrade": {
+    "description": "Preparatory kyu grade label.",
+    "placeholders": { "grade": { "type": "int" } }
+  },
+  "danGroupGrade": "段位",
+  "danGrade": "{grade, select, 1{初段} 2{二段} 3{三段} 4{四段} 5{五段} 6{六段} 7{七段} 8{八段} 9{九段} 10{十段} other{{grade}段}}",
+  "@danGrade": {
+    "description": "Dan grade label. Use the traditional Japanese rank names.",
+    "placeholders": { "grade": { "type": "String" } }
+  },
+  "rankPreShodan": "準初段",
+  "rankShodan": "初段",
+  "rankPreNidan": "準二段",
+  "rankNidan": "二段",
+  "rankPreSandan": "準三段",
+  "rankSandan": "三段",
+  "rankPreYondan": "準四段",
+  "rankYondan": "四段",
+  "rankPreGodan": "準五段",
+  "rankGodan": "五段",
+  "rankPreRokudan": "準六段",
+  "rankRokudan": "六段",
+  "rankNanadan": "七段",
+  "rankHachidan": "八段",
+  "rankKudan": "九段",
+  "rankJudan": "十段",
+  "paperPractice": "練習",
+  "paperExam": "検定",
+  "mitoriZan": "みとり算",
+  "@mitoriZan": {
+    "description": "Compact practice-mode label for Mitorizan (+/−); keep the English term Mitorizan compact."
+  },
+  "division": "わり算",
+  "multiplication": "かけ算",
+  "mitoriAnzan": "みとり暗算",
+  "@mitoriAnzan": {
+    "description": "Mental-arithmetic version of Mitorizan."
+  },
+  "divisionAnzan": "わり暗算",
+  "multiplicationAnzan": "かけ暗算",
+  "flashAnzanSubject": "フラッシュ暗算",
+  "gradeActivity": "{grade}の{activity}",
+  "@gradeActivity": {
+    "description": "Grade label paired with a practice subject.",
+    "placeholders": {
+      "grade": { "type": "String", "example": "10級" },
+      "activity": { "type": "String", "example": "みとり算" }
+    }
+  },
+  "start": "スタート",
+  "timeLimit": "制限時間：{minutes}分",
+  "@timeLimit": {
+    "description": "Time limit in minutes.",
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "problemCount": "問題数：{count}題",
+  "@problemCount": {
+    "description": "Number of questions in a practice set.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "pointsEach": "各{points}点 ({maximum}点満点)",
+  "@pointsEach": {
+    "description": "Points awarded per problem and maximum possible score.",
+    "placeholders": {
+      "points": { "type": "int" },
+      "maximum": { "type": "int" }
+    }
+  },
+  "passingScore": "合格点：{score}点以上",
+  "@passingScore": {
+    "description": "Minimum passing score.",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "oneProblemDigits": "一題あたり{range}字",
+  "@oneProblemDigits": {
+    "description": "Number of digits in each Mitori-zan problem.",
+    "placeholders": { "range": { "type": "String" } }
+  },
+  "methodDigits": "{method}あわせて{range}桁",
+  "@methodDigits": {
+    "description": "Digit range for a multiplication or division method.",
+    "placeholders": {
+      "method": { "type": "String" },
+      "range": { "type": "String" }
+    }
+  },
+  "jippou": "実法",
+  "@jippou": {
+    "description": "Abbreviation for the two factors (multiplicand and multiplier) whose digits are counted together."
+  },
+  "houshou": "法商",
+  "@houshou": {
+    "description": "Abbreviation for divisor and quotient digits counted together."
+  },
+  "mitorizanExplanation": "Mitorizan (+/−)：縦に並んだ数を、足し算・引き算を交互に使って計算します。",
+  "@mitorizanExplanation": {
+    "description": "Inline help gloss: explain that Mitorizan is a vertical sequence of addition and subtraction; this appears in an existing details dialog."
+  },
+  "flashExamTitle": "フラッシュ暗算もぎ検定",
+  "@flashExamTitle": {
+    "description": "Menu title for Flash Anzan examination practice."
+  },
+  "flashFreeTitle": "フラッシュ暗算フリー",
+  "handsFreeAnzanKyuuiContext": "{grade} · {organization}",
+  "@handsFreeAnzanKyuuiContext": {
+    "description": "ハンズフリー暗算の設定画面に表示する級位と団体。",
+    "placeholders": {
+      "grade": { "type": "String" },
+      "organization": { "type": "String" }
+    }
+  },
+  "handsFreeAnzanDurationPreview": "{subject}：{time}",
+  "@handsFreeAnzanDurationPreview": {
+    "description": "選択した各種目について、1題を表示する時間の目安。",
+    "placeholders": {
+      "subject": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "handsFreeAnzanAnswer": "答え：{answer}",
+  "@handsFreeAnzanAnswer": {
+    "description": "ハンズフリー暗算の問題を解いた後に表示する、書式付きの正答。",
+    "placeholders": { "answer": { "type": "String" } }
+  },
+  "handsFreeAnzanGenerationError": "問題を作成できませんでした。このセッションを終了し、もう一度お試しください。",
+  "handsFreeRevealCountdown": "{seconds}秒後に答えを表示",
+  "@handsFreeRevealCountdown": {
+    "description": "Countdown until the answer is revealed in hands-free Flash Anzan.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeNextProblemCountdown": "{seconds}秒後に次の問題",
+  "@handsFreeNextProblemCountdown": {
+    "description": "Countdown until the next hands-free Flash Anzan problem starts.",
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "handsFreeQuestionsCompleted": "練習した問題数：{count}",
+  "@handsFreeQuestionsCompleted": {
+    "description": "Number of problem attempts completed in the current hands-free practice session.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "handsFreePracticeTime": "練習時間：{time}",
+  "@handsFreePracticeTime": {
+    "description": "Elapsed time in the current hands-free practice session.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "handsFreeStop": "ハンズフリーを終了",
+  "flashDigitsLabel": "桁数",
+  "flashKuchiLabel": "口数",
+  "@flashKuchiLabel": {
+    "description": "Number of sequential numbers shown in one Flash Anzan problem."
+  },
+  "digitsUnit": "{count, plural, other{桁}}",
+  "@digitsUnit": {
+    "description": "Unit for the number of digits in one Flash Anzan problem.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "kuchiUnit": "{count, plural, other{口}}",
+  "@kuchiUnit": {
+    "description": "Unit for the number of values shown in one Flash Anzan problem.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "secondsUnit": "秒",
+  "flashAllProblems": "全{count}問 各10点",
+  "@flashAllProblems": {
+    "description": "Flash Anzan question count and points per question.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "flashPassingScore": "{score}点で合格",
+  "@flashPassingScore": {
+    "description": "Passing score for Flash Anzan.",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "noCarry": "くりあがりなし",
+  "displayInterval": "表示間隔",
+  "blankInterval": "消画間隔",
+  "millisecondsShort": "ms",
+  "flashAnswerPrompt": "答えを記入してください。",
+  "repeatProblem": "もう一回",
+  "nextProblem": "次の問題",
+  "grade": "採点",
+  "correct": "正解",
+  "incorrect": "不正解",
+  "answer": "答え",
+  "answerTime": "回答タイム",
+  "answerTimeValue": "{time}秒",
+  "@answerTimeValue": {
+    "description": "Time taken to enter an answer, in seconds.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "time": "タイム",
+  "reviewIncorrect": "間違えた問題を見る",
+  "reviewMistakesButton": "間違えた問題を見る",
+  "tryAgain": "もう一回挑戦する",
+  "returnHome": "メインメニューに戻る",
+  "returnToSettings": "設定画面に戻る",
+  "pointsOutOf": "{maximum}点満点",
+  "@pointsOutOf": {
+    "description": "Maximum possible points in a result score.",
+    "placeholders": { "maximum": { "type": "int" } }
+  },
+  "pointsUnit": "点",
+  "passed": "合格",
+  "failed": "不合格",
+  "unknownLevelType": "Unknown level type",
+  "timeUp": "時間切れ！",
+  "practiceComplete": "終了！",
+  "roundingDecimalNotice": "（注意） 小数第3位未満四捨五入。",
+  "roundingIntegerNotice": "（注意） 整数位未満四捨五入。",
+  "backspaceSemantics": "末尾の数字を削除（長押しですべて消去）",
+  "submitSemantics": "回答を送信",
+  "themeColorWheelSemantics": "テーマカラーを選択",
+  "standardKeypadLayout": "標準のテンキー配列",
+  "telephoneKeypadLayout": "電話式のテンキー配列",
+  "increaseValue": "値を増やす",
+  "decreaseValue": "値を減らす",
+  "increaseTime": "表示時間を長くする",
+  "decreaseTime": "表示時間を短くする"
+}

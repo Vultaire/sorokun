@@ -52,7 +52,9 @@ class ColorSchemeSettingsPage extends StatelessWidget {
                   vertical: 8,
                 ),
                 child: LabeledSlidingSegmentedControl<AppLanguage>(
-                  groupValue: controller.language,
+                  groupValue: controller.language == AppLanguage.japaneseKana
+                      ? AppLanguage.japanese
+                      : controller.language,
                   options: [
                     (AppLanguage.japanese, l10n.japaneseLanguage),
                     (AppLanguage.english, l10n.englishLanguage),
@@ -420,12 +422,15 @@ class _KeypadOption extends StatelessWidget {
   }
 }
 
-enum AppLanguage { japanese, english }
+enum AppLanguage { japanese, japaneseKana, english }
 
-Locale resolveAppLocale(Locale? locale) =>
-    locale?.languageCode.toLowerCase() == 'ja'
-    ? const Locale('ja')
-    : const Locale('en');
+Locale resolveAppLocale(Locale? locale) {
+  if (locale?.languageCode.toLowerCase() != 'ja') return const Locale('en');
+
+  return locale?.scriptCode?.toLowerCase() == 'kana'
+      ? const Locale.fromSubtags(languageCode: 'ja', scriptCode: 'Kana')
+      : const Locale('ja');
+}
 
 AppLanguage resolveInitialLanguage(
   List<Locale> preferredLocales, {
@@ -436,9 +441,13 @@ AppLanguage resolveInitialLanguage(
   }
 
   final firstLocale = preferredLocales.isEmpty ? null : preferredLocales.first;
-  return firstLocale?.languageCode.toLowerCase() == 'ja'
-      ? AppLanguage.japanese
-      : AppLanguage.english;
+  if (firstLocale?.languageCode.toLowerCase() != 'ja') {
+    return AppLanguage.english;
+  }
+
+  return firstLocale?.scriptCode?.toLowerCase() == 'kana'
+      ? AppLanguage.japaneseKana
+      : AppLanguage.japanese;
 }
 
 enum KeypadNumberOrder { standard, telephone }
@@ -473,7 +482,14 @@ class AppController extends ChangeNotifier {
 
   AppLanguage _language = AppLanguage.english;
   AppLanguage get language => _language;
-  Locale get locale => Locale(language == AppLanguage.japanese ? 'ja' : 'en');
+  Locale get locale => switch (language) {
+    AppLanguage.japanese => const Locale('ja'),
+    AppLanguage.japaneseKana => const Locale.fromSubtags(
+      languageCode: 'ja',
+      scriptCode: 'Kana',
+    ),
+    AppLanguage.english => const Locale('en'),
+  };
 
   KeypadNumberOrder _numberOrder = KeypadNumberOrder.standard;
   KeypadNumberOrder get numberOrder => _numberOrder;

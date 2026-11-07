@@ -9,6 +9,7 @@ import 'package:soroban_app/models/level_localizations.dart';
 import 'package:soroban_app/screens/home_page.dart';
 import 'package:soroban_app/screens/settings.dart';
 import 'package:soroban_app/screens/credits.dart';
+import 'package:soroban_app/screens/components/labeled_sliding_segment.dart';
 import 'package:soroban_app/screens/components/organization_option.dart';
 import 'package:soroban_app/screens/components/grade_reference_info_button.dart';
 import 'package:soroban_app/screens/welcome_screen.dart';
@@ -51,6 +52,43 @@ void main() {
       expect(resolveAppLocale(const Locale('en', 'US')), const Locale('en'));
       expect(resolveAppLocale(const Locale('fr', 'FR')), const Locale('en'));
       expect(resolveAppLocale(null), const Locale('en'));
+    });
+
+    test('Kana script is distinct while plain Japanese stays standard', () {
+      const kanaLocale = Locale.fromSubtags(
+        languageCode: 'ja',
+        scriptCode: 'Kana',
+      );
+
+      expect(resolveAppLocale(kanaLocale), kanaLocale);
+      expect(resolveAppLocale(const Locale('ja')), const Locale('ja'));
+      expect(
+        resolveInitialLanguage(const [kanaLocale]),
+        AppLanguage.japaneseKana,
+      );
+      expect(
+        resolveInitialLanguage(const [Locale('ja', 'JP')]),
+        AppLanguage.japanese,
+      );
+    });
+
+    test('localization delegate supports the distinct Kana locale', () async {
+      const kanaLocale = Locale.fromSubtags(
+        languageCode: 'ja',
+        scriptCode: 'Kana',
+      );
+      expect(AppLocalizations.supportedLocales, contains(kanaLocale));
+      expect(AppLocalizations.delegate.isSupported(kanaLocale), isTrue);
+
+      final kana = await AppLocalizations.delegate.load(kanaLocale);
+      final japanese = await AppLocalizations.delegate.load(const Locale('ja'));
+      final english = await AppLocalizations.delegate.load(const Locale('en'));
+
+      expect(kana.localeName, 'ja_Kana');
+      expect(kana.appTitle, japanese.appTitle);
+      expect(japanese.localeName, 'ja');
+      expect(english.localeName, 'en');
+      expect(english.appTitle, 'Sorokun!');
     });
 
     test('a saved language overrides the device locale', () {
@@ -103,6 +141,35 @@ void main() {
       nextLaunch.dispose();
     });
   });
+
+  test(
+    'Kana language selection persists and restores its script locale',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final controller = AppController(
+        preferredLocales: const [Locale('en', 'US')],
+      );
+      await controller.ready;
+
+      await controller.setLanguage(AppLanguage.japaneseKana);
+      const kanaLocale = Locale.fromSubtags(
+        languageCode: 'ja',
+        scriptCode: 'Kana',
+      );
+      expect(controller.locale, kanaLocale);
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('ui_language'), 'japaneseKana');
+      controller.dispose();
+
+      final restoredController = AppController(
+        preferredLocales: const [Locale('ja', 'JP')],
+      );
+      await restoredController.ready;
+      expect(restoredController.language, AppLanguage.japaneseKana);
+      expect(restoredController.locale, kanaLocale);
+      restoredController.dispose();
+    },
+  );
 
   testWidgets('welcome screen presents Japanese before English', (
     WidgetTester tester,
@@ -362,6 +429,40 @@ void main() {
     controller.dispose();
     restoredController.dispose();
   });
+
+  testWidgets(
+    'Kana locale selects Japanese in the two-option settings control',
+    (WidgetTester tester) async {
+      SharedPreferences.setMockInitialValues({});
+      const kanaLocale = Locale.fromSubtags(
+        languageCode: 'ja',
+        scriptCode: 'Kana',
+      );
+      final controller = AppController(preferredLocales: const [kanaLocale]);
+      await controller.ready;
+
+      await tester.pumpWidget(
+        _localizedApp(controller, const ColorSchemeSettingsPage()),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(controller.language, AppLanguage.japaneseKana);
+      expect(controller.locale, kanaLocale);
+
+      final languageControl = tester
+          .widget<LabeledSlidingSegmentedControl<AppLanguage>>(
+            find.byType(LabeledSlidingSegmentedControl<AppLanguage>),
+          );
+      expect(languageControl.groupValue, AppLanguage.japanese);
+      expect(languageControl.options.map((option) => option.$1), [
+        AppLanguage.japanese,
+        AppLanguage.english,
+      ]);
+
+      controller.dispose();
+    },
+  );
 
   testWidgets('representative model grade labels follow the active locale', (
     WidgetTester tester,
