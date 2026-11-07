@@ -977,28 +977,28 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get combinedSubjectsTitle => 'そうごうれんしゅう';
 
   @override
-  String get organizationZenshuren => '全国珠算教育連盟';
+  String get organizationZenshuren => 'ぜんしゅれん';
 
   @override
-  String get organizationNisshuren => '日本珠算連盟';
+  String get organizationNisshuren => 'にっしゅれん';
 
   @override
-  String get organizationFlashAnzan => '日本ﾌﾗｯｼｭ暗算協会';
+  String get organizationFlashAnzan => 'あんざんきょうかい';
 
   @override
-  String get selectorZenshuren => '全珠連';
+  String get selectorZenshuren => 'ぜんしゅれん';
 
   @override
-  String get selectorNisshuren => '日珠連';
+  String get selectorNisshuren => 'にっしゅれん';
 
   @override
-  String get selectorFlashAnzan => '協会';
+  String get selectorFlashAnzan => 'あんざんきょうかい';
 
   @override
-  String get zenshurenOrganizationSubtitle => '全国珠算教育連盟';
+  String get zenshurenOrganizationSubtitle => 'ぜんこくしゅざんきょういくれんめい';
 
   @override
-  String get nisshurenOrganizationSubtitle => '日本珠算連盟';
+  String get nisshurenOrganizationSubtitle => 'にほんしゅざんれんめい';
 
   @override
   String organizationSubtitleLine(String subtitle) {
@@ -1010,111 +1010,111 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
     String _temp0 = intl.Intl.pluralLogic(
       grade,
       locale: localeName,
-      other: '$grade級',
+      other: '$gradeきゅう',
     );
     return '$_temp0';
   }
 
   @override
   String preKyuGrade(int grade) {
-    return '準$grade級';
+    return 'じゅん$gradeきゅう';
   }
 
   @override
-  String get danGroupGrade => '段位';
+  String get danGroupGrade => 'だん';
 
   @override
   String danGrade(String grade) {
     String _temp0 = intl.Intl.selectLogic(grade, {
-      '1': '初段',
-      '2': '二段',
-      '3': '三段',
-      '4': '四段',
-      '5': '五段',
-      '6': '六段',
-      '7': '七段',
-      '8': '八段',
-      '9': '九段',
-      '10': '十段',
-      'other': '$grade段',
+      '1': 'しょだん',
+      '2': 'にだん',
+      '3': 'さんだん',
+      '4': 'よんだん',
+      '5': 'ごだん',
+      '6': 'ろくだん',
+      '7': 'ななだん',
+      '8': 'はちだん',
+      '9': 'きゅうだん',
+      '10': 'じゅうだん',
+      'other': '$gradeだん',
     });
     return '$_temp0';
   }
 
   @override
-  String get rankPreShodan => '準初段';
+  String get rankPreShodan => 'じゅんしょだん';
 
   @override
-  String get rankShodan => '初段';
+  String get rankShodan => 'しょだん';
 
   @override
-  String get rankPreNidan => '準二段';
+  String get rankPreNidan => 'じゅんにだん';
 
   @override
-  String get rankNidan => '二段';
+  String get rankNidan => 'にだん';
 
   @override
-  String get rankPreSandan => '準三段';
+  String get rankPreSandan => 'じゅんさんだん';
 
   @override
-  String get rankSandan => '三段';
+  String get rankSandan => 'さんだん';
 
   @override
-  String get rankPreYondan => '準四段';
+  String get rankPreYondan => 'じゅんよんだん';
 
   @override
-  String get rankYondan => '四段';
+  String get rankYondan => 'よんだん';
 
   @override
-  String get rankPreGodan => '準五段';
+  String get rankPreGodan => 'じゅんごだん';
 
   @override
-  String get rankGodan => '五段';
+  String get rankGodan => 'ごだん';
 
   @override
-  String get rankPreRokudan => '準六段';
+  String get rankPreRokudan => 'じゅんろくだん';
 
   @override
-  String get rankRokudan => '六段';
+  String get rankRokudan => 'ろくだん';
 
   @override
-  String get rankNanadan => '七段';
+  String get rankNanadan => 'ななだん';
 
   @override
-  String get rankHachidan => '八段';
+  String get rankHachidan => 'はちだん';
 
   @override
-  String get rankKudan => '九段';
+  String get rankKudan => 'きゅうだん';
 
   @override
-  String get rankJudan => '十段';
+  String get rankJudan => 'じゅうだん';
 
   @override
-  String get paperPractice => '練習';
+  String get paperPractice => 'れんしゅう';
 
   @override
-  String get paperExam => '検定';
+  String get paperExam => 'けんてい';
 
   @override
-  String get mitoriZan => 'みとり算';
+  String get mitoriZan => 'みとりざん';
 
   @override
-  String get division => 'わり算';
+  String get division => 'わりざん';
 
   @override
-  String get multiplication => 'かけ算';
+  String get multiplication => 'かけざん';
 
   @override
-  String get mitoriAnzan => 'みとり暗算';
+  String get mitoriAnzan => 'みとりあんざん';
 
   @override
-  String get divisionAnzan => 'わり暗算';
+  String get divisionAnzan => 'わりあんざん';
 
   @override
-  String get multiplicationAnzan => 'かけ暗算';
+  String get multiplicationAnzan => 'かけあんざん';
 
   @override
-  String get flashAnzanSubject => 'フラッシュ暗算';
+  String get flashAnzanSubject => 'フラッシュあんざん';
 
   @override
   String gradeActivity(String grade, String activity) {
@@ -1122,47 +1122,47 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   }
 
   @override
-  String get start => 'スタート';
+  String get start => 'はじめる';
 
   @override
   String timeLimit(int minutes) {
-    return '制限時間：$minutes分';
+    return 'せいげんじかん（ふん）：$minutes';
   }
 
   @override
   String problemCount(int count) {
-    return '問題数：$count題';
+    return 'もんだいのかず：$countもん';
   }
 
   @override
   String pointsEach(int points, int maximum) {
-    return '各$points点 ($maximum点満点)';
+    return '1もん$pointsてん（ぜんぶで$maximumてん）';
   }
 
   @override
   String passingScore(int score) {
-    return '合格点：$score点以上';
+    return 'ごうかくてん：$scoreてんいじょう';
   }
 
   @override
   String oneProblemDigits(String range) {
-    return '一題あたり$range字';
+    return '1もんのすうじは$rangeけた';
   }
 
   @override
   String methodDigits(String method, String range) {
-    return '$methodあわせて$range桁';
+    return '$methodをあわせたけたすう：$rangeけた';
   }
 
   @override
-  String get jippou => '実法';
+  String get jippou => 'かけざんのふたつのかず';
 
   @override
-  String get houshou => '法商';
+  String get houshou => 'わりざんのわるかずとこたえ';
 
   @override
   String get mitorizanExplanation =>
-      'Mitorizan (+/−)：縦に並んだ数を、足し算・引き算を交互に使って計算します。';
+      'みとりざんは、たてにならんだかずを、たしたりひいたりをこうごにしてけいさんするよ。';
 
   @override
   String get flashExamTitle => 'フラッシュあんざんもぎテスト';

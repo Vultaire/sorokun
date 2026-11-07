@@ -165,26 +165,26 @@
   "quit": "やめる",
   "back": "戻る",
   "combinedSubjectsTitle": "そうごうれんしゅう",
-  "organizationZenshuren": "全国珠算教育連盟",
+  "organizationZenshuren": "ぜんしゅれん",
   "@organizationZenshuren": {
     "description": "Use the original Japanese organization name in Japanese; use its romanized name in English, without claiming an official English title."
   },
-  "organizationNisshuren": "日本珠算連盟",
+  "organizationNisshuren": "にっしゅれん",
   "@organizationNisshuren": {
     "description": "Use the original Japanese organization name in Japanese; use its romanized name in English, without claiming an official English title."
   },
-  "organizationFlashAnzan": "日本ﾌﾗｯｼｭ暗算協会",
+  "organizationFlashAnzan": "あんざんきょうかい",
   "@organizationFlashAnzan": {
     "description": "Use the original Japanese organization name in Japanese; its official English name is used in the English locale."
   },
-  "selectorZenshuren": "全珠連",
-  "selectorNisshuren": "日珠連",
-  "selectorFlashAnzan": "協会",
-  "zenshurenOrganizationSubtitle": "全国珠算教育連盟",
+  "selectorZenshuren": "ぜんしゅれん",
+  "selectorNisshuren": "にっしゅれん",
+  "selectorFlashAnzan": "あんざんきょうかい",
+  "zenshurenOrganizationSubtitle": "ぜんこくしゅざんきょういくれんめい",
   "@zenshurenOrganizationSubtitle": {
     "description": "Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle."
   },
-  "nisshurenOrganizationSubtitle": "日本珠算連盟",
+  "nisshurenOrganizationSubtitle": "にほんしゅざんれんめい",
   "@nisshurenOrganizationSubtitle": {
     "description": "Japanese formal organization name corresponding to the English subtitle. The Japanese selector continues to show its existing abbreviated label without a subtitle."
   },
@@ -193,53 +193,53 @@
     "description": "Format an organization subtitle in parentheses beneath its primary selector label.",
     "placeholders": { "subtitle": { "type": "String" } }
   },
-  "kyuGrade": "{grade, plural, other{{grade}級}}",
+  "kyuGrade": "{grade, plural, other{{grade}きゅう}}",
   "@kyuGrade": {
     "description": "Standard kyu grade label.",
     "placeholders": { "grade": { "type": "int" } }
   },
-  "preKyuGrade": "準{grade}級",
+  "preKyuGrade": "じゅん{grade}きゅう",
   "@preKyuGrade": {
     "description": "Preparatory kyu grade label.",
     "placeholders": { "grade": { "type": "int" } }
   },
-  "danGroupGrade": "段位",
-  "danGrade": "{grade, select, 1{初段} 2{二段} 3{三段} 4{四段} 5{五段} 6{六段} 7{七段} 8{八段} 9{九段} 10{十段} other{{grade}段}}",
+  "danGroupGrade": "だん",
+  "danGrade": "{grade, select, 1{しょだん} 2{にだん} 3{さんだん} 4{よんだん} 5{ごだん} 6{ろくだん} 7{ななだん} 8{はちだん} 9{きゅうだん} 10{じゅうだん} other{{grade}だん}}",
   "@danGrade": {
     "description": "Dan grade label. Use the traditional Japanese rank names.",
     "placeholders": { "grade": { "type": "String" } }
   },
-  "rankPreShodan": "準初段",
-  "rankShodan": "初段",
-  "rankPreNidan": "準二段",
-  "rankNidan": "二段",
-  "rankPreSandan": "準三段",
-  "rankSandan": "三段",
-  "rankPreYondan": "準四段",
-  "rankYondan": "四段",
-  "rankPreGodan": "準五段",
-  "rankGodan": "五段",
-  "rankPreRokudan": "準六段",
-  "rankRokudan": "六段",
-  "rankNanadan": "七段",
-  "rankHachidan": "八段",
-  "rankKudan": "九段",
-  "rankJudan": "十段",
-  "paperPractice": "練習",
-  "paperExam": "検定",
-  "mitoriZan": "みとり算",
+  "rankPreShodan": "じゅんしょだん",
+  "rankShodan": "しょだん",
+  "rankPreNidan": "じゅんにだん",
+  "rankNidan": "にだん",
+  "rankPreSandan": "じゅんさんだん",
+  "rankSandan": "さんだん",
+  "rankPreYondan": "じゅんよんだん",
+  "rankYondan": "よんだん",
+  "rankPreGodan": "じゅんごだん",
+  "rankGodan": "ごだん",
+  "rankPreRokudan": "じゅんろくだん",
+  "rankRokudan": "ろくだん",
+  "rankNanadan": "ななだん",
+  "rankHachidan": "はちだん",
+  "rankKudan": "きゅうだん",
+  "rankJudan": "じゅうだん",
+  "paperPractice": "れんしゅう",
+  "paperExam": "けんてい",
+  "mitoriZan": "みとりざん",
   "@mitoriZan": {
     "description": "Compact practice-mode label for Mitorizan (+/−); keep the English term Mitorizan compact."
   },
-  "division": "わり算",
-  "multiplication": "かけ算",
-  "mitoriAnzan": "みとり暗算",
+  "division": "わりざん",
+  "multiplication": "かけざん",
+  "mitoriAnzan": "みとりあんざん",
   "@mitoriAnzan": {
     "description": "Mental-arithmetic version of Mitorizan."
   },
-  "divisionAnzan": "わり暗算",
-  "multiplicationAnzan": "かけ暗算",
-  "flashAnzanSubject": "フラッシュ暗算",
+  "divisionAnzan": "わりあんざん",
+  "multiplicationAnzan": "かけあんざん",
+  "flashAnzanSubject": "フラッシュあんざん",
   "gradeActivity": "{grade}の{activity}",
   "@gradeActivity": {
     "description": "Grade label paired with a practice subject.",
@@ -248,18 +248,18 @@
       "activity": { "type": "String", "example": "みとり算" }
     }
   },
-  "start": "スタート",
-  "timeLimit": "制限時間：{minutes}分",
+  "start": "はじめる",
+  "timeLimit": "せいげんじかん（ふん）：{minutes}",
   "@timeLimit": {
     "description": "Time limit in minutes.",
     "placeholders": { "minutes": { "type": "int" } }
   },
-  "problemCount": "問題数：{count}題",
+  "problemCount": "もんだいのかず：{count}もん",
   "@problemCount": {
     "description": "Number of questions in a practice set.",
     "placeholders": { "count": { "type": "int" } }
   },
-  "pointsEach": "各{points}点 ({maximum}点満点)",
+  "pointsEach": "1もん{points}てん（ぜんぶで{maximum}てん）",
   "@pointsEach": {
     "description": "Points awarded per problem and maximum possible score.",
     "placeholders": {
@@ -267,17 +267,17 @@
       "maximum": { "type": "int" }
     }
   },
-  "passingScore": "合格点：{score}点以上",
+  "passingScore": "ごうかくてん：{score}てんいじょう",
   "@passingScore": {
     "description": "Minimum passing score.",
     "placeholders": { "score": { "type": "int" } }
   },
-  "oneProblemDigits": "一題あたり{range}字",
+  "oneProblemDigits": "1もんのすうじは{range}けた",
   "@oneProblemDigits": {
     "description": "Number of digits in each Mitori-zan problem.",
     "placeholders": { "range": { "type": "String" } }
   },
-  "methodDigits": "{method}あわせて{range}桁",
+  "methodDigits": "{method}をあわせたけたすう：{range}けた",
   "@methodDigits": {
     "description": "Digit range for a multiplication or division method.",
     "placeholders": {
@@ -285,15 +285,15 @@
       "range": { "type": "String" }
     }
   },
-  "jippou": "実法",
+  "jippou": "かけざんのふたつのかず",
   "@jippou": {
     "description": "Abbreviation for the two factors (multiplicand and multiplier) whose digits are counted together."
   },
-  "houshou": "法商",
+  "houshou": "わりざんのわるかずとこたえ",
   "@houshou": {
     "description": "Abbreviation for divisor and quotient digits counted together."
   },
-  "mitorizanExplanation": "Mitorizan (+/−)：縦に並んだ数を、足し算・引き算を交互に使って計算します。",
+  "mitorizanExplanation": "みとりざんは、たてにならんだかずを、たしたりひいたりをこうごにしてけいさんするよ。",
   "@mitorizanExplanation": {
     "description": "Inline help gloss: explain that Mitorizan is a vertical sequence of addition and subtraction; this appears in an existing details dialog."
   },
