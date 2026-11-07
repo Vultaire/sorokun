@@ -21,6 +21,74 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Sorokun: soroban and mental-arithmetic practice.">
+  <meta name="theme-color" content="#ffffff">
+
+  <style>
+    html {
+      color-scheme: light dark;
+      --sorokun-page-background: Canvas;
+      background-color: var(--sorokun-page-background);
+    }
+
+    html[data-sorokun-theme="light"] {
+      color-scheme: light;
+    }
+
+    html[data-sorokun-theme="dark"] {
+      color-scheme: dark;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background-color: var(--sorokun-page-background, Canvas);
+    }
+  </style>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      const updateThemeColor = () => {
+        if (themeColor) {
+          themeColor.content = getComputedStyle(root).backgroundColor;
+        }
+      };
+
+      let savedTheme = 'system';
+      try {
+        const storedTheme = localStorage.getItem('flutter.theme_mode');
+        if (storedTheme !== null) {
+          savedTheme = JSON.parse(storedTheme);
+        }
+      } catch (_) {
+        // Keep the system color scheme if browser storage is unavailable.
+      }
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        root.dataset.sorokunTheme = savedTheme;
+      }
+
+      window.sorokunSetDocumentTheme = (brightness, backgroundColor) => {
+        root.dataset.sorokunTheme = brightness;
+        root.style.setProperty('--sorokun-page-background', backgroundColor);
+        updateThemeColor();
+      };
+
+      const systemScheme = matchMedia('(prefers-color-scheme: dark)');
+      const updateSystemThemeColor = () => {
+        if (!root.dataset.sorokunTheme) {
+          updateThemeColor();
+        }
+      };
+      if (systemScheme.addEventListener) {
+        systemScheme.addEventListener('change', updateSystemThemeColor);
+      } else {
+        systemScheme.addListener(updateSystemThemeColor);
+      }
+      updateThemeColor();
+    })();
+  </script>
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">

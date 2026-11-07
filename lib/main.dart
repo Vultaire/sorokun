@@ -25,6 +25,9 @@ import 'package:soroban_app/screens/settings.dart';
 import 'package:soroban_app/screens/welcome_screen.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
+import 'platform/web_document_theme_stub.dart'
+    if (dart.library.js_interop) 'platform/web_document_theme_web.dart'
+    as web_document_theme;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -140,8 +143,9 @@ class DebugMockData {
   }
 }
 
-class _AbacusAppState extends State<AbacusApp> {
+class _AbacusAppState extends State<AbacusApp> with WidgetsBindingObserver {
   late final AppController _appController = widget.appController;
+  String? _lastDocumentTheme;
   late final _router = GoRouter(
     initialLocation: _appController.shouldShowWelcomeScreen
         ? '/welcome'
@@ -279,6 +283,7 @@ class _AbacusAppState extends State<AbacusApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _appController.addListener(_onThemeChanged);
   }
 
@@ -287,7 +292,15 @@ class _AbacusAppState extends State<AbacusApp> {
   }
 
   @override
+  void didChangePlatformBrightness() {
+    if (_appController.themeMode == ThemeMode.system) {
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _appController.removeListener(_onThemeChanged);
     _appController.dispose();
     super.dispose();
@@ -577,6 +590,30 @@ class _AbacusAppState extends State<AbacusApp> {
       );
     }
 
+    final lightTheme = buildTheme(Brightness.light);
+    final darkTheme = buildTheme(Brightness.dark);
+    final documentBrightness = switch (_appController.themeMode) {
+      ThemeMode.light => Brightness.light,
+      ThemeMode.dark => Brightness.dark,
+      ThemeMode.system =>
+        WidgetsBinding.instance.platformDispatcher.platformBrightness,
+    };
+    final documentTheme = documentBrightness == Brightness.dark
+        ? darkTheme
+        : lightTheme;
+    final documentBackgroundColor = _cssHexColor(
+      documentTheme.scaffoldBackgroundColor,
+    );
+    final documentThemeKey =
+        '${documentBrightness.name}:$documentBackgroundColor';
+    if (_lastDocumentTheme != documentThemeKey) {
+      _lastDocumentTheme = documentThemeKey;
+      web_document_theme.synchronizeDocumentTheme(
+        brightness: documentBrightness.name,
+        backgroundColor: documentBackgroundColor,
+      );
+    }
+
     return InheritedAppController(
       controller: _appController,
       child: MaterialApp.router(
@@ -589,11 +626,14 @@ class _AbacusAppState extends State<AbacusApp> {
         localeResolutionCallback: (locale, supportedLocales) =>
             resolveAppLocale(locale),
         themeMode: _appController.themeMode,
-        theme: buildTheme(Brightness.light),
-        darkTheme: buildTheme(Brightness.dark),
+        theme: lightTheme,
+        darkTheme: darkTheme,
       ),
     );
   }
+
+  String _cssHexColor(Color color) =>
+      '#${(color.toARGB32() & 0x00ffffff).toRadixString(16).padLeft(6, '0')}';
 }
 
 String _safeWelcomeDestination(String? destination) {
