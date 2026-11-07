@@ -696,51 +696,51 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get appTitle => 'そろくん！';
 
   @override
-  String get languageLabel => '言語 / Language';
+  String get languageLabel => 'ことば';
 
   @override
-  String get settingsTitle => 'アプリ設定';
+  String get settingsTitle => 'アプリのせってい';
 
   @override
-  String get japaneseLanguage => '日本語';
+  String get japaneseLanguage => 'ふつうのにほんご';
 
   @override
-  String get englishLanguage => 'English';
+  String get englishLanguage => 'えいご';
 
   @override
   String get englishTranslationDisclosure =>
-      '英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。';
+      'えいごのひょうじは、AIにてつだってもらってつくりました。もとのことばはにほんごです。まちがいがあれば、おしえてください。';
 
   @override
-  String get gradeReferenceTitle => '級位・段位の表示について';
+  String get gradeReferenceTitle => 'きゅうやだんのひょうじについて';
 
   @override
   String get gradeReferenceDisclosure =>
-      '本フォークのそろくん！は独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携関係はなく、各団体から公認・推奨を受けたものでもありません。アプリ内の級位・段位等は練習用の目安であり、各団体の最新の基準や検定要件と異なる場合があります。最新の要件は各団体にご確認ください。';
+      'このアプリは、ぜんこくしゅざんきょういくれんめい、にほんしゅざんれんめい、にほんフラッシュあんざんきょうかいのこうしきなプログラムではありません。これらのだんたいとはていけいしておらず、こうにんやすいせんもうけていません。アプリにでてくるきゅうやだんは、れんしゅうのめやすです。だんたいのあたらしいきまりや、けんていでひつようなこととちがうばあいがあります。あたらしいけんていのきまりは、それぞれのだんたいにたしかめてください。';
 
   @override
-  String get close => '閉じる';
+  String get close => 'とじる';
 
   @override
-  String get welcomeJapaneseLanguageHeading => '日本語';
+  String get welcomeJapaneseLanguageHeading => 'にほんご';
 
   @override
-  String get welcomeJapaneseTitle => 'そろくん！のフォークをお試しいただき、ありがとうございます。';
+  String get welcomeJapaneseTitle => 'そろくん！をもとにつくったアプリをためしてくれて、ありがとうございます。';
 
   @override
   String get welcomeJapaneseIntro =>
-      'Chet Linさんが作ったオリジナル版は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加することを試みました。このフォークはその成果です。';
+      'Chet Lin さんがつくったオリジナルばんは、iOS でそろばんをまなぶのに、とてもよいアプリだとおもいました。Web でもつかえるようにして、にほんごをはなさないそろばんのべんきょうをするひとにもつかってもらえるよう、かんたんなえいごのひょうじをつけてみました。このアプリは、そのけっかです。';
 
   @override
-  String get welcomeJapaneseDisclaimerHeading => '団体との関係と級位について';
+  String get welcomeJapaneseDisclaimerHeading => 'だんたいとのかんけいと、きゅうやだんについて';
 
   @override
   String get welcomeJapaneseDisclaimer =>
-      'このフォークは独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携・協力関係もありません。また、公認・推奨も受けていません。オリジナル版もこれらの団体とは公式な関係ではなかったと認識していますが、作者に代わって断言することはできません。\n\n総合種目とフラッシュ暗算の検定モードで選べる級位は、該当する団体の制度をもとにしているようです。フラッシュ暗算のフリーモードは例外で、口数や桁数などを自由に設定して練習できます。これらの級位は、私自身のそろばん学習経験からはおおむね妥当と思われますが、各団体の最新の基準と一つひとつ照合したわけではありません。内容が不完全であったり、現在の検定要件と異なったりする可能性があり、一致を保証するものではありません。現在そろばん教室に通っている方は、ご自身のレベルに適した練習内容について先生にご相談ください。最新の検定要件は各団体にご確認ください。';
+      'このアプリは、ぜんこくしゅざんきょういくれんめい、にほんしゅざんれんめい、にほんフラッシュあんざんきょうかいのこうしきなプログラムではありません。これらのだんたいとていけいやきょうりょくをしておらず、こうにんやすいせんもうけていません。わたしがしるかぎり、もとのそろくん！もこれらのだんたいとこうしきなつながりはなかったようです。ただし、さくしゃにかわって、そうだといいきることはできません。\n\nそうごうしゅもくとフラッシュあんざんのけんていモードでえらべるきゅうは、それぞれのだんたいのきまりをもとにつくられているようです。フラッシュあんざんのフリーモードでは、ひとつのもんだいにかずがいくつでるか、それぞれのかずがなんけたかをじぶんできめて、れんしゅうできます。わたしがそろばんをべんきょうしたけいけんでは、これらのきゅうはだいたいあっているようにおもいますが、だんたいのあたらしいきまりとひとつずつくらべたわけではありません。きゅうのないようがたりなかったり、いまのけんていでひつようなこととちがったりするかもしれません。いまのけんていでひつようなこととおなじだとは、やくそくできません。いまそろばんきょうしつにかよっているひとは、じぶんにあったれんしゅうについて、せんせいにそうだんしてください。さいしんのけんていのきまりは、それぞれのだんたいにたしかめてください。';
 
   @override
   String get welcomeJapaneseClosing =>
-      'このフォークでは、オリジナル版の読み上げ算を削除し、Web対応や英語インターフェースなどを追加しました。無料の練習用アプリとして提供しており、資格の認定や検定の合格を保証するものではありません。\n\nお楽しみいただければ幸いです。原作者のChet Linさん、素晴らしいアプリをありがとうございます。\n\n— Paul Goins (Vultaire)';
+      'このアプリでは、オリジナルばんのよみあげざんをなくし、Web でもつかえるようにして、えいごのひょうじなどをくわえました。むりょうのれんしゅうアプリとしてつかえますが、しかくがとれることや、けんていにごうかくすることをやくそくするものではありません。\n\nたのしんでもらえたらうれしいです。もとのアプリをつくった Chet Lin さん、すばらしいアプリをありがとうございます。\n\n— Paul Goins (Vultaire)';
 
   @override
   String get welcomeEnglishLanguageHeading => 'English';
@@ -765,31 +765,31 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
       'This fork removes the original read-aloud exercises and adds web support, a basic English interface, and other features. It is offered as a free study aid, not as a certification tool or a guarantee of exam readiness.\n\nI hope you enjoy it. To Chet Lin, the original author: thank you for an excellent program.\n\n— Paul Goins (Vultaire)';
 
   @override
-  String get welcomeDoNotShowAgain => '次回から表示しない / Do not show this again';
+  String get welcomeDoNotShowAgain => 'つぎからはひょうじしない';
 
   @override
   String get welcomeOk => 'OK';
 
   @override
-  String get welcomeReplayButton => 'Show welcome screen again';
+  String get welcomeReplayButton => 'はじめのあんないをもういちどみる';
 
   @override
-  String get keypadPosition => 'テンキーの配置';
+  String get keypadPosition => 'すうじキーのいち';
 
   @override
-  String get leftHanded => '左利き';
+  String get leftHanded => 'ひだりきき';
 
   @override
-  String get rightHanded => '右利き';
+  String get rightHanded => 'みぎきき';
 
   @override
-  String get keypadLayout => 'キーレイアウト';
+  String get keypadLayout => 'すうじキーのならびかた';
 
   @override
-  String get screenBrightness => '画面の明るさ';
+  String get screenBrightness => 'がめんのあかるさ';
 
   @override
-  String get automatic => '自動';
+  String get automatic => 'じどう';
 
   @override
   String get theme => 'テーマ';
@@ -917,44 +917,43 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get credits => 'クレジット';
 
   @override
-  String get creditsDevelopment => '開発';
+  String get creditsDevelopment => 'かいはつ';
 
   @override
-  String get developerRole => '開発者';
+  String get developerRole => 'かいはつしゃ';
 
   @override
-  String get originalSourceIntro => '元のそろくんのソースコードはこちらで公開されています：';
+  String get originalSourceIntro => 'もとのそろくんのソースコードはこちら：';
 
   @override
-  String get forkSourceIntro => 'このフォークのソースコード：';
+  String get forkSourceIntro => 'このアプリのソースコード：';
 
   @override
   String get forkModificationNotice =>
-      '原作: Chet Lin。Vultaire による改変版です（2026-11-01）。読み上げ算と VOICEVOX を削除し、Web ビルド対応を行いました。';
+      'もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです（2026-11-01）。よみあげざんと VOICEVOX をなくし、Web でもうごくようにしました。';
 
   @override
   String get forkDevelopmentDisclosure =>
-      'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。';
+      'このアプリは、Vultaire のしじのもと、AIにてつだってもらってつくりました。';
 
   @override
-  String get localizationUpdateNotice =>
-      '日本語・English インターフェースのローカライズを2026-11-02に追加しました。';
+  String get localizationUpdateNotice => 'にほんごとえいごのひょうじを、2026-11-02についかしました。';
 
   @override
   String get fontCredits => 'フォント';
 
   @override
-  String get abacusBeadFont => 'そろばん玉のフォント';
+  String get abacusBeadFont => 'そろばんのたまのフォント';
 
   @override
-  String get sorobanNumeralFont => '珠算の数字のフォント';
+  String get sorobanNumeralFont => 'そろばんのすうじのフォント';
 
   @override
   String get license => 'ライセンス';
 
   @override
   String get noWarrantyLicenseNotice =>
-      '本ソフトウェアは無保証です。GPL v3.0 の条件に従って再配布・改変できます。ライセンス全文は上記リンクから確認できます。';
+      'このソフトウェアには、どんなほしょうもありません。GPL v3.0 のルールにしたがえば、くばったり、かえたりできます。ライセンスのすべては、うえのリンクでよめます。';
 
   @override
   String get exitDialogTitle => '終了しますか？';
