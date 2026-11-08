@@ -1276,7 +1276,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get repeatProblem => 'もういっかい';
 
   @override
-  String get nextProblem => 'つぎのもんだい';
+  String get nextProblem => 'つぎへ';
 
   @override
   String get grade => 'こたえあわせ';
