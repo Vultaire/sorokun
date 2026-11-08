@@ -104,15 +104,52 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('練習'), findsOneWidget);
-    expect(
-      tester.widgetList<StrokeText>(find.byType(StrokeText)).map((e) => e.text),
-      contains('ﾊﾝｽﾞ\nﾌﾘｰ'),
+    final homeTitles = tester.widgetList<StrokeText>(find.byType(StrokeText));
+    expect(homeTitles.map((title) => title.text), contains('ﾊﾝｽﾞ\nﾌﾘｰ'));
+    final handsFreeTitle = homeTitles.firstWhere(
+      (title) => title.text == 'ﾊﾝｽﾞ\nﾌﾘｰ',
     );
+    expect(handsFreeTitle.textStyle?.fontSize, 42);
+    expect(handsFreeTitle.strokeWidth, 7);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(const SizedBox.shrink());
     tester.view.resetPhysicalSize();
     tester.view.resetDevicePixelRatio();
+  });
+
+  testWidgets('Kana home titles use compact type to keep labels legible', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      _localizedApp(
+        const HomePage(),
+        locale: const Locale.fromSubtags(
+          languageCode: 'ja',
+          scriptCode: 'Kana',
+        ),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final kanaTitles = tester
+        .widgetList<StrokeText>(find.byType(StrokeText))
+        .toList();
+    expect(kanaTitles.map((title) => title.text), contains('そうごう\nれんしゅう'));
+    expect(kanaTitles.map((title) => title.text), contains('フラッシュ\nあんざん'));
+    expect(
+      kanaTitles.every((title) => title.textStyle?.fontSize == 24),
+      isTrue,
+    );
+    expect(kanaTitles.every((title) => title.strokeWidth == 4), isTrue);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Japanese setup uses the concise activity labels', (

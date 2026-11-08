@@ -282,7 +282,9 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isJapanese = Localizations.localeOf(context).languageCode == 'ja';
+    final locale = Localizations.localeOf(context);
+    final isJapanese = locale.languageCode == 'ja';
+    final isKana = locale.scriptCode?.toLowerCase() == 'kana';
     final title = [
       titleLine1,
       titleLine2,
@@ -331,13 +333,16 @@ class _MenuRow extends StatelessWidget {
                       text: title,
                       textAlign: TextAlign.center,
                       textStyle: TextStyle(
-                        fontSize: isJapanese ? 42 : 24,
+                        // Kana labels need a smaller size to avoid wrapping
+                        // each long phrase into extra lines in the narrow title
+                        // area. Keep standard Japanese and English unchanged.
+                        fontSize: isKana ? 24 : (isJapanese ? 42 : 24),
                         fontFamily: 'mPlus',
                         height: 1.05,
                         color: Colors.white,
                       ),
                       strokeColor: titleColor,
-                      strokeWidth: isJapanese ? 7 : 4,
+                      strokeWidth: isJapanese && !isKana ? 7 : 4,
                     ),
                   ),
                 ),
