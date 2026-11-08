@@ -732,11 +732,17 @@ class _KyuuiSelectorState extends State<KyuuiSelector> {
                 return Opacity(
                   opacity: isFocused ? 1.0 : 0.5,
                   child: Center(
-                    child: Text(
-                      widget.kyuuiList[index].localizedLabel(
-                        AppLocalizations.of(context),
+                    // Scale long grade labels (kana spellings wrap at phone
+                    // widths) to fit the carousel page instead of letting the
+                    // overflow get clipped by the viewport.
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        widget.kyuuiList[index].localizedLabel(
+                          AppLocalizations.of(context),
+                        ),
+                        style: Theme.of(context).textTheme.displaySmall,
                       ),
-                      style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ),
                 );

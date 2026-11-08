@@ -132,12 +132,18 @@ class _FlashFreeMenuPageState extends State<FlashFreeMenuPage> with RouteAware {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isKana =
+        Localizations.localeOf(context).scriptCode?.toLowerCase() == 'kana';
     final int hideDuration = (_secondsPerProblem / (2.5 * _kuchi - 1) * 1000)
         .round();
     final int showDuration = (1.5 * hideDuration).round();
 
     return Scaffold(
-      appBar: CustomAppBar(title: l10n.flashFreeTitle, context: context),
+      appBar: CustomAppBar(
+        title: l10n.flashFreeTitle,
+        titleFontSize: isKana ? 22 : null,
+        context: context,
+      ),
 
       body: SafeArea(
         child: Center(

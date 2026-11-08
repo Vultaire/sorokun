@@ -11,12 +11,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required BuildContext context,
     this.actionWidget,
     this.actionPadding = const EdgeInsets.only(right: 10.0),
+    this.titleFontSize,
     this.black = false,
     this.onBackPressed,
     this.thresholdHeight = 600.0,
   }) : isCompact = _checkIsCompact(context, thresholdHeight);
 
   final String title;
+  final double? titleFontSize;
   final Widget? actionWidget;
   final EdgeInsetsGeometry actionPadding;
   final VoidCallback? onBackPressed;
@@ -39,7 +41,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final double iconSize = isCompact ? 16.0 : 20.0;
-    final double fontSize = isCompact ? 14.0 : 22.0;
+    final double fontSize = isCompact ? 14.0 : (titleFontSize ?? 22.0);
+    final actionExtent = actionWidget == null
+        ? 0.0
+        : height + actionPadding.resolve(Directionality.of(context)).horizontal;
+    final reservedExtent = actionExtent > height ? actionExtent : height;
+    // The action widget is overlaid on the AppBar, so reserve matching space
+    // on both sides before scaling an explicitly-sized title to fit.
+    final fittedTitleWidth =
+        (MediaQuery.sizeOf(context).width - reservedExtent * 2)
+            .clamp(0.0, double.infinity)
+            .toDouble();
     final backgroundColor = black ? Colors.black : theme.colorScheme.surface;
     final foregroundColor = black ? Colors.white : theme.colorScheme.onSurface;
     final borderColor = black
@@ -67,15 +79,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               centerTitle: true,
               titleSpacing: 0,
               iconTheme: IconThemeData(color: foregroundColor, size: iconSize),
-              title: Text(
-                title,
-                style: TextStyle(
-                  color: foregroundColor,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: -0.2,
-                ),
-              ),
+              title: titleFontSize == null
+                  ? Text(
+                      title,
+                      style: TextStyle(
+                        color: foregroundColor,
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
+                      ),
+                    )
+                  : SizedBox(
+                      width: fittedTitleWidth,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            color: foregroundColor,
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ),
+                    ),
               leading: IconButton(
                 padding: EdgeInsets.zero,
                 constraints: BoxConstraints(

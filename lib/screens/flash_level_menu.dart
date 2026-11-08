@@ -113,9 +113,13 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
+    final isKana = locale.scriptCode?.toLowerCase() == 'kana';
+    final isNarrowKana = isKana && MediaQuery.sizeOf(context).width < 340;
     return Scaffold(
       appBar: CustomAppBar(
         title: l10n.flashExamTitle,
+        titleFontSize: isKana ? 18 : null,
         context: context,
         actionWidget: const GradeReferenceInfoButton(),
       ),
@@ -153,8 +157,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                         },
                       );
 
-                      final isJapanese =
-                          Localizations.localeOf(context).languageCode == 'ja';
+                      final isJapanese = locale.languageCode == 'ja';
                       final denominationOptions = [
                         (
                           KyuuiDenomination.zsFlash,
@@ -177,8 +180,15 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                           LabeledSlidingSegmentedControl<KyuuiDenomination>(
                             groupValue: _kyuuiDenomination,
                             options: denominationOptions,
-                            horizontalPadding: isJapanese ? 16 : 8,
+                            horizontalPadding: isKana
+                                ? 8
+                                : (isJapanese ? 16 : 8),
                             verticalPadding: isJapanese ? 16 : 8,
+                            labelStyle: isKana
+                                ? isNarrowKana
+                                      ? Theme.of(context).textTheme.titleSmall
+                                      : Theme.of(context).textTheme.titleMedium
+                                : null,
                             onValueChanged: (value) {
                               setState(() {
                                 _kyuuiDenomination = value;
@@ -207,6 +217,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                   child: FlashInfoDialog(
                                     selectedLevel: _kyuui.flash!,
                                     isPortrait: isPortrait,
+                                    isKana: isKana,
                                     examDisplayString: l10n.gradeActivity(
                                       _kyuui.localizedLabel(l10n),
                                       l10n.flashAnzanSubject,
@@ -237,6 +248,7 @@ class _FlashLevelMenuPageState extends State<FlashLevelMenuPage> {
                                             child: FlashInfoDialog(
                                               selectedLevel: _kyuui.flash!,
                                               isPortrait: isPortrait,
+                                              isKana: isKana,
                                               examDisplayString: l10n
                                                   .gradeActivity(
                                                     _kyuui.localizedLabel(l10n),
@@ -269,11 +281,13 @@ class FlashInfoDialog extends StatelessWidget {
     super.key,
     required this.selectedLevel,
     required this.isPortrait,
+    required this.isKana,
     required this.examDisplayString,
     required this.savePrefs,
   });
   final FlashLevel selectedLevel;
   final bool isPortrait;
+  final bool isKana;
   final String examDisplayString;
   final VoidCallback savePrefs;
 
@@ -293,7 +307,20 @@ class FlashInfoDialog extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final infoTextStyle = textTheme.titleLarge;
+    final isCompactKanaPortrait =
+        isKana && isPortrait && MediaQuery.sizeOf(context).width < 360;
+    final infoTextStyle = isCompactKanaPortrait
+        ? textTheme.titleMedium
+        : textTheme.titleLarge;
+
+    Widget stat(String value, String unit) {
+      final cell = statCell(context, value, unit);
+      return isCompactKanaPortrait
+          ? Flexible(
+              child: FittedBox(fit: BoxFit.scaleDown, child: cell),
+            )
+          : cell;
+    }
 
     return Material(
       color: colorScheme.surfaceContainerLow,
@@ -308,14 +335,14 @@ class FlashInfoDialog extends StatelessWidget {
           children: [
             Flexible(
               child: SizedBox(
-                width: isPortrait ? 500 : 700,
+                width: isCompactKanaPortrait ? 280 : (isPortrait ? 500 : 700),
                 child: FittedBox(
                   fit: .contain,
                   child: Column(
                     spacing: 16,
                     children: [
                       SizedBox(
-                        width: 300,
+                        width: isCompactKanaPortrait ? 280 : 300,
                         child: FittedBox(
                           fit: .contain,
                           child: Text(
@@ -332,29 +359,27 @@ class FlashInfoDialog extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: SizedBox(
-                            width: isPortrait ? 200 : 500,
+                            width: isCompactKanaPortrait
+                                ? 260
+                                : (isPortrait ? 200 : 500),
                             child: Flex(
-                              direction: isPortrait ? .vertical : .horizontal,
+                              direction: isPortrait && !isCompactKanaPortrait
+                                  ? .vertical
+                                  : .horizontal,
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                statCell(
+                                stat('$digits', l10n.digitsUnit(digits)),
+                                divider(
                                   context,
-                                  '$digits',
-                                  l10n.digitsUnit(digits),
+                                  isPortrait && !isCompactKanaPortrait,
                                 ),
-                                divider(context, isPortrait),
-                                statCell(
+                                stat('$kuchi', l10n.kuchiUnit(kuchi)),
+                                divider(
                                   context,
-                                  '$kuchi',
-                                  l10n.kuchiUnit(kuchi),
+                                  isPortrait && !isCompactKanaPortrait,
                                 ),
-                                divider(context, isPortrait),
-                                statCell(
-                                  context,
-                                  '$secondsPerProblem',
-                                  l10n.secondsUnit,
-                                ),
+                                stat('$secondsPerProblem', l10n.secondsUnit),
                               ],
                             ),
                           ),
