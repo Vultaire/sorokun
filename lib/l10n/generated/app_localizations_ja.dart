@@ -728,25 +728,25 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get close => 'とじる';
 
   @override
-  String get welcomeJapaneseLanguageHeading => 'にほんご';
+  String get welcomeJapaneseLanguageHeading => '日本語';
 
   @override
-  String get welcomeJapaneseTitle => 'そろくん！をもとにつくったアプリをためしてくれて、ありがとうございます。';
+  String get welcomeJapaneseTitle => 'そろくん！のフォークをお試しいただき、ありがとうございます。';
 
   @override
   String get welcomeJapaneseIntro =>
-      'Chet Lin さんがつくったオリジナルばんは、iOS でそろばんをまなぶのに、とてもよいアプリだとおもいました。Web でもつかえるようにして、にほんごをはなさないそろばんのべんきょうをするひとにもつかってもらえるよう、かんたんなえいごのひょうじをつけてみました。このアプリは、そのけっかです。';
+      'Chet Linさんが作ったオリジナル版は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。Webでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加することを試みました。このフォークはその成果です。';
 
   @override
-  String get welcomeJapaneseDisclaimerHeading => 'だんたいとのかんけいと、きゅうやだんについて';
+  String get welcomeJapaneseDisclaimerHeading => '団体との関係と級位について';
 
   @override
   String get welcomeJapaneseDisclaimer =>
-      'このアプリは、ぜんこくしゅざんきょういくれんめい、にほんしゅざんれんめい、にほんフラッシュあんざんきょうかいのこうしきなプログラムではありません。これらのだんたいとていけいやきょうりょくをしておらず、こうにんやすいせんもうけていません。わたしがしるかぎり、もとのそろくん！もこれらのだんたいとこうしきなつながりはなかったようです。ただし、さくしゃにかわって、そうだといいきることはできません。\n\nそうごうしゅもくとフラッシュあんざんのけんていモードでえらべるきゅうは、それぞれのだんたいのきまりをもとにつくられているようです。フラッシュあんざんのフリーモードでは、ひとつのもんだいにかずがいくつでるか、それぞれのかずがなんけたかをじぶんできめて、れんしゅうできます。わたしがそろばんをべんきょうしたけいけんでは、これらのきゅうはだいたいあっているようにおもいますが、だんたいのあたらしいきまりとひとつずつくらべたわけではありません。きゅうのないようがたりなかったり、いまのけんていでひつようなこととちがったりするかもしれません。いまのけんていでひつようなこととおなじだとは、やくそくできません。いまそろばんきょうしつにかよっているひとは、じぶんにあったれんしゅうについて、せんせいにそうだんしてください。さいしんのけんていのきまりは、それぞれのだんたいにたしかめてください。';
+      'このフォークは独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携・協力関係もありません。また、公認・推奨も受けていません。オリジナル版もこれらの団体とは公式な関係ではなかったと認識していますが、作者に代わって断言することはできません。\n\n総合種目とフラッシュ暗算の検定モードで選べる級位は、該当する団体の制度をもとにしているようです。フラッシュ暗算のフリーモードは例外で、口数や桁数などを自由に設定して練習できます。これらの級位は、私自身のそろばん学習経験からはおおむね妥当と思われますが、各団体の最新の基準と一つひとつ照合したわけではありません。内容が不完全であったり、現在の検定要件と異なったりする可能性があり、一致を保証するものではありません。現在そろばん教室に通っている方は、ご自身のレベルに適した練習内容について先生にご相談ください。最新の検定要件は各団体にご確認ください。';
 
   @override
   String get welcomeJapaneseClosing =>
-      'このアプリでは、オリジナルばんのよみあげざんをなくし、Web でもつかえるようにして、えいごのひょうじなどをくわえました。むりょうのれんしゅうアプリとしてつかえますが、しかくがとれることや、けんていにごうかくすることをやくそくするものではありません。\n\nたのしんでもらえたらうれしいです。もとのアプリをつくった Chet Lin さん、すばらしいアプリをありがとうございます。\n\n— Paul Goins (Vultaire)';
+      'このフォークでは、オリジナル版の読み上げ算を削除し、Web対応や英語インターフェースなどを追加しました。無料の練習用アプリとして提供しており、資格の認定や検定の合格を保証するものではありません。\n\nお楽しみいただければ幸いです。原作者のChet Linさん、素晴らしいアプリをありがとうございます。\n\n— Paul Goins (Vultaire)';
 
   @override
   String get welcomeEnglishLanguageHeading => 'English';
@@ -771,7 +771,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
       'This fork removes the original read-aloud exercises and adds web support, a basic English interface, and other features. It is offered as a free study aid, not as a certification tool or a guarantee of exam readiness.\n\nI hope you enjoy it. To Chet Lin, the original author: thank you for an excellent program.\n\n— Paul Goins (Vultaire)';
 
   @override
-  String get welcomeDoNotShowAgain => 'つぎからはひょうじしない';
+  String get welcomeDoNotShowAgain => '次回から表示しない / Do not show this again';
 
   @override
   String get welcomeOk => 'OK';

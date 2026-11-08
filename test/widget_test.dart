@@ -196,38 +196,43 @@ void main() {
     }
   });
 
-  test(
-    'Kana ARB string values contain no kanji, including English welcome',
-    () {
-      final translations =
-          jsonDecode(File('lib/l10n/app_ja_Kana.arb').readAsStringSync())
-              as Map<String, dynamic>;
-      final strings = translations.entries
-          .where((entry) => !entry.key.startsWith('@') && entry.value is String)
-          .toList();
+  test('Kana ARB has no kanji except for the unchanged adult welcome copy', () {
+    final translations =
+        jsonDecode(File('lib/l10n/app_ja_Kana.arb').readAsStringSync())
+            as Map<String, dynamic>;
+    final standardJapanese =
+        jsonDecode(File('lib/l10n/app_ja.arb').readAsStringSync())
+            as Map<String, dynamic>;
+    const adultWelcomeKeys = {
+      'welcomeJapaneseLanguageHeading',
+      'welcomeJapaneseTitle',
+      'welcomeJapaneseIntro',
+      'welcomeJapaneseDisclaimerHeading',
+      'welcomeJapaneseDisclaimer',
+      'welcomeJapaneseClosing',
+      'welcomeDoNotShowAgain',
+    };
+    final strings = translations.entries
+        .where((entry) => !entry.key.startsWith('@') && entry.value is String)
+        .toList();
 
-      expect(strings, isNotEmpty);
-      for (final entry in strings) {
-        expect(
-          _containsKanji(entry.value as String),
-          isFalse,
-          reason: entry.key,
-        );
+    expect(strings, isNotEmpty);
+    for (final entry in strings) {
+      if (adultWelcomeKeys.contains(entry.key)) {
+        expect(entry.value, standardJapanese[entry.key], reason: entry.key);
+        continue;
       }
+      expect(_containsKanji(entry.value as String), isFalse, reason: entry.key);
+    }
 
-      final englishWelcome = strings.where(
-        (entry) => entry.key.startsWith('welcomeEnglish'),
-      );
-      expect(englishWelcome, isNotEmpty);
-      for (final entry in englishWelcome) {
-        expect(
-          _containsKanji(entry.value as String),
-          isFalse,
-          reason: entry.key,
-        );
-      }
-    },
-  );
+    final englishWelcome = strings.where(
+      (entry) => entry.key.startsWith('welcomeEnglish'),
+    );
+    expect(englishWelcome, isNotEmpty);
+    for (final entry in englishWelcome) {
+      expect(_containsKanji(entry.value as String), isFalse, reason: entry.key);
+    }
+  });
 
   testWidgets('welcome screen presents Japanese before English', (
     WidgetTester tester,
