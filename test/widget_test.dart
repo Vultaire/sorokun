@@ -41,6 +41,16 @@ bool _containsKanji(String text) => text.runes.any((codePoint) {
       codePoint == 0x3006; // 〆
 });
 
+void _expectStableLanguageOptionLabels(WidgetTester tester) {
+  // These self-names stay fixed even when the selected UI language changes.
+  expect(find.text('日本語'), findsOneWidget);
+  expect(find.text('にほんご'), findsOneWidget);
+  expect(find.text('English'), findsOneWidget);
+  expect(find.text('Kana'), findsNothing);
+  expect(find.text('かな'), findsNothing);
+  expect(find.text('えいご'), findsNothing);
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -528,9 +538,10 @@ void main() {
       AppLanguage.japaneseKana,
       AppLanguage.english,
     ]);
+    _expectStableLanguageOptionLabels(tester);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('かな'));
+    await tester.tap(find.text('にほんご'));
     await tester.pumpAndSettle();
     expect(controller.language, AppLanguage.japaneseKana);
     expect(
@@ -542,14 +553,15 @@ void main() {
     languageControl = tester
         .widget<LabeledSlidingSegmentedControl<AppLanguage>>(selector);
     expect(languageControl.groupValue, AppLanguage.japaneseKana);
-    expect(find.text('にほんご'), findsOneWidget);
+    _expectStableLanguageOptionLabels(tester);
 
-    await tester.tap(find.text('えいご'));
+    await tester.tap(find.text('English'));
     await tester.pumpAndSettle();
     expect(controller.language, AppLanguage.english);
     expect(controller.locale, const Locale('en'));
     prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('ui_language'), 'english');
+    _expectStableLanguageOptionLabels(tester);
 
     await tester.tap(find.text('日本語'));
     await tester.pumpAndSettle();
@@ -557,6 +569,7 @@ void main() {
     expect(controller.locale, const Locale('ja'));
     prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('ui_language'), 'japanese');
+    _expectStableLanguageOptionLabels(tester);
     expect(tester.takeException(), isNull);
 
     controller.dispose();
@@ -596,12 +609,13 @@ void main() {
       AppLanguage.japaneseKana,
       AppLanguage.english,
     ]);
+    _expectStableLanguageOptionLabels(tester);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('かな'));
+    await tester.tap(find.text('にほんご'));
     await tester.pumpAndSettle();
     expect(controller.language, AppLanguage.japaneseKana);
-    expect(find.text('にほんご'), findsOneWidget);
+    _expectStableLanguageOptionLabels(tester);
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('ui_language'), 'japaneseKana');
     expect(tester.takeException(), isNull);
@@ -644,6 +658,7 @@ void main() {
       AppLanguage.japaneseKana,
       AppLanguage.english,
     ]);
+    _expectStableLanguageOptionLabels(tester);
     expect(tester.takeException(), isNull);
 
     controller.dispose();

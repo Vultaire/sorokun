@@ -110,10 +110,13 @@ class ColorSchemeSettingsPage extends StatelessWidget {
               builder: (context, constraints) {
                 final useVerticalLayout =
                     isPortrait || constraints.maxWidth < 760;
-                final languageOptions = [
-                  (AppLanguage.japanese, l10n.japaneseLanguage),
-                  (AppLanguage.japaneseKana, l10n.kanaJapaneseLanguage),
-                  (AppLanguage.english, l10n.englishLanguage),
+                const languageOptions = [
+                  // Stable self-names keep the choices distinct regardless of
+                  // the selected UI locale. `日本語` intentionally retains kanji
+                  // here to distinguish it from the Kana option.
+                  (AppLanguage.japanese, '日本語'),
+                  (AppLanguage.japaneseKana, 'にほんご'),
+                  (AppLanguage.english, 'English'),
                 ];
                 final useCompactLanguageControl = constraints.maxWidth < 640;
                 final languageGroup = Column(
