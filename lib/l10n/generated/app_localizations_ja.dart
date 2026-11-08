@@ -1273,96 +1273,96 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get nextProblem => 'つぎのもんだい';
 
   @override
-  String get grade => '採点';
+  String get grade => 'こたえあわせ';
 
   @override
-  String get correct => '正解';
+  String get correct => 'せいかい！';
 
   @override
-  String get incorrect => '不正解';
+  String get incorrect => 'ちがうよ';
 
   @override
-  String get answer => '答え';
+  String get answer => 'こたえ';
 
   @override
-  String get answerTime => '回答タイム';
+  String get answerTime => 'こたえるまでのじかん';
 
   @override
   String answerTimeValue(String time) {
-    return '$time秒';
+    return '$timeびょう';
   }
 
   @override
-  String get time => 'タイム';
+  String get time => 'じかん';
 
   @override
-  String get reviewIncorrect => '間違えた問題を見る';
+  String get reviewIncorrect => 'まちがえたもんだい';
 
   @override
-  String get reviewMistakesButton => '間違えた問題を見る';
+  String get reviewMistakesButton => 'まちがいをみる';
 
   @override
-  String get tryAgain => 'もう一回挑戦する';
+  String get tryAgain => 'もういちどやる';
 
   @override
-  String get returnHome => 'メインメニューに戻る';
+  String get returnHome => 'さいしょのがめんにもどる';
 
   @override
-  String get returnToSettings => '設定画面に戻る';
+  String get returnToSettings => 'せっていにもどる';
 
   @override
   String pointsOutOf(int maximum) {
-    return '$maximum点満点';
+    return 'ぜんぶで$maximumてん';
   }
 
   @override
-  String get pointsUnit => '点';
+  String get pointsUnit => 'てん';
 
   @override
-  String get passed => '合格';
+  String get passed => 'ごうかく！';
 
   @override
-  String get failed => '不合格';
+  String get failed => 'ごうかくできなかった';
 
   @override
-  String get unknownLevelType => 'Unknown level type';
+  String get unknownLevelType => 'しゅもくのしゅるいがわかりません';
 
   @override
-  String get timeUp => '時間切れ！';
+  String get timeUp => 'じかんぎれだよ！';
 
   @override
-  String get practiceComplete => '終了！';
+  String get practiceComplete => 'れんしゅうおしまい！';
 
   @override
-  String get roundingDecimalNotice => '（注意） 小数第3位未満四捨五入。';
+  String get roundingDecimalNotice => '（ちゅうい）しょうすうは2けたまで。3けた目でまるめるよ。';
 
   @override
-  String get roundingIntegerNotice => '（注意） 整数位未満四捨五入。';
+  String get roundingIntegerNotice => '（ちゅうい）こたえは1のくらいにまるめるよ。';
 
   @override
-  String get backspaceSemantics => '末尾の数字を削除（長押しですべて消去）';
+  String get backspaceSemantics => 'さいごのすうじをけす。ながくおすと、こたえをぜんぶけす';
 
   @override
-  String get submitSemantics => '回答を送信';
+  String get submitSemantics => 'こたえをおくる';
 
   @override
-  String get themeColorWheelSemantics => 'テーマカラーを選択';
+  String get themeColorWheelSemantics => 'アプリのいろをえらぶ';
 
   @override
-  String get standardKeypadLayout => '標準のテンキー配列';
+  String get standardKeypadLayout => 'ふつうのすうじキーのならび';
 
   @override
-  String get telephoneKeypadLayout => '電話式のテンキー配列';
+  String get telephoneKeypadLayout => 'でんわしきのすうじキーのならび';
 
   @override
-  String get increaseValue => '値を増やす';
+  String get increaseValue => 'かずをふやす';
 
   @override
-  String get decreaseValue => '値を減らす';
+  String get decreaseValue => 'かずをへらす';
 
   @override
-  String get increaseTime => '表示時間を長くする';
+  String get increaseTime => 'ひょうじじかんをながくする';
 
   @override
-  String get decreaseTime => '表示時間を短くする';
+  String get decreaseTime => 'ひょうじじかんをみじかくする';
 }
