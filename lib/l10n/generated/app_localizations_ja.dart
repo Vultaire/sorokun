@@ -25,6 +25,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get japaneseLanguage => '日本語';
 
   @override
+  String get kanaJapaneseLanguage => 'かな';
+
+  @override
   String get englishLanguage => 'English';
 
   @override
@@ -702,7 +705,10 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get settingsTitle => 'アプリのせってい';
 
   @override
-  String get japaneseLanguage => 'ふつうのにほんご';
+  String get japaneseLanguage => 'にほんご';
+
+  @override
+  String get kanaJapaneseLanguage => 'かな';
 
   @override
   String get englishLanguage => 'えいご';

@@ -4,6 +4,7 @@
   "languageLabel": "言語 / Language",
   "settingsTitle": "アプリ設定",
   "japaneseLanguage": "日本語",
+  "kanaJapaneseLanguage": "かな",
   "englishLanguage": "English",
   "englishTranslationDisclosure": "英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。",
   "gradeReferenceTitle": "級位・段位の表示について",

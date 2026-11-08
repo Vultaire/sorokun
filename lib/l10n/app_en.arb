@@ -4,6 +4,7 @@
   "languageLabel": "言語 / Language",
   "settingsTitle": "Settings",
   "japaneseLanguage": "日本語",
+  "kanaJapaneseLanguage": "Kana",
   "englishLanguage": "English",
   "englishTranslationDisclosure": "English interface translations were prepared with LLM assistance; Japanese is the original text. Corrections are welcome.",
   "gradeReferenceTitle": "About grade references",

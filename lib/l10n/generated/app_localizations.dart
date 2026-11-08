@@ -127,6 +127,12 @@ abstract class AppLocalizations {
   /// **'日本語'**
   String get japaneseLanguage;
 
+  /// No description provided for @kanaJapaneseLanguage.
+  ///
+  /// In ja, this message translates to:
+  /// **'かな'**
+  String get kanaJapaneseLanguage;
+
   /// No description provided for @englishLanguage.
   ///
   /// In ja, this message translates to:

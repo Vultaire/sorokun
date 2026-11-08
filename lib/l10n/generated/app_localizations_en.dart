@@ -25,6 +25,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get japaneseLanguage => '日本語';
 
   @override
+  String get kanaJapaneseLanguage => 'Kana';
+
+  @override
   String get englishLanguage => 'English';
 
   @override

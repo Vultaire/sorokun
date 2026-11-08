@@ -9,6 +9,8 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
     required this.groupValue,
     required this.options,
     required this.onValueChanged,
+    this.proportionalWidth = false,
+    this.labelStyle,
     this.horizontalPadding = 16,
     this.verticalPadding = 16,
   });
@@ -16,6 +18,8 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
   final T groupValue;
   final List<(T value, dynamic label)> options;
   final ValueChanged<T> onValueChanged;
+  final bool proportionalWidth;
+  final TextStyle? labelStyle;
   final double horizontalPadding;
   final double verticalPadding;
 
@@ -29,6 +33,7 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
       groupValue: groupValue,
       backgroundColor: colorScheme.surfaceContainer,
       thumbColor: colorScheme.secondaryContainer,
+      proportionalWidth: proportionalWidth,
       children: {
         for (final option in options)
           option.$1: Padding(
@@ -41,6 +46,7 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
               isSelected: option.$1 == groupValue,
               textTheme: textTheme,
               colorScheme: colorScheme,
+              labelStyle: labelStyle,
             ),
           ),
       },
@@ -57,12 +63,15 @@ class LabeledSlidingSegmentedControl<T extends Object> extends StatelessWidget {
     required bool isSelected,
     required TextTheme textTheme,
     required ColorScheme colorScheme,
+    required TextStyle? labelStyle,
   }) {
     final activeColor = isSelected
         ? colorScheme.onSecondaryContainer
         : colorScheme.onSurface;
 
-    final baseStyle = textTheme.headlineSmall!.copyWith(color: activeColor);
+    final baseStyle = (labelStyle ?? textTheme.headlineSmall!).copyWith(
+      color: activeColor,
+    );
 
     if (label is Widget) {
       return IconTheme(

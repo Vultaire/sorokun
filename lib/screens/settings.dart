@@ -42,29 +42,6 @@ class ColorSchemeSettingsPage extends StatelessWidget {
           final isPortrait =
               MediaQuery.orientationOf(context) == Orientation.portrait;
 
-          final languageGroup = Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(l10n.languageLabel, style: textTheme.headlineLarge),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 8,
-                ),
-                child: LabeledSlidingSegmentedControl<AppLanguage>(
-                  groupValue: controller.language == AppLanguage.japaneseKana
-                      ? AppLanguage.japanese
-                      : controller.language,
-                  options: [
-                    (AppLanguage.japanese, l10n.japaneseLanguage),
-                    (AppLanguage.english, l10n.englishLanguage),
-                  ],
-                  onValueChanged: controller.setLanguage,
-                ),
-              ),
-            ],
-          );
-
           final keypadGroup = Column(
             children: [
               Text(l10n.keypadPosition, style: textTheme.headlineLarge),
@@ -133,6 +110,36 @@ class ColorSchemeSettingsPage extends StatelessWidget {
               builder: (context, constraints) {
                 final useVerticalLayout =
                     isPortrait || constraints.maxWidth < 760;
+                final languageOptions = [
+                  (AppLanguage.japanese, l10n.japaneseLanguage),
+                  (AppLanguage.japaneseKana, l10n.kanaJapaneseLanguage),
+                  (AppLanguage.english, l10n.englishLanguage),
+                ];
+                final useCompactLanguageControl = constraints.maxWidth < 640;
+                final languageGroup = Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.languageLabel, style: textTheme.headlineLarge),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      child: LabeledSlidingSegmentedControl<AppLanguage>(
+                        key: const ValueKey('settings-language-selector'),
+                        groupValue: controller.language,
+                        options: languageOptions,
+                        onValueChanged: controller.setLanguage,
+                        proportionalWidth: true,
+                        horizontalPadding: useCompactLanguageControl ? 4 : 16,
+                        verticalPadding: useCompactLanguageControl ? 8 : 16,
+                        labelStyle: useCompactLanguageControl
+                            ? textTheme.titleMedium
+                            : null,
+                      ),
+                    ),
+                  ],
+                );
                 final settingsGroups = Flex(
                   direction: useVerticalLayout
                       ? Axis.vertical
