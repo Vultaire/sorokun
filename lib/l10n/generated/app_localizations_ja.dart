@@ -1311,7 +1311,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get tryAgain => 'もういちどやる';
 
   @override
-  String get returnHome => 'さいしょのがめんにもどる';
+  String get returnHome => 'ホームにもどる';
 
   @override
   String get returnToSettings => 'せっていにもどる';

@@ -393,7 +393,7 @@
   "reviewIncorrect": "まちがえたもんだい",
   "reviewMistakesButton": "まちがいをみる",
   "tryAgain": "もういちどやる",
-  "returnHome": "さいしょのがめんにもどる",
+  "returnHome": "ホームにもどる",
   "returnToSettings": "せっていにもどる",
   "pointsOutOf": "ぜんぶで{maximum}てん",
   "@pointsOutOf": {
