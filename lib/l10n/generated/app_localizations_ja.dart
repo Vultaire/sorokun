@@ -1334,7 +1334,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get practiceComplete => 'れんしゅうおしまい！';
 
   @override
-  String get roundingDecimalNotice => '（ちゅうい）しょうすうは2けたまで。3けた目でまるめるよ。';
+  String get roundingDecimalNotice => '（ちゅうい）しょうすうは2けたまで。3ばんめのけたでまるめるよ。';
 
   @override
   String get roundingIntegerNotice => '（ちゅうい）こたえは1のくらいにまるめるよ。';
