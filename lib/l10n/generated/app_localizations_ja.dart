@@ -261,7 +261,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get localizationUpdateNotice =>
-      '英語・日本語・かな日本語のインターフェースを2026-11-02に追加しました。';
+      '英語・日本語のインターフェースは2026-11-02に、かな日本語モードは2026-11-08に追加しました。';
 
   @override
   String get fontCredits => 'フォント';
@@ -944,7 +944,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String get localizationUpdateNotice =>
-      'えいご・にほんご・かなのひょうじを、2026-11-02についかしました。';
+      'えいご・にほんごのひょうじは2026-11-02に、かなモードは2026-11-08についかしました。';
 
   @override
   String get fontCredits => 'フォント';

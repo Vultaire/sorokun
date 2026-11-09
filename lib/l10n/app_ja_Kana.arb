@@ -153,7 +153,7 @@
   "forkSourceIntro": "このアプリのソースコード：",
   "forkModificationNotice": "もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです（2026-11-09）。\n\n• よみあげざんと VOICEVOX をなくしました。\n• Web たいおうをたしました。\n• えいご・にほんご・かなのひょうじをたしました。\n• ハンズフリーれんしゅうをたしました。\n• PC キーボードでこたえをいれるきのうをたしました。",
   "forkDevelopmentDisclosure": "このアプリは、Vultaire のしじのもと、AIにてつだってもらってつくりました。",
-  "localizationUpdateNotice": "えいご・にほんご・かなのひょうじを、2026-11-02についかしました。",
+  "localizationUpdateNotice": "えいご・にほんごのひょうじは2026-11-02に、かなモードは2026-11-08についかしました。",
   "fontCredits": "フォント",
   "abacusBeadFont": "そろばんのたまのフォント",
   "sorobanNumeralFont": "そろばんのすうじのフォント",
