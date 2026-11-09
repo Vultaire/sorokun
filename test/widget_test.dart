@@ -51,6 +51,16 @@ void _expectStableLanguageOptionLabels(WidgetTester tester) {
   expect(find.text('えいご'), findsNothing);
 }
 
+List<String> _welcomeBlockText(WidgetTester tester, String key) => tester
+    .widgetList<Text>(
+      find.descendant(
+        of: find.byKey(ValueKey(key)),
+        matching: find.byType(Text),
+      ),
+    )
+    .map((widget) => widget.data!)
+    .toList(growable: false);
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -124,25 +134,6 @@ void main() {
         english.localizationAssistanceDisclosure,
         contains('LLM assistance'),
       );
-      for (final localization in [english, japanese, kana]) {
-        expect(
-          localization.welcomeEnglishDisclaimer,
-          contains(
-            'To the best of my knowledge, the original Sorokun! was not officially affiliated with these organizations either.',
-          ),
-        );
-        expect(
-          localization.welcomeEnglishDisclaimer,
-          isNot(contains('though I cannot speak for its author')),
-        );
-      }
-      for (final localization in [english, japanese, kana]) {
-        expect(localization.welcomeJapaneseDisclaimer, contains('認識しています。'));
-        expect(
-          localization.welcomeJapaneseDisclaimer,
-          isNot(contains('作者に代わって断言することはできません')),
-        );
-      }
       for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }
@@ -240,41 +231,78 @@ void main() {
     }
   });
 
-  test('Kana ARB has no kanji except for the unchanged adult welcome copy', () {
+  test('Kana ARB has no kanji except for the bilingual welcome checkbox', () {
     final translations =
         jsonDecode(File('lib/l10n/app_ja_Kana.arb').readAsStringSync())
             as Map<String, dynamic>;
     final standardJapanese =
         jsonDecode(File('lib/l10n/app_ja.arb').readAsStringSync())
             as Map<String, dynamic>;
-    const adultWelcomeKeys = {
-      'welcomeJapaneseLanguageHeading',
-      'welcomeJapaneseTitle',
-      'welcomeJapaneseIntro',
-      'welcomeJapaneseDisclaimerHeading',
-      'welcomeJapaneseDisclaimer',
-      'welcomeJapaneseClosing',
-      'welcomeDoNotShowAgain',
-    };
+    const intentionallyBilingualKeys = {'welcomeDoNotShowAgain'};
     final strings = translations.entries
         .where((entry) => !entry.key.startsWith('@') && entry.value is String)
         .toList();
 
     expect(strings, isNotEmpty);
     for (final entry in strings) {
-      if (adultWelcomeKeys.contains(entry.key)) {
+      if (intentionallyBilingualKeys.contains(entry.key)) {
         expect(entry.value, standardJapanese[entry.key], reason: entry.key);
         continue;
       }
       expect(_containsKanji(entry.value as String), isFalse, reason: entry.key);
     }
+  });
 
-    final englishWelcome = strings.where(
-      (entry) => entry.key.startsWith('welcomeEnglish'),
-    );
-    expect(englishWelcome, isNotEmpty);
-    for (final entry in englishWelcome) {
-      expect(_containsKanji(entry.value as String), isFalse, reason: entry.key);
+  test('welcome copy is not duplicated in locale ARB files', () {
+    const localeFiles = ['app_en.arb', 'app_ja.arb', 'app_ja_Kana.arb'];
+    const welcomeCopyPrefixes = ['welcomeJapanese', 'welcomeEnglish'];
+
+    for (final localeFile in localeFiles) {
+      final translations =
+          jsonDecode(File('lib/l10n/$localeFile').readAsStringSync())
+              as Map<String, dynamic>;
+      final welcomeCopyKeys = translations.keys.where(
+        (key) => welcomeCopyPrefixes.any(key.startsWith),
+      );
+      expect(welcomeCopyKeys, isEmpty, reason: localeFile);
+      expect(translations, contains('welcomeReplayButton'), reason: localeFile);
+    }
+  });
+
+  testWidgets('welcome copy is identical across selected UI locales', (
+    WidgetTester tester,
+  ) async {
+    const locales = [
+      Locale('en'),
+      Locale('ja'),
+      Locale.fromSubtags(languageCode: 'ja', scriptCode: 'Kana'),
+    ];
+    List<String>? canonicalCopy;
+
+    for (final locale in locales) {
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: WelcomeScreen(
+            showDoNotShowAgain: false,
+            onContinue: (_) async {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final copy = [
+        ..._welcomeBlockText(tester, 'welcome-japanese-copy'),
+        ..._welcomeBlockText(tester, 'welcome-english-copy'),
+      ];
+      expect(copy, hasLength(12));
+      if (canonicalCopy == null) {
+        canonicalCopy = copy;
+      } else {
+        expect(copy, canonicalCopy, reason: 'UI locale: $locale');
+      }
     }
   });
 
