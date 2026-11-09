@@ -139,11 +139,11 @@ abstract class AppLocalizations {
   /// **'English'**
   String get englishLanguage;
 
-  /// No description provided for @englishTranslationDisclosure.
+  /// No description provided for @localizationAssistanceDisclosure.
   ///
   /// In ja, this message translates to:
-  /// **'英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。'**
-  String get englishTranslationDisclosure;
+  /// **'一部のインターフェースのローカライズにLLMを利用しています。翻訳に誤りがあれば、ご指摘ください。'**
+  String get localizationAssistanceDisclosure;
 
   /// Heading and accessible tooltip for the independent-practice grade disclaimer.
   ///

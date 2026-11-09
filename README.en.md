@@ -1,4 +1,4 @@
-> **Machine-generated translation notice:** This file is an English translation of the original Japanese [`README.md`](README.md). If the two versions differ, the Japanese README is authoritative.
+> **Machine-generated translation notice:** This is an English translation of the Japanese [`README.md`](README.md), prepared with LLM assistance. Localized wording may contain errors or differ by feature; please report corrections.
 >
 > **Modified fork notice — 2026-11-09:** This is a modified version of Sorokun maintained by Vultaire at <https://github.com/Vultaire/sorokun>. The original project is by Chet Lin. This fork removes yomiagezan (spoken arithmetic) and VOICEVOX and adds web support, English/standard-Japanese/Kana interfaces, physical-keyboard answer entry, and Hands-Free Anzan practice. It remains licensed under GNU GPL v3.0; see `LICENSE.txt`.
 
@@ -12,7 +12,7 @@ Changes to this fork's code and documentation were carried out through agentic d
 
 ## Languages and translation
 
-Choose 日本語 (standard Japanese), にほんご (Kana-mode Japanese), or English in Settings. On first launch, if there is no saved choice, the app uses Japanese only when the first preferred device/browser locale has language code `ja`; otherwise it uses English. A bilingual welcome screen appears at startup, Japanese first and English second. Check “Do not show this again” to skip it on later launches; you can reopen it from Credits. The English interface was prepared with LLM assistance; Japanese is the original text. Please report corrections or suggestions in this fork's [GitHub repository](https://github.com/Vultaire/sorokun). The Credits page includes the translation disclosure.
+Choose 日本語 (standard Japanese), にほんご (Kana-mode Japanese), or English in Settings. On first launch, if there is no saved choice, the app uses Japanese only when the first preferred device/browser locale has language code `ja`; otherwise it uses English. A bilingual welcome screen appears at startup, Japanese first and English second. Check “Do not show this again” to skip it on later launches; you can reopen it from Credits. Some interface localizations used LLM assistance; wording may contain errors or differ by feature. Please report corrections or suggestions in this fork's [GitHub repository](https://github.com/Vultaire/sorokun). The Credits page includes the localization disclosure.
 
 ## Unofficial grade references
 

@@ -31,8 +31,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get englishLanguage => 'English';
 
   @override
-  String get englishTranslationDisclosure =>
-      '英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。';
+  String get localizationAssistanceDisclosure =>
+      '一部のインターフェースのローカライズにLLMを利用しています。翻訳に誤りがあれば、ご指摘ください。';
 
   @override
   String get gradeReferenceTitle => '級位・段位の表示について';
@@ -710,8 +710,8 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get englishLanguage => 'えいご';
 
   @override
-  String get englishTranslationDisclosure =>
-      'えいごのひょうじは、AIにてつだってもらってつくりました。もとのことばはにほんごです。まちがいがあれば、おしえてください。';
+  String get localizationAssistanceDisclosure =>
+      'ひょうじのことばのいちぶは、AIにてつだってもらってつくりました。まちがいがあれば、おしえてください。';
 
   @override
   String get gradeReferenceTitle => 'きゅうやだんのひょうじについて';

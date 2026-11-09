@@ -6,7 +6,7 @@
   "japaneseLanguage": "にほんご",
   "kanaJapaneseLanguage": "かな",
   "englishLanguage": "えいご",
-  "englishTranslationDisclosure": "えいごのひょうじは、AIにてつだってもらってつくりました。もとのことばはにほんごです。まちがいがあれば、おしえてください。",
+  "localizationAssistanceDisclosure": "ひょうじのことばのいちぶは、AIにてつだってもらってつくりました。まちがいがあれば、おしえてください。",
   "gradeReferenceTitle": "きゅうやだんのひょうじについて",
   "@gradeReferenceTitle": {
     "description": "Heading and accessible tooltip for the independent-practice grade disclaimer."

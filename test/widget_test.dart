@@ -113,11 +113,17 @@ void main() {
       expect(kana.japaneseLanguage, 'にほんご');
       expect(kana.kanaJapaneseLanguage, 'かな');
       expect(kana.englishLanguage, 'えいご');
+      expect(kana.localizationAssistanceDisclosure, contains('AI'));
       expect(japanese.localeName, 'ja');
       expect(japanese.kanaJapaneseLanguage, 'かな');
+      expect(japanese.localizationAssistanceDisclosure, contains('LLM'));
       expect(english.localeName, 'en');
       expect(english.appTitle, 'Sorokun!');
       expect(english.kanaJapaneseLanguage, 'Kana');
+      expect(
+        english.localizationAssistanceDisclosure,
+        contains('LLM assistance'),
+      );
       for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }
@@ -414,7 +420,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.text('英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。'),
+      find.text('一部のインターフェースのローカライズにLLMを利用しています。翻訳に誤りがあれば、ご指摘ください。'),
       findsOneWidget,
     );
     final gradeDisclosure = find.text(

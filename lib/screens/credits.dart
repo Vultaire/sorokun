@@ -52,7 +52,7 @@ class CreditsPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(l10n.forkDevelopmentDisclosure, style: textTheme.titleMedium),
             Text(
-              l10n.englishTranslationDisclosure,
+              l10n.localizationAssistanceDisclosure,
               style: textTheme.titleMedium,
             ),
             const SizedBox(height: 24),

@@ -6,7 +6,7 @@
   "japaneseLanguage": "日本語",
   "kanaJapaneseLanguage": "Kana",
   "englishLanguage": "English",
-  "englishTranslationDisclosure": "English interface translations were prepared with LLM assistance; Japanese is the original text. Corrections are welcome.",
+  "localizationAssistanceDisclosure": "Some interface localizations were prepared with LLM assistance. Translations may contain errors; corrections are welcome.",
   "gradeReferenceTitle": "About grade references",
   "@gradeReferenceTitle": {
     "description": "Heading and accessible tooltip for the independent-practice grade disclaimer."

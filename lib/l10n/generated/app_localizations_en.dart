@@ -31,8 +31,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get englishLanguage => 'English';
 
   @override
-  String get englishTranslationDisclosure =>
-      'English interface translations were prepared with LLM assistance; Japanese is the original text. Corrections are welcome.';
+  String get localizationAssistanceDisclosure =>
+      'Some interface localizations were prepared with LLM assistance. Translations may contain errors; corrections are welcome.';
 
   @override
   String get gradeReferenceTitle => 'About grade references';
