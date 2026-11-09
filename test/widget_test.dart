@@ -322,6 +322,7 @@ void main() {
     );
 
     expect(find.text('そろくん！のフォークをお試しいただき、ありがとうございます。'), findsOneWidget);
+    expect(find.textContaining('— ゴーインズ・ポール（ボルテーア）'), findsOneWidget);
     expect(
       find.text('Thank you for trying my fork of Sorokun!'),
       findsOneWidget,
