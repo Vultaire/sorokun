@@ -1,18 +1,18 @@
 > **Machine-generated translation notice:** This file is an English translation of the original Japanese [`README.md`](README.md). If the two versions differ, the Japanese README is authoritative.
 >
-> **Modified fork notice — 2026-11-02; Japanese/English localization update — 2026-11-02:** This is a modified version of Sorokun maintained by Vultaire at <https://github.com/Vultaire/sorokun>. The original project is by Chet Lin. This fork removes yomiagezan (spoken arithmetic) and VOICEVOX and adds web-build support and Japanese/English localization. It remains licensed under GNU GPL v3.0; see `LICENSE.txt`.
+> **Modified fork notice — 2026-11-09:** This is a modified version of Sorokun maintained by Vultaire at <https://github.com/Vultaire/sorokun>. The original project is by Chet Lin. This fork removes yomiagezan (spoken arithmetic) and VOICEVOX and adds web support, English/standard-Japanese/Kana interfaces, physical-keyboard answer entry, and Hands-Free Anzan practice. It remains licensed under GNU GPL v3.0; see `LICENSE.txt`.
 
 ## Sorokun!
 
-Sorokun! is a Dart/Flutter app for practicing soroban and mental arithmetic. It provides two modes: Soroban Practice and Flash Anzan.
+Sorokun! is a Dart/Flutter app for practicing soroban and mental arithmetic. It provides three modes: Soroban Practice, Flash Anzan, and Hands-Free Anzan.
 
 ## Development transparency
 
-Changes introduced in this fork—including the removal of yomiagezan and VOICEVOX, web support, and related documentation—were carried out through agentic development using a large language model (LLM), under Vultaire's direction. This disclosure applies only to this fork's modifications, not to the original upstream code.
+Changes to this fork's code and documentation were carried out through agentic development using a large language model (LLM), under Vultaire's direction. This disclosure applies only to this fork's modifications, not to the original upstream code.
 
 ## Languages and translation
 
-Choose 日本語 or English in Settings. On first launch, if there is no saved choice, the app uses Japanese only when the first preferred device/browser locale has language code `ja`; otherwise it uses English. A bilingual welcome screen appears at startup, Japanese first and English second. Check “Do not show this again” to skip it on later launches; you can reopen it from Credits. The English interface was prepared with LLM assistance; Japanese is the original text. Please report corrections or suggestions in this fork's [GitHub repository](https://github.com/Vultaire/sorokun). The Credits page includes the translation disclosure.
+Choose 日本語 (standard Japanese), にほんご (Kana-mode Japanese), or English in Settings. On first launch, if there is no saved choice, the app uses Japanese only when the first preferred device/browser locale has language code `ja`; otherwise it uses English. A bilingual welcome screen appears at startup, Japanese first and English second. Check “Do not show this again” to skip it on later launches; you can reopen it from Credits. The English interface was prepared with LLM assistance; Japanese is the original text. Please report corrections or suggestions in this fork's [GitHub repository](https://github.com/Vultaire/sorokun). The Credits page includes the translation disclosure.
 
 ## Unofficial grade references
 
@@ -25,6 +25,10 @@ Practice core soroban competition and examination subjects—mitori-zan, multipl
 ## Flash Anzan
 
 Practice addition by calculating numbers that appear rapidly on screen. Choose examination mode, which follows the applicable grade system, or free mode, where you can set the number of numbers, digit range, and display time. Examination grades follow both the Zenshuren and Japan Flash Anzan Association systems.
+
+## Hands-Free Anzan
+
+Build a playlist from mental-arithmetic activities and grade levels. The session shows each problem, gives you time to think, and then reveals the answer, so you can practice without entering answers by hand.
 
 ## Keyboard input (PC)
 

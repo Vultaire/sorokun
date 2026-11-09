@@ -39,6 +39,7 @@ _Harness _app({
   required HolisticHandsFreeProblemSetGenerator generator,
   required Duration Function(HolisticPracticePlaylistEntry, int) duration,
   Locale locale = const Locale('en'),
+  Brightness brightness = Brightness.light,
 }) {
   final router = GoRouter(
     initialLocation: '/setup',
@@ -65,11 +66,24 @@ _Harness _app({
     app: MaterialApp.router(
       routerConfig: router,
       locale: locale,
+      theme: ThemeData(brightness: brightness),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
     ),
     router: router,
   );
+}
+
+double _contrastRatio(Color foreground, Color background) {
+  final foregroundLuminance = foreground.computeLuminance();
+  final backgroundLuminance = background.computeLuminance();
+  final lighter = foregroundLuminance > backgroundLuminance
+      ? foregroundLuminance
+      : backgroundLuminance;
+  final darker = foregroundLuminance > backgroundLuminance
+      ? backgroundLuminance
+      : foregroundLuminance;
+  return (lighter + 0.05) / (darker + 0.05);
 }
 
 Future<void> _startSession(WidgetTester tester, _Harness harness) async {
@@ -295,6 +309,52 @@ void main() {
       harness.router.dispose();
     },
   );
+
+  testWidgets('Flash numbers have readable theme-aware colors in both phases', (
+    tester,
+  ) async {
+    for (final brightness in [Brightness.light, Brightness.dark]) {
+      final harness = _app(
+        config: _config([
+          _flashEntry(),
+        ], thinkingDelay: const Duration(milliseconds: 100)),
+        duration: (_, _) => const Duration(seconds: 20),
+        generator: (_, _) => const [
+          HolisticHandsFreeGeneratedProblem(
+            formattedPrompt: ['7', '8'],
+            flashNumbers: ['7', '8'],
+            formattedAnswer: '15',
+          ),
+        ],
+        brightness: brightness,
+      );
+      await _startSession(tester, harness);
+
+      Future<void> expectReadableFlashText(String expectedText) async {
+        final flashTextFinder = find.byKey(
+          const ValueKey('holistic-flash-current-number'),
+        );
+        expect(flashTextFinder, findsOneWidget);
+        final flashText = tester.widget<Text>(flashTextFinder);
+        expect(flashText.data, expectedText);
+        final theme = Theme.of(tester.element(flashTextFinder));
+        final color = flashText.style!.color!;
+        expect(color, theme.colorScheme.onSurface);
+        expect(
+          _contrastRatio(color, theme.scaffoldBackgroundColor),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+
+      await expectReadableFlashText('7');
+      await tester.pump(const Duration(seconds: 20));
+      await tester.pump(const Duration(milliseconds: 100));
+      await expectReadableFlashText('7   8');
+
+      harness.router.dispose();
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+  });
 
   testWidgets(
     'dwell expiry automatically advances and regenerates an exhausted set',

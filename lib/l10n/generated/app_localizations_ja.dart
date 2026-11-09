@@ -253,7 +253,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get forkModificationNotice =>
-      '原作: Chet Lin。Vultaire による改変版です（2026-11-01）。読み上げ算と VOICEVOX を削除し、Web ビルド対応を行いました。';
+      '原作: Chet Lin。Vultaire による改変版です（2026-11-09）。読み上げ算と VOICEVOX を削除し、Web 対応、英語・日本語・かな日本語の表示、ハンズフリー暗算、PC キーボード入力を追加しました。';
 
   @override
   String get forkDevelopmentDisclosure =>
@@ -936,7 +936,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String get forkModificationNotice =>
-      'もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです（2026-11-01）。よみあげざんと VOICEVOX をなくし、Web でもうごくようにしました。';
+      'もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです（2026-11-09）。よみあげざんと VOICEVOX をなくし、Web たいおう、えいご・にほんご・かなのひょうじ、ハンズフリーれんしゅう、PC キーボードでこたえをいれるきのうをたしました。';
 
   @override
   String get forkDevelopmentDisclosure =>

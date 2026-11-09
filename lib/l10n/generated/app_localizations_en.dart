@@ -255,7 +255,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forkModificationNotice =>
-      'Originally by Chet Lin. Modified by Vultaire (2026-11-01). Removed yomiagezan and VOICEVOX and added web-build support.';
+      'Originally by Chet Lin. Modified by Vultaire (2026-11-09). Removed yomiagezan and VOICEVOX; added web support, English/standard-Japanese/Kana interfaces, Hands-Free Anzan, and physical keyboard answer entry.';
 
   @override
   String get forkDevelopmentDisclosure =>

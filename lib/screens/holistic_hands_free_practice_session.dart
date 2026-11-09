@@ -13,8 +13,7 @@ import 'package:soroban_app/screens/components/mitori_display.dart';
 
 enum _HolisticSessionPhase { problem, thinking, answer, error }
 
-/// Runs a typed holistic playlist independently from the existing hands-free
-/// Flash and Combined Subjects flows.
+/// Runs a typed holistic playlist as a hands-free practice session.
 class HolisticHandsFreePracticeSessionPage extends StatefulWidget {
   const HolisticHandsFreePracticeSessionPage({
     super.key,
@@ -249,10 +248,10 @@ class _HolisticHandsFreePracticeSessionPageState
         child: Text(
           text,
           key: const ValueKey('holistic-flash-current-number'),
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'abacusFont',
             fontSize: 120,
-            color: Colors.lightGreenAccent,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           textScaler: TextScaler.noScaling,
         ),
