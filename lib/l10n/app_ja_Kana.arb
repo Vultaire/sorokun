@@ -32,7 +32,7 @@
   "@welcomeJapaneseDisclaimerHeading": {
     "description": "Japanese heading for the welcome screen's affiliation and grade-level caveat."
   },
-  "welcomeJapaneseDisclaimer": "このフォークは独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携・協力関係もありません。また、公認・推奨も受けていません。オリジナル版もこれらの団体とは公式な関係ではなかったと認識していますが、作者に代わって断言することはできません。\n\n総合種目とフラッシュ暗算の検定モードで選べる級位は、該当する団体の制度をもとにしているようです。フラッシュ暗算のフリーモードは例外で、口数や桁数などを自由に設定して練習できます。これらの級位は、私自身のそろばん学習経験からはおおむね妥当と思われますが、各団体の最新の基準と一つひとつ照合したわけではありません。内容が不完全であったり、現在の検定要件と異なったりする可能性があり、一致を保証するものではありません。現在そろばん教室に通っている方は、ご自身のレベルに適した練習内容について先生にご相談ください。最新の検定要件は各団体にご確認ください。",
+  "welcomeJapaneseDisclaimer": "このフォークは独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携・協力関係もありません。また、公認・推奨も受けていません。オリジナル版もこれらの団体とは公式な関係ではなかったと認識しています。\n\n総合種目とフラッシュ暗算の検定モードで選べる級位は、該当する団体の制度をもとにしているようです。フラッシュ暗算のフリーモードは例外で、口数や桁数などを自由に設定して練習できます。これらの級位は、私自身のそろばん学習経験からはおおむね妥当と思われますが、各団体の最新の基準と一つひとつ照合したわけではありません。内容が不完全であったり、現在の検定要件と異なったりする可能性があり、一致を保証するものではありません。現在そろばん教室に通っている方は、ご自身のレベルに適した練習内容について先生にご相談ください。最新の検定要件は各団体にご確認ください。",
   "@welcomeJapaneseDisclaimer": {
     "description": "Japanese statement about this fork's independence, the original app's uncertain affiliation, and the limits of its grade-level references."
   },
@@ -56,7 +56,7 @@
   "@welcomeEnglishDisclaimerHeading": {
     "description": "English heading for the welcome screen's affiliation and grade-level caveat."
   },
-  "welcomeEnglishDisclaimer": "This fork is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it is not affiliated with or endorsed by any of them. To the best of my knowledge, the original Sorokun! was not officially affiliated with these organizations either, though I cannot speak for its author.\n\nThe selectable grade levels in Soroban Practice and Flash Anzan Exam appear to be modeled on the relevant organizations' systems. Based on my experience studying soroban, they seem broadly accurate, but I have not checked each one against the organizations' current standards. They may be incomplete or out of date, and I cannot guarantee that they match current exam requirements. If you are currently taking soroban classes, please ask your teacher which practice materials are appropriate for your level. For current exam requirements, check with the relevant organization.",
+  "welcomeEnglishDisclaimer": "This fork is an independent, unofficial practice app. It is not an official program of Zenshuren, Nisshuren, or the Japan Flash Anzan Association, and it is not affiliated with or endorsed by any of them. To the best of my knowledge, the original Sorokun! was not officially affiliated with these organizations either.\n\nThe selectable grade levels in Soroban Practice and Flash Anzan Exam appear to be modeled on the relevant organizations' systems. Based on my experience studying soroban, they seem broadly accurate, but I have not checked each one against the organizations' current standards. They may be incomplete or out of date, and I cannot guarantee that they match current exam requirements. If you are currently taking soroban classes, please ask your teacher which practice materials are appropriate for your level. For current exam requirements, check with the relevant organization.",
   "@welcomeEnglishDisclaimer": {
     "description": "English statement about this fork's independence and the limits of its grade-level references."
   },

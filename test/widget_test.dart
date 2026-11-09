@@ -125,6 +125,30 @@ void main() {
         contains('LLM assistance'),
       );
       for (final localization in [english, japanese, kana]) {
+        expect(
+          localization.welcomeEnglishDisclaimer,
+          contains(
+            'To the best of my knowledge, the original Sorokun! was not officially affiliated with these organizations either.',
+          ),
+        );
+        expect(
+          localization.welcomeEnglishDisclaimer,
+          isNot(contains('though I cannot speak for its author')),
+        );
+      }
+      expect(
+        japanese.welcomeJapaneseDisclaimer,
+        contains('オリジナル版もこれらの団体とは公式な関係ではなかったと認識しています。'),
+      );
+      expect(
+        japanese.welcomeJapaneseDisclaimer,
+        isNot(contains('作者に代わって断言することはできません')),
+      );
+      expect(
+        kana.welcomeJapaneseDisclaimer,
+        japanese.welcomeJapaneseDisclaimer,
+      );
+      for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }
       expect(
