@@ -538,7 +538,7 @@ abstract class AppLocalizations {
   /// No description provided for @forkModificationNotice.
   ///
   /// In ja, this message translates to:
-  /// **'原作: Chet Lin。Vultaire による改変版です（2026-11-09）。\n\n• 読み上げ算と VOICEVOX を削除しました。\n• Web 対応を追加しました。\n• 英語・日本語・かな日本語の表示を追加しました。\n• ハンズフリー暗算を追加しました。\n• PC キーボード入力を追加しました。'**
+  /// **'原作: Chet Lin。Vultaire による改変版です。最終更新日: 2026-11-09。\n\n• 読み上げ算と VOICEVOX を削除しました。\n• Web 対応を追加しました。\n• 英語・日本語・かな日本語の表示を追加しました。\n• ハンズフリー暗算を追加しました。\n• PC キーボード入力を追加しました。'**
   String get forkModificationNotice;
 
   /// No description provided for @forkDevelopmentDisclosure.
@@ -546,12 +546,6 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。'**
   String get forkDevelopmentDisclosure;
-
-  /// No description provided for @localizationUpdateNotice.
-  ///
-  /// In ja, this message translates to:
-  /// **'英語・日本語のインターフェースは2026-11-02に、かな日本語モードは2026-11-08に追加しました。'**
-  String get localizationUpdateNotice;
 
   /// No description provided for @fontCredits.
   ///

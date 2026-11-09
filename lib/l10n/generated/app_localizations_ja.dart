@@ -253,15 +253,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get forkModificationNotice =>
-      '原作: Chet Lin。Vultaire による改変版です（2026-11-09）。\n\n• 読み上げ算と VOICEVOX を削除しました。\n• Web 対応を追加しました。\n• 英語・日本語・かな日本語の表示を追加しました。\n• ハンズフリー暗算を追加しました。\n• PC キーボード入力を追加しました。';
+      '原作: Chet Lin。Vultaire による改変版です。最終更新日: 2026-11-09。\n\n• 読み上げ算と VOICEVOX を削除しました。\n• Web 対応を追加しました。\n• 英語・日本語・かな日本語の表示を追加しました。\n• ハンズフリー暗算を追加しました。\n• PC キーボード入力を追加しました。';
 
   @override
   String get forkDevelopmentDisclosure =>
       'このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。';
-
-  @override
-  String get localizationUpdateNotice =>
-      '英語・日本語のインターフェースは2026-11-02に、かな日本語モードは2026-11-08に追加しました。';
 
   @override
   String get fontCredits => 'フォント';
@@ -936,15 +932,11 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String get forkModificationNotice =>
-      'もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです（2026-11-09）。\n\n• よみあげざんと VOICEVOX をなくしました。\n• Web たいおうをたしました。\n• えいご・にほんご・かなのひょうじをたしました。\n• ハンズフリーれんしゅうをたしました。\n• PC キーボードでこたえをいれるきのうをたしました。';
+      'もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです。さいしゅうこうしんび: 2026-11-09。\n\n• よみあげざんと VOICEVOX をなくしました。\n• Web たいおうをたしました。\n• えいご・にほんご・かなのひょうじをたしました。\n• ハンズフリーれんしゅうをたしました。\n• PC キーボードでこたえをいれるきのうをたしました。';
 
   @override
   String get forkDevelopmentDisclosure =>
       'このアプリは、Vultaire のしじのもと、AIにてつだってもらってつくりました。';
-
-  @override
-  String get localizationUpdateNotice =>
-      'えいご・にほんごのひょうじは2026-11-02に、かなモードは2026-11-08についかしました。';
 
   @override
   String get fontCredits => 'フォント';

@@ -121,6 +121,12 @@ void main() {
       for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }
+      expect(
+        english.forkModificationNotice,
+        contains('Last updated: 2026-11-09.'),
+      );
+      expect(japanese.forkModificationNotice, contains('最終更新日: 2026-11-09。'));
+      expect(kana.forkModificationNotice, contains('さいしゅうこうしんび: 2026-11-09。'));
     });
 
     test('a saved language overrides the device locale', () {
@@ -385,7 +391,7 @@ void main() {
     controller.dispose();
   });
 
-  testWidgets('Credits show the modification summary as bullets', (
+  testWidgets('Credits show the modification summary as a dated bullet list', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
@@ -400,14 +406,11 @@ void main() {
 
     expect(find.text('元のそろくんのソースコードはこちらで公開されています：'), findsOneWidget);
     expect(find.text('このフォークのソースコード：'), findsOneWidget);
+    expect(find.textContaining('最終更新日: 2026-11-09。'), findsOneWidget);
     expect(find.textContaining('• 読み上げ算と VOICEVOX を削除しました。'), findsOneWidget);
     expect(find.textContaining('• ハンズフリー暗算を追加しました。'), findsOneWidget);
     expect(
       find.text('このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。'),
-      findsOneWidget,
-    );
-    expect(
-      find.text('英語・日本語のインターフェースは2026-11-02に、かな日本語モードは2026-11-08に追加しました。'),
       findsOneWidget,
     );
     expect(

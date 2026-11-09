@@ -255,15 +255,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forkModificationNotice =>
-      'Originally by Chet Lin. Modified by Vultaire (2026-11-09).\n\n• Removed yomiagezan and VOICEVOX.\n• Added web support.\n• Added English, standard-Japanese, and Kana-mode interfaces.\n• Added Hands-Free Anzan practice.\n• Added physical-keyboard answer entry.';
+      'Originally by Chet Lin. Modified by Vultaire. Last updated: 2026-11-09.\n\n• Removed yomiagezan and VOICEVOX.\n• Added web support.\n• Added English, standard-Japanese, and Kana-mode interfaces.\n• Added Hands-Free Anzan practice.\n• Added physical-keyboard answer entry.';
 
   @override
   String get forkDevelopmentDisclosure =>
       'Changes in this fork were made through agentic development using an LLM, under Vultaire\'s direction.';
-
-  @override
-  String get localizationUpdateNotice =>
-      'English and standard-Japanese interfaces were added on 2026-11-02; Kana mode was added on 2026-11-08.';
 
   @override
   String get fontCredits => 'Fonts';
