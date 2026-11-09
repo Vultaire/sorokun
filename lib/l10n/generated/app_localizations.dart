@@ -550,7 +550,7 @@ abstract class AppLocalizations {
   /// No description provided for @localizationUpdateNotice.
   ///
   /// In ja, this message translates to:
-  /// **'日本語・English インターフェースのローカライズを2026-11-02に追加しました。'**
+  /// **'英語・日本語・かな日本語のインターフェースを2026-11-02に追加しました。'**
   String get localizationUpdateNotice;
 
   /// No description provided for @fontCredits.

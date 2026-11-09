@@ -401,7 +401,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.text('日本語・English インターフェースのローカライズを2026-11-02に追加しました。'),
+      find.text('英語・日本語・かな日本語のインターフェースを2026-11-02に追加しました。'),
       findsOneWidget,
     );
     expect(

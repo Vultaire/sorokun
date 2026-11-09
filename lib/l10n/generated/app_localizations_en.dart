@@ -263,7 +263,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get localizationUpdateNotice =>
-      'Japanese/English interface localization was added on 2026-11-02.';
+      'English, standard-Japanese, and Kana-mode interfaces were added on 2026-11-02.';
 
   @override
   String get fontCredits => 'Fonts';
