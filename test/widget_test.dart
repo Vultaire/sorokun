@@ -118,6 +118,9 @@ void main() {
       expect(english.localeName, 'en');
       expect(english.appTitle, 'Sorokun!');
       expect(english.kanaJapaneseLanguage, 'Kana');
+      for (final localization in [english, japanese, kana]) {
+        expect(localization.forkModificationNotice, contains('\n\n• '));
+      }
     });
 
     test('a saved language overrides the device locale', () {
@@ -381,7 +384,7 @@ void main() {
     controller.dispose();
   });
 
-  testWidgets('Credits retain the original Japanese copy', (
+  testWidgets('Credits show the modification summary as bullets', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
@@ -396,6 +399,8 @@ void main() {
 
     expect(find.text('元のそろくんのソースコードはこちらで公開されています：'), findsOneWidget);
     expect(find.text('このフォークのソースコード：'), findsOneWidget);
+    expect(find.textContaining('• 読み上げ算と VOICEVOX を削除しました。'), findsOneWidget);
+    expect(find.textContaining('• ハンズフリー暗算を追加しました。'), findsOneWidget);
     expect(
       find.text('このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。'),
       findsOneWidget,
@@ -408,12 +413,22 @@ void main() {
       find.text('英語インターフェースの翻訳にはLLMを使用しています。日本語が原文です。誤訳のご指摘を歓迎します。'),
       findsOneWidget,
     );
-    expect(
-      find.text(
-        '本フォークのそろくん！は独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携関係はなく、各団体から公認・推奨を受けたものでもありません。アプリ内の級位・段位等は練習用の目安であり、各団体の最新の基準や検定要件と異なる場合があります。最新の要件は各団体にご確認ください。',
-      ),
-      findsOneWidget,
+    final gradeDisclosure = find.text(
+      '本フォークのそろくん！は独立した非公式の練習用アプリです。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会の公式プログラムではなく、各団体との提携関係はなく、各団体から公認・推奨を受けたものでもありません。アプリ内の級位・段位等は練習用の目安であり、各団体の最新の基準や検定要件と異なる場合があります。最新の要件は各団体にご確認ください。',
     );
+    for (
+      var attempt = 0;
+      attempt < 8 && gradeDisclosure.evaluate().isEmpty;
+      attempt++
+    ) {
+      await tester.drag(
+        find.byType(ListView),
+        const Offset(0, -240),
+        warnIfMissed: false,
+      );
+      await tester.pumpAndSettle();
+    }
+    expect(gradeDisclosure, findsOneWidget);
   });
 
   testWidgets('grade-reference info dialog follows the selected locale', (

@@ -151,7 +151,7 @@
   "developerRole": "かいはつしゃ",
   "originalSourceIntro": "もとのそろくんのソースコードはこちら：",
   "forkSourceIntro": "このアプリのソースコード：",
-  "forkModificationNotice": "もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです（2026-11-09）。よみあげざんと VOICEVOX をなくし、Web たいおう、えいご・にほんご・かなのひょうじ、ハンズフリーれんしゅう、PC キーボードでこたえをいれるきのうをたしました。",
+  "forkModificationNotice": "もとのアプリは Chet Lin がつくりました。Vultaire がかえたばんです（2026-11-09）。\n\n• よみあげざんと VOICEVOX をなくしました。\n• Web たいおうをたしました。\n• えいご・にほんご・かなのひょうじをたしました。\n• ハンズフリーれんしゅうをたしました。\n• PC キーボードでこたえをいれるきのうをたしました。",
   "forkDevelopmentDisclosure": "このアプリは、Vultaire のしじのもと、AIにてつだってもらってつくりました。",
   "localizationUpdateNotice": "えいご・にほんご・かなのひょうじを、2026-11-02についかしました。",
   "fontCredits": "フォント",
