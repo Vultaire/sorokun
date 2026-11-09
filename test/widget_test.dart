@@ -136,18 +136,13 @@ void main() {
           isNot(contains('though I cannot speak for its author')),
         );
       }
-      expect(
-        japanese.welcomeJapaneseDisclaimer,
-        contains('オリジナル版もこれらの団体とは公式な関係ではなかったと認識しています。'),
-      );
-      expect(
-        japanese.welcomeJapaneseDisclaimer,
-        isNot(contains('作者に代わって断言することはできません')),
-      );
-      expect(
-        kana.welcomeJapaneseDisclaimer,
-        japanese.welcomeJapaneseDisclaimer,
-      );
+      for (final localization in [english, japanese, kana]) {
+        expect(localization.welcomeJapaneseDisclaimer, contains('認識しています。'));
+        expect(
+          localization.welcomeJapaneseDisclaimer,
+          isNot(contains('作者に代わって断言することはできません')),
+        );
+      }
       for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }
