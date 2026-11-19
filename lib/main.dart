@@ -149,9 +149,13 @@ class _AbacusAppState extends State<AbacusApp> with WidgetsBindingObserver {
   late final AppController _appController = widget.appController;
   String? _lastDocumentTheme;
   late final _router = GoRouter(
-    initialLocation: _appController.hasSelectedLanguage
+    initialLocation: !_appController.hasSelectedLanguage
+        ? '/language'
+        : _appController.shouldShowStartupDisclaimer
         ? '/disclaimer'
-        : '/language',
+        : _appController.shouldShowWelcomeScreen
+        ? '/welcome'
+        : '/home',
     redirect: (context, state) {
       final location = state.matchedLocation;
       final continueTo = state.uri.queryParameters['continueTo'];
@@ -170,6 +174,13 @@ class _AbacusAppState extends State<AbacusApp> with WidgetsBindingObserver {
           '/disclaimer',
           continueTo ?? state.uri.toString(),
         );
+      }
+
+      if (!_appController.shouldShowStartupDisclaimer &&
+          location == '/disclaimer') {
+        return _appController.shouldShowWelcomeScreen
+            ? _routePathWithContinueTo('/welcome', continueTo)
+            : _safeWelcomeDestination(continueTo);
       }
 
       if (!_appController.shouldShowStartupDisclaimer &&
@@ -203,8 +214,11 @@ class _AbacusAppState extends State<AbacusApp> with WidgetsBindingObserver {
       GoRoute(
         path: '/disclaimer',
         builder: (context, state) => StartupDisclaimerScreen(
-          onContinue: () {
-            _appController.completeStartupDisclaimer();
+          onContinue: (doNotShowAgain) async {
+            await _appController.completeStartupDisclaimer(
+              doNotShowAgain: doNotShowAgain,
+            );
+            if (!context.mounted) return;
             final continueTo = state.uri.queryParameters['continueTo'];
             if (_appController.shouldShowWelcomeScreen) {
               context.go(_routePathWithContinueTo('/welcome', continueTo));

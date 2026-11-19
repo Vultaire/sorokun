@@ -14,6 +14,7 @@
   "startupDisclaimerParagraph1": "このアプリは、Chet Lin 氏の『そろくん！』をもとにした独立した派生作品です。ゴーインズ・ポール（Paul Goins）が作成し、保守しています。",
   "startupDisclaimerParagraph2": "このアプリの学習レベルは、複数のそろばん関連団体の制度を参考にしていますが、いずれの団体の公式な学習用アプリでもありません。レベルの正確性や学習への適合性は保証できません。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会、およびその他アプリ内で言及する団体は、このアプリとは無関係です。これらの団体名は、学習の参考情報としてのみ記載しています。",
   "startupDisclaimerOk": "了解",
+  "startupDisclaimerDoNotShowAgain": "次回から表示しない",
   "@startupDisclaimerOk": {
     "description": "起動時の免責事項を確認して続行するボタン。"
   },
@@ -31,15 +32,20 @@
     "description": "Clarify that this fork is independent and unofficial, and that its grade and level labels may not match current organizational standards."
   },
   "close": "閉じる",
-  "welcomeDoNotShowAgain": "次回から表示しない / Do not show this again",
+  "welcomeDoNotShowAgain": "次回から表示しない",
   "@welcomeDoNotShowAgain": {
-    "description": "Intentionally bilingual checkbox label on the welcome screen."
+    "description": "ウェルカム画面を次回以降表示しないためのチェックボックス。"
   },
   "welcomeOk": "OK",
   "@welcomeOk": {
     "description": "Dismiss the welcome screen and continue; this is not a consent or waiver action."
   },
-  "welcomeReplayButton": "Show welcome screen again",
+  "welcomeTitle": "そろくん！をもとにした私のバージョンをお試しいただき、ありがとうございます。",
+  "welcomeIntro": "Chet Linさんのオリジナル版『そろくん！』は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。ウェブでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加してみたいと思いました。このカスタマイズ版は、その試みから生まれました。",
+  "welcomeChanges": "このバージョンでは、ウェブ対応、英語・かな日本語の表示、ハンズフリー練習、キーボードでの回答入力などを追加し、オリジナル版の読み上げ算を削除しました。",
+  "welcomeThanks": "すばらしいアプリを作ってくださったChet Linさん、ありがとうございます。このバージョンが、そろばんの練習に役立てばうれしいです。",
+  "welcomeSignature": "— ゴーインズ・ポール（Paul Goins／Vultaire）",
+  "welcomeReplayButton": "案内をもう一度見る",
   "@welcomeReplayButton": {
     "description": "Credits button that reopens the bilingual welcome screen."
   },

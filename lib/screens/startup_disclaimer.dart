@@ -1,10 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
 
-class StartupDisclaimerScreen extends StatelessWidget {
+class StartupDisclaimerScreen extends StatefulWidget {
   const StartupDisclaimerScreen({super.key, required this.onContinue});
 
-  final VoidCallback onContinue;
+  final Future<void> Function(bool doNotShowAgain) onContinue;
+
+  @override
+  State<StartupDisclaimerScreen> createState() =>
+      _StartupDisclaimerScreenState();
+}
+
+class _StartupDisclaimerScreenState extends State<StartupDisclaimerScreen> {
+  bool _doNotShowAgain = false;
+  bool _isContinuing = false;
+
+  Future<void> _continue() async {
+    setState(() => _isContinuing = true);
+    try {
+      await widget.onContinue(_doNotShowAgain);
+    } finally {
+      if (mounted) setState(() => _isContinuing = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +74,21 @@ class StartupDisclaimerScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 820),
+                  child: CheckboxListTile(
+                    key: const ValueKey('startup-disclaimer-do-not-show-again'),
+                    value: _doNotShowAgain,
+                    onChanged: (value) =>
+                        setState(() => _doNotShowAgain = value ?? false),
+                    title: Text(l10n.startupDisclaimerDoNotShowAgain),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                  ),
+                ),
+              ),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 360),
@@ -63,7 +96,7 @@ class StartupDisclaimerScreen extends StatelessWidget {
                   width: double.infinity,
                   child: FilledButton(
                     key: const ValueKey('startup-disclaimer-ok-button'),
-                    onPressed: onContinue,
+                    onPressed: _isContinuing ? null : _continue,
                     child: Text(l10n.startupDisclaimerOk),
                   ),
                 ),

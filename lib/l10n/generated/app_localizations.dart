@@ -151,6 +151,12 @@ abstract class AppLocalizations {
   /// **'了解'**
   String get startupDisclaimerOk;
 
+  /// No description provided for @startupDisclaimerDoNotShowAgain.
+  ///
+  /// In ja, this message translates to:
+  /// **'次回から表示しない'**
+  String get startupDisclaimerDoNotShowAgain;
+
   /// No description provided for @settingsTitle.
   ///
   /// In ja, this message translates to:
@@ -199,10 +205,10 @@ abstract class AppLocalizations {
   /// **'閉じる'**
   String get close;
 
-  /// Intentionally bilingual checkbox label on the welcome screen.
+  /// ウェルカム画面を次回以降表示しないためのチェックボックス。
   ///
   /// In ja, this message translates to:
-  /// **'次回から表示しない / Do not show this again'**
+  /// **'次回から表示しない'**
   String get welcomeDoNotShowAgain;
 
   /// Dismiss the welcome screen and continue; this is not a consent or waiver action.
@@ -211,10 +217,40 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get welcomeOk;
 
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'そろくん！をもとにした私のバージョンをお試しいただき、ありがとうございます。'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeIntro.
+  ///
+  /// In ja, this message translates to:
+  /// **'Chet Linさんのオリジナル版『そろくん！』は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。ウェブでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加してみたいと思いました。このカスタマイズ版は、その試みから生まれました。'**
+  String get welcomeIntro;
+
+  /// No description provided for @welcomeChanges.
+  ///
+  /// In ja, this message translates to:
+  /// **'このバージョンでは、ウェブ対応、英語・かな日本語の表示、ハンズフリー練習、キーボードでの回答入力などを追加し、オリジナル版の読み上げ算を削除しました。'**
+  String get welcomeChanges;
+
+  /// No description provided for @welcomeThanks.
+  ///
+  /// In ja, this message translates to:
+  /// **'すばらしいアプリを作ってくださったChet Linさん、ありがとうございます。このバージョンが、そろばんの練習に役立てばうれしいです。'**
+  String get welcomeThanks;
+
+  /// No description provided for @welcomeSignature.
+  ///
+  /// In ja, this message translates to:
+  /// **'— ゴーインズ・ポール（Paul Goins／Vultaire）'**
+  String get welcomeSignature;
+
   /// Credits button that reopens the bilingual welcome screen.
   ///
   /// In ja, this message translates to:
-  /// **'Show welcome screen again'**
+  /// **'案内をもう一度見る'**
   String get welcomeReplayButton;
 
   /// No description provided for @keypadPosition.

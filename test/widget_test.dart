@@ -51,16 +51,6 @@ void _expectStableLanguageOptionLabels(WidgetTester tester) {
   expect(find.text('えいご'), findsNothing);
 }
 
-List<String> _welcomeBlockText(WidgetTester tester, String key) => tester
-    .widgetList<Text>(
-      find.descendant(
-        of: find.byKey(ValueKey(key)),
-        matching: find.byType(Text),
-      ),
-    )
-    .map((widget) => widget.data!)
-    .toList(growable: false);
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -108,6 +98,9 @@ void main() {
       expect(kana.languageSelectionTitle, 'げんご');
       expect(kana.languageSelectionConfirm, 'けってい');
       expect(kana.startupDisclaimerOk, 'りょうかい');
+      expect(english.startupDisclaimerDoNotShowAgain, 'Do not show this again');
+      expect(japanese.startupDisclaimerDoNotShowAgain, '次回から表示しない');
+      expect(kana.startupDisclaimerDoNotShowAgain, 'つぎからひょうじしない');
       expect(
         japanese.startupDisclaimerParagraph2,
         contains('全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会'),
@@ -147,6 +140,19 @@ void main() {
         kana.startupDisclaimerParagraph1,
         contains('ゴーインズ・ポール（Paul Goins）'),
       );
+      expect(
+        english.welcomeTitle,
+        'Thank you for trying my version of Sorokun!',
+      );
+      expect(
+        english.welcomeIntro,
+        endsWith('This customized version is the result of that experiment.'),
+      );
+      expect(japanese.welcomeTitle, contains('私のバージョン'));
+      expect(japanese.welcomeThanks, contains('Chet Lin'));
+      expect(kana.welcomeTitle, contains('わたしのバージョン'));
+      expect(kana.welcomeChanges, contains('よみあげざん'));
+      expect(kana.welcomeDoNotShowAgain, 'つぎからはひょうじしない');
       for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }
@@ -209,6 +215,41 @@ void main() {
     });
   });
 
+  group('startup disclaimer preference', () {
+    test('unchecked dismissal lasts for this launch only', () async {
+      SharedPreferences.setMockInitialValues({'ui_language': 'english'});
+      final controller = AppController();
+      await controller.ready;
+
+      expect(controller.shouldShowStartupDisclaimer, isTrue);
+      await controller.completeStartupDisclaimer(doNotShowAgain: false);
+      expect(controller.shouldShowStartupDisclaimer, isFalse);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getBool('startup_disclaimer_suppressed'), isNull);
+      controller.dispose();
+
+      final nextLaunch = AppController();
+      await nextLaunch.ready;
+      expect(nextLaunch.shouldShowStartupDisclaimer, isTrue);
+      nextLaunch.dispose();
+    });
+
+    test('checked dismissal suppresses future launches', () async {
+      SharedPreferences.setMockInitialValues({'ui_language': 'english'});
+      final controller = AppController();
+      await controller.ready;
+      await controller.completeStartupDisclaimer(doNotShowAgain: true);
+      expect(controller.shouldShowStartupDisclaimer, isFalse);
+      controller.dispose();
+
+      final nextLaunch = AppController();
+      await nextLaunch.ready;
+      expect(nextLaunch.shouldShowStartupDisclaimer, isFalse);
+      nextLaunch.dispose();
+    });
+  });
+
   test('switching and persistence support all three languages', () async {
     const kanaLocale = Locale.fromSubtags(
       languageCode: 'ja',
@@ -240,14 +281,10 @@ void main() {
     }
   });
 
-  test('Kana ARB has no kanji except for the bilingual welcome checkbox', () {
+  test('Kana ARB has no kanji except for the formal disclaimer names', () {
     final translations =
         jsonDecode(File('lib/l10n/app_ja_Kana.arb').readAsStringSync())
             as Map<String, dynamic>;
-    final standardJapanese =
-        jsonDecode(File('lib/l10n/app_ja.arb').readAsStringSync())
-            as Map<String, dynamic>;
-    const intentionallyBilingualKeys = {'welcomeDoNotShowAgain'};
     const formalAssociationNamesInKana = [
       '全国珠算教育連盟（ぜんしゅれん）',
       '日本珠算連盟（にっしゅれん）',
@@ -259,10 +296,6 @@ void main() {
 
     expect(strings, isNotEmpty);
     for (final entry in strings) {
-      if (intentionallyBilingualKeys.contains(entry.key)) {
-        expect(entry.value, standardJapanese[entry.key], reason: entry.key);
-        continue;
-      }
       var text = entry.value as String;
       if (entry.key == 'startupDisclaimerParagraph2') {
         for (final associationName in formalAssociationNamesInKana) {
@@ -274,23 +307,29 @@ void main() {
     }
   });
 
-  test('welcome copy is not duplicated in locale ARB files', () {
+  test('welcome copy is localized in each locale ARB file', () {
     const localeFiles = ['app_en.arb', 'app_ja.arb', 'app_ja_Kana.arb'];
-    const welcomeCopyPrefixes = ['welcomeJapanese', 'welcomeEnglish'];
+    const welcomeCopyKeys = [
+      'welcomeTitle',
+      'welcomeIntro',
+      'welcomeChanges',
+      'welcomeThanks',
+      'welcomeSignature',
+      'welcomeDoNotShowAgain',
+      'welcomeReplayButton',
+    ];
 
     for (final localeFile in localeFiles) {
       final translations =
           jsonDecode(File('lib/l10n/$localeFile').readAsStringSync())
               as Map<String, dynamic>;
-      final welcomeCopyKeys = translations.keys.where(
-        (key) => welcomeCopyPrefixes.any(key.startsWith),
-      );
-      expect(welcomeCopyKeys, isEmpty, reason: localeFile);
-      expect(translations, contains('welcomeReplayButton'), reason: localeFile);
+      for (final key in welcomeCopyKeys) {
+        expect(translations, contains(key), reason: localeFile);
+      }
     }
   });
 
-  testWidgets('welcome copy is identical across selected UI locales', (
+  testWidgets('welcome screen follows the selected UI locale', (
     WidgetTester tester,
   ) async {
     const locales = [
@@ -298,8 +337,6 @@ void main() {
       Locale('ja'),
       Locale.fromSubtags(languageCode: 'ja', scriptCode: 'Kana'),
     ];
-    List<String>? canonicalCopy;
-
     for (final locale in locales) {
       await tester.pumpWidget(
         MaterialApp(
@@ -307,32 +344,43 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: WelcomeScreen(
-            showDoNotShowAgain: false,
+            showDoNotShowAgain: true,
             onContinue: (_) async {},
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      final copy = [
-        ..._welcomeBlockText(tester, 'welcome-japanese-copy'),
-        ..._welcomeBlockText(tester, 'welcome-english-copy'),
-      ];
-      expect(copy, hasLength(12));
-      if (canonicalCopy == null) {
-        canonicalCopy = copy;
-      } else {
-        expect(copy, canonicalCopy, reason: 'UI locale: $locale');
+      final l10n = await AppLocalizations.delegate.load(locale);
+      for (final copy in [
+        l10n.welcomeTitle,
+        l10n.welcomeIntro,
+        l10n.welcomeChanges,
+        l10n.welcomeThanks,
+        l10n.welcomeSignature,
+        l10n.welcomeDoNotShowAgain,
+      ]) {
+        expect(find.text(copy), findsOneWidget, reason: 'UI locale: $locale');
+      }
+      expect(find.byType(CheckboxListTile), findsOneWidget);
+      expect(
+        tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+        isFalse,
+      );
+      for (final otherLocale in locales.where((other) => other != locale)) {
+        final otherCopy = await AppLocalizations.delegate.load(otherLocale);
+        expect(find.text(otherCopy.welcomeTitle), findsNothing);
       }
     }
   });
 
-  testWidgets('welcome screen presents Japanese before English', (
+  testWidgets('welcome checkbox label is localized', (
     WidgetTester tester,
   ) async {
     bool? doNotShowAgain;
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('ja'),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: WelcomeScreen(
@@ -342,16 +390,8 @@ void main() {
       ),
     );
 
-    expect(find.text('そろくん！のフォークをお試しいただき、ありがとうございます。'), findsOneWidget);
-    expect(find.textContaining('— ゴーインズ・ポール（ボルテーア）'), findsOneWidget);
-    expect(
-      find.text('Thank you for trying my fork of Sorokun!'),
-      findsOneWidget,
-    );
-    expect(
-      tester.getTopLeft(find.text('日本語')).dy,
-      lessThan(tester.getTopLeft(find.text('English')).dy),
-    );
+    expect(find.text('次回から表示しない'), findsOneWidget);
+    expect(find.text('そろくん！をもとにした私のバージョンをお試しいただき、ありがとうございます。'), findsOneWidget);
     expect(
       tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
       isFalse,
@@ -411,7 +451,15 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Thank you for trying my fork of Sorokun!'), findsNothing);
+    expect(
+      find.text('Thank you for trying my version of Sorokun!'),
+      findsNothing,
+    );
+    expect(
+      tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+      isFalse,
+    );
+    expect(prefs.getBool('startup_disclaimer_suppressed'), isNull);
     expect(prefs.getString('ui_language'), 'english');
 
     await tester.tap(
@@ -419,7 +467,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(
-      find.text('Thank you for trying my fork of Sorokun!'),
+      find.text('Thank you for trying my version of Sorokun!'),
       findsOneWidget,
     );
     await tester.tap(find.byType(CheckboxListTile));
@@ -451,7 +499,7 @@ void main() {
     await tester.pump();
 
     expect(
-      find.text('Thank you for trying my fork of Sorokun!'),
+      find.text('Thank you for trying my version of Sorokun!'),
       findsOneWidget,
     );
     expect(find.byType(CheckboxListTile), findsNothing);
@@ -479,6 +527,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('About this app'), findsOneWidget);
       expect(find.text('Choose a subject'), findsNothing);
+      expect(
+        tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+        isFalse,
+      );
 
       await tester.tap(
         find.byKey(const ValueKey('startup-disclaimer-ok-button')),
@@ -489,6 +541,48 @@ void main() {
       expect(find.text('Choose a subject'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
     }
+  });
+
+  testWidgets('checked disclaimer choice hides it on later launches', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'ui_language': 'english',
+      'welcome_screen_suppressed': true,
+    });
+
+    final firstLaunch = AppController();
+    await firstLaunch.ready;
+    await tester.pumpWidget(app.AbacusApp(appController: firstLaunch));
+    await tester.pumpAndSettle();
+    expect(find.text('About this app'), findsOneWidget);
+
+    final checkbox = find.byKey(
+      const ValueKey('startup-disclaimer-do-not-show-again'),
+    );
+    await tester.tap(checkbox);
+    await tester.pump();
+    expect(tester.widget<CheckboxListTile>(checkbox).value, isTrue);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('startup_disclaimer_suppressed'), isNull);
+
+    await tester.tap(
+      find.byKey(const ValueKey('startup-disclaimer-ok-button')),
+    );
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
+    expect(prefs.getBool('startup_disclaimer_suppressed'), isTrue);
+    expect(find.text('Choose a subject'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+
+    final nextLaunch = AppController();
+    await nextLaunch.ready;
+    expect(nextLaunch.shouldShowStartupDisclaimer, isFalse);
+    await tester.pumpWidget(app.AbacusApp(appController: nextLaunch));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
+    expect(find.text('About this app'), findsNothing);
+    expect(find.text('Choose a subject'), findsOneWidget);
   });
 
   testWidgets('home page presents the available practice modes', (

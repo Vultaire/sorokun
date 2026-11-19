@@ -476,6 +476,8 @@ class AppController extends ChangeNotifier {
   static const _numberOrderKey = 'keypad_number_order';
   static const _handednessKey = 'handedness';
   static const _welcomeSuppressedKey = 'welcome_screen_suppressed';
+  static const _startupDisclaimerSuppressedKey =
+      'startup_disclaimer_suppressed';
 
   FlexScheme _flexScheme = FlexScheme.shadBlue;
   FlexScheme get flexScheme => _flexScheme;
@@ -488,8 +490,10 @@ class AppController extends ChangeNotifier {
   bool _hasSelectedLanguage = false;
   bool get hasSelectedLanguage => _hasSelectedLanguage;
 
+  bool _startupDisclaimerSuppressed = false;
   bool _disclaimerDismissedThisLaunch = false;
-  bool get shouldShowStartupDisclaimer => !_disclaimerDismissedThisLaunch;
+  bool get shouldShowStartupDisclaimer =>
+      !_startupDisclaimerSuppressed && !_disclaimerDismissedThisLaunch;
 
   Locale get locale => switch (language) {
     AppLanguage.japanese => const Locale('ja'),
@@ -541,6 +545,8 @@ class AppController extends ChangeNotifier {
     _hasSelectedLanguage = AppLanguage.values.any(
       (language) => language.name == storedLanguage,
     );
+    _startupDisclaimerSuppressed =
+        prefs.getBool(_startupDisclaimerSuppressedKey) ?? false;
     _welcomeSuppressed = prefs.getBool(_welcomeSuppressedKey) ?? false;
 
     final storedOrder = prefs.getString(_numberOrderKey);
@@ -605,10 +611,15 @@ class AppController extends ChangeNotifier {
     await prefs.setString(_languageKey, _language.name);
   }
 
-  /// Dismisses the startup disclaimer for this launch only.
-  void completeStartupDisclaimer() {
+  /// Dismisses the startup disclaimer, optionally suppressing future displays.
+  Future<void> completeStartupDisclaimer({required bool doNotShowAgain}) async {
     _disclaimerDismissedThisLaunch = true;
+    if (doNotShowAgain) _startupDisclaimerSuppressed = true;
     notifyListeners();
+    if (!doNotShowAgain) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_startupDisclaimerSuppressedKey, true);
   }
 
   Future<void> completeWelcome({required bool doNotShowAgain}) async {

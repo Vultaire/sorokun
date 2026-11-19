@@ -14,6 +14,7 @@
   "startupDisclaimerParagraph1": "このアプリは、Chet Lin さんの『そろくん！』をもとにつくった、どくりつしたアプリです。ゴーインズ・ポール（Paul Goins）がつくり、かんりしています。",
   "startupDisclaimerParagraph2": "このアプリのれんしゅうレベルは、いくつかのそろばんだんたいのしくみをもとにしています。でも、どのだんたいのこうしきなれんしゅうアプリでもありません。レベルがただしいことや、れんしゅうにあっていることは、ほしょうできません。全国珠算教育連盟（ぜんしゅれん）、日本珠算連盟（にっしゅれん）、日本フラッシュ暗算協会（あんざんきょうかい）、そのほかアプリでなまえをあげているだんたいは、このアプリとかんけいありません。だんたいのなまえは、れんしゅうのさんこうとしてしょうかいしています。",
   "startupDisclaimerOk": "りょうかい",
+  "startupDisclaimerDoNotShowAgain": "つぎからひょうじしない",
   "@startupDisclaimerOk": {
     "description": "さいしょにでるちゅういをよんで、つぎへすすむボタン。"
   },
@@ -31,14 +32,19 @@
     "description": "Clarify that this fork is independent and unofficial, and that its grade and level labels may not match current organizational standards."
   },
   "close": "とじる",
-  "welcomeDoNotShowAgain": "次回から表示しない / Do not show this again",
+  "welcomeDoNotShowAgain": "つぎからはひょうじしない",
   "@welcomeDoNotShowAgain": {
-    "description": "Intentionally bilingual checkbox label on the welcome screen."
+    "description": "ウェルカムがめんを、つぎからださないためのチェックボックス。"
   },
   "welcomeOk": "OK",
   "@welcomeOk": {
     "description": "Dismiss the welcome screen and continue; this is not a consent or waiver action."
   },
+  "welcomeTitle": "そろくん！をもとにした わたしのバージョンをつかってくれて、ありがとう！",
+  "welcomeIntro": "Chet Lin さんの『そろくん！』は、iPhoneやiPadでそろばんをれんしゅうするのに、とてもよいアプリだとおもいました。ウェブでもつかえて、にほんごがわからないひともつかえるように、かんたんなえいごのひょうじをつけたいとおもいました。このアプリは、そのためにつくった、わたしのバージョンです。",
+  "welcomeChanges": "ウェブでもつかえるようにして、えいごとかなのひょうじ、ハンズフリーれんしゅう、キーボードでこたえをいれるきのうをつけました。もとのよみあげざんはありません。",
+  "welcomeThanks": "Chet Lin さん、すてきなアプリをつくってくれて、ありがとうございます。このバージョンで、そろばんのれんしゅうをたのしんでね！",
+  "welcomeSignature": "— ゴーインズ・ポール（Paul Goins／Vultaire）",
   "welcomeReplayButton": "はじめのあんないをもういちどみる",
   "@welcomeReplayButton": {
     "description": "Credits button that reopens the bilingual welcome screen."

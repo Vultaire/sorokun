@@ -39,6 +39,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startupDisclaimerOk => '了解';
 
   @override
+  String get startupDisclaimerDoNotShowAgain => '次回から表示しない';
+
+  @override
   String get settingsTitle => 'アプリ設定';
 
   @override
@@ -65,13 +68,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get close => '閉じる';
 
   @override
-  String get welcomeDoNotShowAgain => '次回から表示しない / Do not show this again';
+  String get welcomeDoNotShowAgain => '次回から表示しない';
 
   @override
   String get welcomeOk => 'OK';
 
   @override
-  String get welcomeReplayButton => 'Show welcome screen again';
+  String get welcomeTitle => 'そろくん！をもとにした私のバージョンをお試しいただき、ありがとうございます。';
+
+  @override
+  String get welcomeIntro =>
+      'Chet Linさんのオリジナル版『そろくん！』は、iOSでそろばんを学ぶのにとても優れたアプリだと感じました。ウェブでも使えるようにし、日本語を話さないそろばん学習者にも使ってもらえるよう、英語の基本的なインターフェースを追加してみたいと思いました。このカスタマイズ版は、その試みから生まれました。';
+
+  @override
+  String get welcomeChanges =>
+      'このバージョンでは、ウェブ対応、英語・かな日本語の表示、ハンズフリー練習、キーボードでの回答入力などを追加し、オリジナル版の読み上げ算を削除しました。';
+
+  @override
+  String get welcomeThanks =>
+      'すばらしいアプリを作ってくださったChet Linさん、ありがとうございます。このバージョンが、そろばんの練習に役立てばうれしいです。';
+
+  @override
+  String get welcomeSignature => '— ゴーインズ・ポール（Paul Goins／Vultaire）';
+
+  @override
+  String get welcomeReplayButton => '案内をもう一度見る';
 
   @override
   String get keypadPosition => 'テンキーの配置';
@@ -695,6 +716,9 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get startupDisclaimerOk => 'りょうかい';
 
   @override
+  String get startupDisclaimerDoNotShowAgain => 'つぎからひょうじしない';
+
+  @override
   String get settingsTitle => 'アプリのせってい';
 
   @override
@@ -721,10 +745,28 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
   String get close => 'とじる';
 
   @override
-  String get welcomeDoNotShowAgain => '次回から表示しない / Do not show this again';
+  String get welcomeDoNotShowAgain => 'つぎからはひょうじしない';
 
   @override
   String get welcomeOk => 'OK';
+
+  @override
+  String get welcomeTitle => 'そろくん！をもとにした わたしのバージョンをつかってくれて、ありがとう！';
+
+  @override
+  String get welcomeIntro =>
+      'Chet Lin さんの『そろくん！』は、iPhoneやiPadでそろばんをれんしゅうするのに、とてもよいアプリだとおもいました。ウェブでもつかえて、にほんごがわからないひともつかえるように、かんたんなえいごのひょうじをつけたいとおもいました。このアプリは、そのためにつくった、わたしのバージョンです。';
+
+  @override
+  String get welcomeChanges =>
+      'ウェブでもつかえるようにして、えいごとかなのひょうじ、ハンズフリーれんしゅう、キーボードでこたえをいれるきのうをつけました。もとのよみあげざんはありません。';
+
+  @override
+  String get welcomeThanks =>
+      'Chet Lin さん、すてきなアプリをつくってくれて、ありがとうございます。このバージョンで、そろばんのれんしゅうをたのしんでね！';
+
+  @override
+  String get welcomeSignature => '— ゴーインズ・ポール（Paul Goins／Vultaire）';
 
   @override
   String get welcomeReplayButton => 'はじめのあんないをもういちどみる';

@@ -14,6 +14,7 @@
   "startupDisclaimerParagraph1": "This is an independent derivative work based on Sorokun by Chet Lin. It was created and is maintained by Paul Goins.",
   "startupDisclaimerParagraph2": "The study levels in this app are modeled on systems used by various soroban organizations. This app is not an official study resource of any of them, and we cannot guarantee that the levels are accurate or suitable for your studies. Zenshuren (The League for Soroban Education of Japan, Inc.), Nisshuren (The League of Japan Abacus Associations), the Japan Flash Anzan Association, and any other organizations mentioned are not affiliated with this app. Their names are included for informational purposes only, as study references.",
   "startupDisclaimerOk": "OK",
+  "startupDisclaimerDoNotShowAgain": "Do not show this again",
   "@startupDisclaimerOk": {
     "description": "Acknowledge the startup disclaimer and continue; this is not consent or a waiver."
   },
@@ -31,14 +32,19 @@
     "description": "Clarify that this fork is independent and unofficial, and that its grade and level labels may not match current organizational standards."
   },
   "close": "Close",
-  "welcomeDoNotShowAgain": "次回から表示しない / Do not show this again",
+  "welcomeDoNotShowAgain": "Do not show this again",
   "@welcomeDoNotShowAgain": {
-    "description": "Intentionally bilingual checkbox label on the welcome screen."
+    "description": "Hide the welcome screen on future launches."
   },
   "welcomeOk": "OK",
   "@welcomeOk": {
     "description": "Dismiss the welcome screen and continue; this is not a consent or waiver action."
   },
+  "welcomeTitle": "Thank you for trying my version of Sorokun!",
+  "welcomeIntro": "I found Chet Lin's original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This customized version is the result of that experiment.",
+  "welcomeChanges": "This version adds web support, English and Kana interfaces, hands-free practice, and keyboard answer entry. It also removes the original read-aloud exercises.",
+  "welcomeThanks": "Thank you, Chet Lin, for creating Sorokun! I hope this version helps you enjoy practicing soroban.",
+  "welcomeSignature": "— Paul Goins (Vultaire)",
   "welcomeReplayButton": "Show welcome screen again",
   "@welcomeReplayButton": {
     "description": "Credits button that reopens the bilingual welcome screen."

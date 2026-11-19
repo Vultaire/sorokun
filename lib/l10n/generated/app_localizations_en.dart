@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startupDisclaimerOk => 'OK';
 
   @override
+  String get startupDisclaimerDoNotShowAgain => 'Do not show this again';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
@@ -65,10 +68,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
-  String get welcomeDoNotShowAgain => '次回から表示しない / Do not show this again';
+  String get welcomeDoNotShowAgain => 'Do not show this again';
 
   @override
   String get welcomeOk => 'OK';
+
+  @override
+  String get welcomeTitle => 'Thank you for trying my version of Sorokun!';
+
+  @override
+  String get welcomeIntro =>
+      'I found Chet Lin\'s original Sorokun! to be an excellent study app for iOS. I wanted to experiment with bringing it to the web and adding a basic English interface for people studying soroban who do not speak Japanese. This customized version is the result of that experiment.';
+
+  @override
+  String get welcomeChanges =>
+      'This version adds web support, English and Kana interfaces, hands-free practice, and keyboard answer entry. It also removes the original read-aloud exercises.';
+
+  @override
+  String get welcomeThanks =>
+      'Thank you, Chet Lin, for creating Sorokun! I hope this version helps you enjoy practicing soroban.';
+
+  @override
+  String get welcomeSignature => '— Paul Goins (Vultaire)';
 
   @override
   String get welcomeReplayButton => 'Show welcome screen again';
