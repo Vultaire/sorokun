@@ -29,7 +29,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get startupDisclaimerParagraph1 =>
-      'このアプリは、Chet Lin 氏の『Sorokun』をもとにした独立した派生作品です。Paul Goins が作成し、保守しています。';
+      'このアプリは、Chet Lin 氏の『そろくん！』をもとにした独立した派生作品です。ゴーインズ・ポール（Paul Goins）が作成し、保守しています。';
 
   @override
   String get startupDisclaimerParagraph2 =>
@@ -685,7 +685,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String get startupDisclaimerParagraph1 =>
-      'このアプリは、Chet Lin さんの『Sorokun』をもとにつくった、どくりつしたアプリです。Paul Goins がつくり、かんりしています。';
+      'このアプリは、Chet Lin さんの『そろくん！』をもとにつくった、どくりつしたアプリです。ゴーインズ・ポール（Paul Goins）がつくり、かんりしています。';
 
   @override
   String get startupDisclaimerParagraph2 =>

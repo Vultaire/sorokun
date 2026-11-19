@@ -127,6 +127,11 @@ void main() {
       expect(japanese.languageSelectionTitle, '言語');
       expect(japanese.languageSelectionConfirm, '決定');
       expect(japanese.startupDisclaimerOk, '了解');
+      expect(japanese.startupDisclaimerParagraph1, contains('『そろくん！』'));
+      expect(
+        japanese.startupDisclaimerParagraph1,
+        contains('ゴーインズ・ポール（Paul Goins）'),
+      );
       expect(english.localeName, 'en');
       expect(english.appTitle, 'Sorokun!');
       expect(english.kanaJapaneseLanguage, 'Kana');
@@ -137,6 +142,11 @@ void main() {
       expect(english.languageSelectionTitle, 'Language');
       expect(english.languageSelectionConfirm, 'OK');
       expect(english.startupDisclaimerOk, 'OK');
+      expect(kana.startupDisclaimerParagraph1, contains('『そろくん！』'));
+      expect(
+        kana.startupDisclaimerParagraph1,
+        contains('ゴーインズ・ポール（Paul Goins）'),
+      );
       for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }

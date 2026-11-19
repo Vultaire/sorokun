@@ -136,7 +136,7 @@ abstract class AppLocalizations {
   /// No description provided for @startupDisclaimerParagraph1.
   ///
   /// In ja, this message translates to:
-  /// **'このアプリは、Chet Lin 氏の『Sorokun』をもとにした独立した派生作品です。Paul Goins が作成し、保守しています。'**
+  /// **'このアプリは、Chet Lin 氏の『そろくん！』をもとにした独立した派生作品です。ゴーインズ・ポール（Paul Goins）が作成し、保守しています。'**
   String get startupDisclaimerParagraph1;
 
   /// No description provided for @startupDisclaimerParagraph2.
