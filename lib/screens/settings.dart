@@ -442,22 +442,15 @@ Locale resolveAppLocale(Locale? locale) {
       : const Locale('ja');
 }
 
-AppLanguage resolveInitialLanguage(
-  List<Locale> preferredLocales, {
-  String? savedLanguage,
-}) {
+AppLanguage resolveInitialLanguage({String? savedLanguage}) {
   for (final language in AppLanguage.values) {
     if (language.name == savedLanguage) return language;
   }
 
-  final firstLocale = preferredLocales.isEmpty ? null : preferredLocales.first;
-  if (firstLocale?.languageCode.toLowerCase() != 'ja') {
-    return AppLanguage.english;
-  }
-
-  return firstLocale?.scriptCode?.toLowerCase() == 'kana'
-      ? AppLanguage.japaneseKana
-      : AppLanguage.japanese;
+  // The first-run language screen intentionally starts in standard Japanese,
+  // regardless of the device locale, so the user can understand its title and
+  // choose a language before entering the app.
+  return AppLanguage.japanese;
 }
 
 enum KeypadNumberOrder { standard, telephone }
@@ -492,6 +485,12 @@ class AppController extends ChangeNotifier {
 
   AppLanguage _language = AppLanguage.english;
   AppLanguage get language => _language;
+  bool _hasSelectedLanguage = false;
+  bool get hasSelectedLanguage => _hasSelectedLanguage;
+
+  bool _disclaimerDismissedThisLaunch = false;
+  bool get shouldShowStartupDisclaimer => !_disclaimerDismissedThisLaunch;
+
   Locale get locale => switch (language) {
     AppLanguage.japanese => const Locale('ja'),
     AppLanguage.japaneseKana => const Locale.fromSubtags(
@@ -514,12 +513,9 @@ class AppController extends ChangeNotifier {
 
   late final Future<void> ready;
 
-  AppController({List<Locale>? preferredLocales}) {
-    _preferredLocales = preferredLocales;
+  AppController() {
     ready = _load();
   }
-
-  List<Locale>? _preferredLocales;
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -541,12 +537,10 @@ class AppController extends ChangeNotifier {
     }
 
     final storedLanguage = prefs.getString(_languageKey);
-    _language = resolveInitialLanguage(
-      _preferredLocales ?? WidgetsBinding.instance.platformDispatcher.locales,
-      savedLanguage: storedLanguage,
+    _language = resolveInitialLanguage(savedLanguage: storedLanguage);
+    _hasSelectedLanguage = AppLanguage.values.any(
+      (language) => language.name == storedLanguage,
     );
-    _preferredLocales = null;
-
     _welcomeSuppressed = prefs.getBool(_welcomeSuppressedKey) ?? false;
 
     final storedOrder = prefs.getString(_numberOrderKey);
@@ -591,8 +585,30 @@ class AppController extends ChangeNotifier {
       _language = language;
       notifyListeners();
     }
+    _hasSelectedLanguage = true;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_languageKey, language.name);
+  }
+
+  /// Updates the language shown on the first-run selector without saving it.
+  void previewLanguage(AppLanguage language) {
+    if (_language == language) return;
+    _language = language;
+    notifyListeners();
+  }
+
+  /// Confirms and persists the language selected during first-run setup.
+  Future<void> confirmLanguageSelection() async {
+    _hasSelectedLanguage = true;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_languageKey, _language.name);
+  }
+
+  /// Dismisses the startup disclaimer for this launch only.
+  void completeStartupDisclaimer() {
+    _disclaimerDismissedThisLaunch = true;
+    notifyListeners();
   }
 
   Future<void> completeWelcome({required bool doNotShowAgain}) async {

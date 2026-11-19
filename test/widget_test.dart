@@ -65,20 +65,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('initial language resolution', () {
-    test('uses the first preferred locale only', () {
-      expect(
-        resolveInitialLanguage(const [Locale('ja', 'JP'), Locale('en', 'US')]),
-        AppLanguage.japanese,
-      );
-      expect(
-        resolveInitialLanguage(const [Locale('en', 'US'), Locale('ja', 'JP')]),
-        AppLanguage.english,
-      );
-      expect(
-        resolveInitialLanguage(const [Locale('fr', 'FR'), Locale('ja', 'JP')]),
-        AppLanguage.english,
-      );
-      expect(resolveInitialLanguage(const []), AppLanguage.english);
+    test('defaults to Japanese until a language has been saved', () {
+      expect(resolveInitialLanguage(), AppLanguage.japanese);
     });
 
     test('unsupported explicit locales resolve to English', () {
@@ -96,14 +84,7 @@ void main() {
 
       expect(resolveAppLocale(kanaLocale), kanaLocale);
       expect(resolveAppLocale(const Locale('ja')), const Locale('ja'));
-      expect(
-        resolveInitialLanguage(const [kanaLocale]),
-        AppLanguage.japaneseKana,
-      );
-      expect(
-        resolveInitialLanguage(const [Locale('ja', 'JP')]),
-        AppLanguage.japanese,
-      );
+      expect(resolveInitialLanguage(), AppLanguage.japanese);
     });
 
     test('localization delegate supports the distinct Kana locale', () async {
@@ -124,9 +105,15 @@ void main() {
       expect(kana.kanaJapaneseLanguage, 'かな');
       expect(kana.englishLanguage, 'えいご');
       expect(kana.localizationAssistanceDisclosure, contains('AI'));
+      expect(kana.languageSelectionTitle, 'げんご');
+      expect(kana.languageSelectionConfirm, 'けってい');
+      expect(kana.startupDisclaimerOk, 'りょうかい');
       expect(japanese.localeName, 'ja');
       expect(japanese.kanaJapaneseLanguage, 'かな');
       expect(japanese.localizationAssistanceDisclosure, contains('LLM'));
+      expect(japanese.languageSelectionTitle, '言語');
+      expect(japanese.languageSelectionConfirm, '決定');
+      expect(japanese.startupDisclaimerOk, '了解');
       expect(english.localeName, 'en');
       expect(english.appTitle, 'Sorokun!');
       expect(english.kanaJapaneseLanguage, 'Kana');
@@ -134,6 +121,9 @@ void main() {
         english.localizationAssistanceDisclosure,
         contains('LLM assistance'),
       );
+      expect(english.languageSelectionTitle, 'Language');
+      expect(english.languageSelectionConfirm, 'OK');
+      expect(english.startupDisclaimerOk, 'OK');
       for (final localization in [english, japanese, kana]) {
         expect(localization.forkModificationNotice, contains('\n\n• '));
       }
@@ -147,15 +137,15 @@ void main() {
 
     test('a saved language overrides the device locale', () {
       expect(
-        resolveInitialLanguage(const [
-          Locale('ja', 'JP'),
-        ], savedLanguage: 'english'),
+        resolveInitialLanguage(savedLanguage: 'english'),
         AppLanguage.english,
       );
       expect(
-        resolveInitialLanguage(const [
-          Locale('en', 'US'),
-        ], savedLanguage: 'japanese'),
+        resolveInitialLanguage(savedLanguage: 'japanese'),
+        AppLanguage.japanese,
+      );
+      expect(
+        resolveInitialLanguage(savedLanguage: 'not-a-language'),
         AppLanguage.japanese,
       );
     });
@@ -164,7 +154,7 @@ void main() {
   group('welcome screen preference', () {
     test('unchecked dismissal lasts for this launch only', () async {
       SharedPreferences.setMockInitialValues({});
-      final controller = AppController(preferredLocales: const []);
+      final controller = AppController();
       await controller.ready;
 
       expect(controller.shouldShowWelcomeScreen, isTrue);
@@ -175,7 +165,7 @@ void main() {
       expect(prefs.getBool('welcome_screen_suppressed'), isNull);
       controller.dispose();
 
-      final nextLaunch = AppController(preferredLocales: const []);
+      final nextLaunch = AppController();
       await nextLaunch.ready;
       expect(nextLaunch.shouldShowWelcomeScreen, isTrue);
       nextLaunch.dispose();
@@ -183,13 +173,13 @@ void main() {
 
     test('checked dismissal persists across launches', () async {
       SharedPreferences.setMockInitialValues({});
-      final controller = AppController(preferredLocales: const []);
+      final controller = AppController();
       await controller.ready;
       await controller.completeWelcome(doNotShowAgain: true);
       expect(controller.shouldShowWelcomeScreen, isFalse);
       controller.dispose();
 
-      final nextLaunch = AppController(preferredLocales: const []);
+      final nextLaunch = AppController();
       await nextLaunch.ready;
       expect(nextLaunch.shouldShowWelcomeScreen, isFalse);
       nextLaunch.dispose();
@@ -209,9 +199,7 @@ void main() {
 
     for (final (language, locale) in cases) {
       SharedPreferences.setMockInitialValues({});
-      final controller = AppController(
-        preferredLocales: const [Locale('en', 'US')],
-      );
+      final controller = AppController();
       await controller.ready;
 
       await controller.setLanguage(language);
@@ -221,9 +209,7 @@ void main() {
       expect(prefs.getString('ui_language'), language.name);
       controller.dispose();
 
-      final restoredController = AppController(
-        preferredLocales: const [Locale('ja', 'JP')],
-      );
+      final restoredController = AppController();
       await restoredController.ready;
       expect(restoredController.language, language);
       expect(restoredController.locale, locale);
@@ -343,18 +329,52 @@ void main() {
     expect(doNotShowAgain, isTrue);
   });
 
-  testWidgets('startup welcome can be reopened from Credits', (
+  testWidgets('first-run language and disclaimer precede the welcome screen', (
     WidgetTester tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
-    final controller = AppController(
-      preferredLocales: const [Locale('en', 'US')],
-    );
+    final controller = AppController();
     await controller.ready;
 
     await tester.pumpWidget(app.AbacusApp(appController: controller));
     await tester.pumpAndSettle();
 
+    expect(controller.language, AppLanguage.japanese);
+    expect(controller.hasSelectedLanguage, isFalse);
+    expect(find.text('言語'), findsOneWidget);
+    expect(find.text('決定'), findsOneWidget);
+
+    await tester.tap(find.text('にほんご'));
+    await tester.pumpAndSettle();
+    expect(find.text('げんご'), findsOneWidget);
+    expect(controller.hasSelectedLanguage, isFalse);
+
+    await tester.tap(find.text('English'));
+    await tester.pumpAndSettle();
+    expect(find.text('Language'), findsOneWidget);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('ui_language'), isNull);
+
+    await tester.tap(
+      find.byKey(const ValueKey('language-selection-confirm-button')),
+    );
+    await tester.pumpAndSettle();
+    expect(controller.language, AppLanguage.english);
+    expect(controller.hasSelectedLanguage, isTrue);
+    expect(find.text('About this app'), findsOneWidget);
+    expect(
+      find.text(
+        'This is an independent derivative work based on Sorokun by Chet Lin. It was created and is maintained by Paul Goins.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Thank you for trying my fork of Sorokun!'), findsNothing);
+    expect(prefs.getString('ui_language'), 'english');
+
+    await tester.tap(
+      find.byKey(const ValueKey('startup-disclaimer-ok-button')),
+    );
+    await tester.pumpAndSettle();
     expect(
       find.text('Thank you for trying my fork of Sorokun!'),
       findsOneWidget,
@@ -366,7 +386,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('Choose a subject'), findsOneWidget);
-    final prefs = await SharedPreferences.getInstance();
     expect(prefs.getBool('welcome_screen_suppressed'), isTrue);
 
     await tester.tap(find.text('Credits'));
@@ -399,13 +418,41 @@ void main() {
     expect(find.text('Show welcome screen again'), findsOneWidget);
   });
 
+  testWidgets('startup disclaimer is shown on every app launch', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'ui_language': 'english',
+      'welcome_screen_suppressed': true,
+    });
+
+    for (var launch = 0; launch < 2; launch++) {
+      final controller = AppController();
+      await controller.ready;
+      expect(controller.hasSelectedLanguage, isTrue);
+      expect(controller.shouldShowStartupDisclaimer, isTrue);
+
+      await tester.pumpWidget(app.AbacusApp(appController: controller));
+      await tester.pumpAndSettle();
+      expect(find.text('About this app'), findsOneWidget);
+      expect(find.text('Choose a subject'), findsNothing);
+
+      await tester.tap(
+        find.byKey(const ValueKey('startup-disclaimer-ok-button')),
+      );
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pump();
+      expect(controller.shouldShowStartupDisclaimer, isFalse);
+      expect(find.text('Choose a subject'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+  });
+
   testWidgets('home page presents the available practice modes', (
     WidgetTester tester,
   ) async {
     SharedPreferences.setMockInitialValues({'ui_language': 'japanese'});
-    final controller = AppController(
-      preferredLocales: const [Locale('en', 'US')],
-    );
+    final controller = AppController();
     await controller.ready;
 
     await tester.pumpWidget(_localizedApp(controller, const HomePage()));
@@ -422,9 +469,7 @@ void main() {
     WidgetTester tester,
   ) async {
     SharedPreferences.setMockInitialValues({'ui_language': 'english'});
-    final controller = AppController(
-      preferredLocales: const [Locale('en', 'US')],
-    );
+    final controller = AppController();
     await controller.ready;
 
     await tester.pumpWidget(_localizedApp(controller, const HomePage()));
@@ -533,9 +578,7 @@ void main() {
     WidgetTester tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
-    final controller = AppController(
-      preferredLocales: const [Locale('ja', 'JP'), Locale('en', 'US')],
-    );
+    final controller = AppController();
     await controller.ready;
 
     await tester.pumpWidget(
@@ -565,9 +608,7 @@ void main() {
     prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('ui_language'), 'english');
 
-    final restoredController = AppController(
-      preferredLocales: const [Locale('ja', 'JP')],
-    );
+    final restoredController = AppController();
     await restoredController.ready;
     expect(restoredController.language, AppLanguage.english);
     expect(restoredController.locale, const Locale('en'));
@@ -587,9 +628,7 @@ void main() {
     });
 
     SharedPreferences.setMockInitialValues({});
-    final controller = AppController(
-      preferredLocales: const [Locale('ja', 'JP')],
-    );
+    final controller = AppController();
     await controller.ready;
 
     await tester.pumpWidget(
@@ -659,9 +698,7 @@ void main() {
     });
 
     SharedPreferences.setMockInitialValues({});
-    final controller = AppController(
-      preferredLocales: const [Locale('ja', 'JP')],
-    );
+    final controller = AppController();
     await controller.ready;
 
     await tester.pumpWidget(
@@ -706,12 +743,8 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    SharedPreferences.setMockInitialValues({});
-    const kanaLocale = Locale.fromSubtags(
-      languageCode: 'ja',
-      scriptCode: 'Kana',
-    );
-    final controller = AppController(preferredLocales: const [kanaLocale]);
+    SharedPreferences.setMockInitialValues({'ui_language': 'japaneseKana'});
+    final controller = AppController();
     await controller.ready;
 
     await tester.pumpWidget(

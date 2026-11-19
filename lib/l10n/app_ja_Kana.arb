@@ -2,6 +2,21 @@
   "@@locale": "ja_Kana",
   "appTitle": "そろくん！",
   "languageLabel": "ことば",
+  "languageSelectionTitle": "げんご",
+  "@languageSelectionTitle": {
+    "description": "さいしょにひらくことばえらびのタイトル。えらんだことばですぐにかわる。"
+  },
+  "languageSelectionConfirm": "けってい",
+  "@languageSelectionConfirm": {
+    "description": "さいしょにえらんだことばをきめるボタン。"
+  },
+  "startupDisclaimerTitle": "このアプリについて",
+  "startupDisclaimerParagraph1": "このアプリは、Chet Lin さんの『Sorokun』をもとにつくった、どくりつしたアプリです。Paul Goins がつくり、かんりしています。",
+  "startupDisclaimerParagraph2": "このアプリのれんしゅうレベルは、いくつかのそろばんだんたいのしくみをもとにしています。でも、どのだんたいのこうしきなれんしゅうアプリでもありません。レベルがただしいことや、れんしゅうにあっていることは、ほしょうできません。ぜんこくしゅざんきょういくれんめい（Zenshuren／The League for Soroban Education of Japan, Inc.）、にほんしゅざんれんめい（Nisshuren／The League of Japan Abacus Associations）、にほんフラッシュあんざんきょうかい、そのほかアプリでなまえをあげているだんたいは、このアプリとかんけいありません。だんたいのなまえは、れんしゅうのさんこうとしてしょうかいしています。",
+  "startupDisclaimerOk": "りょうかい",
+  "@startupDisclaimerOk": {
+    "description": "さいしょにでるちゅういをよんで、つぎへすすむボタン。"
+  },
   "settingsTitle": "アプリのせってい",
   "japaneseLanguage": "にほんご",
   "kanaJapaneseLanguage": "かな",

@@ -19,6 +19,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get languageLabel => '言語 / Language';
 
   @override
+  String get languageSelectionTitle => '言語';
+
+  @override
+  String get languageSelectionConfirm => '決定';
+
+  @override
+  String get startupDisclaimerTitle => 'このアプリについて';
+
+  @override
+  String get startupDisclaimerParagraph1 =>
+      'このアプリは、Chet Lin 氏の『Sorokun』をもとにした独立した派生作品です。Paul Goins が作成し、保守しています。';
+
+  @override
+  String get startupDisclaimerParagraph2 =>
+      'このアプリの学習レベルは、複数のそろばん関連団体の制度を参考にしていますが、いずれの団体の公式な学習用アプリでもありません。レベルの正確性や学習への適合性は保証できません。全国珠算教育連盟（Zenshuren／The League for Soroban Education of Japan, Inc.）、日本珠算連盟（Nisshuren／The League of Japan Abacus Associations）、日本フラッシュ暗算協会、およびその他アプリ内で言及する団体は、このアプリとは無関係です。これらの団体名は、学習の参考情報としてのみ記載しています。';
+
+  @override
+  String get startupDisclaimerOk => '了解';
+
+  @override
   String get settingsTitle => 'アプリ設定';
 
   @override
@@ -653,6 +673,26 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String get languageLabel => 'ことば';
+
+  @override
+  String get languageSelectionTitle => 'げんご';
+
+  @override
+  String get languageSelectionConfirm => 'けってい';
+
+  @override
+  String get startupDisclaimerTitle => 'このアプリについて';
+
+  @override
+  String get startupDisclaimerParagraph1 =>
+      'このアプリは、Chet Lin さんの『Sorokun』をもとにつくった、どくりつしたアプリです。Paul Goins がつくり、かんりしています。';
+
+  @override
+  String get startupDisclaimerParagraph2 =>
+      'このアプリのれんしゅうレベルは、いくつかのそろばんだんたいのしくみをもとにしています。でも、どのだんたいのこうしきなれんしゅうアプリでもありません。レベルがただしいことや、れんしゅうにあっていることは、ほしょうできません。ぜんこくしゅざんきょういくれんめい（Zenshuren／The League for Soroban Education of Japan, Inc.）、にほんしゅざんれんめい（Nisshuren／The League of Japan Abacus Associations）、にほんフラッシュあんざんきょうかい、そのほかアプリでなまえをあげているだんたいは、このアプリとかんけいありません。だんたいのなまえは、れんしゅうのさんこうとしてしょうかいしています。';
+
+  @override
+  String get startupDisclaimerOk => 'りょうかい';
 
   @override
   String get settingsTitle => 'アプリのせってい';

@@ -19,6 +19,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageLabel => '言語 / Language';
 
   @override
+  String get languageSelectionTitle => 'Language';
+
+  @override
+  String get languageSelectionConfirm => 'OK';
+
+  @override
+  String get startupDisclaimerTitle => 'About this app';
+
+  @override
+  String get startupDisclaimerParagraph1 =>
+      'This is an independent derivative work based on Sorokun by Chet Lin. It was created and is maintained by Paul Goins.';
+
+  @override
+  String get startupDisclaimerParagraph2 =>
+      'The study levels in this app are modeled on systems used by various soroban organizations. This app is not an official study resource of any of them, and we cannot guarantee that the levels are accurate or suitable for your studies. Zenshuren (The League for Soroban Education of Japan, Inc.), Nisshuren (The League of Japan Abacus Associations), the Japan Flash Anzan Association, and any other organizations mentioned are not affiliated with this app. Their names are included for informational purposes only, as study references.';
+
+  @override
+  String get startupDisclaimerOk => 'OK';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

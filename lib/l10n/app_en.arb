@@ -2,6 +2,21 @@
   "@@locale": "en",
   "appTitle": "Sorokun!",
   "languageLabel": "言語 / Language",
+  "languageSelectionTitle": "Language",
+  "@languageSelectionTitle": {
+    "description": "Native-language title on first startup; it changes immediately with the selected language."
+  },
+  "languageSelectionConfirm": "OK",
+  "@languageSelectionConfirm": {
+    "description": "Confirm the language chosen during first-run setup."
+  },
+  "startupDisclaimerTitle": "About this app",
+  "startupDisclaimerParagraph1": "This is an independent derivative work based on Sorokun by Chet Lin. It was created and is maintained by Paul Goins.",
+  "startupDisclaimerParagraph2": "The study levels in this app are modeled on systems used by various soroban organizations. This app is not an official study resource of any of them, and we cannot guarantee that the levels are accurate or suitable for your studies. Zenshuren (The League for Soroban Education of Japan, Inc.), Nisshuren (The League of Japan Abacus Associations), the Japan Flash Anzan Association, and any other organizations mentioned are not affiliated with this app. Their names are included for informational purposes only, as study references.",
+  "startupDisclaimerOk": "OK",
+  "@startupDisclaimerOk": {
+    "description": "Acknowledge the startup disclaimer and continue; this is not consent or a waiver."
+  },
   "settingsTitle": "Settings",
   "japaneseLanguage": "日本語",
   "kanaJapaneseLanguage": "Kana",

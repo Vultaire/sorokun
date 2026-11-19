@@ -18,10 +18,12 @@ import 'package:soroban_app/screens/flash_level_menu.dart';
 import 'package:soroban_app/screens/flash_problem.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_setup.dart';
 import 'package:soroban_app/screens/holistic_hands_free_practice_session.dart';
+import 'package:soroban_app/screens/language_selection.dart';
 import 'package:soroban_app/screens/paper_menu.dart';
 import 'package:soroban_app/screens/paper_results.dart';
 import 'package:soroban_app/screens/paper_review.dart';
 import 'package:soroban_app/screens/settings.dart';
+import 'package:soroban_app/screens/startup_disclaimer.dart';
 import 'package:soroban_app/screens/welcome_screen.dart';
 import 'screens/home_page.dart';
 import 'screens/paper_problem.dart';
@@ -147,21 +149,71 @@ class _AbacusAppState extends State<AbacusApp> with WidgetsBindingObserver {
   late final AppController _appController = widget.appController;
   String? _lastDocumentTheme;
   late final _router = GoRouter(
-    initialLocation: _appController.shouldShowWelcomeScreen
-        ? '/welcome'
-        : '/home',
+    initialLocation: _appController.hasSelectedLanguage
+        ? '/disclaimer'
+        : '/language',
     redirect: (context, state) {
-      if (!_appController.shouldShowWelcomeScreen ||
-          state.matchedLocation == '/welcome') {
-        return null;
+      final location = state.matchedLocation;
+      final continueTo = state.uri.queryParameters['continueTo'];
+
+      if (!_appController.hasSelectedLanguage) {
+        if (location == '/language') return null;
+        return _routePathWithContinueTo(
+          '/language',
+          continueTo ?? state.uri.toString(),
+        );
       }
 
-      return Uri(
-        path: '/welcome',
-        queryParameters: {'continueTo': state.uri.toString()},
-      ).toString();
+      if (_appController.shouldShowStartupDisclaimer &&
+          location != '/disclaimer') {
+        return _routePathWithContinueTo(
+          '/disclaimer',
+          continueTo ?? state.uri.toString(),
+        );
+      }
+
+      if (!_appController.shouldShowStartupDisclaimer &&
+          _appController.shouldShowWelcomeScreen &&
+          location != '/welcome') {
+        return _routePathWithContinueTo(
+          '/welcome',
+          continueTo ?? state.uri.toString(),
+        );
+      }
+
+      return null;
     },
     routes: [
+      GoRoute(
+        path: '/language',
+        builder: (context, state) => LanguageSelectionScreen(
+          onConfirm: () async {
+            await _appController.confirmLanguageSelection();
+            if (context.mounted) {
+              context.go(
+                _routePathWithContinueTo(
+                  '/disclaimer',
+                  state.uri.queryParameters['continueTo'],
+                ),
+              );
+            }
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/disclaimer',
+        builder: (context, state) => StartupDisclaimerScreen(
+          onContinue: () {
+            _appController.completeStartupDisclaimer();
+            final continueTo = state.uri.queryParameters['continueTo'];
+            if (_appController.shouldShowWelcomeScreen) {
+              context.go(_routePathWithContinueTo('/welcome', continueTo));
+            } else {
+              context.go(_safeWelcomeDestination(continueTo));
+            }
+          },
+        ),
+      ),
       GoRoute(
         path: '/welcome',
         builder: (context, state) {
@@ -634,6 +686,14 @@ class _AbacusAppState extends State<AbacusApp> with WidgetsBindingObserver {
 
   String _cssHexColor(Color color) =>
       '#${(color.toARGB32() & 0x00ffffff).toRadixString(16).padLeft(6, '0')}';
+}
+
+String _routePathWithContinueTo(String path, String? destination) {
+  if (destination == null) return path;
+  return Uri(
+    path: path,
+    queryParameters: {'continueTo': destination},
+  ).toString();
 }
 
 String _safeWelcomeDestination(String? destination) {

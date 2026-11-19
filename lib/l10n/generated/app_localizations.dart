@@ -115,6 +115,42 @@ abstract class AppLocalizations {
   /// **'言語 / Language'**
   String get languageLabel;
 
+  /// 初回起動時の言語選択画面のタイトル。選択した言語に応じてすぐに切り替わる。
+  ///
+  /// In ja, this message translates to:
+  /// **'言語'**
+  String get languageSelectionTitle;
+
+  /// 初回起動時に選んだ言語を確定するボタン。
+  ///
+  /// In ja, this message translates to:
+  /// **'決定'**
+  String get languageSelectionConfirm;
+
+  /// No description provided for @startupDisclaimerTitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'このアプリについて'**
+  String get startupDisclaimerTitle;
+
+  /// No description provided for @startupDisclaimerParagraph1.
+  ///
+  /// In ja, this message translates to:
+  /// **'このアプリは、Chet Lin 氏の『Sorokun』をもとにした独立した派生作品です。Paul Goins が作成し、保守しています。'**
+  String get startupDisclaimerParagraph1;
+
+  /// No description provided for @startupDisclaimerParagraph2.
+  ///
+  /// In ja, this message translates to:
+  /// **'このアプリの学習レベルは、複数のそろばん関連団体の制度を参考にしていますが、いずれの団体の公式な学習用アプリでもありません。レベルの正確性や学習への適合性は保証できません。全国珠算教育連盟（Zenshuren／The League for Soroban Education of Japan, Inc.）、日本珠算連盟（Nisshuren／The League of Japan Abacus Associations）、日本フラッシュ暗算協会、およびその他アプリ内で言及する団体は、このアプリとは無関係です。これらの団体名は、学習の参考情報としてのみ記載しています。'**
+  String get startupDisclaimerParagraph2;
+
+  /// 起動時の免責事項を確認して続行するボタン。
+  ///
+  /// In ja, this message translates to:
+  /// **'了解'**
+  String get startupDisclaimerOk;
+
   /// No description provided for @settingsTitle.
   ///
   /// In ja, this message translates to:
