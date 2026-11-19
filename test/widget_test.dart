@@ -108,6 +108,19 @@ void main() {
       expect(kana.languageSelectionTitle, 'げんご');
       expect(kana.languageSelectionConfirm, 'けってい');
       expect(kana.startupDisclaimerOk, 'りょうかい');
+      expect(
+        japanese.startupDisclaimerParagraph2,
+        contains('全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会'),
+      );
+      expect(
+        japanese.startupDisclaimerParagraph2,
+        isNot(contains('The League')),
+      );
+      expect(
+        kana.startupDisclaimerParagraph2,
+        contains('全国珠算教育連盟（ぜんしゅれん）、日本珠算連盟（にっしゅれん）、日本フラッシュ暗算協会（あんざんきょうかい）'),
+      );
+      expect(kana.startupDisclaimerParagraph2, isNot(contains('The League')));
       expect(japanese.localeName, 'ja');
       expect(japanese.kanaJapaneseLanguage, 'かな');
       expect(japanese.localizationAssistanceDisclosure, contains('LLM'));
@@ -225,6 +238,11 @@ void main() {
         jsonDecode(File('lib/l10n/app_ja.arb').readAsStringSync())
             as Map<String, dynamic>;
     const intentionallyBilingualKeys = {'welcomeDoNotShowAgain'};
+    const formalAssociationNamesInKana = [
+      '全国珠算教育連盟（ぜんしゅれん）',
+      '日本珠算連盟（にっしゅれん）',
+      '日本フラッシュ暗算協会（あんざんきょうかい）',
+    ];
     final strings = translations.entries
         .where((entry) => !entry.key.startsWith('@') && entry.value is String)
         .toList();
@@ -235,7 +253,14 @@ void main() {
         expect(entry.value, standardJapanese[entry.key], reason: entry.key);
         continue;
       }
-      expect(_containsKanji(entry.value as String), isFalse, reason: entry.key);
+      var text = entry.value as String;
+      if (entry.key == 'startupDisclaimerParagraph2') {
+        for (final associationName in formalAssociationNamesInKana) {
+          expect(text, contains(associationName));
+          text = text.replaceAll(associationName, '');
+        }
+      }
+      expect(_containsKanji(text), isFalse, reason: entry.key);
     }
   });
 
@@ -343,6 +368,14 @@ void main() {
     expect(controller.hasSelectedLanguage, isFalse);
     expect(find.text('言語'), findsOneWidget);
     expect(find.text('決定'), findsOneWidget);
+    final languageConfirmButton = find.byKey(
+      const ValueKey('language-selection-confirm-button'),
+    );
+    expect(tester.getSize(languageConfirmButton).height, greaterThan(56));
+    expect(
+      tester.getSize(find.text('決定')).height,
+      greaterThanOrEqualTo(tester.getSize(find.text('日本語')).height),
+    );
 
     await tester.tap(find.text('にほんご'));
     await tester.pumpAndSettle();

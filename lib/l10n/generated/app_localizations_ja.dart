@@ -33,7 +33,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get startupDisclaimerParagraph2 =>
-      'このアプリの学習レベルは、複数のそろばん関連団体の制度を参考にしていますが、いずれの団体の公式な学習用アプリでもありません。レベルの正確性や学習への適合性は保証できません。全国珠算教育連盟（Zenshuren／The League for Soroban Education of Japan, Inc.）、日本珠算連盟（Nisshuren／The League of Japan Abacus Associations）、日本フラッシュ暗算協会、およびその他アプリ内で言及する団体は、このアプリとは無関係です。これらの団体名は、学習の参考情報としてのみ記載しています。';
+      'このアプリの学習レベルは、複数のそろばん関連団体の制度を参考にしていますが、いずれの団体の公式な学習用アプリでもありません。レベルの正確性や学習への適合性は保証できません。全国珠算教育連盟、日本珠算連盟、日本フラッシュ暗算協会、およびその他アプリ内で言及する団体は、このアプリとは無関係です。これらの団体名は、学習の参考情報としてのみ記載しています。';
 
   @override
   String get startupDisclaimerOk => '了解';
@@ -689,7 +689,7 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String get startupDisclaimerParagraph2 =>
-      'このアプリのれんしゅうレベルは、いくつかのそろばんだんたいのしくみをもとにしています。でも、どのだんたいのこうしきなれんしゅうアプリでもありません。レベルがただしいことや、れんしゅうにあっていることは、ほしょうできません。ぜんこくしゅざんきょういくれんめい（Zenshuren／The League for Soroban Education of Japan, Inc.）、にほんしゅざんれんめい（Nisshuren／The League of Japan Abacus Associations）、にほんフラッシュあんざんきょうかい、そのほかアプリでなまえをあげているだんたいは、このアプリとかんけいありません。だんたいのなまえは、れんしゅうのさんこうとしてしょうかいしています。';
+      'このアプリのれんしゅうレベルは、いくつかのそろばんだんたいのしくみをもとにしています。でも、どのだんたいのこうしきなれんしゅうアプリでもありません。レベルがただしいことや、れんしゅうにあっていることは、ほしょうできません。全国珠算教育連盟（ぜんしゅれん）、日本珠算連盟（にっしゅれん）、日本フラッシュ暗算協会（あんざんきょうかい）、そのほかアプリでなまえをあげているだんたいは、このアプリとかんけいありません。だんたいのなまえは、れんしゅうのさんこうとしてしょうかいしています。';
 
   @override
   String get startupDisclaimerOk => 'りょうかい';

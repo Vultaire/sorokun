@@ -78,6 +78,12 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                               key: const ValueKey(
                                 'language-selection-confirm-button',
                               ),
+                              style: FilledButton.styleFrom(
+                                minimumSize: const Size.fromHeight(64),
+                                textStyle: compact
+                                    ? textTheme.titleMedium
+                                    : textTheme.headlineSmall,
+                              ),
                               onPressed: _isConfirming ? null : _confirm,
                               child: Text(l10n.languageSelectionConfirm),
                             ),
