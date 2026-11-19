@@ -4,13 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:soroban_app/l10n/generated/app_localizations.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({
-    super.key,
-    required this.showDoNotShowAgain,
-    required this.onContinue,
-  });
+  const WelcomeScreen({super.key, required this.onContinue});
 
-  final bool showDoNotShowAgain;
   final Future<void> Function(bool doNotShowAgain) onContinue;
 
   @override
@@ -43,7 +38,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     return PopScope(
-      canPop: !widget.showDoNotShowAgain,
+      canPop: false,
       child: Scaffold(
         body: SafeArea(
           child: Padding(
@@ -105,21 +100,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                   ),
                 ),
-                if (widget.showDoNotShowAgain)
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 820),
-                      child: CheckboxListTile(
-                        value: _doNotShowAgain,
-                        onChanged: (value) =>
-                            setState(() => _doNotShowAgain = value ?? false),
-                        title: Text(l10n.welcomeDoNotShowAgain),
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                      ),
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 820),
+                    child: CheckboxListTile(
+                      value: _doNotShowAgain,
+                      onChanged: (value) =>
+                          setState(() => _doNotShowAgain = value ?? false),
+                      title: Text(l10n.welcomeDoNotShowAgain),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
                     ),
                   ),
+                ),
                 const SizedBox(height: 8),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 360),

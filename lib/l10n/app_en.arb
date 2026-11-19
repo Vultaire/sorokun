@@ -45,10 +45,6 @@
   "welcomeChanges": "This version adds web support, English and Kana interfaces, hands-free practice, and keyboard answer entry. It also removes the original read-aloud exercises.",
   "welcomeThanks": "Thank you, Chet Lin, for creating Sorokun! I hope this version helps you enjoy practicing soroban.",
   "welcomeSignature": "— Paul Goins (Vultaire)",
-  "welcomeReplayButton": "Show welcome screen again",
-  "@welcomeReplayButton": {
-    "description": "Credits button that reopens the bilingual welcome screen."
-  },
   "keypadPosition": "Keypad position",
   "leftHanded": "Left-handed",
   "rightHanded": "Right-handed",

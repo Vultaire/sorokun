@@ -316,7 +316,6 @@ void main() {
       'welcomeThanks',
       'welcomeSignature',
       'welcomeDoNotShowAgain',
-      'welcomeReplayButton',
     ];
 
     for (final localeFile in localeFiles) {
@@ -343,10 +342,7 @@ void main() {
           locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-          home: WelcomeScreen(
-            showDoNotShowAgain: true,
-            onContinue: (_) async {},
-          ),
+          home: WelcomeScreen(onContinue: (_) async {}),
         ),
       );
       await tester.pumpAndSettle();
@@ -384,7 +380,6 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: WelcomeScreen(
-          showDoNotShowAgain: true,
           onContinue: (value) async => doNotShowAgain = value,
         ),
       ),
@@ -404,7 +399,7 @@ void main() {
     expect(doNotShowAgain, isTrue);
   });
 
-  testWidgets('first-run language and disclaimer precede the welcome screen', (
+  testWidgets('first-run language, disclaimer, and welcome flow in order', (
     WidgetTester tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
@@ -478,35 +473,6 @@ void main() {
 
     expect(find.text('Choose a subject'), findsOneWidget);
     expect(prefs.getBool('welcome_screen_suppressed'), isTrue);
-
-    await tester.tap(find.text('Credits'));
-    await tester.pump(const Duration(seconds: 1));
-    await tester.pump();
-    final reopenButton = find.text('Show welcome screen again');
-    final creditsList = find.byType(Scrollable).first;
-    for (var i = 0; i < 8 && reopenButton.evaluate().isEmpty; i++) {
-      await tester.drag(
-        creditsList,
-        const Offset(0, -240),
-        warnIfMissed: false,
-      );
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-    await tester.ensureVisible(reopenButton);
-    await tester.pumpAndSettle();
-    await tester.tap(reopenButton);
-    await tester.pump(const Duration(seconds: 1));
-    await tester.pump();
-
-    expect(
-      find.text('Thank you for trying my version of Sorokun!'),
-      findsOneWidget,
-    );
-    expect(find.byType(CheckboxListTile), findsNothing);
-    await tester.tap(find.text('OK'));
-    await tester.pump(const Duration(seconds: 1));
-    await tester.pump();
-    expect(find.text('Show welcome screen again'), findsOneWidget);
   });
 
   testWidgets('startup disclaimer is shown on every app launch', (
@@ -645,6 +611,7 @@ void main() {
     expect(find.textContaining('最終更新日: 2026-11-09。'), findsOneWidget);
     expect(find.textContaining('• 読み上げ算と VOICEVOX を削除しました。'), findsOneWidget);
     expect(find.textContaining('• ハンズフリー暗算を追加しました。'), findsOneWidget);
+    expect(find.text('案内をもう一度見る'), findsNothing);
     expect(
       find.text('このフォークの改変は、Vultaire の指示のもと、LLM を用いたエージェント型開発で行われました。'),
       findsOneWidget,

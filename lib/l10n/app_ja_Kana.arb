@@ -45,10 +45,6 @@
   "welcomeChanges": "ウェブでもつかえるようにして、えいごとかなのひょうじ、ハンズフリーれんしゅう、キーボードでこたえをいれるきのうをつけました。もとのよみあげざんはありません。",
   "welcomeThanks": "Chet Lin さん、すてきなアプリをつくってくれて、ありがとうございます。このバージョンで、そろばんのれんしゅうをたのしんでね！",
   "welcomeSignature": "— ゴーインズ・ポール（Paul Goins／Vultaire）",
-  "welcomeReplayButton": "はじめのあんないをもういちどみる",
-  "@welcomeReplayButton": {
-    "description": "Credits button that reopens the bilingual welcome screen."
-  },
   "keypadPosition": "すうじキーのいち",
   "leftHanded": "ひだりきき",
   "rightHanded": "みぎきき",

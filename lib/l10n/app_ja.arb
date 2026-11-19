@@ -45,10 +45,6 @@
   "welcomeChanges": "このバージョンでは、ウェブ対応、英語・かな日本語の表示、ハンズフリー練習、キーボードでの回答入力などを追加し、オリジナル版の読み上げ算を削除しました。",
   "welcomeThanks": "すばらしいアプリを作ってくださったChet Linさん、ありがとうございます。このバージョンが、そろばんの練習に役立てばうれしいです。",
   "welcomeSignature": "— ゴーインズ・ポール（Paul Goins／Vultaire）",
-  "welcomeReplayButton": "案内をもう一度見る",
-  "@welcomeReplayButton": {
-    "description": "Credits button that reopens the bilingual welcome screen."
-  },
   "keypadPosition": "テンキーの配置",
   "leftHanded": "左利き",
   "rightHanded": "右利き",

@@ -231,17 +231,10 @@ class _AbacusAppState extends State<AbacusApp> with WidgetsBindingObserver {
       GoRoute(
         path: '/welcome',
         builder: (context, state) {
-          final isReview = state.extra == true;
           final continueTo = state.uri.queryParameters['continueTo'];
 
           return WelcomeScreen(
-            showDoNotShowAgain: !isReview,
             onContinue: (doNotShowAgain) async {
-              if (isReview) {
-                if (context.mounted) context.pop();
-                return;
-              }
-
               await _appController.completeWelcome(
                 doNotShowAgain: doNotShowAgain,
               );

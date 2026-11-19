@@ -92,9 +92,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeSignature => '— Paul Goins (Vultaire)';
 
   @override
-  String get welcomeReplayButton => 'Show welcome screen again';
-
-  @override
   String get keypadPosition => 'Keypad position';
 
   @override

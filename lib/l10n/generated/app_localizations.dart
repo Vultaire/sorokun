@@ -247,12 +247,6 @@ abstract class AppLocalizations {
   /// **'— ゴーインズ・ポール（Paul Goins／Vultaire）'**
   String get welcomeSignature;
 
-  /// Credits button that reopens the bilingual welcome screen.
-  ///
-  /// In ja, this message translates to:
-  /// **'案内をもう一度見る'**
-  String get welcomeReplayButton;
-
   /// No description provided for @keypadPosition.
   ///
   /// In ja, this message translates to:

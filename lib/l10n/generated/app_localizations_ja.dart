@@ -92,9 +92,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get welcomeSignature => '— ゴーインズ・ポール（Paul Goins／Vultaire）';
 
   @override
-  String get welcomeReplayButton => '案内をもう一度見る';
-
-  @override
   String get keypadPosition => 'テンキーの配置';
 
   @override
@@ -767,9 +764,6 @@ class AppLocalizationsJaKana extends AppLocalizationsJa {
 
   @override
   String get welcomeSignature => '— ゴーインズ・ポール（Paul Goins／Vultaire）';
-
-  @override
-  String get welcomeReplayButton => 'はじめのあんないをもういちどみる';
 
   @override
   String get keypadPosition => 'すうじキーのいち';
